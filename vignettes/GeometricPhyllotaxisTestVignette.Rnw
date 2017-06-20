@@ -1,0 +1,721 @@
+
+
+\documentclass[a4paper]{article}
+\usepackage{Sweave}
+
+\usepackage{amsmath}
+\bibliographystyle{plain}
+
+\SweaveOpts{prefix.string=figdir/fig,debug=TRUE,eps=FALSE}
+
+\usepackage{float}
+\newcommand{\uvec}{{\bf u}}
+\newcommand{\mvec}{{\bf m}}
+\newcommand{\nvec}{{\bf n}}
+\newcommand{\vvec}{{\bf v}}
+\newcommand{\half}{\textstyle{\frac{1}{2}}}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{Theory and code for geometrical phyllotaxis}
+\author{Jonathan Swinton}
+\maketitle
+
+%\section{Housekeeping}
+<<echo=FALSE>>=
+options(width=80)
+@
+<<>>=
+library(GeometricalPhyllotaxis)
+library(grid)
+library(xtable)
+library(showtext); showtext.auto() # for greek symbols in plots
+
+@
+
+
+\section{Periodic lattices}
+We have vertical infinite cylinders of radius $\rho$ and circumference $R=2\pi\rho$.
+coordinate $x \in [0,2\pi\rho]$  and vertical coordinate $z$ as in Figure~\ref{fig:cylcoord}.
+We can take the divergence $d=x/2\pi\rho$, $d\in [0,1]$ as an alternative horizontal coordinate.
+
+\begin{center}
+\begin{figure}[H]
+<<plotPGtest,fig=TRUE,echo=FALSE>>=
+# Rho is ignored
+PG.test <- newPhyllotaxisGenetic(Rise=.7,Divergence=.38,Rho=0.795775,Jugacy=1,L=3)
+plotPhyllotaxis (PG.test,doRepeat=1,doNumbers=FALSE,doAxes=FALSE,pointSize=1)
+
+xRange <- getXlim(PG.test)
+
+grid.clip(x=-1,width=3,y=-1,height=3,default.units="npc",just=c("left","bottom"))
+
+grid.lines(x=unit(c(xRange[1],xRange[1]),"native"),y=unit(c(.6,.8),"npc"),arrow=arrow(length=unit(0.02,"npc")))
+grid.text(x=unit(xRange[1],"native"),y=unit(0.7,"npc"),label="z",hjust=2)
+grid.lines(x=unit(xRange[1],"native")+unit(c(0,.1),"npc"),y=unit(c(.6,.6),"npc"),arrow=arrow(length=unit(0.02,"npc")))
+grid.text(x=unit(xRange[1],"native")+unit(.05,"npc"),y=unit(.6,"npc"),vjust=1,label=c("x"));
+grid.xaxis(at=c(xRange[1],xRange[2]),label=c("0","R=2\U03C0\U03C1"));
+@
+\caption{A cylinder unwound into the plane}
+\label{fig:cylcoord}
+\end{figure}
+\end{center}
+
+A choice of divergence $d$ and rise $h$ defines a lattice on the cylinder.
+The code may not work properly for Jugacy $J>1$. TEST.
+
+\begin{center}
+\begin{figure}[H]
+<<scaledpgtest,fig=TRUE,echo=FALSE>>=
+PG.test <- newPhyllotaxisGenetic(Rise=.2,Divergence=.38,Rho=0.795775,Jugacy=1,L=3)
+plotPhyllotaxis (PG.test,doRepeat=0,doNumbers=FALSE,doAxes=FALSE,pointSize=1)
+grid.clip(x=-1,width=3,y=-1,height=3,default.units="npc",just=c("left","bottom"))
+
+xRange <- getXlim(PG.test)
+ylim <- getYlim(PG.test)
+divergence <- getDivergence(PG.test)
+rise <- getRise(PG.test)
+
+grid.lines(x=c(0, divergence),	y=c(0,0),arrow=arrow(length=unit(0.02,"npc")),default.units="native")
+grid.text(x=divergence/2,	y=unit(0.52,"npc"),default.units="native",label="d")
+grid.lines(x=c(divergence, divergence),y=c(0,rise),arrow=arrow(length=unit(0.02,"npc")),default.units="native")
+grid.text(x=unit( divergence,"native")-unit(0.02,"npc"),	y=rise/2,default.units="native",label="h")
+grid.xaxis(at=c(xRange[1],xRange[2]),label=c("0","1"));
+@
+\caption{The lattice defined by its genetic parameters}
+\label{fig:latticegenetic}
+\end{figure}
+\end{center}
+
+
+
+
+
+\clearpage
+\section{Winding numbers}
+Given a pair of coprime positive integers $m,n$  a {congruence pair} for $m,n$ is $u,v$ where
+\begin{equation}
+v m - u n = 1
+\label{eq:wnp}
+\end{equation}
+For $1<m<n$ the \emph{winding number pair} for $m,n$ is the unique congruence pair of integers $u,v$ satisfying $0<u<m,0<v<n$;
+For $\Delta=\pm1$, the generalised winding number is the unique pair of integers $u(m,n,\Delta),v(m,n,\Delta)$ satisfying $v m - u n = \Delta$.
+
+<<maketable,echo=FALSE>>=
+
+wntable <- function(mrange,nrange,Delta=1) {
+  res <- array("",dim=c(length(mrange),length(nrange)))
+  colnames(res) <- sprintf("%d",nrange); colnames(res)[1]<- paste("n=",colnames(res)[1],sep="")
+  rownames(res) <- sprintf("%d",mrange); rownames(res)[1]<- paste("m=",rownames(res)[1],sep="")
+ for (mix in seq(along=mrange)) {
+    for (nix in seq(along=nrange)) {
+      m=mrange[mix];n=nrange[nix]
+     h <- hcf(m,n)
+      if (h==1) {
+        uv = windingNumbers(m,n,Delta)
+        if (all(uv==c(0.5,0.5))) { res[mix,nix]<-"(1/2,1/2)"} else {
+        res[mix,nix] <- sprintf("(%d,%d)",uv[1],uv[2])
+        }
+      }
+    }
+  }
+  res
+}
+
+@
+
+Winding numbers can be calculated using the \texttt{windingNumbers} function and are tabulated in Table~\ref{tab:wnp} and Table~\ref{tab:wnm}. As implemented it extends the range of $m$ and $n$.
+<<shown,echo=TRUE>>=
+windingNumbers(m=34,n=55,Delta=1)
+@
+
+
+
+<<doplus1,results=tex,eval=TRUE,echo=FALSE>>=
+mrange <- c(1:5,7,10,19,32,34)
+nrange <- c(1:5,10,11,20,34,55)
+print(xtable(wntable(mrange,nrange,1),caption="Winding numbers for $\\Delta=1$",label="tab:wnp"),include.rownames=TRUE,include.colnames=TRUE)
+print(xtable(wntable(mrange,nrange,-1),caption="Winding numbers for $\\Delta=-1$",label="tab:wnm"),include.rownames=TRUE,include.colnames=TRUE)
+@
+
+\clearpage
+
+\section{Generating pairs}
+Given a real $d$, the $d-$determinant of $m$ and $n$ is
+\[
+\Delta_{mn}(d) =  [ nd ]  m -   [md ]n
+\]
+where $[x]$ is \texttt{round(x)}.
+<<showsmnd,echo=TRUE>>=
+Deltamnd(m=34,n=55,d=.1)
+dGolden <- (sqrt(5)-1)/2
+Deltamnd(m=34,n=55,d=dGolden)
+@
+A coprime pair $m,n$ is defined to be \emph{generating} if $|\Delta_{mn}(d)|=1$,
+except that $1,1$ is generating iff $d=\half$.
+We can compute the $d$-intervals in $[0,1]$ on which $m,n$ is generating.
+<<showsgintd,echo=TRUE>>=
+divergenceInterval (m=4,n=5,Delta=1,scale="unity",type="generating")
+@
+These intervals have rational endpoints with denominators no larger than $2mn$ and the \texttt{scale=twomn} argument can be used
+to obtain the numerators.
+<<showsgintd2,echo=TRUE>>=
+ divergenceInterval (m=4,n=11,Delta=1,scale="twomn",type="generating")
+@
+
+On the generating interval $\Delta$ is continuous so $[md]$ and $[nd]$ are both continuous
+and we must have $[md]=u$, $[nd]=v$.
+<<checkmdnd>>=
+dint <- divergenceInterval (m=4,n=11,Delta=1,scale="unity",type="generating"); dindi <- dint[1]+.63*(dint[2]-dint[1])
+windingNumbers(4,11,1) == c(round(4*dindi), round(11*dindi))
+@
+
+<<defdivtab,echo=FALSE>>=
+digtable <- function(mrange,nrange,Delta=1,type="generating") {
+  res <- array("",dim=c(length(mrange),length(nrange)))
+  colnames(res) <- sprintf("%d",nrange); colnames(res)[1]<- paste("n=",colnames(res)[1],sep="")
+  rownames(res) <- sprintf("%d",mrange); rownames(res)[1]<- paste("m=",rownames(res)[1],sep="")
+  for (mix in seq(along=mrange)) {
+    for (nix in seq(along=nrange)) {
+      m=mrange[mix];n=nrange[nix]
+      h <- hcf(m,n)
+      if (h==1) {
+        gi <- divergenceInterval (m=m,n=n,Delta=Delta,scale="twomn",type=type)
+        res[mix,nix] <- sprintf("(%g,%g)",gi[1],gi[2])
+      }
+    }
+  }
+  res
+}
+@
+
+<<dogenint,results=tex,eval=TRUE,echo=FALSE>>=
+nrange <- setdiff(nrange,c(10,20))
+print(xtable(digtable(mrange,nrange,1),caption="Generating interval, scaled to $2mn$, for $\\Delta=1$",label="tab:genintp"),include.rownames=TRUE,include.colnames=TRUE)
+print(xtable(digtable(mrange,nrange,-1),caption="Generating interval, scaled to $2mn$, for $\\Delta=-1$",label="tab:genintm"),include.rownames=TRUE,include.colnames=TRUE)
+@
+
+
+\section{Pseudogenerating intervals}
+For -$\half<d<\half$, a coprime pair $m,n$ are \emph{pseudogenerating} iff $2\max(m,n)|d|<1$. A pseudogenerating pair always has $\Delta_{mn}(d)=0$.
+<<showsgintoppd,echo=TRUE>>=
+divergenceInterval (m=1,n=4,scale="unity",type="pseudogenerating")
+@
+
+\clearpage
+\section{Opposed intervals}
+We define
+\begin{align*}
+x_m &= m d - [ m d]
+\\
+x_n &= n d - [ n d ]
+\end{align*}
+and note that as $d$ varies, $x_m$ changes sign by going through zero when $md$ is an integer but also by a discontinuous change when $md$ is an integer plus a half, and it must alternate between these two as kinds of change as $d$ increases. For $m,n>0$, the pair $m,n$ is \emph{opposed} if $x_m x_n <0$, except that we define 1,1 to be opposed iff $d=\half$.
+
+If $0<m<n$ then for $d$ small enough and positive both $x_m$ and $x_n$ are positive and $m,n$ are not opposed. For $d$ in $(0,1)$,
+$x_m$ changes sign every time $2mnd=n i_m$ for integer $0<i_m<2m$.
+We can find the $d$-intervals on which a pair is opposed:
+<<showsgintoppd,echo=TRUE>>=
+divergenceInterval (m=1,n=4,Delta=1,scale="twomn",type="opposed")
+@
+
+There are many such disjoint intervals
+<<doopp,results=tex,eval=TRUE,echo=FALSE>>=
+mat <- t(divergenceInterval (m=4,n=11,Delta=1,scale="twomn",type="opposed"))
+         rownames(mat) <- c("Start","End")
+print(xtable(mat,
+             digits=0,caption="Intervals on which 4,11 is opposed in $2mn=88$ units"
+             ),include.rownames=TRUE,include.colnames=FALSE)
+
+@
+
+
+
+\clearpage
+\section{Generating and opposed intervals}
+
+The generating and opposed interval is the $d-$interval on which $m,n$ is both generating and opposed:
+<<showsgoid,echo=TRUE>>=
+divergenceInterval (m=4,n=5,Delta=1,scale="twomn",type="generatingopposed")
+@
+
+
+<<dogenoppint,results=tex,eval=TRUE,echo=FALSE>>=
+nrange <- setdiff(nrange,c(10,20))
+print(xtable(digtable(mrange,nrange,1,type="generatingopposed"),caption="Generating and opposed interval, scaled to $2mn$, for $\\Delta=1$",label="tab:genopintp"),include.rownames=TRUE,include.colnames=TRUE)
+print(xtable(digtable(mrange,nrange,-1,type="generatingopposed"),caption="Generating and opposed interval, scaled to $2mn$, for $\\Delta=-1$",label="tab:genopintm"),include.rownames=TRUE,include.colnames=TRUE)
+@
+
+
+<<defgicode,echo=FALSE>>=
+gix <- list (c(1,1),c(1,2),c(1,3),c(1,4),c(1,5),
+	c(2,3),c(2,5),c(2,7),c(2,9),
+	c(3,4),c(3,5),c(3,7),c(3,8),c(3,10),
+	c(4,5),c(4,7),c(4,9),
+	c(5,6),c(5,7),c(5,8),c(5,9),c(5,11))
+@
+
+\begin{center}
+\begin{figure}[H]
+<<gi,fig=TRUE,echo=FALSE>>=
+plotGeneratingIntervals(gix)
+@
+\caption{Generating intervals for a range of parastichy pairs. Light grey: $\Delta=+1$;
+Dark grey: $\Delta=-1$. Pink: subinterval on which pair is opposed.}
+\label{fig:ogi}
+\end{figure}
+\end{center}
+
+
+
+
+\clearpage
+\section{van Iterson diagrams}
+
+<<vpairs,echo=FALSE>>=
+
+vmax <- c(10,10)
+vgrid <- as.matrix(expand.grid(seq(vmax[1]),seq(vmax[2])))
+vgrid <- vgrid[apply(vgrid,1,function(x){x[1] < x[2]}),]
+vgrid <- vgrid[apply(vgrid,1,function(x){x[1]==1 || hcf(x[1],x[2])==1}),]
+vpairs <- data.frame(vgrid);colnames(vpairs)<-c("m","n")
+vpairs$showLabel <- FALSE
+vpairs$showLabel[vpairs$m==1 &  vpairs$n<7] <- TRUE
+vpairs$showLabel[(vpairs$m+1==vpairs$n) & vpairs$n<8] <- TRUE
+vpairs$showLabel[vpairs$m==3 & vpairs$n<11] <- TRUE
+vpairs$showLabel[vpairs$m==5 & vpairs$n==8] <- TRUE
+vpairs$showLabel[vpairs$m==3 & vpairs$n==8] <- FALSE
+vpairs$showLabel[vpairs$m==2 & vpairs$n==3] <- TRUE
+vpairs$showLabel[vpairs$m==2 & vpairs$n==5] <- TRUE
+
+
+vpairlabels <- matrix(c(
+1,2, .35,.18,
+2,1, .45,.18,
+1,3, .22,.18,
+3,1, .32,.08,
+1,4, .16, .12,
+4,1, .24,.045,
+1,5, .12, .10,
+2,3, .42,.08,
+3,2, .37,.08,
+2,5, .43,.05,
+5,2, .41,.03,
+3,4, .30,.045,
+4,3, .27, .045,
+3,5, .365,.035,
+5,3, .39,.025),ncol=4,byrow=T)
+vpairlabels <- as.data.frame(vpairlabels)
+vpairlabels$label <- sprintf("%d,%d",vpairlabels[,1],vpairlabels[,2])
+
+
+@
+
+
+
+
+\begin{center}
+\begin{figure}[H]
+<<jsvanIterson,fig=TRUE,echo=FALSE,eval=TRUE>>=
+plotvanIterson(vpairs,labellines=TRUE,labelregions=TRUE,vpairlabels,onlyPrimary=FALSE,doCircles=TRUE,primaryColour="red",doTriplePoints=TRUE)
+@
+\caption{Lattice space characterised by principal parastichy vectors as separated by the van Iterson tree}
+\end{figure}
+\end{center}
+
+
+\section{Jean Theorem 4.2}
+
+
+
+Jean uses a diagram like Figure~\ref{fig:ftp} to prove the FTP.
+
+
+\begin{center}
+\begin{figure}[H]
+<<ftpfig,fig=TRUE,echo=FALSE>>=
+Rise <- 1.5/25
+Divergence=(17/72)
+L <- 1.4
+PG.FTP <-  newPhyllotaxisGenetic(Rise=Rise,Divergence=Divergence,Rho=1/(2*pi),Jugacy=1,L=L)
+PG.FTP@origin <- c(-1/2,-L/2)
+
+plotPhyllotaxis(PG.FTP,doRepeat=0,doNumbers=TRUE,gpCylinder=gpar())
+plotParastichySegment (PG.FTP,parastichyCount=4,through=0,length=4,gp=gpar(col="blue"))
+plotParastichySegment (PG.FTP,parastichyCount=5,through=0,length=3,gp=gpar(col="blue"))
+plotParastichySegment (PG.FTP,parastichyCount=5,through=0,length=1,gp=gpar(col="red"))
+plotParastichySegment (PG.FTP,parastichyCount=4,through=1,length=1,gp=gpar(col="red"))
+plotParastichySegment (PG.FTP,parastichyCount=1,through=0,length=1,gp=gpar(col="red"))
+plotParastichySegment (PG.FTP,parastichyCount=4,through=-3,length=1,gp=gpar(col="red",lty=2))
+plotParastichySegment (PG.FTP,parastichyCount=5,through=1,length=2,gp=gpar(col="green"))
+plotParastichySegment (PG.FTP,parastichyCount=5,through=-4,length=1,gp=gpar(col="green",lty=2))
+plotParastichySegment (PG.FTP,parastichyCount=4,through=0,length=3,gp=gpar(col="green"))
+#coords.1 <- getParastichyLine(PG.FTP,1)
+#grid.lines(x=c(coords.1[1],1),y=c(coords.1[2],0),default.units="native",gp=gpar(col="green"))
+@
+\caption{Proof of the FTP}
+\label{fig:ftp}
+\end{figure}
+\end{center}
+@
+
+
+
+\section{The lattice matrix}
+
+Now we turn to an alternative description of the lattice. It can equally well be described by the coordinates of any
+pair of vectors that generate it (Turing p64).
+
+If those vectors are $(x,z)=(a,b)$ and $(c,d)$ respectively then the lattice matrix
+is
+\[
+	\left( \begin{array}{ll}
+	a & b \\ c & d
+\end{array} \right )
+=
+\frac{1}{s}\left( \begin{array}{ll}
+	sa & m \\ sc & n
+\end{array} \right )
+=
+\frac{s_n}{s_d}\left( \begin{array}{ll}
+	a' & m \\ b' & n
+\end{array} \right )
+\]
+where $m=sb$ and $n=sd$ must be integers as the vertical components are multiple integers of the rise.
+If $m$ and $n$ have a common factor, we can extract that into the rise via the scaling factor $s$, so we
+can assume that they are coprime, and they are the parastichy pair for the matrix.
+
+We try to keep the matrix entries integers, even under inversion, by recording the numerator and denominator of the scaling factor separately. To do this completely we should really keep an extra scaling factor for the $x$ component alone.
+
+
+Note that we don't insist that the parastichy numbers are positive, but it would be a package bug if they were not integers.
+
+We can also calculate what the width of the cylinder must be. The current code assumes the jugacy $J\equiv 1$.
+<<defpmtest,echo=TRUE>>=
+matrix.test <- matrix(c(2,1,-1,2),ncol=2,byrow=TRUE)
+PM.test <- as(matrix.test,"PhyllotaxisMatrix")
+
+
+@
+
+
+
+<<sPMtest>>=
+GeometricalPhyllotaxis:::summary.PhyllotaxisMatrix.matrix(PM.test)
+@
+
+
+\subsection{Converting a genetic lattice to a matrix lattice}
+It is easy to construct a matrix lattice from a genetic lattice by taking the first two points.
+
+<<echo=FALSE,eval=FALSE>>=
+PGM.test.R <- as(PG.test.R,"PhyllotaxisMatrix")
+
+@
+\subsection{Computing parameters from a matrix lattice}
+Now we have all the parameters to construct a genetic spiral.
+We can pull the rise out:
+
+Since $m$ and $n$ are coprime there is a congruence: integers $k,l$ such that $km -l n=1$.
+
+From the congruence we can find a point that has a rise of exactly 1, and so find the first point in
+the genetic spiral.
+
+
+
+
+That allows us to say more about the genetic form of the matrix
+<<>>=
+GeometricalPhyllotaxis:::summary.PhyllotaxisMatrix.genetic(PM.test)
+@
+
+
+\subsection{Converting a lattice matrix to a genetic one}
+Now it is simple to convert a lattice matrix to a genetic one.
+
+
+@
+
+So now we have two equvalent formulations of a lattice, one which privileges the genetic spiral and one which privileges a pair of
+points in the lattice.
+
+<<figPMtest,fig=FALSE,echo=FALSE,eval=FALSE>>=
+plotPhyllotaxis(PM.test,y=15,doRepeat=2,plotPrincipals=FALSE) # still not defined =TRUE
+@
+
+<<figPGtRE,fig=FALSE,echo=FALSE>>=
+ PG.test.R <- newPhyllotaxisGenetic(Rise=2.5,Divergence=1.1,Rho=0.795775,Jugacy=1)
+plotPhyllotaxis(PG.test.R,y=20)
+@
+
+%\section{Plotting non-cylindrical lattices}
+<<showpv,eval=TRUE,echo=FALSE>>=
+# a brute force approach which is not guaranteed to show all points
+# will do better if using principal vectors
+#only used when plotting inverse lattice
+plot.from.LatticeMatrix <- function(x,y) {
+	P1 <- getParastichyVector(x,1)
+	P2 <- getParastichyVector(x,2)
+	P1range <- 1+floor(y/abs(P1[1]))
+	P2range <- 1+floor(y/abs(P2[1]))
+	PvecList <- matrix(NA,nrow=((2*P1range+1)*(2*P2range+1)),ncol=2)
+	pcount=1
+	for (i in seq(from=-P1range,to=P1range)) {
+		for (j in seq(from=-P2range,to=P2range)) {
+			pvec <- i * P1 + j * P2	+ c(0,0)
+			if (all(abs(pvec)<y/2)) {
+				PvecList[pcount,] <- pvec
+				pcount <- pcount+1
+			}
+		}
+	}
+	PvecList <- PvecList[1:pcount,]
+	PvecList <- unique(PvecList)
+
+	grid.points(x=PvecList[,1],y=PvecList[,2])
+}
+@
+
+%<<fig>>=
+%GeometricalPhyllotaxis:::.setup.grid(L=4)
+%plot.from.LatticeMatrix(PM.test,y=4)
+%@
+
+
+Note that a lattice generated by $(\uvec,\vvec)$ is the same as one generated by $(\uvec+k\vvec,\vvec+l\uvec)$
+so that two lattice matrices related by
+\[
+M_1 = \left( \begin{array}{ll} 1 & k \\ l & 1 \end{array}\right) M_2
+\]
+are equivalent.
+
+\section{The principal parastichy vectors}
+
+
+
+(Following Turing p56) The two vectors $\uvec$ and $\vvec$ from which
+ we chose to generate the lattice are not necessarily the
+shortest possible vectors in the lattice. By definition the first principal vector is the shortest nonzero vector in the lattice,
+ and the second principal vector the shortest which is not a multiple of the first.
+
+Observe that the first and second principal vectors must generate the lattice.
+The parallelogram formed by the two principal vectors can be used to tile the plane, and
+if there was a lattice point which is not generated by the first two principal vectors, it would
+lie inside one of these parallelograms. But `a point within a parallelogram is always closer to one of
+its vertices than are any of the vertices from one another' which would allow a vector of the lattice
+shorter than the principal vectors in contradiction to their definition.
+
+
+The area of the parallelogram formed by any two vectors $(\uvec,\vvec)$ in the lattice is $\Delta(\uvec,\vvec)$
+\begin{eqnarray}
+\Delta^2(\uvec,\vvec) &=& \uvec^2 \vvec^2 - (\uvec. \vvec)^2
+\\
+&=& \Delta^2(\uvec+k\vvec,\vvec+l\uvec)
+\end{eqnarray}
+and for vectors which generate the lattice it can be interpreted as the area per point
+and so must be the same for any choice of generating vectors. This suggests a
+systematic way to identify the principal vectors in a lattice. Since they minimise $\uvec^2\vvec^2$,
+they must also minimise $ (\uvec. \vvec)^2 = \uvec^2 \vvec^2 - \Delta^2$. (Hence the latter part of Turing's theorem p57).
+So we systematically
+change $\uvec$ and $\vvec$ always trying to minimize $\left|\uvec. \vvec\right|$.
+One easy way to do that is to look at the sum or difference of $\uvec$ and $\vvec$, and
+by insisting that $\uvec. \vvec>0$ the shorter of those is $\uvec-\vvec$ (Observe
+that $0<\uvec.\vvec < \uvec^2/2 \iff  \left|\vvec\right|<\left|\uvec-\vvec\right|<\left|\uvec+\vvec\right|$.)
+
+
+Specifically, start with  $\uvec$ and  $ \vvec$, and relabel and change the sign of
+$\vvec$ if necessary so that  $\uvec^2\leq\vvec^2$ and $\uvec. \vvec>0$. That guarantees
+$\left|\vvec\right|<\left|\uvec+\vvec\right|$ but it might be that
+$\uvec.\vvec>\uvec^2/2 \iff \left|\vvec\right|>\left|\uvec-\vvec\right|$ in which case replace $(\uvec,\vvec)$ by
+$(\uvec,\vvec-\uvec)$. That reduces $\uvec.\vvec$ by $\uvec^2$, so
+ $\left|\uvec.\vvec\right|$ will
+be reduced.  Now may need to relabel and change signs again, which will not change this modulus.
+
+
+Eventually, will have a $\uvec$ and  $ \vvec$ such that
+$0<2\uvec.\vvec < \uvec^2 <\vvec^2$. But Turing p57 shows such a pair are the first two parastichy vectors.
+
+For integers $m,n\geq 1$
+\begin{eqnarray}
+(m\uvec+n\vvec)^2 - (\uvec-\vvec)^2
+ &=& m^2 \uvec^2 +n^2 \vvec^2 + 2 mn \uvec.\vvec - (\uvec^2+\vvec^2-2\uvec.\vvec)
+\\
+&=& (m^2 -1)\uvec^2 +(n^2-1) \vvec^2 + 2( mn+1) \uvec.\vvec
+\\
+&\geq& (m^2-\left|mn\right|+1)\uvec^2 + (n^2-1)\vvec^2
+\\
+&\geq& (m^2-\left|mn\right|+n^2)\uvec^2
+\\
+&=& ((\left|m\right|-\left|n\right|)^2+\left|mn\right| )\uvec^2
+\\
+&\geq&0
+\end{eqnarray}
+Since $0< \uvec^2 <\vvec^2<(\uvec-\vvec)^2$ there are no other vectors of the lattice shorter
+than any of these three which are not multiples of $\uvec$ or $\vvec$, so they are the
+the first three parastichy vectors.
+
+In matrix terms, if the initial lattice matrix has $\uvec^2>\vvec^2$ then multiply it by
+\[
+\left( \begin{array}{ll}0 & 1 \\ 1 & 0 \end{array}\right)
+\]
+then if $\uvec.\vvec<0$ multiply it by
+\[
+\left( \begin{array}{ll} 1 & 0  \\ 0 & -1 \end{array}\right)
+\]
+and then if $\uvec.\vvec>\uvec^2/2$ multiply it by
+\[
+\left( \begin{array}{ll} 1 & 0  \\ -1 & 1\end{array}  \right)
+\]
+which is guaranteed to reduce the modulus of $\uvec.\vvec$.
+
+So now we can find the Principal vectors in a matrix lattice and convert to a representation
+in those vectors. We adopt the convention that the first principal vector has a positive $z$ component and thus the first parastichy number is positive.
+
+
+This allows us to say more about matrix objects:
+<<>>=
+print(PM.test)
+
+@
+\subsection{Example of converting a lattice matrix to its principal form}
+<<examplereduction>>=
+
+set.seed(1)
+Prand <- as(matrix(sample(100,4),ncol=2,byrow=TRUE),"PhyllotaxisMatrix")
+print(Prand)
+print(GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (Prand))
+
+@
+<<ex2,eval=FALSE,echo=FALSE,results=hide>>=
+
+
+doReps <- function(n,nscale=100) {
+	res <- rep(NA,n)
+	PList <- list()
+	for (try in 1:length(res)) {
+		Prand <- as(matrix(sample(nscale,4),ncol=2,byrow=TRUE),"PhyllotaxisMatrix")
+		mn <- getParastichyNumbers(Prand)
+		cat(mn,"\n")
+		PList[[try]] <- Prand
+		PMrand <- GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (Prand,trace=FALSE)
+		res[try] <- isOpposedMatrix(PMrand)
+	}
+	res
+}
+set.seed(1)
+doReps(10)
+@
+
+\subsection{Plotting the principal vectors in a lattice}
+Now we can generate principal vectors for  a lattice we can include those in the plots.
+
+\subsection{Do the principal vectors always oppose?}
+No:
+
+<<exodd>>=
+Podd <-  as(matrix(c(7,1,2,8),ncol=2,byrow=TRUE),"PhyllotaxisMatrix")
+print(Podd)
+@
+<<toow,fig=TRUE,eval=FALSE>>=
+Podd@L <- 70
+Podd@lhsOrigin <- FALSE
+plotPhyllotaxis(Podd)
+@
+
+<<>>=
+Pnotcoprime <- as(matrix(c(-1,2,2,4),ncol=2,byrow=TRUE),"PhyllotaxisMatrix")
+print(Pnotcoprime)
+@
+
+
+
+
+<<fig=TRUE,echo=FALSE>>=
+Rise <- 1.5/50
+Divergence=(17/72)
+PG.Jean.4.1 <-  newPhyllotaxisGenetic(Rise=Rise,Divergence=Divergence,Rho=1/(2*pi),Jugacy=1)
+plotPhyllotaxis(PG.Jean.4.1,bottomOrigin=FALSE,lhsOrigin=FALSE,doNumbers=TRUE,doRepeat=2)
+if (TRUE) {
+gxy <- function(n) { xn <- floor( n*Divergence/(2*pi)); x <- n*Divergence/(2*pi)-xn;
+			 if (x>1/2) x<- x-1;
+			c(x,n*Rise)}
+
+xy <- rbind(gxy(0),gxy(5))
+grid.lines(x=xy[,1],y=xy[,2],default.units="native",gp=gpar(col="black"))
+xy <- rbind(gxy(0),gxy(7))
+grid.lines(x=xy[,1],y=xy[,2],default.units="native",gp=gpar(col="black"))
+xy <- rbind(gxy(5),gxy(12))
+grid.lines(x=xy[,1],y=xy[,2],default.units="native",gp=gpar(col="black"))
+xy <- rbind(gxy(7),gxy(12))
+grid.lines(x=xy[,1],y=xy[,2],default.units="native",gp=gpar(col="black"))
+xy <- rbind(gxy(-3),gxy(11))
+grid.lines(x=xy[,1],y=xy[,2],default.units="native",gp=gpar(col="black"))
+xy <- rbind(gxy(1),gxy(15))
+grid.lines(x=xy[,1],y=xy[,2],default.units="native",gp=gpar(col="black"))
+}
+@
+
+\section{Jean computation}
+
+
+
+<<jean>>=
+tau <- (1+sqrt(5))/2
+divergence <- 1/tau^2
+JeanComputation(1/tau^2)
+
+
+
+@
+
+
+
+
+<<fibfig,fig=TRUE>>=
+
+PG.Fibonacci <-  newPhyllotaxisGenetic(Rise=1,Divergence=(2*pi)/tau^2,Rho=40/(2*pi),Jugacy=1)
+plotPhyllotaxis(PG.Fibonacci,y=50,bottomOrigin=TRUE,doNumbers=TRUE)
+grid.lines(x=c(0,0),y=c(0,50),default.units="native")
+@
+
+
+
+\section{Touching circles}
+We can take the length of the first parastichy vector as the diameter
+of the largest  circles which can be packed on the cylinder with centres given by the lattice:
+what Turing and van Iterson called `touching circle phyllotaxis'.
+An arbitrary lattice is not in general a close packing for a touching circle phyllotaxis compared to other packings of circles
+with the same radius:
+
+<<fig=TRUE>>=
+plotPhyllotaxis(PG.test,y=10,doCircles=TRUE)
+@
+
+
+\section{Facets}
+Similarly we can construct the parallelogram formed by the principal vectors and facet the cylinder with it.
+<<fig=TRUE>>=
+plotPhyllotaxis(PG.test,y=10,doFacets=TRUE)
+@
+
+
+
+\section{Notation}
+
+
+
+\begin{tabular}{lccc}
+& Turing\cite[p54]{turing:1952} &  Jean\cite{jean:1994} & \cite{abop:1991} \\
+\hline
+Divergence angle & $0 \leq \alpha \leq 2\pi $\\
+
+Scaled divergence & $0 \leq d_T=\alpha/2\pi \leq 1$ & $0 \leq d=\alpha/2\pi \leq 1$ & \\
+Jugacy & $J=\kappa/2\pi$ & Fixed at 1 & \\
+Rise & $\eta$ & $v$ & \\
+Cylinder circumference &$2\pi\rho$& $u=2\pi\rho$ & \\
+Normalised cylinder && $r=2\pi\rho/\eta$\\
+\end{tabular}
+\bibliography{GPpackage}
+\end{document}
+

@@ -1,0 +1,238 @@
+
+
+\documentclass[a4paper]{article}
+\usepackage{Sweave}
+\bibliographystyle{plain}
+
+\SweaveOpts{prefix.string=figdir/fig,debug=TRUE,eps=FALSE}
+
+\usepackage{float}
+\newcommand{\uvec}{{\bf u}}
+\newcommand{\mvec}{{\bf m}}
+\newcommand{\nvec}{{\bf n}}
+\newcommand{\vvec}{{\bf v}}
+\newcommand{\half}{\textstyle{\frac{1}{2}}}
+
+\begin{document}
+
+\title{The inverse lattice}
+\author{Jonathan Swinton}
+\maketitle
+
+%\section{Housekeeping}
+<<echo=FALSE>>=
+options(width=80)
+@
+<<>>=
+library(GeometricalPhyllotaxis)
+library(grid)
+library(xtable)
+library(showtext)
+showtext.auto()
+
+@
+<<defpmtest,echo=TRUE>>=
+matrix.test <- matrix(c(2,1,-1,2),ncol=2,byrow=TRUE)
+PM.test <- as(matrix.test,"PhyllotaxisMatrix")
+
+
+@
+\section{The inverse lattice}
+
+The inverse lattice is the lattice whose matrix is the transpose of the inverse
+of the lattice matrix:
+
+<<ilm>>=
+inverseLatticeMatrix <- function(from) {
+	imat <- from@Coord
+	nmat <- imat*from@nScale # hoping this will make integers...
+	if (sum(abs(nmat-floor(nmat)))>1e-12) {
+		stop("Numerical rounding errors")
+	}
+	invtmat <- matrix(c( nmat[2,2], -nmat[1,2], -nmat[2,1],nmat[1,1]),ncol=2,byrow=TRUE) # inverse and transpose
+	delta <- (nmat[1,1]*nmat[2,2] -nmat[2,1]*nmat[1,2])
+	if (delta<0) { delta <- -delta; invtmat <- -invtmat }
+	object <- new("PhyllotaxisMatrix", nScale=from@dScale,dScale=delta, Coord=invtmat )
+	object <- GeometricalPhyllotaxis:::extractHCFIntoRise(object)
+	object@Rho <- GeometricalPhyllotaxis:::getRho.PM(object,Jugacy=1)
+	object
+}
+@
+This is not $2\pi\rho$ periodic.
+
+
+Some plot methods are defined.
+<<echo=FALSE>>=
+plotInverse <- function(x,y,k=0,wire.distance= x@nScale/x@dScale,...) {
+	Cylinder <- new("Cylinder",L=y,Rho=0,lhsOrigin=FALSE,bottomOrigin=FALSE)
+	GeometricalPhyllotaxis:::.setup.grid(Cylinder=Cylinder,...)
+	iPM <- GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (x)
+	plot.from.LatticeMatrix(iPM,y=y)
+	GeometricalPhyllotaxis:::plot.Principal.Vectors(x)
+	grid.circle(x=0,y=0,r=k,default.units="native")
+
+	# assume first column is integer
+	nwires <- floor((y/2)/wire.distance)
+	xvals <- wire.distance * ( -nwires:nwires)
+	for (x in xvals) {
+		grid.lines(x=c(x,x),y=c(-y/2,y/2),default.units="native")
+	}
+}
+
+plotLatticeAndInverse <- function(object,iobject,y,iy,k=12,wire.distance=iobject@nScale/iobject@dScale) {
+	grid.newpage()
+	il <-  grid.layout(nrow=2,ncol=1,widths = c(3,3), heights = c(3,3),default.units="inches")
+#	grid.show.layout(l=il)
+	top.vp <- viewport(layout = il)
+	inv.vp  <- viewport(layout.pos.col = 1, layout.pos.row = 1,name = "InverseLattice")
+	lat.vp  <- viewport(layout.pos.col = 1, layout.pos.row = 2,name = "Lattice")
+
+	splot <- vpTree(top.vp, vpList(inv.vp,lat.vp))
+	pushViewport(splot)
+	seekViewport("InverseLattice")
+	plotInverse(x=iobject,y=iy,doNewPage=FALSE,doAxes=FALSE,k=k,wire.distance=wire.distance)
+
+	seekViewport("Lattice")
+	object@L <- y
+	object@lhsOrigin <- FALSE
+	object@bottomOrigin <- FALSE
+
+	plotPhyllotaxis(object,doNewPage=FALSE,doRepeat=0,doAxes=FALSE)
+	plot.Principal.Vectors(object)
+}
+
+
+@
+
+
+ <<xpIPM,eval=TRUE>>=
+ iPM.test <-inverseLatticeMatrix (PM.test)
+ print(PM.test)
+ print(iPM.test)
+ #plotInverse(iPM.test,y=4,doNewPage=TRUE)
+ stopifnot(all.equal(as(inverseLatticeMatrix (iPM.test),"matrix"),as(PM.test,"matrix")))
+ GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (iPM.test)
+ @
+
+
+<<pLAItest,fig=TRUE,eval=FALSE>>=
+plotLatticeAndInverse(PM.test,iPM.test,10,3)
+@
+\clearpage
+\section{K4}
+<<doPK4>>=
+iPK4 <- GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (as(matrix(c(10,5,5,-7),nrow=2,byrow=TRUE),"PhyllotaxisMatrix"))
+iiPK4 <- inverseLatticeMatrix (iPK4)
+PK4 <- GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (iiPK4)
+print(PK4)
+@
+\begin{figure}\begin{center}
+<<fig=TRUE,eval=FALSE>>=
+plotLatticeAndInverse(PK4,iPK4,y=1,35,wire=4)
+@
+\caption{Inverse matrix with the same lattice as AMT-K4}
+\end{center}
+\end{figure}
+
+\clearpage
+\section{K5}
+<<iPK5>>=
+iPK5 <- (as(matrix(c(12,-2,8,6),nrow=2,byrow=TRUE),"PhyllotaxisMatrix"))
+print(iPK5)
+K5 <- (inverseLatticeMatrix (iPK5))
+PK5 <- GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (K5)
+print(PK5)
+@
+\begin{figure}\begin{center}
+<<fig=TRUE,eval=FALSE>>=
+plotLatticeAndInverse(PK5,iPK5,y=1,35,wire=4)
+@
+\caption{Inverse matrix with the same lattice as AMT-K5}
+\end{center}
+\end{figure}
+
+\clearpage
+\section{K6}
+<<pk6>>=
+iK6a <- (as(matrix(c(40,36,80,-30),nrow=2,byrow=TRUE),"PhyllotaxisMatrix"))
+iPK6a <- GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (iK6a,trace=TRUE)
+print(iPK6a)
+K6a <- (inverseLatticeMatrix (iPK6a))
+PK6a <- GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (K6a)
+print(PK6a)
+
+PK6a.2 <- ((as(matrix(c(47,32,-25,32),nrow=2,byrow=TRUE),"PhyllotaxisMatrix")))
+print(PK6a.2)
+iPK6a.2 <-  GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (inverseLatticeMatrix(PK6a.2))
+
+@
+\begin{figure}\begin{center}
+<<fig=TRUE,eval=FALSE>>=
+plotLatticeAndInverse(PK6a,iPK6a,y=.3,35,wire=4)
+@
+\caption{Inverse matrix with the same lattice as AMT-K6}
+\end{center}
+\end{figure}
+
+The lattice parameters:
+\begin{center}
+\begin{tabular}{llllllll}
+Figure 	& Wirewidth &  Cylinder 			& Ring  & Scaled  &Expected  	& Parastichy  & Inverse
+\\
+ 				&  					&  cf &  height &  cf & cf 	&  numbers &  Lattice
+\\
+ 				& 	 				&  (grid squares) &  	 &  	 & 	&   &  matrix
+\\
+K4  & 5   &30 & 24 & 20 & 20 & (1,2) & $ \left( \begin{array}{ll}	7 & 5 \\ -5  & 10 \end{array} \right) $
+\\
+K5 & 4  & 24 & 16 & 24 & 25 & (2,1) & $ \left( \begin{array}{ll}	4 & -8 \\ 8  & 6  \end{array}  \right)$
+\\
+K6 & 10/3  &  28 & 16 & 28 & 30 & (1,2) & $ \frac{1}{6}\left( \begin{array}{ll}	40 & 36 \\ 80  & -30  \end{array} \right)$
+%\
+% 				&   				&  								&  &  &  		& (,) & $ \frac{1}{6}\left( \begin{array}{ll}	20 & -36 \\ 20  & 69  \end{array} $
+\end{tabular}
+\end{center}
+
+\section{Illustrations}
+
+<<prg,echo=FALSE>>=
+plot.RiseLabel.grid <- function(PG,L) {
+	grid.clip()
+	# ie from the genetic spiral
+	rise <- getRise(PG)
+	rho <- getRho(PG)
+	divergence <- getDivergence(PG)
+	J <- getJugacy(PG)
+
+	xGeneticPoint <- rho * divergence
+	yGeneticPoint <- rise
+
+	grid.lines(x=c(0,xGeneticPoint),y=c(0,0),default.units="native",
+		arrow=(arrow(length=unit(0.5,"native"))))
+	grid.text(x=(0+xGeneticPoint)/2,y=0,label="ar",gp=gpar(fontfamily="HersheySymbol"),
+		just=c("center","top"),
+		default.units="native")
+	grid.lines(x=c(xGeneticPoint,xGeneticPoint),y=c(0,yGeneticPoint),default.units="native",
+		arrow=(arrow(length=unit(0.5,"native"))))
+	grid.text(x=(xGeneticPoint),y=(0+yGeneticPoint)/2,
+		label="e",gp=gpar(fontfamily="HersheySymbol"),
+		just=c("left","center"),
+		default.units="native")
+	}
+@
+<<explore,eval=TRUE>>=
+tau = (sqrt(5)+1)/2
+Fibonacci.Divergence <- 2*pi/tau^2
+PF.fig <- newPhyllotaxisGenetic(Rise=2,
+	Divergence=Fibonacci.Divergence,Rho=5 , Jugacy=1)
+PG.fig <- GeometricalPhyllotaxis:::makePrincipalPhyllotaxisMatrix (as(PF.fig,"PhyllotaxisMatrix"))
+@
+<<fig=TRUE,eval=FALSE>>=
+plotPhyllotaxis(PG.fig,y=50,doAxes=2,doNumbers=TRUE,plotPrincipals=10)
+plot.RiseLabel.grid(PG.fig,L=50)
+#savePlot("ams-fig-lattice-parameters",type="jpg")
+@
+
+\bibliography{GPpackage}
+\end{document}
+

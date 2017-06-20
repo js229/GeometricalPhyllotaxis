@@ -1,0 +1,10 @@
+*.blg
+*.aux
+*.toc
+*.log
+*.tex
+*.pdf
+Sweave.sty
+*.bbl
+library.bib
+GeometricPhyllotaxisTestVignette.synctex.gz(busy)

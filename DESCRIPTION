@@ -1,0 +1,14 @@
+Package: GeometricalPhyllotaxis
+Type: Package
+Title: Calculations to support geometrical phyllotaxis
+Version: 0.1.0
+Author: Jonathan Swinton
+Maintainer: Jonathan Swinton <jonathan@swintons.net>
+Description: Calculations similar to those found in eg Jean (1996)
+License: MIT
+LazyData: TRUE
+Suggests:
+    testthat
+Imports:
+    grid
+RoxygenNote: 5.0.1
