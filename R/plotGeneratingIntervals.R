@@ -32,10 +32,10 @@ plotGeneratingIntervals <- function(mnlist) {
               gp=gpar(fill=grey(.4)),just=c("left"))
     oi <- divergenceInterval(m,n,Delta=1,type="generatingopposed")
     grid.rect(x=oi[1],y=ix,width=oi[2]-oi[1],height=.2,default.units="native",
-              gp=gpar(fill="pink"),just=c("left"))
+              gp=gpar(fill="red"),just=c("left"))
     oi <- divergenceInterval(m,n,Delta=-1,type="generatingopposed")
     grid.rect(x=oi[1],y=ix,width=oi[2]-oi[1],height=.2,default.units="native",
-              gp=gpar(fill="pink"),just=c("left"))
+              gp=gpar(fill="red"),just=c("left"))
 
   }
 }

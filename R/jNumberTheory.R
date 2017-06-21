@@ -186,3 +186,18 @@ continuedFraction <- function(x, nmax=10) {
     uu[k] <- uu[k-1]-tt[k-1]
   }
 }
+
+#'
+#' Recursive Fibonacci ouch
+#' @param n Integer Real
+F <- function(n) {
+  if (n==0) {res=0 } else {
+  if (n==1) {res=1 } else {
+    res = F(n-1)+F(n-2)
+  }
+  }
+  res
+}
+
+
+

@@ -38,6 +38,7 @@ windingNumbers <- function(m,n,Delta=1) {
 #' @param d Divergence
 #' @export
 Deltamnd <- function(m,n,d) {
+  if (m==0) return(n)
   if (m!=n) return( round(n*d)*m - round(m*d)*n)
   if (m==1 & n==1 & d==1/2) return(1)
 }
@@ -190,7 +191,6 @@ dPseudogeneratingInterval <- function(m,n,type="twomn") {
 
 #' Return the Delta for which the generating interval (m,n,Delta) is in 0<d<1/2
 #' @param m,n Integer
-#' @export
 DeltaForLHSd <- function(m,n) { # force the choice of 0<d<1/2
   Delta <- 1
   gi <- dGeneratingInterval(m,n,1)
@@ -203,7 +203,6 @@ DeltaForLHSd <- function(m,n) { # force the choice of 0<d<1/2
 #' Return the interval for which m,n is generating in 0<d<1/2
 #'
 #' @param m,n Integer
-#' @export
 dGeneratingIntervalLHS <- function(m,n) {
   if (hcf(m,n)!=1) return(NA)
   gi <- dGeneratingInterval(m,n,1)
@@ -216,7 +215,6 @@ dGeneratingIntervalLHS <- function(m,n) {
 #' Return the interval for which m,n is generating and opposed in 0<d<1/2
 #'
 #' @param m,n Integer
-#' @export
 dGeneratingOpposedIntervalLHS <- function(m,n) {
   if (hcf(m,n)!=1) return(NA)
   gi <- dGeneratingOpposedInterval(m,n,1)
