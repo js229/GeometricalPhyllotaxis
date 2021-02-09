@@ -56,14 +56,16 @@ makeTidyMesh[seedCentres_] :=
 
 
 meshLineLength[Line[{p1_, p2_}]] := Norm[p1 - p2];
+meshCellCellDistance[mesh_,{ix1_,ix2_}] := Norm[meshCoordinates[mesh,ix1]-meshCoordinates[mesh,ix2]];
 meshCoordinates[mesh_MeshRegion,ix_] := Block[{x},MeshPrimitives[mesh, {0, ix}] /. Point[x_] -> x];
-meshCoordinates[meshAssociation_Association,ix_] := meshCoordinates[meshAssociation["Mesh"],ix];
+meshCoordinates[meshAssociation_Association,ix_] := meshCoordinates[meshAssociation["Mesh"],ix]
 meshCoordinates[mesh_] := Block[{x},MeshPrimitives[mesh, 0] /. Point[x_] -> x];
 
 meshDeletePolygons[mesh_,deletedpolys_] :=   
 	MeshRegion[meshCoordinates[mesh],Complement[ MeshCells[mesh,2],deletedpolys]];
 
 meshLinesWithLength[mesh_MeshRegion] := AssociationThread[MeshCells[mesh,1],Map[meshLineLength,MeshPrimitives[mesh,1]]];
+meshLinesWithLength[mesh_Association] := meshLinesWithLength[mesh["Mesh"]];
 
 (* for tidying the initial mesh *)
 
@@ -117,7 +119,6 @@ If[makePackage,EndPackage[]];
 
 
 (* ::Input::Initialization:: *)
-
 createParastichyFamily[meshAssociation_,starter_,family_:1] := Module[{nextpara,paraList,mpf,pstart},
 pstart = parastichyStarter[meshAssociation,starter];If[Length[pstart]<2,Return[Missing["Can't make starter from ", starter]]];
 mpf = {};

@@ -87,7 +87,6 @@ uv = euclideanUV[mn];
 
 
 (* ::Input::Initialization:: *)
-
 euclideanReduction[pq_]  := Module[{uv,it,firstShorter,dotPositive,reduceSecond,isPrincipal,positiveRise,positiveVec},
 firstShorter[{u_,v_}] := Module[{u2=Simplify[u . u],v2=Simplify[v . v]},If [ u2 < v2, {u,v},{v,u}]];
 dotPositive[{u_,v_}] := If [ u . v > 0, {u,v},{u,-v}];
@@ -149,7 +148,6 @@ Association[Map[#[[1]]->#[[2]] &,Transpose[{pnumbers,pvectors}]]]
 
 
 (* ::Input::Initialization:: *)
-
 latticeCreateDH[{d_,0}] := Nothing; (* silently drop from lists *) 
 
 latticeCreateDH[{d_,h_},cylinderLU_:{-0.2,3.2}]  :=  Module[{lattice},
@@ -168,7 +166,6 @@ lattice
 
 
 (* ::Input::Initialization:: *)
-
 latticeParastichyNumbersGroupedByLength[lattice_] := Module[{pv,pvlengths,pva}, 
 pv = latticeParastichyVectors[lattice];
 pvlengths =Map[vectorNorm2,pv];
@@ -260,7 +257,6 @@ latticeVectorLength[lattice_,m_] := Module[{mEnd= latticeVector[lattice,m]}, Sqr
 
 
 (* ::Input::Initialization:: *)
-
 latticePrincipal3ParastichyLines[lattice_] := Map[latticeParastichyLines[lattice,#]&,latticePrincipal3ParastichyNumbers[lattice]];
 
 latticePrincipalParastichyLines[lattice_] := Map[latticeParastichyLines[lattice,#]&,latticePrincipalParastichyPair[lattice]];
@@ -290,7 +286,6 @@ If[zeroParastichyQ[m],Return[1]];
 
 
 (* ::Input::Initialization:: *)
-
 linelineIntersection[line1_,line2_] := Module[{x1,y1,x2,y2,x3,y3,x4,y4,x,y},
 { {x1,y1},{x2,y2} } = line1;
 {{ x3,y3},{x4,y4}} = line2;
@@ -395,6 +390,7 @@ origin = latticePoint[lattice,through]; pm=latticePoint[lattice,m];pn=latticePoi
 (* ::Input::Initialization:: *)
 
 
+
 latticeGraphicsCylinder[lattice_] :=  Rectangle @@ Transpose[latticeGetCylinder[lattice]];
 latticeGraphicsPlotRange[lattice_] :=  latticeGetCylinder[lattice];
 
@@ -405,7 +401,6 @@ latticeGraphicsPlotRange[lattice_] :=  latticeGetCylinder[lattice];
 
 
 (* ::Input::Initialization:: *)
-
 latticeVectorComplex[lattice_,m_] := latticePointComplex[lattice,m];
 latticeVectorComplex[lattice_,0] :=  1;
 
@@ -472,7 +467,6 @@ If[n==0,Return[-1]];
 
 
 (* ::Input::Initialization:: *)
-
 latticeRenormalised[lattice_] := Module[{tran,lgpDH,transformedlgpDH,cylinderLU,hScale,pm,pn},
 (* rotate and scale so that the old m-th parastichy vector is now (1,0) *)
 {pm,pn} = latticePrincipalParastichyPair[lattice];
@@ -638,6 +632,7 @@ DiscretizeRegion[Disk[{0,0},1,{0,\[Pi]}],MaxCellMeasure->.001]
 (* ::Input::Initialization:: *)
 
 
+
 viRegionPoints[{m_,n_}] := Map[Simplify,Map[
 latticeMoebiusTransform[m,n],viPrincipalRegionPoints]
 ];
@@ -741,7 +736,6 @@ w/(n+m)
 
 
 (* ::Input::Initialization:: *)
-
 (*
 
 
