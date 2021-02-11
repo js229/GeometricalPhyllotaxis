@@ -13,6 +13,7 @@ If[makePackage,Begin["`Private`"]];
 
 
 locateParastichyOptions = <|
+"Renumber"-> True,
 "DuplicateNearness" ->5.1,
 "LargePolygonLength" ->42,
 "InitialPeel" -> 0,
@@ -119,71 +120,73 @@ If[makePackage,EndPackage[]];
 
 
 (* ::Input::Initialization:: *)
-createParastichyFamily[meshAssociation_,starter_,family_:1] := Module[{nextpara,paraList,mpf,pstart},
-pstart = parastichyStarter[meshAssociation,starter];If[Length[pstart]<2,Return[Missing["Can't make starter from ", starter]]];
-mpf = {};
-mpf = addToParastichyFamily[mpf,pstart,family];
-mpf = Nest[findAdjacentThreads[meshAssociation,#]&,mpf,
-locateParastichyOptions["FamilyGrowthSize" ]];
+createParastichyFamily[meshAssociation_,starter_,family_:1] := Module[{nextpara,paraList,mpf,pstart},pstart = parastichyStarter[meshAssociation,starter];If[Length[pstart]<2,Return[Missing["Can't make starter from ", starter]]];mpf = {};mpf = addToParastichyFamily[mpf,pstart,family];mpf = Nest[findAdjacentThreads[meshAssociation,#]&,mpf,locateParastichyOptions["FamilyGrowthSize" ]];
 mpf = tidyParastichyFamily[meshAssociation,mpf];
+
+If[locateParastichyOptions["Renumber" ],
 mpf = renumberParastichyFamily[meshAssociation,mpf];
+];
+
 mpf
 ];
 
 tidyParastichyFamily[meshAssociation_,parastichyFamily_] := Module[{family,ix,jx,res,overlap,newParastichy,lastIndex,firstTail,secondHead},
-res= parastichyFamily;family = First[parastichyFamily]["Family"];
-For[ix=1,ix<Length[parastichyFamily],ix++,
-For[jx = ix+1, jx<=Length[parastichyFamily],jx++,
-overlap  = Intersection[parastichyFamily[[ix]]["Members"],parastichyFamily[[jx]]["Members"]];
-If[Length[overlap]>0,
-res = mergeParastichySibs[meshAssociation,parastichyFamily,res,{ix,jx}];
-If[MissingQ[res],Echo[{ix,jx,res, "overlapping failed"},"tPF"];Return[parastichyFamily]];
-];
-firstTail = Last[parastichyFamily[[ix]]["Members"]];
-secondHead =  First[parastichyFamily[[jx]]["Members"]];
-If[MemberQ[meshAssociation["Adjacency"][firstTail],secondHead],
-res = mergeParastichySibs[meshAssociation,parastichyFamily,res,{ix,jx}];
-If[MissingQ[res],Echo[{{ix,jx},{parastichyFamily[[ix]],parastichyFamily[[jx]]},firstTail,secondHead, "joining failed"},"tPF"];Return[parastichyFamily]];]
+res= parastichyFamily;family = First[parastichyFamily]["Family"];For[ix=1,ix<Length[parastichyFamily],ix++,For[jx = ix+1, jx<=Length[parastichyFamily],jx++,
+overlap  = Intersection[
+parastichyFamily[[ix]]["Members"],parastichyFamily[[jx]]["Members"]];If[Length[overlap]>0,
+res = mergeParastichySibs[meshAssociation,parastichyFamily,res,{ix,jx}];If[MissingQ[res],Echo[{ix,jx,res, "overlapping failed"},"tPF"];Return[parastichyFamily]];];
+firstTail = Last[parastichyFamily[[ix]]["Members"]];secondHead =  First[parastichyFamily[[jx]]["Members"]];If[MemberQ[meshAssociation["Adjacency"][firstTail],secondHead],res = mergeParastichySibs[meshAssociation,parastichyFamily,res,{ix,jx}];If[MissingQ[res],Echo[{{ix,jx},{parastichyFamily[[ix]],parastichyFamily[[jx]]},firstTail,secondHead, "joining failed"},"tPF"];Return[parastichyFamily]];]
 ]];
 res
 ];
 
 
 
-renumberParastichyFamily[meshAssociation_,parastichyFamily_] := Module[{g,path},
-paraAdjacency[parastichyFamilyMember_] := DeleteDuplicates[Union@@Map[meshAssociation["Adjacency"],parastichyFamilyMember["Members"]]];
-paraAdjacencyCount[ix_,ix_] := 0;
-paraAdjacencyCount[ix_,jx_] := Length@Intersection[
-paraAdjacency[parastichyFamily[[ix]]],
-parastichyFamily[[jx]]["Members"]
-];
+parastichyAdjacencyTable [meshAssociation_,parastichyFamily_]:= Module[{g,path,paraAdjacency,paraAdjacencyCount,paraAdjacencies,paraAdjacencyTable,},
+	paraAdjacency[parastichyFamilyMember_] := DeleteDuplicates[Union@@Map[meshAssociation["Adjacency"],parastichyFamilyMember["Members"]]];
+	paraAdjacencyCount[ix_,ix_] := 0;
+	paraAdjacencyCount[ix_,jx_] := Length@Intersection[
+	paraAdjacency[parastichyFamily[[ix]]],parastichyFamily[[jx]]["Members"]
+	];
 paraAdjacencies[ix_] := Keys@Take[Reverse@Sort@Association@Table[ 
-UndirectedEdge[parastichyFamily[[ix]]["Index"],parastichyFamily[[jx]]["Index"]]-> paraAdjacencyCount[ix,jx],{jx,Length[parastichyFamily]}],2];
-atable = Flatten@Table[paraAdjacencies[ix],{ix,Length[parastichyFamily]}];
-g = Graph[Map[#["Index"]&,parastichyFamily],atable,VertexLabels->"Name"];
-path = findSpanningPathEitherWay[g];
-res = {};family = First[parastichyFamily]["Family"];family=ToString[family]~~"A";
-For[i=1,i<= Length[path],i++,
-para = Query[SelectFirst[#["Index"]==path[[i]]&]]@parastichyFamily;
-res = addToParastichyFamily[res,para["Members"],family];
+parastichyFamily[[ix]]["Index"] \[UndirectedEdge]parastichyFamily[[jx]]["Index"]
+-> paraAdjacencyCount[ix,jx],{jx,Length[parastichyFamily]}],2];paraAdjacencyTable = Flatten@Table[paraAdjacencies[ix],{ix,Length[parastichyFamily]}]; 
+paraAdjacencyTable
 ];
+
+
+renumberParastichyFamily[meshAssociation_,parastichyFamily_] := Module[{g,path,paraAdjacencyTable,res,family,para,i},
+
+	paraAdjacencyTable =parastichyAdjacencyTable[meshAssociation,parastichyFamily]; g = Graph[Map[#["Index"]&,parastichyFamily],paraAdjacencyTable,VertexLabels->"Name"];
+
+path = findLongestPath[g];
+
+res = {};family = First[parastichyFamily]["Family"];family=ToString[family]~~"A";For[i=1,i<= Length[path],i++,
+para = Query[SelectFirst[#["Index"]==path[[i]]&]]@parastichyFamily;res = addToParastichyFamily[res,para["Members"],family];
+];
+
 res
 ];
+
 
 mergeParastichySibs[meshAssociation_,masterFamily_,newFamily_,{ix_,jx_}] := Module[{family,res,newParastichy
 ,ixxi,jxxj,decho},
-decho[x_] := If[{ix,jx}=={5,-17},Echo[x,"mPS"],x];
-res = newFamily;
-family = First[masterFamily]["Family"];
-newParastichy = Union[masterFamily[[ix]]["Members"],masterFamily[[jx]]["Members"]];
-newParastichy = decho@makeDirectedParastichy[meshAssociation,newParastichy];
-
-ixxi  = FirstPosition[res,SelectFirst[res, #["Index"]==masterFamily[[ix]]["Index"]&]];
-If[!MissingQ[ixxi],res = Drop[res,ixxi]];
-jxxj =  FirstPosition[res,SelectFirst[res, #["Index"]==masterFamily[[jx]]["Index"]&]];
-If[!MissingQ[jxxj],res = Drop[res,jxxj]];
-res = addToParastichyFamily[res,newParastichy,family];
-res
+	decho[x_] := If[{ix,jx}=={63,-64},Echo[x,"mPS"],x];
+	res = newFamily;
+	family = First[masterFamily]["Family"];
+	newParastichy = Union[masterFamily[[ix]]["Members"],masterFamily[[jx]]["Members"]];
+	newParastichy = decho@makeDirectedParastichy[meshAssociation,newParastichy];
+	If[MissingQ[newParastichy],decho[newParastichy];Return[res]];
+	
+	ixxi  = FirstPosition[res,SelectFirst[res, #["Index"]==masterFamily[[ix]]["Index"]&]];
+	If[!MissingQ[ixxi],res = Drop[res,ixxi]];
+	jxxj =  FirstPosition[res,SelectFirst[res, #["Index"]==masterFamily[[jx]]["Index"]&]];
+	If[!MissingQ[jxxj],res = Drop[res,jxxj]];
+	If[MissingQ@newParastichy["Members"],Echo[{ix,masterFamily[[ix]],jx,masterFamily[[jx]]},"mPS2"]];
+	
+	res = addToParastichyFamily[res,newParastichy,family];
+	
+	res
 ];
 
 
@@ -361,34 +364,28 @@ res
 
 ];
 
-findSpanningPathEitherWay[undirectedGraph_] := Module[{acyclic,endPoints,path,decho},
-decho[x_] := Echo[x,"fSPEW"];
-acyclic = FindSpanningTree[undirectedGraph];
 
-endPoints = Select[VertexList[acyclic],vertexCount[acyclic,#]==1&];
-If[Length[endPoints]<1,Return[Missing["Missing path ends"]]];
 
-If[Length[endPoints]==1,
-decho[{"No spanning tree for ",acyclic}];
-Return[Missing["Couldn't construct spanning tree"]]
-];
 
-If[Length[endPoints]>2,endPoints=Take[endPoints,2]];
 
-path = FindPath[acyclic,First[endPoints],Last[endPoints]];
-If[Length[path]==0,
-path = FindPath[acyclic,Last[endPoints],First[endPoints]]
-];
+findLongestPath[g_] := Module[{acyclic,endPoints,path,decho},
+decho[x_] := If[False,Echo[x,"fLP"],x];
+acyclic = decho@FindSpanningTree[g];endPoints = Select[VertexList[acyclic],vertexCount[acyclic,#]==1&];If[Length[endPoints]<1,Return[Missing["Missing path ends"]]];If[Length[endPoints]==1,Return[Missing["Couldn't construct spanning tree"]]];
 
-If[Length[path]==0,
-Return[Missing["No spanning path"]]];
+paths = Map[<|"Start"->#[[1]],"End"->#[[2]]|> &, Partition[endPoints,2,1]];
+paths = Map[ Append[#,"Path"-> First@FindPath[acyclic,#["Start"],#["End"]]]&,paths];
+paths = Map[ Append[#,"PathLength"-> Length@#["Path"]]&,paths];
 
-path = First@path;
+path = Last[SortBy[paths,#["PathLength"]&]]["Path"];
+
+
+If[Length[path]==0,Return[Missing["No spanning path"]]];
 path
 ];
 
 findSpanningPath[meshAssociation_,undirectedGraph_] := Module[{acyclic,endPoints,path,decho},
-decho[x_] := Echo[x,"fSPd"];
+(* fixable *) 
+decho[x_] := If[False,Echo[x,"fSPd"]];
 acyclic = removeCyclicPoints[undirectedGraph];
 
 endPoints = Select[VertexList[acyclic],vertexCount[acyclic,#]==1&];
@@ -476,12 +473,12 @@ Return[res];
 
 ];
 
-edeleteEdge[g_Graph,edge_] :=If[EdgeQ[g,edge],EdgeDelete[g,edge],g];
+eDeleteEdge[g_Graph,edge_] :=If[EdgeQ[g,edge],EdgeDelete[g,edge],g];
 
-edelete[comp_,edges_] := Module[{g,i},
+eDelete[comp_,edges_] := Module[{g,i},
 g=comp;
 For[i=1,i<= Length[edges],i++,
-g = edeleteEdge[g,edges[[i]]]
+g = eDeleteEdge[g,edges[[i]]]
 ];
 g
 ];
@@ -492,7 +489,7 @@ flip[ a_ \[DirectedEdge] b_ ] := b \[DirectedEdge] a;
 edges = Map[flip,edges];
 If[MissingQ[edges],Echo[" Missing edges ", Stack[]]];
 res = EdgeAdd[g,edges];
-Map[edelete[#,edges]&,
+Map[eDelete[#,edges]&,
 ConnectedGraphComponents[res]]
 ];
 
@@ -507,4 +504,22 @@ vertexCoordinates := Map[meshCoordinates[meshAssociation["Mesh"],{0,#}]&,vertexe
  VertexCoordinates -> vertexCoordinates];
 g
 ];
+
+
+
+polygonsAtVertex[g_,v_] := Module[{edges},
+edges = EdgeList@NeighborhoodGraph[g,v];
+edges = Cases[edges,Except[ _ \[UndirectedEdge] v | v \[UndirectedEdge] _]];
+edges  = Apply[List,edges,1];
+edges = Map[Polygon@Append[#,v]&,edges];
+edges 
+];
+graphToMesh[g_] := Module[{meshPoints,meshPolygons,mesh},
+meshPoints = AnnotationValue[{g,VertexList[g]},VertexCoordinates];
+meshPolygons = Flatten@Map[polygonsAtVertex[g,#]&,VertexList[g]];
+mesh = MeshRegion[meshPoints,meshPolygons];
+{meshPoints,meshPolygons}
+];
+
+
 
