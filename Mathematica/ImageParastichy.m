@@ -12,7 +12,7 @@ If[makePackage,Begin["`Private`"]];
 
 
 
-locateParastichyOptions = <|
+resetOptions := locateParastichyOptions = <|
 "Renumber"-> True,
 "DuplicateNearness" ->5.1,
 "LargePolygonLength" ->42,
@@ -24,6 +24,8 @@ locateParastichyOptions = <|
 "MinimumThreadLength"-> 3,
 "FamilyGrowthSize" -> 20
 |>; 
+resetOptions;
+
 	
 makeTidyMesh[seedCentres_] :=
 	Module[{dMeshRaw, lineLength, lengths, pointsToDrop, x, meshxy, toDrop, dMesh, res, boundary},
@@ -190,6 +192,26 @@ mergeParastichySibs[meshAssociation_,masterFamily_,newFamily_,{ix_,jx_}] := Modu
 ];
 
 
+deleteFromParastichyFamily[mpf_,indices_] := Module[{res},
+res = Query[Select[ !MemberQ[indices,#["Index"]]&]]@mpf;
+res
+];
+
+
+
+combineInParastichyFamily[mpf_,{ix1_,ix2_}] := Module[{para,para1,para2,res},
+para1 = (First@Query[Select[#["Index"]==ix1&]]@mpf)["Members"];
+para2 = (First@Query[Select[#["Index"]==ix2&]]@mpf)["Members"];
+para = Join[para1,para2];
+res = mpf;
+
+res = deleteFromParastichyFamily[mpf,{ix1,ix2}];
+res = addToParastichyFamily[res,para];
+res
+];
+
+
+addToParastichyFamily[mpf_,parastichy_] := addToParastichyFamily[mpf,parastichy,First[mpf]["Family"]];
 addToParastichyFamily[mpf_,parastichy_,family_] := Module[{ix,res,overlaps,maxIndex},
 res = mpf;
 maxIndex = If[Length[mpf]==0,0,Max[Map[#["Index"]&,mpf]]];
@@ -197,6 +219,33 @@ res = Append[res,
 <| "Family"->family,"Index"-> maxIndex+1,"Members"->parastichy , "Head"-> First@parastichy|>];
 res
 ];
+
+dropParastichyElement[mpf_,ix_,dix_] := Module[{res,para,pix},
+res = mpf;
+pix = First@FirstPosition[Map[#["Index"]&,res],ix];
+para = res[[pix]];
+para["Members"] = Drop[para["Members"],dix];
+res[[pix]]=para;
+res
+];
+
+appendParastichyElements[mpf_,ix_,extraPoints_] := Module[{res,para,pix},
+res = mpf;
+pix = First@FirstPosition[Map[#["Index"]&,res],ix];
+para = res[[pix]];
+para["Members"] = Join[para["Members"],extraPoints];
+res[[pix]]=para;
+res
+];
+prependParastichyElements[mpf_,ix_,extraPoints_] := Module[{res,para,pix},
+res = mpf;
+pix = First@FirstPosition[Map[#["Index"]&,res],ix];
+para = res[[pix]];
+para["Members"] = Join[extraPoints,para["Members"]];
+res[[pix]]=para;
+res
+];
+
 
 parastichyStarter[meshAssociation_, starter_] :=
   Module[{inner, parastichyPoints},
