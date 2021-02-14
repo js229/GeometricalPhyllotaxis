@@ -168,9 +168,14 @@ If[Length[overlap]>0
 Return[Missing["No overlap"]];
 ];
 
-findAnAdjacency[meshAssociation_,parastichyFamily_] := Module[{ix,jx,firstTail,secondHead},
+findAnAdjacency[meshAssociation_,parastichyFamily_] := Module[{ix,jx,firstTail,secondHead,decho},
+decho[x_] := If[False,Echo[x,"fAA"],x];
+
+
 For[ix=1,ix<Length[parastichyFamily],ix++,
 For[jx = ix+1, jx<=Length[parastichyFamily],jx++,
+decho[{parastichyFamily[[ix]],parastichyFamily[[jx]]}];
+
 firstTail = Last[parastichyFamily[[ix]]["Members"]];
 secondHead =  First[parastichyFamily[[jx]]["Members"]];
 
@@ -201,7 +206,7 @@ If[MissingQ[ijx],Break[]];
 Print[n, " Overlap", ijx];
 mPF = mergeParastichySibs[meshAssociation,mPF,ijx];
 ];
-For[n=0,n<10,n++,
+For[n=0,n<100,n++,
 ijx = findAnAdjacency[meshAssociation,mPF] ;
 If[MissingQ[ijx],Break[]];
 mPF = mergeParastichySibs[meshAssociation,mPF,ijx];
@@ -314,83 +319,81 @@ parastichyStarter[meshAssociation_, starter_] :=
    inner
   ];
  
-meshExtendParastichy[meshAssociation_,starter_,length_,avoidPoints_,adjacentParastichy_] :=Module[{i,res,np,decho},
-decho[x_] := If[Length[Intersection[starter,{340,464}]]<00,Echo[x,"mEP"],x];
-res = starter;
+meshExtendParastichy[meshAssociation_,starter_,length_,avoidPoints_,adjacentParastichy_] :=Module[{i,parastichy,np,decho},
 
-For[ i=1,i<= length,i++,
-np = decho@nextParastichyPoint[meshAssociation,res,avoidPoints,adjacentParastichy];
-If[MissingQ[np],Break[]];res= Append[res,np];If[MemberQ[meshAssociation["OuterBoundary"],np],Break[]];If[MemberQ[meshAssociation["InnerBoundary"],np],Break[]];
+decho[x_] := If[False,Echo[x],x];
+parastichy = starter;
+
+For[ i=1,i<= length,i++,np = decho@nextParastichyPoint[meshAssociation,parastichy,avoidPoints,adjacentParastichy];If[MissingQ[np],Break[]];parastichy= Append[parastichy,np];If[MemberQ[meshAssociation["OuterBoundary"],np],Break[]];If[MemberQ[meshAssociation["InnerBoundary"],np],Break[]];
 ];
-res
-];
-
-
-nextParastichyPoint[meshAssociation_,parastichy_,avoidPoints_,adjacentParastichy_] := Module[{candidateContinues,straightnessAngle,nextStraightest,debugTest,adjacentParastichyEnds,candidateInfo,adjacentParastichyCentre,
-adjacentCandidates,res,decho},
-debugTest = MemberQ[{2,10},-Last@parastichy];
-decho[x_] := If[debugTest,Echo[x,"nPP"],x];
-
-If[Length[parastichy]==0,Return[Missing["No parastichy to extend"]]];If[MissingQ[parastichy]==0,Return[Missing["Missing parastichy"]]];
-
-straightnessAngle = If[Length[adjacentParastichy]>0,
-locateParastichyOptions["StraightnessWhenAdjacent"],
-locateParastichyOptions["StraightnessWhenUnadjacent"]
-];
-adjacentParastichyEnds  = If[Length[adjacentParastichy]==0,{},Union@@Map[meshAssociation["Adjacency"][#]&, {First[adjacentParastichy],Last[adjacentParastichy]}]];adjacentParastichyCentre   = Complement[adjacentParastichy,adjacentParastichyEnds];
-
-decho[parastichy];
-candidateContinues = meshAssociation["Adjacency"][Last@parastichy];
-
-candidateContinues = Complement[candidateContinues,avoidPoints];candidateInfo = KeyValueMap[ <| "Node"->#1,"Deviation"-> #2|> &]@orderByStraightness[meshAssociation,parastichy,candidateContinues];candidateInfo = Map[
-Append[#, "Adjacency"-> meshAssociation["Adjacency"][#["Node"]]]&,candidateInfo];candidateInfo = Map[Append[#, "NextToAdjacentCentre"->  
-Length[Intersection[#["Adjacency"],adjacentParastichyCentre]]>0]&,candidateInfo];candidateInfo = Map[Append[#, "NextToAdjacentEnds"->  
-Length[Intersection[#["Adjacency"],adjacentParastichyEnds]]>0]&,candidateInfo];candidateInfo = Map[
-Append[#, "NextToAdjacent"->  
-Length[Intersection[#["Adjacency"],adjacentParastichy]]>0]&,candidateInfo];candidateInfo = Map[
-Append[#, "OnAdjacent"-> 
- Length[Intersection[{#["Node"]},adjacentParastichy]]>0]&,candidateInfo];
-candidateInfo = Map[
-Append[#, "Straightish"-> isStraightish[#]]&,candidateInfo];
-(* screen out any with too much deviation anyway *) 
-
-candidateInfo =  Query[Select[  #["Straightish"]& ]]@ candidateInfo;If[Length[candidateInfo]==0,
-decho@"End of the line" ;Return[Missing["End of the line"]]];If[First[candidateInfo]["OnAdjacent"],decho@{"terminating at ",candidateInfo, "because of collision with adjacent"};Return[Missing["Collision"]]
+parastichy
 ];
 
-(* do we have any that preserve adjacency *) adjacentCandidates =  Query[Select[  #["NextToAdjacent"]& ]]@candidateInfo;If[debugTest,Print[adjacentCandidates ]];If[Length[adjacentCandidates]>0,
-res = First[adjacentCandidates]["Node"];
-If[debugTest,Print[res]];
-Return[res]];
 
-(* otherwise we take a nonadjacent (which may have been straighter *)res = First[candidateInfo]["Node"];If[debugTest,Print[res]];Return[res];
-];
+(* ::Input::Initialization:: *)
+nextParastichyPoint[meshAssociation_, parastichy_, avoidPoints_, adjacentParastichy_] := Module[{candidateContinues, straightnessAngle, nextStraightest, debugTest, adjacentParastichyEnds, candidateInfo, adjacentParastichyCentre, adjacentCandidates, res, decho}, debugTest = MemberQ[{845, 10}, -First@parastichy]; decho[x_] := If[debugTest, Echo[x, "nPP"], x];
+   
+   If[Length[parastichy] == 0, Return[Missing["No parastichy to extend"]]];
+   If[MissingQ[parastichy] == 0, Return[Missing["Missing parastichy"]]];
+   
+   straightnessAngle = If[Length[adjacentParastichy] > 0,
+     locateParastichyOptions["StraightnessWhenAdjacent"],
+     locateParastichyOptions["StraightnessWhenUnadjacent"]
+     ];
+   adjacentParastichyEnds  = If[Length[adjacentParastichy] == 0, {}, Union @@ Map[meshAssociation["Adjacency"][#] &, {First[adjacentParastichy], Last[adjacentParastichy]}]]; adjacentParastichyCentre   = Complement[adjacentParastichy, adjacentParastichyEnds];
+   
+   decho[parastichy];
+   candidateContinues = meshAssociation["Adjacency"][Last@parastichy];
+   
+   candidateContinues = Complement[candidateContinues, avoidPoints]; candidateInfo = KeyValueMap[ <| "Node" -> #1, "Deviation" -> #2|> &]@orderByStraightness[meshAssociation, parastichy, candidateContinues]; candidateInfo = Map[
+     Append[#, "Adjacency" -> meshAssociation["Adjacency"][#["Node"]]] &, candidateInfo]; candidateInfo = Map[Append[#, "NextToAdjacentCentre" ->  
+        Length[Intersection[#["Adjacency"], adjacentParastichyCentre]] > 0] &, candidateInfo]; candidateInfo = Map[Append[#, "NextToAdjacentEnds" ->  
+        Length[Intersection[#["Adjacency"], adjacentParastichyEnds]] > 0] &, candidateInfo]; candidateInfo = Map[
+     Append[#, "NextToAdjacent" ->  
+        Length[Intersection[#["Adjacency"], adjacentParastichy]] > 0] &, candidateInfo]; candidateInfo = Map[
+     Append[#, "OnAdjacent" -> 
+         Length[Intersection[{#["Node"]}, adjacentParastichy]] > 0] &, candidateInfo];
+   candidateInfo = decho@Map[
+     Append[#, "Straightish" -> isStraightish[#]] &, candidateInfo];
+   (* screen out any with too much deviation anyway *) 
+   
+   candidateInfo =  Query[Select[  #["Straightish"] & ]]@ candidateInfo; If[Length[candidateInfo] == 0,
+    decho@"End of the line" ; Return[Missing["End of the line"]]]; If[First[candidateInfo]["OnAdjacent"], decho@{"terminating at ", candidateInfo, "because of collision with adjacent"}; Return[Missing["Collision"]]
+    ];
+   
+   (* do we have any that preserve adjacency *) adjacentCandidates =  Query[Select[  #["NextToAdjacent"] & ]]@candidateInfo; If[debugTest, Print[adjacentCandidates ]]; If[Length[adjacentCandidates] > 0,
+    res = First[adjacentCandidates]["Node"];
+    If[debugTest, Print[res]];
+    Return[res]];
+   
+   (* otherwise we take a nonadjacent (which may have been straighter *)res = First[candidateInfo]["Node"]; If[debugTest, Print[res]]; Return[res];
+   ];
 
 isStraightish[cInfo_] := (
-Abs[cInfo["Deviation"]]< 
-If[cInfo["NextToAdjacentCentre"] || cInfo["NextToAdjacentEnds"], 
-locateParastichyOptions["StraightnessWhenAdjacent"],
-locateParastichyOptions["StraightnessWhenUnadjacent"]
-]
-);
+   Abs[cInfo["Deviation"]] < 
+    If[cInfo["NextToAdjacentCentre"] || cInfo["NextToAdjacentEnds"], 
+     locateParastichyOptions["StraightnessWhenAdjacent"],
+     locateParastichyOptions["StraightnessWhenUnadjacent"]
+     ]
+   );
 
-orderByStraightness[meshAssociation_,parastichy_,candidateContinues_] := Module[{paraPossiblePairs,paraPossibleAngles,lastAngle,paraAngles,deviationsNext},paraPossiblePairs = Map[{parastichy[[-1]],#}&,candidateContinues];paraPossibleAngles = Association@Map[#[[2]]->meshLineAngle[meshAssociation,#]&,paraPossiblePairs];lastAngle = meshLineAngle[meshAssociation,{parastichy[[-2]],parastichy[[-1]]}];paraAngles = Map[anglePrincipal[#-lastAngle]&,paraPossibleAngles];deviationsNext = Sort@Abs[paraAngles];
-deviationsNext
-];
+orderByStraightness[meshAssociation_, parastichy_, candidateContinues_] := Module[{paraPossiblePairs, paraPossibleAngles, lastAngle, paraAngles, deviationsNext}, paraPossiblePairs = Map[{parastichy[[-1]], #} &, candidateContinues]; paraPossibleAngles = Association@Map[#[[2]] -> meshLineAngle[meshAssociation, #] &, paraPossiblePairs]; lastAngle = meshLineAngle[meshAssociation, {parastichy[[-2]], parastichy[[-1]]}]; paraAngles = Map[anglePrincipal[# - lastAngle] &, paraPossibleAngles]; deviationsNext = Sort@Abs[paraAngles];
+   deviationsNext
+   ];
 
-meshLineDeviation[meshAssociation_,{ix1_,ix2_,ix3_}] := Module[{p1p2,p2p3,first,second,pAngle,res},
-(* in [-180,180 *)p1p2 = MeshPrimitives[meshAssociation["Mesh"],{0,{ix1,ix2}}];pAngle[{Point[{x1_,y1_}],Point[{x2_,y2_}]}] := (360/(2\[Pi])) ArcTan[x2-x1,y2-y1];first = pAngle[p1p2];
-p2p3 = MeshPrimitives[meshAssociation["Mesh"],{0,{ix2,ix3}}];
-second = pAngle[p2p3];
-anglePrincipal[first-second]
-];
+meshLineDeviation[meshAssociation_, {ix1_, ix2_, ix3_}] := Module[{p1p2, p2p3, first, second, pAngle, res},
+   (* in [-180,180 *)p1p2 = MeshPrimitives[meshAssociation["Mesh"], {0, {ix1, ix2}}]; pAngle[{Point[{x1_, y1_}], Point[{x2_, y2_}]}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1]; first = pAngle[p1p2];
+   p2p3 = MeshPrimitives[meshAssociation["Mesh"], {0, {ix2, ix3}}];
+   second = pAngle[p2p3];
+   anglePrincipal[first - second]
+   ];
 
-meshLineAngle[meshAssociation_,{ix1_,ix2_}] := Module[{p1p2,pAngle,res},
-(* in [-180,180 *)
-p1p2 = MeshPrimitives[meshAssociation["Mesh"],{0,{ix1,ix2}}];
-pAngle[{Point[{x1_,y1_}],Point[{x2_,y2_}]}] := (360/(2\[Pi])) ArcTan[x2-x1,y2-y1];
-pAngle[p1p2]
-];
+meshLineAngle[meshAssociation_, {ix1_, ix2_}] := Module[{p1p2, pAngle, res},
+   (* in [-180,180 *)
+   p1p2 = MeshPrimitives[meshAssociation["Mesh"], {0, {ix1, ix2}}];
+   pAngle[{Point[{x1_, y1_}], Point[{x2_, y2_}]}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
+   pAngle[p1p2]
+   ];
 anglePrincipal[angle_] :=  angle - 360 Round[angle/360]; (* in -180 < angle < 180 *) 
 
 
@@ -416,7 +419,7 @@ mPF
 (* ::Input::Initialization:: *)
 findAdjacentThreads[meshAssociation_,parastichyFamily_] := Module[{mPF,atp,family,ix,avoidPoints,extendThread,decho,nTimes},
 mPF = parastichyFamily;
-For[nTimes = 1,nTimes<= 4,nTimes++,
+For[nTimes = 1,nTimes<= 1,nTimes++,
 atp = adjacentThreadsToParastichyFamily[meshAssociation,mPF];
 For[ix=1,ix<= Length[atp],ix++,
 mPF = extendThreadAndAdd[meshAssociation,mPF,atp[[ix]]];

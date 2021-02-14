@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    114331,       2953]
-NotebookOptionsPosition[    110348,       2886]
-NotebookOutlinePosition[    110996,       2908]
-CellTagsIndexPosition[    110953,       2905]
+NotebookDataLength[    116581,       2990]
+NotebookOptionsPosition[    112568,       2922]
+NotebookOutlinePosition[    113218,       2944]
+CellTagsIndexPosition[    113175,       2941]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -577,8 +577,8 @@ Cell[BoxData[
     "\n", "]"}]}], ";"}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "2/14/21 17:16:49 (Local) \
-In[302]:=",ExpressionUUID->"d3f2d60d-4435-48a4-be52-8b86c3b6f85d"],
+  "2/14/21 20:05:05 (Local) \
+In[460]:=",ExpressionUUID->"d3f2d60d-4435-48a4-be52-8b86c3b6f85d"],
 
 Cell[BoxData[{
  RowBox[{
@@ -651,9 +651,17 @@ Cell[BoxData[{
     RowBox[{"Module", "[", 
      RowBox[{
       RowBox[{"{", 
-       RowBox[{"ix", ",", "jx", ",", "firstTail", ",", "secondHead"}], "}"}], 
-      ",", "\[IndentingNewLine]", 
+       RowBox[{
+       "ix", ",", "jx", ",", "firstTail", ",", "secondHead", ",", "decho"}], 
+       "}"}], ",", "\[IndentingNewLine]", 
       RowBox[{
+       RowBox[{
+        RowBox[{"decho", "[", "x_", "]"}], " ", ":=", " ", 
+        RowBox[{"If", "[", 
+         RowBox[{"False", ",", 
+          RowBox[{"Echo", "[", 
+           RowBox[{"x", ",", "\"\<fAA\>\""}], "]"}], ",", "x"}], "]"}]}], ";",
+        "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
        RowBox[{"For", "[", 
         RowBox[{
          RowBox[{"ix", "=", "1"}], ",", 
@@ -668,6 +676,16 @@ Cell[BoxData[{
             RowBox[{"Length", "[", "parastichyFamily", "]"}]}], ",", 
            RowBox[{"jx", "++"}], ",", "\[IndentingNewLine]", 
            RowBox[{
+            RowBox[{"decho", "[", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{
+               "parastichyFamily", "\[LeftDoubleBracket]", "ix", 
+                "\[RightDoubleBracket]"}], ",", 
+               RowBox[{
+               "parastichyFamily", "\[LeftDoubleBracket]", "jx", 
+                "\[RightDoubleBracket]"}]}], "}"}], "]"}], ";", 
+            "\[IndentingNewLine]", "\[IndentingNewLine]", 
             RowBox[{"firstTail", " ", "=", " ", 
              RowBox[{"Last", "[", 
               RowBox[{
@@ -745,8 +763,8 @@ Cell[BoxData[{
   "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
  InitializationCell->True,
  CellLabel->
-  "2/14/21 17:16:49 (Local) \
-In[303]:=",ExpressionUUID->"d27eb31f-9685-4b44-b6ca-9d98105f73e6"],
+  "2/14/21 20:05:18 (Local) \
+In[468]:=",ExpressionUUID->"d27eb31f-9685-4b44-b6ca-9d98105f73e6"],
 
 Cell[BoxData[
  RowBox[{
@@ -787,7 +805,7 @@ Cell[BoxData[
        RowBox[{"For", "[", 
         RowBox[{
          RowBox[{"n", "=", "0"}], ",", 
-         RowBox[{"n", "<", "10"}], ",", 
+         RowBox[{"n", "<", "100"}], ",", 
          RowBox[{"n", "++"}], ",", "\[IndentingNewLine]", 
          RowBox[{
           RowBox[{"ijx", " ", "=", " ", 
@@ -806,8 +824,8 @@ Cell[BoxData[
   "\n"}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "2/14/21 17:16:49 (Local) \
-In[305]:=",ExpressionUUID->"6f079890-0c30-49f9-a923-bceb2e315ea5"],
+  "2/14/21 20:04:02 (Local) \
+In[442]:=",ExpressionUUID->"6f079890-0c30-49f9-a923-bceb2e315ea5"],
 
 Cell[BoxData[
  RowBox[{
@@ -1271,42 +1289,36 @@ Cell[BoxData[{
    RowBox[{"Module", "[", 
     RowBox[{
      RowBox[{"{", 
-      RowBox[{"i", ",", "res", ",", "np", ",", "decho"}], "}"}], ",", "\n", 
+      RowBox[{"i", ",", "parastichy", ",", "np", ",", "decho"}], "}"}], ",", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
      RowBox[{
       RowBox[{
        RowBox[{"decho", "[", "x_", "]"}], " ", ":=", " ", 
        RowBox[{"If", "[", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"Length", "[", 
-           RowBox[{"Intersection", "[", 
-            RowBox[{"starter", ",", 
-             RowBox[{"{", 
-              RowBox[{"340", ",", "464"}], "}"}]}], "]"}], "]"}], "<", "00"}],
-          ",", 
-         RowBox[{"Echo", "[", 
-          RowBox[{"x", ",", "\"\<mEP\>\""}], "]"}], ",", "x"}], "]"}]}], ";", 
-      "\n", 
-      RowBox[{"res", " ", "=", " ", "starter"}], ";", "\n", "\n", 
+        RowBox[{"False", ",", 
+         RowBox[{"Echo", "[", "x", "]"}], ",", "x"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"parastichy", " ", "=", " ", "starter"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
       RowBox[{"For", "[", " ", 
        RowBox[{
         RowBox[{"i", "=", "1"}], ",", 
         RowBox[{"i", "<=", " ", "length"}], ",", 
-        RowBox[{"i", "++"}], ",", "\n", 
+        RowBox[{"i", "++"}], ",", 
         RowBox[{
          RowBox[{"np", " ", "=", " ", 
           RowBox[{"decho", "@", 
            RowBox[{"nextParastichyPoint", "[", 
             RowBox[{
-            "meshAssociation", ",", "res", ",", "avoidPoints", ",", 
-             "adjacentParastichy"}], "]"}]}]}], ";", "\n", 
+            "meshAssociation", ",", "parastichy", ",", "avoidPoints", ",", 
+             "adjacentParastichy"}], "]"}]}]}], ";", 
          RowBox[{"If", "[", 
           RowBox[{
            RowBox[{"MissingQ", "[", "np", "]"}], ",", 
            RowBox[{"Break", "[", "]"}]}], "]"}], ";", 
-         RowBox[{"res", "=", " ", 
+         RowBox[{"parastichy", "=", " ", 
           RowBox[{"Append", "[", 
-           RowBox[{"res", ",", "np"}], "]"}]}], ";", 
+           RowBox[{"parastichy", ",", "np"}], "]"}]}], ";", 
          RowBox[{"If", "[", 
           RowBox[{
            RowBox[{"MemberQ", "[", 
@@ -1320,12 +1332,13 @@ Cell[BoxData[{
             RowBox[{
              RowBox[{"meshAssociation", "[", "\"\<InnerBoundary\>\"", "]"}], 
              ",", "np"}], "]"}], ",", 
-           RowBox[{"Break", "[", "]"}]}], "]"}], ";"}]}], "\n", "]"}], ";", 
-      "\n", "res"}]}], "\n", "]"}]}], ";"}]}], "Input",
+           RowBox[{"Break", "[", "]"}]}], "]"}], ";"}]}], 
+       "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+      "parastichy"}]}], "\n", "]"}]}], ";"}]}], "Input",
  InitializationCell->True,
  CellLabel->
-  "2/14/21 17:16:49 (Local) \
-In[317]:=",ExpressionUUID->"e051c6ea-9b7a-4344-afed-0ec63275c8f0"],
+  "2/14/21 19:35:10 (Local) \
+In[202]:=",ExpressionUUID->"e051c6ea-9b7a-4344-afed-0ec63275c8f0"],
 
 Cell[BoxData[{
  RowBox[{
@@ -1333,216 +1346,231 @@ Cell[BoxData[{
    RowBox[{
     RowBox[{"nextParastichyPoint", "[", 
      RowBox[{
-     "meshAssociation_", ",", "parastichy_", ",", "avoidPoints_", ",", 
-      "adjacentParastichy_"}], "]"}], " ", ":=", " ", 
+     "meshAssociation_", ",", " ", "parastichy_", ",", " ", "avoidPoints_", 
+      ",", " ", "adjacentParastichy_"}], "]"}], " ", ":=", " ", 
     RowBox[{"Module", "[", 
      RowBox[{
       RowBox[{"{", 
        RowBox[{
-       "candidateContinues", ",", "straightnessAngle", ",", "nextStraightest",
-         ",", "debugTest", ",", "adjacentParastichyEnds", ",", 
-        "candidateInfo", ",", "adjacentParastichyCentre", ",", "\n", 
-        "adjacentCandidates", ",", "res", ",", "decho"}], "}"}], ",", "\n", 
+       "candidateContinues", ",", " ", "straightnessAngle", ",", " ", 
+        "nextStraightest", ",", " ", "debugTest", ",", " ", 
+        "adjacentParastichyEnds", ",", " ", "candidateInfo", ",", " ", 
+        "adjacentParastichyCentre", ",", " ", "adjacentCandidates", ",", " ", 
+        "res", ",", " ", "decho"}], "}"}], ",", " ", 
       RowBox[{
        RowBox[{"debugTest", " ", "=", " ", 
         RowBox[{"MemberQ", "[", 
          RowBox[{
           RowBox[{"{", 
-           RowBox[{"2", ",", "10"}], "}"}], ",", 
+           RowBox[{"845", ",", " ", "10"}], "}"}], ",", " ", 
           RowBox[{"-", 
-           RowBox[{"Last", "@", "parastichy"}]}]}], "]"}]}], ";", "\n", 
+           RowBox[{"First", "@", "parastichy"}]}]}], "]"}]}], ";", " ", 
        RowBox[{
         RowBox[{"decho", "[", "x_", "]"}], " ", ":=", " ", 
         RowBox[{"If", "[", 
-         RowBox[{"debugTest", ",", 
+         RowBox[{"debugTest", ",", " ", 
           RowBox[{"Echo", "[", 
-           RowBox[{"x", ",", "\"\<nPP\>\""}], "]"}], ",", "x"}], "]"}]}], ";",
-        "\n", "\n", 
+           RowBox[{"x", ",", " ", "\"\<nPP\>\""}], "]"}], ",", " ", "x"}], 
+         "]"}]}], ";", "\n", "   ", "\n", "   ", 
        RowBox[{"If", "[", 
         RowBox[{
          RowBox[{
-          RowBox[{"Length", "[", "parastichy", "]"}], "==", "0"}], ",", 
+          RowBox[{"Length", "[", "parastichy", "]"}], " ", "==", " ", "0"}], 
+         ",", " ", 
          RowBox[{"Return", "[", 
           RowBox[{"Missing", "[", "\"\<No parastichy to extend\>\"", "]"}], 
-          "]"}]}], "]"}], ";", 
+          "]"}]}], "]"}], ";", "\n", "   ", 
        RowBox[{"If", "[", 
         RowBox[{
          RowBox[{
-          RowBox[{"MissingQ", "[", "parastichy", "]"}], "==", "0"}], ",", 
+          RowBox[{"MissingQ", "[", "parastichy", "]"}], " ", "==", " ", "0"}],
+          ",", " ", 
          RowBox[{"Return", "[", 
           RowBox[{"Missing", "[", "\"\<Missing parastichy\>\"", "]"}], 
-          "]"}]}], "]"}], ";", "\n", "\n", 
+          "]"}]}], "]"}], ";", "\n", "   ", "\n", "   ", 
        RowBox[{"straightnessAngle", " ", "=", " ", 
         RowBox[{"If", "[", 
          RowBox[{
           RowBox[{
-           RowBox[{"Length", "[", "adjacentParastichy", "]"}], ">", "0"}], 
-          ",", "\n", 
+           RowBox[{"Length", "[", "adjacentParastichy", "]"}], " ", ">", " ", 
+           "0"}], ",", "\n", "     ", 
           RowBox[{
           "locateParastichyOptions", "[", "\"\<StraightnessWhenAdjacent\>\"", 
-           "]"}], ",", "\n", 
+           "]"}], ",", "\n", "     ", 
           RowBox[{
           "locateParastichyOptions", "[", 
-           "\"\<StraightnessWhenUnadjacent\>\"", "]"}]}], "\n", "]"}]}], ";", 
-       "\n", 
+           "\"\<StraightnessWhenUnadjacent\>\"", "]"}]}], "\n", "     ", 
+         "]"}]}], ";", "\n", "   ", 
        RowBox[{"adjacentParastichyEnds", "  ", "=", " ", 
         RowBox[{"If", "[", 
          RowBox[{
           RowBox[{
-           RowBox[{"Length", "[", "adjacentParastichy", "]"}], "==", "0"}], 
-          ",", 
-          RowBox[{"{", "}"}], ",", 
-          RowBox[{"Union", "@@", 
+           RowBox[{"Length", "[", "adjacentParastichy", "]"}], " ", "==", " ",
+            "0"}], ",", " ", 
+          RowBox[{"{", "}"}], ",", " ", 
+          RowBox[{"Union", " ", "@@", " ", 
            RowBox[{"Map", "[", 
             RowBox[{
              RowBox[{
               RowBox[{
                RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], 
-               "[", "#", "]"}], "&"}], ",", " ", 
+               "[", "#", "]"}], " ", "&"}], ",", " ", 
              RowBox[{"{", 
               RowBox[{
-               RowBox[{"First", "[", "adjacentParastichy", "]"}], ",", 
+               RowBox[{"First", "[", "adjacentParastichy", "]"}], ",", " ", 
                RowBox[{"Last", "[", "adjacentParastichy", "]"}]}], "}"}]}], 
-            "]"}]}]}], "]"}]}], ";", 
+            "]"}]}]}], "]"}]}], ";", " ", 
        RowBox[{"adjacentParastichyCentre", "   ", "=", " ", 
         RowBox[{"Complement", "[", 
-         RowBox[{"adjacentParastichy", ",", "adjacentParastichyEnds"}], 
-         "]"}]}], ";", "\n", "\n", 
-       RowBox[{"decho", "[", "parastichy", "]"}], ";", "\n", 
+         RowBox[{"adjacentParastichy", ",", " ", "adjacentParastichyEnds"}], 
+         "]"}]}], ";", "\n", "   ", "\n", "   ", 
+       RowBox[{"decho", "[", "parastichy", "]"}], ";", "\n", "   ", 
        RowBox[{"candidateContinues", " ", "=", " ", 
         RowBox[{
          RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], "[", 
-         RowBox[{"Last", "@", "parastichy"}], "]"}]}], ";", "\n", "\n", 
+         RowBox[{"Last", "@", "parastichy"}], "]"}]}], ";", "\n", "   ", "\n",
+        "   ", 
        RowBox[{"candidateContinues", " ", "=", " ", 
         RowBox[{"Complement", "[", 
-         RowBox[{"candidateContinues", ",", "avoidPoints"}], "]"}]}], ";", 
+         RowBox[{"candidateContinues", ",", " ", "avoidPoints"}], "]"}]}], 
+       ";", " ", 
        RowBox[{"candidateInfo", " ", "=", " ", 
         RowBox[{
          RowBox[{"KeyValueMap", "[", " ", 
           RowBox[{
            RowBox[{"<|", " ", 
             RowBox[{
-             RowBox[{"\"\<Node\>\"", "->", "#1"}], ",", 
-             RowBox[{"\"\<Deviation\>\"", "->", " ", "#2"}]}], "|>"}], " ", 
-           "&"}], "]"}], "@", 
+             RowBox[{"\"\<Node\>\"", " ", "->", " ", "#1"}], ",", " ", 
+             RowBox[{"\"\<Deviation\>\"", " ", "->", " ", "#2"}]}], "|>"}], 
+           " ", "&"}], "]"}], "@", 
          RowBox[{"orderByStraightness", "[", 
           RowBox[{
-          "meshAssociation", ",", "parastichy", ",", "candidateContinues"}], 
-          "]"}]}]}], ";", 
+          "meshAssociation", ",", " ", "parastichy", ",", " ", 
+           "candidateContinues"}], "]"}]}]}], ";", " ", 
        RowBox[{"candidateInfo", " ", "=", " ", 
-        RowBox[{"Map", "[", "\n", 
+        RowBox[{"Map", "[", "\n", "     ", 
          RowBox[{
           RowBox[{
            RowBox[{"Append", "[", 
             RowBox[{"#", ",", " ", 
-             RowBox[{"\"\<Adjacency\>\"", "->", " ", 
+             RowBox[{"\"\<Adjacency\>\"", " ", "->", " ", 
               RowBox[{
                RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], 
                "[", 
-               RowBox[{"#", "[", "\"\<Node\>\"", "]"}], "]"}]}]}], "]"}], 
-           "&"}], ",", "candidateInfo"}], "]"}]}], ";", 
+               RowBox[{"#", "[", "\"\<Node\>\"", "]"}], "]"}]}]}], "]"}], " ",
+            "&"}], ",", " ", "candidateInfo"}], "]"}]}], ";", " ", 
        RowBox[{"candidateInfo", " ", "=", " ", 
         RowBox[{"Map", "[", 
          RowBox[{
           RowBox[{
            RowBox[{"Append", "[", 
             RowBox[{"#", ",", " ", 
-             RowBox[{"\"\<NextToAdjacentCentre\>\"", "->", "  ", "\n", 
+             RowBox[{
+             "\"\<NextToAdjacentCentre\>\"", " ", "->", "  ", "\n", 
+              "        ", 
               RowBox[{
                RowBox[{"Length", "[", 
                 RowBox[{"Intersection", "[", 
                  RowBox[{
-                  RowBox[{"#", "[", "\"\<Adjacency\>\"", "]"}], ",", 
-                  "adjacentParastichyCentre"}], "]"}], "]"}], ">", "0"}]}]}], 
-            "]"}], "&"}], ",", "candidateInfo"}], "]"}]}], ";", 
+                  RowBox[{"#", "[", "\"\<Adjacency\>\"", "]"}], ",", " ", 
+                  "adjacentParastichyCentre"}], "]"}], "]"}], " ", ">", " ", 
+               "0"}]}]}], "]"}], " ", "&"}], ",", " ", "candidateInfo"}], 
+         "]"}]}], ";", " ", 
        RowBox[{"candidateInfo", " ", "=", " ", 
         RowBox[{"Map", "[", 
          RowBox[{
           RowBox[{
            RowBox[{"Append", "[", 
             RowBox[{"#", ",", " ", 
-             RowBox[{"\"\<NextToAdjacentEnds\>\"", "->", "  ", "\n", 
+             RowBox[{
+             "\"\<NextToAdjacentEnds\>\"", " ", "->", "  ", "\n", "        ", 
               RowBox[{
                RowBox[{"Length", "[", 
                 RowBox[{"Intersection", "[", 
                  RowBox[{
-                  RowBox[{"#", "[", "\"\<Adjacency\>\"", "]"}], ",", 
-                  "adjacentParastichyEnds"}], "]"}], "]"}], ">", "0"}]}]}], 
-            "]"}], "&"}], ",", "candidateInfo"}], "]"}]}], ";", 
+                  RowBox[{"#", "[", "\"\<Adjacency\>\"", "]"}], ",", " ", 
+                  "adjacentParastichyEnds"}], "]"}], "]"}], " ", ">", " ", 
+               "0"}]}]}], "]"}], " ", "&"}], ",", " ", "candidateInfo"}], 
+         "]"}]}], ";", " ", 
        RowBox[{"candidateInfo", " ", "=", " ", 
-        RowBox[{"Map", "[", "\n", 
+        RowBox[{"Map", "[", "\n", "     ", 
          RowBox[{
           RowBox[{
            RowBox[{"Append", "[", 
             RowBox[{"#", ",", " ", 
-             RowBox[{"\"\<NextToAdjacent\>\"", "->", "  ", "\n", 
+             RowBox[{
+             "\"\<NextToAdjacent\>\"", " ", "->", "  ", "\n", "        ", 
               RowBox[{
                RowBox[{"Length", "[", 
                 RowBox[{"Intersection", "[", 
                  RowBox[{
-                  RowBox[{"#", "[", "\"\<Adjacency\>\"", "]"}], ",", 
-                  "adjacentParastichy"}], "]"}], "]"}], ">", "0"}]}]}], "]"}],
-            "&"}], ",", "candidateInfo"}], "]"}]}], ";", 
+                  RowBox[{"#", "[", "\"\<Adjacency\>\"", "]"}], ",", " ", 
+                  "adjacentParastichy"}], "]"}], "]"}], " ", ">", " ", 
+               "0"}]}]}], "]"}], " ", "&"}], ",", " ", "candidateInfo"}], 
+         "]"}]}], ";", " ", 
        RowBox[{"candidateInfo", " ", "=", " ", 
-        RowBox[{"Map", "[", "\n", 
+        RowBox[{"Map", "[", "\n", "     ", 
          RowBox[{
           RowBox[{
            RowBox[{"Append", "[", 
             RowBox[{"#", ",", " ", 
-             RowBox[{"\"\<OnAdjacent\>\"", "->", " ", "\n", " ", 
+             RowBox[{"\"\<OnAdjacent\>\"", " ", "->", " ", "\n", "         ", 
               RowBox[{
                RowBox[{"Length", "[", 
                 RowBox[{"Intersection", "[", 
                  RowBox[{
                   RowBox[{"{", 
-                   RowBox[{"#", "[", "\"\<Node\>\"", "]"}], "}"}], ",", 
-                  "adjacentParastichy"}], "]"}], "]"}], ">", "0"}]}]}], "]"}],
-            "&"}], ",", "candidateInfo"}], "]"}]}], ";", "\n", 
+                   RowBox[{"#", "[", "\"\<Node\>\"", "]"}], "}"}], ",", " ", 
+                  "adjacentParastichy"}], "]"}], "]"}], " ", ">", " ", 
+               "0"}]}]}], "]"}], " ", "&"}], ",", " ", "candidateInfo"}], 
+         "]"}]}], ";", "\n", "   ", 
        RowBox[{"candidateInfo", " ", "=", " ", 
-        RowBox[{"Map", "[", "\n", 
-         RowBox[{
+        RowBox[{"decho", "@", 
+         RowBox[{"Map", "[", "\n", "     ", 
           RowBox[{
-           RowBox[{"Append", "[", 
-            RowBox[{"#", ",", " ", 
-             RowBox[{"\"\<Straightish\>\"", "->", " ", 
-              RowBox[{"isStraightish", "[", "#", "]"}]}]}], "]"}], "&"}], ",",
-           "candidateInfo"}], "]"}]}], ";", "\n", 
+           RowBox[{
+            RowBox[{"Append", "[", 
+             RowBox[{"#", ",", " ", 
+              RowBox[{"\"\<Straightish\>\"", " ", "->", " ", 
+               RowBox[{"isStraightish", "[", "#", "]"}]}]}], "]"}], " ", 
+            "&"}], ",", " ", "candidateInfo"}], "]"}]}]}], ";", "\n", "   ", 
        RowBox[{"(*", " ", 
         RowBox[{
         "screen", " ", "out", " ", "any", " ", "with", " ", "too", " ", 
          "much", " ", "deviation", " ", "anyway"}], " ", "*)"}], " ", "\n", 
-       "\n", 
+       "   ", "\n", "   ", 
        RowBox[{"candidateInfo", " ", "=", "  ", 
         RowBox[{
          RowBox[{"Query", "[", 
           RowBox[{"Select", "[", "  ", 
            RowBox[{
-            RowBox[{"#", "[", "\"\<Straightish\>\"", "]"}], "&"}], " ", "]"}],
-           "]"}], "@", " ", "candidateInfo"}]}], ";", 
+            RowBox[{"#", "[", "\"\<Straightish\>\"", "]"}], " ", "&"}], " ", 
+           "]"}], "]"}], "@", " ", "candidateInfo"}]}], ";", " ", 
        RowBox[{"If", "[", 
         RowBox[{
          RowBox[{
-          RowBox[{"Length", "[", "candidateInfo", "]"}], "==", "0"}], ",", 
-         "\n", 
+          RowBox[{"Length", "[", "candidateInfo", "]"}], " ", "==", " ", 
+          "0"}], ",", "\n", "    ", 
          RowBox[{
-          RowBox[{"decho", "@", "\"\<End of the line\>\""}], " ", ";", 
+          RowBox[{"decho", "@", "\"\<End of the line\>\""}], " ", ";", " ", 
           RowBox[{"Return", "[", 
            RowBox[{"Missing", "[", "\"\<End of the line\>\"", "]"}], 
-           "]"}]}]}], "]"}], ";", 
+           "]"}]}]}], "]"}], ";", " ", 
        RowBox[{"If", "[", 
         RowBox[{
          RowBox[{
           RowBox[{"First", "[", "candidateInfo", "]"}], "[", 
-          "\"\<OnAdjacent\>\"", "]"}], ",", 
+          "\"\<OnAdjacent\>\"", "]"}], ",", " ", 
          RowBox[{
           RowBox[{"decho", "@", 
            RowBox[{"{", 
             RowBox[{
-            "\"\<terminating at \>\"", ",", "candidateInfo", ",", " ", 
+            "\"\<terminating at \>\"", ",", " ", "candidateInfo", ",", " ", 
              "\"\<because of collision with adjacent\>\""}], "}"}]}], ";", 
+          " ", 
           RowBox[{"Return", "[", 
            RowBox[{"Missing", "[", "\"\<Collision\>\"", "]"}], "]"}]}]}], 
-        "\n", "]"}], ";", "\n", "\n", 
+        "\n", "    ", "]"}], ";", "\n", "   ", "\n", "   ", 
        RowBox[{"(*", " ", 
         RowBox[{
         "do", " ", "we", " ", "have", " ", "any", " ", "that", " ", 
@@ -1552,25 +1580,27 @@ Cell[BoxData[{
          RowBox[{"Query", "[", 
           RowBox[{"Select", "[", "  ", 
            RowBox[{
-            RowBox[{"#", "[", "\"\<NextToAdjacent\>\"", "]"}], "&"}], " ", 
-           "]"}], "]"}], "@", "candidateInfo"}]}], ";", 
+            RowBox[{"#", "[", "\"\<NextToAdjacent\>\"", "]"}], " ", "&"}], 
+           " ", "]"}], "]"}], "@", "candidateInfo"}]}], ";", " ", 
        RowBox[{"If", "[", 
-        RowBox[{"debugTest", ",", 
-         RowBox[{"Print", "[", "adjacentCandidates", " ", "]"}]}], "]"}], ";", 
+        RowBox[{"debugTest", ",", " ", 
+         RowBox[{"Print", "[", "adjacentCandidates", " ", "]"}]}], "]"}], ";",
+        " ", 
        RowBox[{"If", "[", 
         RowBox[{
          RowBox[{
-          RowBox[{"Length", "[", "adjacentCandidates", "]"}], ">", "0"}], ",",
-          "\n", 
+          RowBox[{"Length", "[", "adjacentCandidates", "]"}], " ", ">", " ", 
+          "0"}], ",", "\n", "    ", 
          RowBox[{
           RowBox[{"res", " ", "=", " ", 
            RowBox[{
             RowBox[{"First", "[", "adjacentCandidates", "]"}], "[", 
-            "\"\<Node\>\"", "]"}]}], ";", "\n", 
+            "\"\<Node\>\"", "]"}]}], ";", "\n", "    ", 
           RowBox[{"If", "[", 
-           RowBox[{"debugTest", ",", 
-            RowBox[{"Print", "[", "res", "]"}]}], "]"}], ";", "\n", 
-          RowBox[{"Return", "[", "res", "]"}]}]}], "]"}], ";", "\n", "\n", 
+           RowBox[{"debugTest", ",", " ", 
+            RowBox[{"Print", "[", "res", "]"}]}], "]"}], ";", "\n", "    ", 
+          RowBox[{"Return", "[", "res", "]"}]}]}], "]"}], ";", "\n", "   ", 
+       "\n", "   ", 
        RowBox[{"(*", " ", 
         RowBox[{
         "otherwise", " ", "we", " ", "take", " ", "a", " ", "nonadjacent", 
@@ -1582,47 +1612,49 @@ Cell[BoxData[{
        RowBox[{"res", " ", "=", " ", 
         RowBox[{
          RowBox[{"First", "[", "candidateInfo", "]"}], "[", "\"\<Node\>\"", 
-         "]"}]}], ";", 
+         "]"}]}], ";", " ", 
        RowBox[{"If", "[", 
-        RowBox[{"debugTest", ",", 
-         RowBox[{"Print", "[", "res", "]"}]}], "]"}], ";", 
-       RowBox[{"Return", "[", "res", "]"}], ";"}]}], "\n", "]"}]}], ";"}], 
-  "\n"}], "\n", 
+        RowBox[{"debugTest", ",", " ", 
+         RowBox[{"Print", "[", "res", "]"}]}], "]"}], ";", " ", 
+       RowBox[{"Return", "[", "res", "]"}], ";"}]}], "\n", "   ", "]"}]}], 
+   ";"}], "\n"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{
     RowBox[{"isStraightish", "[", "cInfo_", "]"}], " ", ":=", " ", 
-    RowBox[{"(", "\n", 
+    RowBox[{"(", "\n", "   ", 
      RowBox[{
       RowBox[{"Abs", "[", 
-       RowBox[{"cInfo", "[", "\"\<Deviation\>\"", "]"}], "]"}], "<", " ", 
-      "\n", 
+       RowBox[{"cInfo", "[", "\"\<Deviation\>\"", "]"}], "]"}], " ", "<", " ",
+       "\n", "    ", 
       RowBox[{"If", "[", 
        RowBox[{
         RowBox[{
          RowBox[{"cInfo", "[", "\"\<NextToAdjacentCentre\>\"", "]"}], " ", "||",
           " ", 
          RowBox[{"cInfo", "[", "\"\<NextToAdjacentEnds\>\"", "]"}]}], ",", 
-        " ", "\n", 
+        " ", "\n", "     ", 
         RowBox[{
         "locateParastichyOptions", "[", "\"\<StraightnessWhenAdjacent\>\"", 
-         "]"}], ",", "\n", 
+         "]"}], ",", "\n", "     ", 
         RowBox[{
         "locateParastichyOptions", "[", "\"\<StraightnessWhenUnadjacent\>\"", 
-         "]"}]}], "\n", "]"}]}], "\n", ")"}]}], ";"}], "\n"}], "\n", 
+         "]"}]}], "\n", "     ", "]"}]}], "\n", "   ", ")"}]}], ";"}], 
+  "\n"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{
     RowBox[{"orderByStraightness", "[", 
      RowBox[{
-     "meshAssociation_", ",", "parastichy_", ",", "candidateContinues_"}], 
-     "]"}], " ", ":=", " ", 
+     "meshAssociation_", ",", " ", "parastichy_", ",", " ", 
+      "candidateContinues_"}], "]"}], " ", ":=", " ", 
     RowBox[{"Module", "[", 
      RowBox[{
       RowBox[{"{", 
        RowBox[{
-       "paraPossiblePairs", ",", "paraPossibleAngles", ",", "lastAngle", ",", 
-        "paraAngles", ",", "deviationsNext"}], "}"}], ",", 
+       "paraPossiblePairs", ",", " ", "paraPossibleAngles", ",", " ", 
+        "lastAngle", ",", " ", "paraAngles", ",", " ", "deviationsNext"}], 
+       "}"}], ",", " ", 
       RowBox[{
        RowBox[{"paraPossiblePairs", " ", "=", " ", 
         RowBox[{"Map", "[", 
@@ -1632,8 +1664,8 @@ Cell[BoxData[{
             RowBox[{
              RowBox[{"parastichy", "[", 
               RowBox[{"[", 
-               RowBox[{"-", "1"}], "]"}], "]"}], ",", "#"}], "}"}], "&"}], 
-          ",", "candidateContinues"}], "]"}]}], ";", 
+               RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", "#"}], "}"}], " ", 
+           "&"}], ",", " ", "candidateContinues"}], "]"}]}], ";", " ", 
        RowBox[{"paraPossibleAngles", " ", "=", " ", 
         RowBox[{"Association", "@", 
          RowBox[{"Map", "[", 
@@ -1641,46 +1673,46 @@ Cell[BoxData[{
            RowBox[{
             RowBox[{
              RowBox[{"#", "[", 
-              RowBox[{"[", "2", "]"}], "]"}], "->", 
+              RowBox[{"[", "2", "]"}], "]"}], " ", "->", " ", 
              RowBox[{"meshLineAngle", "[", 
-              RowBox[{"meshAssociation", ",", "#"}], "]"}]}], "&"}], ",", 
-           "paraPossiblePairs"}], "]"}]}]}], ";", 
+              RowBox[{"meshAssociation", ",", " ", "#"}], "]"}]}], " ", "&"}],
+            ",", " ", "paraPossiblePairs"}], "]"}]}]}], ";", " ", 
        RowBox[{"lastAngle", " ", "=", " ", 
         RowBox[{"meshLineAngle", "[", 
-         RowBox[{"meshAssociation", ",", 
+         RowBox[{"meshAssociation", ",", " ", 
           RowBox[{"{", 
            RowBox[{
             RowBox[{"parastichy", "[", 
              RowBox[{"[", 
-              RowBox[{"-", "2"}], "]"}], "]"}], ",", 
+              RowBox[{"-", "2"}], "]"}], "]"}], ",", " ", 
             RowBox[{"parastichy", "[", 
              RowBox[{"[", 
-              RowBox[{"-", "1"}], "]"}], "]"}]}], "}"}]}], "]"}]}], ";", 
+              RowBox[{"-", "1"}], "]"}], "]"}]}], "}"}]}], "]"}]}], ";", " ", 
        RowBox[{"paraAngles", " ", "=", " ", 
         RowBox[{"Map", "[", 
          RowBox[{
           RowBox[{
            RowBox[{"anglePrincipal", "[", 
-            RowBox[{"#", "-", "lastAngle"}], "]"}], "&"}], ",", 
-          "paraPossibleAngles"}], "]"}]}], ";", 
+            RowBox[{"#", " ", "-", " ", "lastAngle"}], "]"}], " ", "&"}], ",",
+           " ", "paraPossibleAngles"}], "]"}]}], ";", " ", 
        RowBox[{"deviationsNext", " ", "=", " ", 
         RowBox[{"Sort", "@", 
-         RowBox[{"Abs", "[", "paraAngles", "]"}]}]}], ";", "\n", 
-       "deviationsNext"}]}], "\n", "]"}]}], ";"}], "\n"}], "\n", 
+         RowBox[{"Abs", "[", "paraAngles", "]"}]}]}], ";", "\n", "   ", 
+       "deviationsNext"}]}], "\n", "   ", "]"}]}], ";"}], "\n"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{
     RowBox[{"meshLineDeviation", "[", 
-     RowBox[{"meshAssociation_", ",", 
+     RowBox[{"meshAssociation_", ",", " ", 
       RowBox[{"{", 
-       RowBox[{"ix1_", ",", "ix2_", ",", "ix3_"}], "}"}]}], "]"}], " ", ":=", 
-    " ", 
+       RowBox[{"ix1_", ",", " ", "ix2_", ",", " ", "ix3_"}], "}"}]}], "]"}], 
+    " ", ":=", " ", 
     RowBox[{"Module", "[", 
      RowBox[{
       RowBox[{"{", 
        RowBox[{
-       "p1p2", ",", "p2p3", ",", "first", ",", "second", ",", "pAngle", ",", 
-        "res"}], "}"}], ",", "\n", 
+       "p1p2", ",", " ", "p2p3", ",", " ", "first", ",", " ", "second", ",", 
+        " ", "pAngle", ",", " ", "res"}], "}"}], ",", "\n", "   ", 
       RowBox[{"(*", " ", 
        RowBox[{"in", " ", "[", 
         RowBox[{
@@ -1689,106 +1721,110 @@ Cell[BoxData[{
        RowBox[{"p1p2", " ", "=", " ", 
         RowBox[{"MeshPrimitives", "[", 
          RowBox[{
-          RowBox[{"meshAssociation", "[", "\"\<Mesh\>\"", "]"}], ",", 
+          RowBox[{"meshAssociation", "[", "\"\<Mesh\>\"", "]"}], ",", " ", 
           RowBox[{"{", 
-           RowBox[{"0", ",", 
+           RowBox[{"0", ",", " ", 
             RowBox[{"{", 
-             RowBox[{"ix1", ",", "ix2"}], "}"}]}], "}"}]}], "]"}]}], ";", 
+             RowBox[{"ix1", ",", " ", "ix2"}], "}"}]}], "}"}]}], "]"}]}], ";",
+        " ", 
        RowBox[{
         RowBox[{"pAngle", "[", 
          RowBox[{"{", 
           RowBox[{
            RowBox[{"Point", "[", 
             RowBox[{"{", 
-             RowBox[{"x1_", ",", "y1_"}], "}"}], "]"}], ",", 
+             RowBox[{"x1_", ",", " ", "y1_"}], "}"}], "]"}], ",", " ", 
            RowBox[{"Point", "[", 
             RowBox[{"{", 
-             RowBox[{"x2_", ",", "y2_"}], "}"}], "]"}]}], "}"}], "]"}], " ", ":=",
-         " ", 
+             RowBox[{"x2_", ",", " ", "y2_"}], "}"}], "]"}]}], "}"}], "]"}], 
+        " ", ":=", " ", 
         RowBox[{
          RowBox[{"(", 
           RowBox[{"360", "/", 
            RowBox[{"(", 
-            RowBox[{"2", "\[Pi]"}], ")"}]}], ")"}], " ", 
+            RowBox[{"2", " ", "\[Pi]"}], ")"}]}], ")"}], " ", 
          RowBox[{"ArcTan", "[", 
           RowBox[{
-           RowBox[{"x2", "-", "x1"}], ",", 
-           RowBox[{"y2", "-", "y1"}]}], "]"}]}]}], ";", 
+           RowBox[{"x2", " ", "-", " ", "x1"}], ",", " ", 
+           RowBox[{"y2", " ", "-", " ", "y1"}]}], "]"}]}]}], ";", " ", 
        RowBox[{"first", " ", "=", " ", 
-        RowBox[{"pAngle", "[", "p1p2", "]"}]}], ";", "\n", 
+        RowBox[{"pAngle", "[", "p1p2", "]"}]}], ";", "\n", "   ", 
        RowBox[{"p2p3", " ", "=", " ", 
         RowBox[{"MeshPrimitives", "[", 
          RowBox[{
-          RowBox[{"meshAssociation", "[", "\"\<Mesh\>\"", "]"}], ",", 
+          RowBox[{"meshAssociation", "[", "\"\<Mesh\>\"", "]"}], ",", " ", 
           RowBox[{"{", 
-           RowBox[{"0", ",", 
+           RowBox[{"0", ",", " ", 
             RowBox[{"{", 
-             RowBox[{"ix2", ",", "ix3"}], "}"}]}], "}"}]}], "]"}]}], ";", 
-       "\n", 
+             RowBox[{"ix2", ",", " ", "ix3"}], "}"}]}], "}"}]}], "]"}]}], ";",
+        "\n", "   ", 
        RowBox[{"second", " ", "=", " ", 
-        RowBox[{"pAngle", "[", "p2p3", "]"}]}], ";", "\n", 
+        RowBox[{"pAngle", "[", "p2p3", "]"}]}], ";", "\n", "   ", 
        RowBox[{"anglePrincipal", "[", 
-        RowBox[{"first", "-", "second"}], "]"}]}]}], "\n", "]"}]}], ";"}], 
-  "\n"}], "\n", 
+        RowBox[{"first", " ", "-", " ", "second"}], "]"}]}]}], "\n", "   ", 
+     "]"}]}], ";"}], "\n"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{"meshLineAngle", "[", 
-    RowBox[{"meshAssociation_", ",", 
+    RowBox[{"meshAssociation_", ",", " ", 
      RowBox[{"{", 
-      RowBox[{"ix1_", ",", "ix2_"}], "}"}]}], "]"}], " ", ":=", " ", 
+      RowBox[{"ix1_", ",", " ", "ix2_"}], "}"}]}], "]"}], " ", ":=", " ", 
    RowBox[{"Module", "[", 
     RowBox[{
      RowBox[{"{", 
-      RowBox[{"p1p2", ",", "pAngle", ",", "res"}], "}"}], ",", "\n", 
+      RowBox[{"p1p2", ",", " ", "pAngle", ",", " ", "res"}], "}"}], ",", "\n",
+      "   ", 
      RowBox[{"(*", " ", 
       RowBox[{"in", " ", "[", 
        RowBox[{
-        RowBox[{"-", "180"}], ",", "180"}], " "}], "*)"}], "\n", 
+        RowBox[{"-", "180"}], ",", "180"}], " "}], "*)"}], "\n", "   ", 
      RowBox[{
       RowBox[{"p1p2", " ", "=", " ", 
        RowBox[{"MeshPrimitives", "[", 
         RowBox[{
-         RowBox[{"meshAssociation", "[", "\"\<Mesh\>\"", "]"}], ",", 
+         RowBox[{"meshAssociation", "[", "\"\<Mesh\>\"", "]"}], ",", " ", 
          RowBox[{"{", 
-          RowBox[{"0", ",", 
+          RowBox[{"0", ",", " ", 
            RowBox[{"{", 
-            RowBox[{"ix1", ",", "ix2"}], "}"}]}], "}"}]}], "]"}]}], ";", "\n", 
+            RowBox[{"ix1", ",", " ", "ix2"}], "}"}]}], "}"}]}], "]"}]}], ";", 
+      "\n", "   ", 
       RowBox[{
        RowBox[{"pAngle", "[", 
         RowBox[{"{", 
          RowBox[{
           RowBox[{"Point", "[", 
            RowBox[{"{", 
-            RowBox[{"x1_", ",", "y1_"}], "}"}], "]"}], ",", 
+            RowBox[{"x1_", ",", " ", "y1_"}], "}"}], "]"}], ",", " ", 
           RowBox[{"Point", "[", 
            RowBox[{"{", 
-            RowBox[{"x2_", ",", "y2_"}], "}"}], "]"}]}], "}"}], "]"}], " ", ":=",
-        " ", 
+            RowBox[{"x2_", ",", " ", "y2_"}], "}"}], "]"}]}], "}"}], "]"}], 
+       " ", ":=", " ", 
        RowBox[{
         RowBox[{"(", 
          RowBox[{"360", "/", 
           RowBox[{"(", 
-           RowBox[{"2", "\[Pi]"}], ")"}]}], ")"}], " ", 
+           RowBox[{"2", " ", "\[Pi]"}], ")"}]}], ")"}], " ", 
         RowBox[{"ArcTan", "[", 
          RowBox[{
-          RowBox[{"x2", "-", "x1"}], ",", 
-          RowBox[{"y2", "-", "y1"}]}], "]"}]}]}], ";", "\n", 
-      RowBox[{"pAngle", "[", "p1p2", "]"}]}]}], "\n", "]"}]}], ";"}], "\n", 
+          RowBox[{"x2", " ", "-", " ", "x1"}], ",", " ", 
+          RowBox[{"y2", " ", "-", " ", "y1"}]}], "]"}]}]}], ";", "\n", "   ", 
+      RowBox[{"pAngle", "[", "p1p2", "]"}]}]}], "\n", "   ", "]"}]}], 
+  ";"}], "\n", 
  RowBox[{
   RowBox[{
-   RowBox[{
-    RowBox[{"anglePrincipal", "[", "angle_", "]"}], " ", ":=", "  ", 
-    RowBox[{"angle", " ", "-", " ", 
-     RowBox[{"360", " ", 
-      RowBox[{"Round", "[", 
-       RowBox[{"angle", "/", "360"}], "]"}]}]}]}], ";"}], " ", 
+   RowBox[{"anglePrincipal", "[", "angle_", "]"}], " ", ":=", "  ", 
+   RowBox[{"angle", " ", "-", " ", 
+    RowBox[{"360", " ", 
+     RowBox[{"Round", "[", 
+      RowBox[{"angle", "/", "360"}], "]"}]}]}]}], ";", " ", 
   RowBox[{"(*", " ", 
    RowBox[{
     RowBox[{"in", " ", "-", "180"}], " ", "<", " ", "angle", " ", "<", " ", 
-    "180"}], " ", "*)"}], " "}], "\n"}], "Code",
+    "180"}], " ", "*)"}], " ", "\n"}]}], "Input",
+ InitializationCell->True,
  CellLabel->
-  "2/14/21 17:16:49 (Local) \
-In[319]:=",ExpressionUUID->"76ea223f-8c2c-4947-9ea8-ff05b8f82dd0"],
+  "2/14/21 19:53:27 (Local) \
+In[316]:=",ExpressionUUID->"76ea223f-8c2c-4947-9ea8-ff05b8f82dd0"],
 
 Cell[BoxData[
  RowBox[{
@@ -1871,7 +1907,7 @@ Cell[BoxData[
       RowBox[{"For", "[", 
        RowBox[{
         RowBox[{"nTimes", " ", "=", " ", "1"}], ",", 
-        RowBox[{"nTimes", "<=", " ", "4"}], ",", 
+        RowBox[{"nTimes", "<=", " ", "1"}], ",", 
         RowBox[{"nTimes", "++"}], ",", "\[IndentingNewLine]", 
         RowBox[{
          RowBox[{"atp", " ", "=", " ", 
@@ -1894,8 +1930,8 @@ Cell[BoxData[
        ";", "\[IndentingNewLine]", "mPF"}]}], "\n", "]"}]}], ";"}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "2/14/21 17:16:49 (Local) \
-In[326]:=",ExpressionUUID->"322c5088-f8d9-44cb-b112-dc5e4d3df686"],
+  "2/14/21 19:36:22 (Local) \
+In[216]:=",ExpressionUUID->"322c5088-f8d9-44cb-b112-dc5e4d3df686"],
 
 Cell[BoxData[{
  RowBox[{
@@ -2884,8 +2920,8 @@ Cell[BoxData[{
   "2/14/21 17:16:50 (Local) \
 In[348]:=",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
 },
-WindowSize->{1150.5, 825.75},
-WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowSize->{525.75, 831.},
+WindowMargins->{{-5.25, Automatic}, {Automatic, 0}},
 WindowStatusArea->"",
 TaggingRules->{
  "WelcomeScreenSettings" -> {"FEStarting" -> False}, 
@@ -2911,50 +2947,51 @@ Cell[558, 20, 1308, 35, 282, "Code",ExpressionUUID->"c6c4cce2-bc28-4439-ae0d-6af
 Cell[1869, 57, 6262, 143, 777, "Code",ExpressionUUID->"545f80d8-56e3-47b6-8060-3a2155b76023"],
 Cell[8134, 202, 207, 5, 63, "Code",ExpressionUUID->"5cb0906a-7fd6-41ca-bd93-01a456c28bc8"],
 Cell[8344, 209, 11378, 314, 1133, "Code",ExpressionUUID->"266cd5b1-2123-4b41-8621-e7480adb92fc"],
-Cell[19725, 525, 2209, 55, 283, "Input",ExpressionUUID->"d3f2d60d-4435-48a4-be52-8b86c3b6f85d",
+Cell[19725, 525, 2209, 55, 320, "Input",ExpressionUUID->"d3f2d60d-4435-48a4-be52-8b86c3b6f85d",
  InitializationCell->True],
-Cell[21937, 582, 7017, 166, 658, "Input",ExpressionUUID->"d27eb31f-9685-4b44-b6ca-9d98105f73e6",
+Cell[21937, 582, 7803, 184, 770, "Input",ExpressionUUID->"d27eb31f-9685-4b44-b6ca-9d98105f73e6",
  InitializationCell->True],
-Cell[28957, 750, 2483, 59, 377, "Input",ExpressionUUID->"6f079890-0c30-49f9-a923-bceb2e315ea5",
+Cell[29743, 768, 2484, 59, 377, "Input",ExpressionUUID->"6f079890-0c30-49f9-a923-bceb2e315ea5",
  InitializationCell->True],
-Cell[31443, 811, 3310, 79, 302, "Input",ExpressionUUID->"756f00cc-3755-454d-a208-247637ce9458",
+Cell[32230, 829, 3310, 79, 377, "Input",ExpressionUUID->"756f00cc-3755-454d-a208-247637ce9458",
  InitializationCell->True],
-Cell[34756, 892, 2518, 63, 283, "Input",ExpressionUUID->"1d014996-9baf-42c8-a2cc-89ac1bc48b8e",
+Cell[35543, 910, 2518, 63, 320, "Input",ExpressionUUID->"1d014996-9baf-42c8-a2cc-89ac1bc48b8e",
  InitializationCell->True],
-Cell[37277, 957, 2238, 54, 302, "Input",ExpressionUUID->"aa52782f-2f77-4f6d-b567-77af59b4375b",
+Cell[38064, 975, 2238, 54, 339, "Input",ExpressionUUID->"aa52782f-2f77-4f6d-b567-77af59b4375b",
  InitializationCell->True],
-Cell[39518, 1013, 902, 27, 100, "Code",ExpressionUUID->"dbb63815-f69a-4a96-bfec-9b2f1f193c64"],
-Cell[40423, 1042, 1910, 52, 224, "Code",ExpressionUUID->"c85247cb-971b-4af8-acc6-d28716b5ddbf"],
-Cell[42336, 1096, 5439, 144, 652, "Code",ExpressionUUID->"8d91e29a-16bb-4df2-99a4-fcf8eb6bdae2"],
-Cell[47778, 1242, 3226, 85, 395, "Input",ExpressionUUID->"e051c6ea-9b7a-4344-afed-0ec63275c8f0",
+Cell[40305, 1031, 902, 27, 100, "Code",ExpressionUUID->"dbb63815-f69a-4a96-bfec-9b2f1f193c64"],
+Cell[41210, 1060, 1910, 52, 224, "Code",ExpressionUUID->"c85247cb-971b-4af8-acc6-d28716b5ddbf"],
+Cell[43123, 1114, 5439, 144, 652, "Code",ExpressionUUID->"8d91e29a-16bb-4df2-99a4-fcf8eb6bdae2"],
+Cell[48565, 1260, 3123, 80, 414, "Input",ExpressionUUID->"e051c6ea-9b7a-4344-afed-0ec63275c8f0",
  InitializationCell->True],
-Cell[51007, 1329, 17932, 461, 1240, "Code",ExpressionUUID->"76ea223f-8c2c-4947-9ea8-ff05b8f82dd0"],
-Cell[68942, 1792, 2547, 60, 358, "Input",ExpressionUUID->"66768435-00b5-4a9d-92b3-461e76c140f5",
+Cell[51691, 1342, 19468, 484, 2870, "Input",ExpressionUUID->"76ea223f-8c2c-4947-9ea8-ff05b8f82dd0",
  InitializationCell->True],
-Cell[71492, 1854, 1764, 43, 227, "Input",ExpressionUUID->"322c5088-f8d9-44cb-b112-dc5e4d3df686",
+Cell[71162, 1828, 2547, 60, 489, "Input",ExpressionUUID->"66768435-00b5-4a9d-92b3-461e76c140f5",
  InitializationCell->True],
-Cell[73259, 1899, 3191, 87, 367, "Code",ExpressionUUID->"be645f4a-1ec5-42a2-a97d-351d1dab3f71"],
-Cell[76453, 1988, 3109, 73, 358, "Input",ExpressionUUID->"c1ab1a61-6202-4858-9b27-ab224e963ebe",
+Cell[73712, 1890, 1764, 43, 302, "Input",ExpressionUUID->"322c5088-f8d9-44cb-b112-dc5e4d3df686",
  InitializationCell->True],
-Cell[79565, 2063, 2325, 56, 395, "Input",ExpressionUUID->"bd123bb0-00cd-4325-b748-3131e98f621a",
+Cell[75479, 1935, 3191, 87, 367, "Code",ExpressionUUID->"be645f4a-1ec5-42a2-a97d-351d1dab3f71"],
+Cell[78673, 2024, 3109, 73, 377, "Input",ExpressionUUID->"c1ab1a61-6202-4858-9b27-ab224e963ebe",
  InitializationCell->True],
-Cell[81893, 2121, 1585, 42, 189, "Input",ExpressionUUID->"82855400-5408-449f-af68-370bf0c13ed9",
+Cell[81785, 2099, 2325, 56, 395, "Input",ExpressionUUID->"bd123bb0-00cd-4325-b748-3131e98f621a",
  InitializationCell->True],
-Cell[83481, 2165, 1333, 35, 171, "Code",ExpressionUUID->"3707e896-ac90-41c5-bd63-2e31683bd266"],
-Cell[84817, 2202, 2851, 76, 245, "Input",ExpressionUUID->"752f904d-5e31-44ab-914d-ea0b8146f2f7",
+Cell[84113, 2157, 1585, 42, 189, "Input",ExpressionUUID->"82855400-5408-449f-af68-370bf0c13ed9",
  InitializationCell->True],
-Cell[87671, 2280, 5015, 128, 687, "Code",ExpressionUUID->"e9b0a34e-a121-475f-a643-57550abc01f4"],
-Cell[92689, 2410, 1970, 52, 170, "Input",ExpressionUUID->"70bf3f1a-54dc-4bc3-9028-1c5fb201242e",
+Cell[85701, 2201, 1333, 35, 171, "Code",ExpressionUUID->"3707e896-ac90-41c5-bd63-2e31683bd266"],
+Cell[87037, 2238, 2851, 76, 245, "Input",ExpressionUUID->"752f904d-5e31-44ab-914d-ea0b8146f2f7",
  InitializationCell->True],
-Cell[94662, 2464, 2008, 48, 251, "Input",ExpressionUUID->"3f1b1063-c893-4c9a-abf7-831c9e8274e1",
+Cell[89891, 2316, 5015, 128, 687, "Code",ExpressionUUID->"e9b0a34e-a121-475f-a643-57550abc01f4"],
+Cell[94909, 2446, 1970, 52, 189, "Input",ExpressionUUID->"70bf3f1a-54dc-4bc3-9028-1c5fb201242e",
  InitializationCell->True],
-Cell[96673, 2514, 3336, 89, 377, "Input",ExpressionUUID->"23e910ed-a1dc-4ea0-ae8e-0daf1b70bad7",
+Cell[96882, 2500, 2008, 48, 270, "Input",ExpressionUUID->"3f1b1063-c893-4c9a-abf7-831c9e8274e1",
  InitializationCell->True],
-Cell[100012, 2605, 2677, 69, 245, "Input",ExpressionUUID->"bec8a550-880d-4270-b994-1ee9f1cc4e8b",
+Cell[98893, 2550, 3336, 89, 414, "Input",ExpressionUUID->"23e910ed-a1dc-4ea0-ae8e-0daf1b70bad7",
  InitializationCell->True],
-Cell[102692, 2676, 2621, 73, 385, "Code",ExpressionUUID->"84d878d6-dd33-4fb8-a10a-037275e2a40e"],
-Cell[105316, 2751, 2562, 66, 242, "Code",ExpressionUUID->"edad16cf-609c-4d48-8f5d-f38a880f72cc"],
-Cell[107881, 2819, 2463, 65, 332, "Code",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
+Cell[102232, 2641, 2677, 69, 358, "Input",ExpressionUUID->"bec8a550-880d-4270-b994-1ee9f1cc4e8b",
+ InitializationCell->True],
+Cell[104912, 2712, 2621, 73, 385, "Code",ExpressionUUID->"84d878d6-dd33-4fb8-a10a-037275e2a40e"],
+Cell[107536, 2787, 2562, 66, 242, "Code",ExpressionUUID->"edad16cf-609c-4d48-8f5d-f38a880f72cc"],
+Cell[110101, 2855, 2463, 65, 332, "Code",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
 }
 ]
 *)
