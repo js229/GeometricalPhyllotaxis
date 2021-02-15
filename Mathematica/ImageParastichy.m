@@ -137,6 +137,14 @@ meshAdjacencyAssociation[mesh_] := Module[{paraPossibles},
 	GroupBy[paraPossibles,First,Map[Last,#]&]
 ];
 
+(*
+meshLineAngle[meshAssociation_, {ix1_, ix2_}] := Module[{p1p2, pAngle, res},
+   (* in [-180,180 *)
+   p1p2 = MeshPrimitives[meshAssociation["Mesh"], {0, {ix1, ix2}}];
+   pAngle[{Point[{x1_, y1_}], Point[{x2_, y2_}]}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
+   pAngle[p1p2]
+   ];
+*)
 If[makePackage,End[]]; (* Private *)
 
 If[makePackage,EndPackage[]];
@@ -391,7 +399,7 @@ isStraightish[cInfo_] := (
      ]
    );
 
-orderByStraightness[meshAssociation_, parastichy_, candidateContinues_] := Module[{paraPossiblePairs, paraPossibleAngles, lastAngle, paraAngles, deviationsNext}, paraPossiblePairs = Map[{parastichy[[-1]], #} &, candidateContinues]; paraPossibleAngles = Association@Map[#[[2]] -> meshLineAngle[meshAssociation, #] &, paraPossiblePairs]; lastAngle = meshLineAngle[meshAssociation, {parastichy[[-2]], parastichy[[-1]]}]; paraAngles = Map[anglePrincipal[# - lastAngle] &, paraPossibleAngles]; deviationsNext = Sort@Abs[paraAngles];
+orderByStraightness[meshAssociation_, parastichy_, candidateContinues_] := Module[{paraPossiblePairs, paraPossibleAngles, lastAngle, paraAngles, deviationsNext}, paraPossiblePairs = Map[{parastichy[[-1]], #} &, candidateContinues]; paraPossibleAngles = Association@Map[#[[2]] -> graphEdgeAngle[meshAssociation, #] &, paraPossiblePairs]; lastAngle = graphEdgeAngle[meshAssociation, {parastichy[[-2]], parastichy[[-1]]}]; paraAngles = Map[anglePrincipal[# - lastAngle] &, paraPossibleAngles]; deviationsNext = Sort@Abs[paraAngles];
    deviationsNext
    ];
 
@@ -416,12 +424,6 @@ pAngle[p1p2]
 
 
 (* ::Input::Initialization:: *)
-meshLineAngle[meshAssociation_, {ix1_, ix2_}] := Module[{p1p2, pAngle, res},
-   (* in [-180,180 *)
-   p1p2 = MeshPrimitives[meshAssociation["Mesh"], {0, {ix1, ix2}}];
-   pAngle[{Point[{x1_, y1_}], Point[{x2_, y2_}]}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
-   pAngle[p1p2]
-   ];
 
 
 anglePrincipal[angle_] :=  angle - 360 Round[angle/360]; (* in -180 < angle < 180 *) 
