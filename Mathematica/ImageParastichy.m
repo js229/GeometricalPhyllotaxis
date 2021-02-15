@@ -399,19 +399,20 @@ orderByStraightness[meshAssociation_, parastichy_, candidateContinues_] := Modul
 
 
 (* ::Input::Initialization:: *)
-graphLineDeviation[meshAssociation_, {ix1_, ix2_, ix3_}] := Module[{p1p2, p2p3, first, second, pAngle, res},
+graphLineDeviation[meshAssociation_, {ix1_, ix2_, ix3_}] := Module[{ first, second, },
    (* in [-180,180 *)
-(*Print["gld ", {ix1,ix2,ix3}];
-*)
-
-p1p2g =graphCoordinates[meshAssociation, {ix1, ix2}];p2p3g =graphCoordinates[meshAssociation, {ix2, ix3}];
-pAngleg[{{x1_, y1_}, {x2_, y2_}}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
-
-
-first = pAngleg[p1p2g];
-second =pAngleg[p2p3g];
+first =  graphEdgeAngle[meshAssociation,{ix1,ix2}];
+second = graphEdgeAngle[meshAssociation,{ix2,ix3}];
 anglePrincipal[first - second]
    ];
+
+graphEdgeAngle[meshAssociation_,{ix1_,ix2_}] := Module[{p1p2,pAngle},
+(* in [-180,180 *)
+p1p2 =graphCoordinates[meshAssociation, {ix1, ix2}];
+pAngle[{{x1_, y1_}, {x2_, y2_}}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
+pAngle[p1p2]
+];
+
 
 
 (* ::Input::Initialization:: *)
@@ -420,12 +421,6 @@ meshLineAngle[meshAssociation_, {ix1_, ix2_}] := Module[{p1p2, pAngle, res},
    p1p2 = MeshPrimitives[meshAssociation["Mesh"], {0, {ix1, ix2}}];
    pAngle[{Point[{x1_, y1_}], Point[{x2_, y2_}]}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
    pAngle[p1p2]
-   ];
-graphLineAngle[meshAssociation_, {ix1_, ix2_}] := Module[{p1p2, pAngle, res},
-   (* in [-180,180 *)
-p1p2 =graphCoordinates[meshAssociation, {ix1, ix2}];
-pAngle[{{x1_, y1_}, {x2_, y2_}}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
-pAngle[p1p2]
    ];
 
 
