@@ -35,6 +35,7 @@ If[makePackage,
 *)
 
 
+
 resetOptions := locateParastichyOptions = <|
 "Renumber"-> True,
 "DuplicateNearness" ->5.1,
@@ -72,6 +73,7 @@ makeTidyMesh[seedCentres_] :=
 			, "InnerBoundary" -> meshCellsOfMesh1InMesh2[boundary[[1]], dMesh]
 			, "OuterBoundary" -> meshCellsOfMesh1InMesh2[boundary[[2]], dMesh]
 			, "Adjacency" -> meshAdjacencyAssociation[dMesh]
+			, "Centroid" -> RegionCentroid[dMesh]
 		|>;
 		res
 	];	
@@ -85,8 +87,8 @@ lineToLength[Line[{p1_, p2_}]] := Norm[p1 - p2];
 
 
 meshCoordinates[mesh_MeshRegion,ix_] := Block[{x},MeshPrimitives[mesh, {0, ix}] /. Point[x_] -> x];
-(*meshCoordinates[meshAssociation_Association,ix_] := meshCoordinates[meshAssociation["Mesh"],ix]
-*)meshCoordinates[mesh_] := Block[{x},MeshPrimitives[mesh, 0] /. Point[x_] -> x];
+meshCoordinates[mesh_] := Block[{x},MeshPrimitives[mesh, 0] /. Point[x_] -> x];
+meshCellCellDistance[mesh_,{v1_,v2_}] := Norm[meshCoordinates[mesh,v1]-meshCoordinates[mesh,v2]];
 
 meshDeletePolygons[mesh_,deletedpolys_] :=   
 	MeshRegion[meshCoordinates[mesh],Complement[ MeshCells[mesh,2],deletedpolys]];
@@ -255,6 +257,7 @@ paraAdjacencyTable = Flatten@Table[paraAdjacencies[ix],{ix,Length[parastichyFami
 ];
 
 
+
 (* ::Input::Initialization:: *)
 renumberParastichyFamily[meshAssociation_,parastichyFamily_] := Module[{g,familyOrder,paraAdjacencyTable,res,family,para,i},
 paraAdjacencyTable =parastichyAdjacencyTable[meshAssociation,parastichyFamily]; g = Graph[Map[#["Index"]&,parastichyFamily],paraAdjacencyTable,VertexLabels->"Name"];
@@ -267,6 +270,7 @@ para = Query[SelectFirst[#["Index"]==familyOrder[[i]]&]]@parastichyFamily;res = 
 
 
 (* ::Input::Initialization:: *)
+
 mergeParastichySibs[meshAssociation_,parastichyFamily_,{ix_,jx_}] := Module[{mPF,newParastichy,decho},
 
 decho[x_] := If[True,Echo[x,"mPS"],x];
@@ -283,6 +287,8 @@ mPF
 
 deleteFromParastichyFamily[mpf_,indices_] :=  Query[Select[ !MemberQ[indices,#["Index"]]&]]@mpf;
 getParastichyByIndex[mpf_,index_] := First@Select[mpf,#["Index"]==index&];
+
+
 
 
 
@@ -335,6 +341,7 @@ res
 
 
 (* ::Input::Initialization:: *)
+
 parastichyStarter[meshAssociation_, starter_] :=
   Module[{inner, parastichyPoints},
     inner = meshExtendParastichy[meshAssociation, starter, locateParastichyOptions["InitialParastichyLength"], {}, {}];
@@ -353,6 +360,7 @@ parastichy
 
 
 (* ::Input::Initialization:: *)
+
 nextParastichyPoint[meshAssociation_, parastichy_, avoidPoints_, adjacentParastichy_] := Module[{candidateContinues, straightnessAngle, nextStraightest, debugTest, adjacentParastichyEnds, candidateInfo, adjacentParastichyCentre, adjacentCandidates, res, decho}, debugTest = MemberQ[{845, 10}, -First@parastichy]; decho[x_] := If[debugTest, Echo[x, "nPP"], x];
    
    If[Length[parastichy] == 0, Return[Missing["No parastichy to extend"]]];
@@ -379,16 +387,14 @@ nextParastichyPoint[meshAssociation_, parastichy_, avoidPoints_, adjacentParasti
      Append[#, "Straightish" -> isStraightish[#]] &, candidateInfo];
    (* screen out any with too much deviation anyway *) 
    
-   candidateInfo =  Query[Select[  #["Straightish"] & ]]@ candidateInfo; If[Length[candidateInfo] == 0,
-    decho@"End of the line" ; Return[Missing["End of the line"]]]; If[First[candidateInfo]["OnAdjacent"], decho@{"terminating at ", candidateInfo, "because of collision with adjacent"}; Return[Missing["Collision"]]
-    ];
+   candidateInfo =  Query[Select[  #["Straightish"] & ]]@ candidateInfo; If[Length[candidateInfo] == 0, Return[Missing["End of the line"]]  ]; If[First[candidateInfo]["OnAdjacent"],  Return[Missing["Collision"]]    ];
    
-   (* do we have any that preserve adjacency *) adjacentCandidates =  Query[Select[  #["NextToAdjacent"] & ]]@candidateInfo; If[debugTest, Print[adjacentCandidates ]]; If[Length[adjacentCandidates] > 0,
-    res = First[adjacentCandidates]["Node"];
-    If[debugTest, Print[res]];
-    Return[res]];
-   
-   (* otherwise we take a nonadjacent (which may have been straighter *)res = First[candidateInfo]["Node"]; If[debugTest, Print[res]]; Return[res];
+   (* do we have any that preserve adjacency *) adjacentCandidates =  Query[Select[  #["NextToAdjacent"] & ]]@candidateInfo;If[Length[adjacentCandidates] > 0,
+res = First[adjacentCandidates]["Node"];
+Return[res]
+];   
+   (* otherwise we take a nonadjacent (which may have been straighter *)res = First[candidateInfo]["Node"]; 
+Return[res];
    ];
 
 isStraightish[cInfo_] := (
@@ -407,7 +413,7 @@ orderByStraightness[meshAssociation_, parastichy_, candidateContinues_] := Modul
 
 
 (* ::Input::Initialization:: *)
-graphLineDeviation[meshAssociation_, {ix1_, ix2_, ix3_}] := Module[{ first, second, },
+graphLineDeviation[meshAssociation_, {ix1_, ix2_, ix3_}] := Module[{ first, second},
    (* in [-180,180 *)
 first =  graphEdgeAngle[meshAssociation,{ix1,ix2}];
 second = graphEdgeAngle[meshAssociation,{ix2,ix3}];
@@ -416,14 +422,16 @@ anglePrincipal[first - second]
 
 graphEdgeAngle[meshAssociation_,{ix1_,ix2_}] := Module[{p1p2,pAngle},
 (* in [-180,180 *)
-p1p2 =graphCoordinates[meshAssociation, {ix1, ix2}];
+p1p2 =graphCoordinates[meshAssociation["Graph"], {ix1, ix2}];
 pAngle[{{x1_, y1_}, {x2_, y2_}}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
 pAngle[p1p2]
 ];
 
 
 
+
 (* ::Input::Initialization:: *)
+
 
 
 anglePrincipal[angle_] :=  angle - 360 Round[angle/360]; (* in -180 < angle < 180 *) 
@@ -431,20 +439,11 @@ anglePrincipal[angle_] :=  angle - 360 Round[angle/360]; (* in -180 < angle < 18
 
 
 (* ::Input::Initialization:: *)
-extendThreadAndAdd[meshAssociation_,parastichyFamily_,thread_] := Module[{mPF,extendThread,avoidPoints},
+extendThreadAndAdd[meshAssociation_,parastichyFamily_,thread_] := Module[{mPF,extendThread,avoidPoints,decho},
 mPF = parastichyFamily;
-avoidPoints = nodesInParastichyFamily[mPF];
-If[Length[Intersection[thread,avoidPoints]]>0,Return[mPF]];
-extendThread = meshExtendParastichy[meshAssociation,thread
-,locateParastichyOptions["ParastichyExtensionLength"], avoidPoints,{}];
-avoidPoints = Union[avoidPoints,extendThread];
-
-extendThread = meshExtendParastichy[meshAssociation,Reverse@extendThread,
-locateParastichyOptions["ParastichyExtensionLength"], avoidPoints,{}];decho[{"Second extension ",extendThread}];avoidPoints = Union[avoidPoints,extendThread];
-
-extendThread  = makeDirectedParastichy[meshAssociation,extendThread];mPF = addToParastichyFamily[mPF,extendThread] ; 
+avoidPoints = nodesInParastichyFamily[mPF];If[Length[Intersection[thread,avoidPoints]]>0,Return[mPF]];extendThread = meshExtendParastichy[meshAssociation,thread,locateParastichyOptions["ParastichyExtensionLength"], avoidPoints,{}];avoidPoints = Union[avoidPoints,extendThread];
+extendThread = meshExtendParastichy[meshAssociation,Reverse@extendThread,locateParastichyOptions["ParastichyExtensionLength"], avoidPoints,{}];decho[{"Second extension ",extendThread}];avoidPoints = Union[avoidPoints,extendThread];extendThread  = makeDirectedParastichy[meshAssociation,extendThread];mPF = addToParastichyFamily[mPF,extendThread] ; 
 mPF
-
 ];
 
 
@@ -484,11 +483,30 @@ allAdjacentPoints
 
 
 (* ::Input::Initialization:: *)
-adjacentThreadsToParastichyFamily[meshAssociation_,parastichyFamily_]:=  Module[{allAdjacentPoints,allAdjacentGraph,allAdjacentComponents,adjacentThreads},allAdjacentPoints =adjacentNodesToParastichyFamily[meshAssociation,parastichyFamily];If[Length[allAdjacentPoints] < 2,
-			Return[{}]
-];
+adjacentThreadsToParastichyFamily[meshAssociation_,parastichyFamily_]:=  Module[{allAdjacentEdges,allAdjacentGraph,allAdjacentComponents,adjacentThreads},
+debugTest = False;
+avoidPoints = nodesInParastichyFamily[parastichyFamily];
+allAdjacentEdges = GraphUnion@@Map[NeighborhoodGraph[meshAssociation["Graph"],#]&,nodesInParastichyFamily[parastichyFamily]];
+allAdjacentEdges = Graph[allAdjacentEdges,VertexLabels->"Name"];
+allAdjacentEdges = VertexDelete[allAdjacentEdges,nodesInParastichyFamily[parastichyFamily]];
 
-allAdjacentGraph= adjacencyGraph[meshAssociation, allAdjacentPoints];allAdjacentComponents =  ConnectedGraphComponents[allAdjacentGraph];allAdjacentComponents  =Select[allAdjacentComponents, VertexCount[#] >= locateParastichyOptions["MinimumThreadLength"]&];allAdjacentComponents  =Map[makeDirectedPath[meshAssociation,#]&,allAdjacentComponents];allAdjacentComponents    = allAdjacentComponents /. Missing[_]->Nothing[];allAdjacentComponents  = Map[splitAtKinks[meshAssociation,#]&,allAdjacentComponents];allAdjacentComponents  = Flatten @allAdjacentComponents;allAdjacentComponents    = allAdjacentComponents /. Missing[_]->Nothing[];adjacentThreads  =Map[TopologicalSort,allAdjacentComponents];
+If[debugTest,
+Print[allAdjacentEdges]];
+
+If[VertexCount[allAdjacentEdges]<2,Return[]];
+
+allAdjacentGraph = allAdjacentEdges;
+allAdjacentComponents =  ConnectedGraphComponents[allAdjacentGraph];allAdjacentComponents  =Select[allAdjacentComponents, VertexCount[#] >= locateParastichyOptions["MinimumThreadLength"]&];
+
+If[debugTest,
+Print[allAdjacentComponents]];
+
+allAdjacentComponents  =Map[makeDirectedPath[meshAssociation,#]&,allAdjacentComponents];allAdjacentComponents    = allAdjacentComponents /. Missing[_]->Nothing[];
+
+If[debugTest,
+Print[allAdjacentComponents]];
+allAdjacentComponents  = Map[splitAtKinks[meshAssociation,#]&,allAdjacentComponents];allAdjacentComponents  = Flatten @allAdjacentComponents;allAdjacentComponents    = allAdjacentComponents /. Missing[_]->Nothing[];adjacentThreads  =Map[TopologicalSort,allAdjacentComponents];
+
 adjacentThreads
 ];
 
@@ -496,17 +514,12 @@ adjacentThreads
 (* ::Input::Initialization:: *)
 vertexEdgeCount[graph_,vertex_] := Length[IncidenceList[graph,vertex]];
 
-removeCyclicPoints[component_] :=Module[{stree,incidence,edgeCount,branchPoints,streeComponents,res},
-stree = FindSpanningTree[component];
-incidence  =  AssociationThread[VertexList[stree],
-Map[IncidenceList[stree,#]&,VertexList[stree]]
-];
-edgeCount  =  Map[Length,incidence];
-branchPoints = Select[edgeCount,#>2&];
-stree =VertexDelete[component,Keys@branchPoints];
-streeComponents = ConnectedGraphComponents[stree];
-streeComponents = SortBy[streeComponents,VertexCount];
-res = Last@streeComponents;
+
+removeCyclicPoints[component_] :=Module[{stree,incidence,edgeCount,branchPoints,streeComponents,res},stree = FindSpanningTree[component];
+
+
+incidence  =  AssociationThread[VertexList[stree],Map[IncidenceList[stree,#]&,VertexList[stree]]];edgeCount  =  Map[Length,incidence];branchPoints = Select[edgeCount,#>2&];stree =VertexDelete[component,Keys@branchPoints];streeComponents = ConnectedGraphComponents[stree];streeComponents = SortBy[streeComponents,VertexCount];res = Last@streeComponents;
+
 res
 
 ];
@@ -561,7 +574,7 @@ decho[x_] := If[False,Echo[x,"fSPd"]];
 acyclic = removeCyclicPoints[undirectedGraph];
 
 endPoints = Select[VertexList[acyclic],vertexEdgeCount[acyclic,#]==1&];
-endPoints = SortBy[endPoints,-meshPointRadius[meshAssociation,#]&];
+endPoints = SortBy[endPoints,-graphPointRadius[meshAssociation,#]&];
 
 If[Length[endPoints]<1,Return[Missing["Missing path ends"]]];
 
@@ -604,13 +617,14 @@ directedPathHead[component_] :=  First@TopologicalSort[component];
 
 
 (* ::Input::Initialization:: *)
-meshPointRadius[mesh_MeshRegion,ix_] := Module[{c,p},
-c = RegionCentroid[mesh];
-p = meshCoordinates[mesh,ix];
+
+
+
+graphPointRadius[meshAssociation_Association,ix_] :=  Module[{c,p},
+c = meshAssociation["Centroid"];
+p = graphCoordinates[meshAssociation["Graph"],ix];
 Norm[(c-p)]
 ];
-
-meshPointRadius[meshAssociation_Association,ix_] := meshPointRadius[meshAssociation["Mesh"],ix]
 
 vertexAngle[meshAssociation_,component_,vertex_] :=Module[{incidence,inPair,outPair,ix123},
 incidence = IncidenceList[component,vertex];
@@ -665,15 +679,16 @@ ConnectedGraphComponents[res]]
 ];
 
 
+(* ::Input::Initialization:: *)
 adjacencyGraph[meshAssociation_,vertexes_] := Module[{g,edges,edge,adjacencies,vertexCoordinates},
+(*
+Print["Computing adjacency graph at ", vertexes];adjacencies= KeyTake[meshAssociation["Adjacency"],vertexes];adjacencies= Map[Intersection[vertexes,#]&,adjacencies];makeSortedEdge[v1_,v2_] := UndirectedEdge @@ Sort[{v1,v2}];edge[k_,v_] := Map[ makeSortedEdge[k,#]&,v];edges =DeleteDuplicates@Flatten[KeyValueMap[edge,adjacencies]];vertexCoordinates := graphCoordinates[meshAssociation,vertexes] ;
+Print[vertexCoordinates];vertexCoordinates:=Map[meshCoordinates[meshAssociation["Mesh"],#]&,vertexes];
+Print[vertexCoordinates];g1  = Graph[vertexes,edges,VertexLabels -> "Name",VertexCoordinates -> vertexCoordinates];
+*)
+g2 = Subgraph[meshAssociation["Graph"],vertexes,VertexLabels -> "Name"];
+g2
 
-adjacencies= KeyTake[meshAssociation["Adjacency"],vertexes];adjacencies= Map[Intersection[vertexes,#]&,adjacencies];
-makeSortedEdge[v1_,v2_] := UndirectedEdge @@ Sort[{v1,v2}];
-edge[k_,v_] := Map[ makeSortedEdge[k,#]&,v];edges =DeleteDuplicates@Flatten[KeyValueMap[edge,adjacencies]];
-
-vertexCoordinates := Map[meshCoordinates[meshAssociation["Mesh"],{0,#}]&,vertexes] ;g  = Graph[vertexes,edges,VertexLabels -> "Name",
- VertexCoordinates -> vertexCoordinates];
-g
 ];
 
 
