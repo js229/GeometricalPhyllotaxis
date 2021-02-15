@@ -54,7 +54,7 @@ makeTidyMesh[seedCentres_] :=
 	Module[{dMeshRaw, lineLength, lengths, pointsToDrop, x, meshxy, toDrop, dMesh, res, boundary},
 		dMeshRaw = DelaunayMesh[seedCentres];
 	
-	lengths = AssociationThread[MeshCells[dMeshRaw, 1], Map[meshLineLength, MeshPrimitives[dMeshRaw, 1]]];
+	lengths = AssociationThread[MeshCells[dMeshRaw, 1], Map[lineToLength, MeshPrimitives[dMeshRaw, 1]]];
 	(* find the short line pairs and take the first cell index *) 
 	pointsToDrop =
 	(
@@ -81,16 +81,17 @@ makeTidyMesh[seedCentres_] :=
 (* private functions *)
 
 
-meshLineLength[Line[{p1_, p2_}]] := Norm[p1 - p2];
-meshCellCellDistance[mesh_,{ix1_,ix2_}] := Norm[meshCoordinates[mesh,ix1]-meshCoordinates[mesh,ix2]];
+lineToLength[Line[{p1_, p2_}]] := Norm[p1 - p2];
+
+
 meshCoordinates[mesh_MeshRegion,ix_] := Block[{x},MeshPrimitives[mesh, {0, ix}] /. Point[x_] -> x];
-meshCoordinates[meshAssociation_Association,ix_] := meshCoordinates[meshAssociation["Mesh"],ix]
-meshCoordinates[mesh_] := Block[{x},MeshPrimitives[mesh, 0] /. Point[x_] -> x];
+(*meshCoordinates[meshAssociation_Association,ix_] := meshCoordinates[meshAssociation["Mesh"],ix]
+*)meshCoordinates[mesh_] := Block[{x},MeshPrimitives[mesh, 0] /. Point[x_] -> x];
 
 meshDeletePolygons[mesh_,deletedpolys_] :=   
 	MeshRegion[meshCoordinates[mesh],Complement[ MeshCells[mesh,2],deletedpolys]];
 
-meshLinesWithLength[mesh_MeshRegion] := AssociationThread[MeshCells[mesh,1],Map[meshLineLength,MeshPrimitives[mesh,1]]];
+meshLinesWithLength[mesh_MeshRegion] := AssociationThread[MeshCells[mesh,1],Map[lineToLength,MeshPrimitives[mesh,1]]];
 meshLinesWithLength[mesh_Association] := meshLinesWithLength[mesh["Mesh"]];
 
 (* for tidying the initial mesh *)
@@ -145,8 +146,21 @@ If[makePackage,EndPackage[]];
 
 
 (* ::Input::Initialization:: *)
+meshCoordinates[meshAssociation_Association,ix_] := graphCoordinates[meshAssociation["Graph"],ix]
+
+graphCoordinates[meshAssociation_Association,ix_] := graphCoordinates[meshAssociation["Graph"],ix]
+
+ 
+graphCoordinates[g_Graph,ix_] := (AnnotationValue[{g,ix},VertexCoordinates]);
+graphCoordinates[g_,ix_] := Print["gC called with head ",Head[g]];
+
+
+
+
+(* ::Input::Initialization:: *)
 createParastichyFamily[meshAssociation_,starter_,family_:1] := Module[{nextpara,paraList,mpf,pstart},
-pstart = parastichyStarter[meshAssociation,starter];If[Length[pstart]<2,Return[Missing["Can't make starter from ", starter]]];mpf = {};mpf = addToParastichyFamily[mpf,pstart,family];mpf = Nest[findAdjacentThreads[meshAssociation,#]&,mpf,locateParastichyOptions["FamilyGrowthSize"]];mpf = tidyParastichyFamily[meshAssociation,mpf];
+pstart = parastichyStarter[meshAssociation,starter];If[Length[pstart]<2,Return[Missing["Can't make starter from ", starter]]];mpf = {};mpf = addToParastichyFamily[mpf,pstart,family];mpf = Nest[findAdjacentThreads[meshAssociation,#]&,mpf,locateParastichyOptions["FamilyGrowthSize"]];
+mpf = tidyParastichyFamily[meshAssociation,mpf];
 
 If[locateParastichyOptions["Renumber"],
 mpf = renumberParastichyFamily[meshAssociation,mpf];
@@ -381,19 +395,40 @@ orderByStraightness[meshAssociation_, parastichy_, candidateContinues_] := Modul
    deviationsNext
    ];
 
-meshLineDeviation[meshAssociation_, {ix1_, ix2_, ix3_}] := Module[{p1p2, p2p3, first, second, pAngle, res},
-   (* in [-180,180 *)p1p2 = MeshPrimitives[meshAssociation["Mesh"], {0, {ix1, ix2}}]; pAngle[{Point[{x1_, y1_}], Point[{x2_, y2_}]}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1]; first = pAngle[p1p2];
-   p2p3 = MeshPrimitives[meshAssociation["Mesh"], {0, {ix2, ix3}}];
-   second = pAngle[p2p3];
-   anglePrincipal[first - second]
+
+
+
+(* ::Input::Initialization:: *)
+graphLineDeviation[meshAssociation_, {ix1_, ix2_, ix3_}] := Module[{p1p2, p2p3, first, second, pAngle, res},
+   (* in [-180,180 *)
+(*Print["gld ", {ix1,ix2,ix3}];
+*)
+
+p1p2g =graphCoordinates[meshAssociation, {ix1, ix2}];p2p3g =graphCoordinates[meshAssociation, {ix2, ix3}];
+pAngleg[{{x1_, y1_}, {x2_, y2_}}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
+
+
+first = pAngleg[p1p2g];
+second =pAngleg[p2p3g];
+anglePrincipal[first - second]
    ];
 
+
+(* ::Input::Initialization:: *)
 meshLineAngle[meshAssociation_, {ix1_, ix2_}] := Module[{p1p2, pAngle, res},
    (* in [-180,180 *)
    p1p2 = MeshPrimitives[meshAssociation["Mesh"], {0, {ix1, ix2}}];
    pAngle[{Point[{x1_, y1_}], Point[{x2_, y2_}]}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
    pAngle[p1p2]
    ];
+graphLineAngle[meshAssociation_, {ix1_, ix2_}] := Module[{p1p2, pAngle, res},
+   (* in [-180,180 *)
+p1p2 =graphCoordinates[meshAssociation, {ix1, ix2}];
+pAngle[{{x1_, y1_}, {x2_, y2_}}] := (360/(2 \[Pi])) ArcTan[x2 - x1, y2 - y1];
+pAngle[p1p2]
+   ];
+
+
 anglePrincipal[angle_] :=  angle - 360 Round[angle/360]; (* in -180 < angle < 180 *) 
 
 
@@ -419,8 +454,10 @@ mPF
 (* ::Input::Initialization:: *)
 findAdjacentThreads[meshAssociation_,parastichyFamily_] := Module[{mPF,atp,family,ix,avoidPoints,extendThread,decho,nTimes},
 mPF = parastichyFamily;
+
 For[nTimes = 1,nTimes<= 1,nTimes++,
 atp = adjacentThreadsToParastichyFamily[meshAssociation,mPF];
+
 For[ix=1,ix<= Length[atp],ix++,
 mPF = extendThreadAndAdd[meshAssociation,mPF,atp[[ix]]];
 ];
@@ -453,6 +490,7 @@ allAdjacentPoints
 adjacentThreadsToParastichyFamily[meshAssociation_,parastichyFamily_]:=  Module[{allAdjacentPoints,allAdjacentGraph,allAdjacentComponents,adjacentThreads},allAdjacentPoints =adjacentNodesToParastichyFamily[meshAssociation,parastichyFamily];If[Length[allAdjacentPoints] < 2,
 			Return[{}]
 ];
+
 allAdjacentGraph= adjacencyGraph[meshAssociation, allAdjacentPoints];allAdjacentComponents =  ConnectedGraphComponents[allAdjacentGraph];allAdjacentComponents  =Select[allAdjacentComponents, VertexCount[#] >= locateParastichyOptions["MinimumThreadLength"]&];allAdjacentComponents  =Map[makeDirectedPath[meshAssociation,#]&,allAdjacentComponents];allAdjacentComponents    = allAdjacentComponents /. Missing[_]->Nothing[];allAdjacentComponents  = Map[splitAtKinks[meshAssociation,#]&,allAdjacentComponents];allAdjacentComponents  = Flatten @allAdjacentComponents;allAdjacentComponents    = allAdjacentComponents /. Missing[_]->Nothing[];adjacentThreads  =Map[TopologicalSort,allAdjacentComponents];
 adjacentThreads
 ];
@@ -585,14 +623,20 @@ If[Length[incidence] > 2,Return[Missing["Too many incidences"]]];
 inPair = First@Cases[incidence, _ \[DirectedEdge] vertex];
 outPair = First@Cases[incidence, vertex \[DirectedEdge] _];
 ix123 = {First[inPair],First[outPair],Last[outPair]};
-meshLineDeviation[meshAssociation,ix123]
+graphLineDeviation[meshAssociation,ix123]
 ];
 
 
 (* ::Input::Initialization:: *)
 splitAtKinks[meshAssociation_,component_] := Module[{angles,res,kinks,edgesToDrop},
-(* component is an unforked directed path with one element *)angles = Association@Map[#->vertexAngle[meshAssociation,component,#]&,
-		VertexList[component]];
+(* component is an unforked directed path with one element *)
+
+
+vertices = VertexList[component];
+
+angleAtVertex = Map[vertexAngle[meshAssociation,component,#]&,vertices];
+
+angles = AssociationThread[vertices,angleAtVertex];
 kinks = Keys@Select[angles,
 		Abs[#] >locateParastichyOptions["StraightnessWhenAdjacent"]&];edgesToDrop = Map[
 	Cases[IncidenceList[component,#],#\[DirectedEdge] _]&,kinks];res = component;
