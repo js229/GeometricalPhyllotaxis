@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    122800,       3119]
-NotebookOptionsPosition[    118027,       3037]
-NotebookOutlinePosition[    118676,       3059]
-CellTagsIndexPosition[    118633,       3056]
+NotebookDataLength[    123024,       3126]
+NotebookOptionsPosition[    118334,       3045]
+NotebookOutlinePosition[    118996,       3067]
+CellTagsIndexPosition[    118953,       3064]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -83,15 +83,15 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
    RowBox[{
-    RowBox[{"makeTidyMesh", "[", "seedCentres_", "]"}], " ", ":=", "\n", "\t", 
+    RowBox[{"makeSunGraph", "[", "seedCentres_", "]"}], " ", ":=", "\n", "\t", 
     RowBox[{"Module", "[", 
      RowBox[{
       RowBox[{"{", 
        RowBox[{
-       "dMeshRaw", ",", " ", "lineLength", ",", " ", "lengths", ",", " ", 
-        "pointsToDrop", ",", " ", "x", ",", " ", "meshxy", ",", " ", "toDrop",
-         ",", " ", "dMesh", ",", " ", "res", ",", " ", "boundary"}], "}"}], 
-      ",", "\n", "\t\t", 
+       "g", ",", "dMeshRaw", ",", " ", "lineLength", ",", " ", "lengths", ",",
+         " ", "pointsToDrop", ",", " ", "x", ",", " ", "meshxy", ",", " ", 
+        "toDrop", ",", " ", "dMesh", ",", " ", "res", ",", " ", "boundary"}], 
+       "}"}], ",", "\n", "\t\t", 
       RowBox[{
        RowBox[{"dMeshRaw", " ", "=", " ", 
         RowBox[{"DelaunayMesh", "[", "seedCentres", "]"}]}], ";", "\n", "\t", 
@@ -173,12 +173,15 @@ Cell[BoxData[{
            RowBox[{
             RowBox[{"MeshCells", "[", 
              RowBox[{"#", ",", " ", "0"}], "]"}], "&"}], "]"}]}], "]"}]}], 
-       ";", "\n", "\t", 
+       ";", "\n", "\t", "\n", "\t", 
+       RowBox[{"g", " ", "=", " ", 
+        RowBox[{"meshToGraph", "[", "dMesh", "]"}]}], ";", "\n", "\t", "\n", 
+       "\t", 
        RowBox[{"res", " ", "=", " ", 
         RowBox[{"<|", "\n", "\t\t\t", 
          RowBox[{
-          RowBox[{"\"\<Mesh\>\"", " ", "->", " ", "dMesh"}], "\n", "\t\t\t", 
-          ",", " ", 
+          RowBox[{"\"\<Graph\>\"", " ", "->", " ", "g"}], "\n", "\t\t\t", ",",
+           " ", 
           RowBox[{"\"\<InnerBoundary\>\"", " ", "->", " ", 
            RowBox[{"meshCellsOfMesh1InMesh2", "[", 
             RowBox[{
@@ -190,17 +193,19 @@ Cell[BoxData[{
             RowBox[{
              RowBox[{"boundary", "[", 
               RowBox[{"[", "2", "]"}], "]"}], ",", " ", "dMesh"}], "]"}]}], 
-          "\n", "\t\t\t", ",", " ", 
-          RowBox[{"\"\<Adjacency\>\"", " ", "->", " ", 
-           RowBox[{"meshAdjacencyAssociation", "[", "dMesh", "]"}]}], "\n", 
-          "\t\t\t", ",", " ", 
+          "\n", "\t", 
+          RowBox[{"(*", "\t\t", 
+           RowBox[{",", " ", 
+            RowBox[{"\"\<Adjacency\>\"", " ", "->", " ", 
+             RowBox[{"meshAdjacencyAssociation", "[", "dMesh", "]"}]}]}], 
+           "\n", "*)"}], "\t\t\t", ",", " ", 
           RowBox[{"\"\<Centroid\>\"", " ", "->", " ", 
            RowBox[{"RegionCentroid", "[", "dMesh", "]"}]}]}], "\n", "\t\t", 
          "|>"}]}], ";", "\n", "\t\t", "res"}]}], "\n", "\t", "]"}]}], ";"}], 
   "\t"}], "\n"}], "Code",
  CellLabel->
-  "2/15/21 12:28:01 (Local) \
-In[64]:=",ExpressionUUID->"545f80d8-56e3-47b6-8060-3a2155b76023"],
+  "2/15/21 17:51:28 (Local) \
+In[721]:=",ExpressionUUID->"545f80d8-56e3-47b6-8060-3a2155b76023"],
 
 Cell[BoxData[
  RowBox[{"(*", " ", 
@@ -559,7 +564,94 @@ Cell[BoxData[{
             RowBox[{"y2", " ", "-", " ", "y1"}]}], "]"}]}]}], ";", "\n", 
         "   ", 
         RowBox[{"pAngle", "[", "p1p2", "]"}]}]}], "\n", "   ", "]"}]}], ";"}],
-    "\n", "*)"}]}], "\n", 
+    "\n", "*)"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"meshCellCellDistance", "[", 
+     RowBox[{"mesh_", ",", 
+      RowBox[{"{", 
+       RowBox[{"v1_", ",", "v2_"}], "}"}]}], "]"}], " ", ":=", " ", 
+    RowBox[{"Norm", "[", 
+     RowBox[{
+      RowBox[{"meshCoordinates", "[", 
+       RowBox[{"mesh", ",", "v1"}], "]"}], "-", 
+      RowBox[{"meshCoordinates", "[", 
+       RowBox[{"mesh", ",", "v2"}], "]"}]}], "]"}]}], ";"}], 
+  "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"meshToGraph", "[", "mesh_MeshRegion", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"g", ",", "vertexList", ",", "edgeList", ",", "edgeWeights"}], 
+      "}"}], ",", 
+     RowBox[{
+      RowBox[{"vertexList", " ", "=", " ", 
+       RowBox[{"Block", "[", 
+        RowBox[{
+         RowBox[{"{", "x", "}"}], ",", 
+         RowBox[{
+          RowBox[{"MeshCells", "[", 
+           RowBox[{"mesh", ",", "0"}], "]"}], " ", "/.", " ", 
+          RowBox[{
+           RowBox[{"Point", "[", "x_", "]"}], "\[Rule]", "x"}]}]}], "]"}]}], 
+      ";", "\[IndentingNewLine]", 
+      RowBox[{"edgeList", "  ", "=", " ", 
+       RowBox[{"Block", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"v1", ",", "v2"}], "}"}], ",", 
+         RowBox[{
+          RowBox[{"MeshCells", "[", 
+           RowBox[{"mesh", ",", "1"}], "]"}], " ", "/.", " ", 
+          RowBox[{
+           RowBox[{"Line", "[", " ", 
+            RowBox[{"{", 
+             RowBox[{"v1_", ",", "v2_"}], "}"}], "]"}], "\[Rule]", " ", 
+           RowBox[{"UndirectedEdge", "[", 
+            RowBox[{"v1", ",", "v2"}], "]"}]}]}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"edgeWeights", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"MeshCells", "[", 
+         RowBox[{"mesh", ",", "1"}], "]"}], " ", "/.", " ", 
+        RowBox[{
+         RowBox[{"Line", "[", " ", 
+          RowBox[{"{", 
+           RowBox[{"v1_", ",", "v2_"}], "}"}], "]"}], "\[RuleDelayed]", "  ", 
+         RowBox[{"meshCellCellDistance", "[", 
+          RowBox[{"mesh", ",", 
+           RowBox[{"{", 
+            RowBox[{"v1", ",", "v2"}], "}"}]}], "]"}]}]}]}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"g", " ", "=", " ", 
+       RowBox[{"Graph", "[", 
+        RowBox[{
+        "vertexList", "\[IndentingNewLine]", ",", "edgeList", 
+         "\[IndentingNewLine]", ",", 
+         RowBox[{"EdgeWeight", "\[Rule]", "edgeWeights"}], 
+         "\[IndentingNewLine]", ",", 
+         RowBox[{"VertexCoordinates", "\[Rule]", 
+          RowBox[{"Block", "[", 
+           RowBox[{
+            RowBox[{"{", "x", "}"}], ",", 
+            RowBox[{
+             RowBox[{"MeshPrimitives", "[", 
+              RowBox[{"mesh", ",", "0"}], "]"}], "/.", " ", 
+             RowBox[{
+              RowBox[{"Point", "[", "x_", "]"}], "\[Rule]", "x"}]}]}], 
+           "]"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", "g"}]}], 
+    "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"meshToGraph", "[", "m_", "]"}], " ", ":=", " ", 
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<mG called with head \>\"", ",", " ", 
+      RowBox[{"Head", "[", "m", "]"}]}], "]"}]}], ";"}], 
+  "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"If", "[", 
@@ -569,10 +661,11 @@ Cell[BoxData[{
    RowBox[{"If", "[", 
     RowBox[{"makePackage", ",", 
      RowBox[{"EndPackage", "[", "]"}]}], "]"}], ";"}], "\n", 
-  "\n"}], "\n"}], "Code",
+  "\n"}], "\n"}], "Input",
+ InitializationCell->True,
  CellLabel->
-  "2/15/21 12:28:01 (Local) \
-In[69]:=",ExpressionUUID->"7d3ee17a-750e-48b8-9523-9ce516590beb"]
+  "2/15/21 17:50:02 (Local) \
+In[694]:=",ExpressionUUID->"7d3ee17a-750e-48b8-9523-9ce516590beb"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -744,6 +837,19 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
    RowBox[{
+    RowBox[{"adjacencyFunction", "[", "meshAssociation_", "]"}], " ", ":=", 
+    " ", 
+    RowBox[{"Function", "[", 
+     RowBox[{
+      RowBox[{"{", "ix", "}"}], ",", 
+      RowBox[{"AdjacencyList", "[", 
+       RowBox[{
+        RowBox[{"meshAssociation", "[", "\"\<Graph\>\"", "]"}], ",", "ix"}], 
+       "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
     RowBox[{"findAnAdjacency", "[", 
      RowBox[{"meshAssociation_", ",", "parastichyFamily_"}], "]"}], " ", ":=",
      " ", 
@@ -803,7 +909,7 @@ Cell[BoxData[{
               RowBox[{"MemberQ", "[", 
                RowBox[{
                 RowBox[{
-                 RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], 
+                 RowBox[{"adjacencyFunction", "[", "meshAssociation", "]"}], 
                  "[", "firstTail", "]"}], ",", "secondHead"}], "]"}], 
               "\[IndentingNewLine]", ",", " ", 
               RowBox[{"Return", "[", 
@@ -838,7 +944,7 @@ Cell[BoxData[{
               RowBox[{"MemberQ", "[", 
                RowBox[{
                 RowBox[{
-                 RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], 
+                 RowBox[{"adjacencyFunction", "[", "meshAssociation", "]"}], 
                  "[", "firstTail", "]"}], ",", "secondHead"}], "]"}], 
               "\[IndentingNewLine]", ",", " ", 
               RowBox[{"Return", "[", 
@@ -860,10 +966,8 @@ Cell[BoxData[{
         RowBox[{"Missing", "[", "\"\<No adjacency\>\"", "]"}], "]"}], ";"}]}],
       "\[IndentingNewLine]", "]"}]}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
- InitializationCell->True,
- CellLabel->
-  "2/15/21 17:06:13 (Local) \
-In[363]:=",ExpressionUUID->"d27eb31f-9685-4b44-b6ca-9d98105f73e6"],
+ InitializationCell->
+  True,ExpressionUUID->"d27eb31f-9685-4b44-b6ca-9d98105f73e6"],
 
 Cell[BoxData[
  RowBox[{
@@ -947,7 +1051,7 @@ Cell[BoxData[
          RowBox[{"Union", "@@", 
           RowBox[{"Map", "[", 
            RowBox[{
-            RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], ",", 
+            RowBox[{"adjacencyFunction", "[", "meshAssociation", "]"}], ",", 
             RowBox[{"parastichyFamilyMember", "[", "\"\<Members\>\"", "]"}]}],
             "]"}]}], "]"}]}], ";", "\n", "\t", 
        RowBox[{
@@ -1456,7 +1560,8 @@ Cell[BoxData[
          "nextStraightest", ",", " ", "debugTest", ",", " ", 
          "adjacentParastichyEnds", ",", " ", "candidateInfo", ",", " ", 
          "adjacentParastichyCentre", ",", " ", "adjacentCandidates", ",", " ",
-          "res", ",", " ", "decho"}], "}"}], ",", " ", 
+          "res", ",", " ", "decho"}], "}"}], ",", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", " ", 
        RowBox[{
         RowBox[{"debugTest", " ", "=", " ", 
          RowBox[{"MemberQ", "[", 
@@ -1471,7 +1576,7 @@ Cell[BoxData[
           RowBox[{"debugTest", ",", " ", 
            RowBox[{"Echo", "[", 
             RowBox[{"x", ",", " ", "\"\<nPP\>\""}], "]"}], ",", " ", "x"}], 
-          "]"}]}], ";", "\n", "   ", "\n", "   ", 
+          "]"}]}], ";", 
         RowBox[{"If", "[", 
          RowBox[{
           RowBox[{
@@ -1479,7 +1584,7 @@ Cell[BoxData[
           ",", " ", 
           RowBox[{"Return", "[", 
            RowBox[{"Missing", "[", "\"\<No parastichy to extend\>\"", "]"}], 
-           "]"}]}], "]"}], ";", "\n", "   ", 
+           "]"}]}], "]"}], ";", 
         RowBox[{"If", "[", 
          RowBox[{
           RowBox[{
@@ -1487,20 +1592,20 @@ Cell[BoxData[
            "0"}], ",", " ", 
           RowBox[{"Return", "[", 
            RowBox[{"Missing", "[", "\"\<Missing parastichy\>\"", "]"}], 
-           "]"}]}], "]"}], ";", "\n", "   ", "\n", "   ", 
+           "]"}]}], "]"}], ";", 
         RowBox[{"straightnessAngle", " ", "=", " ", 
          RowBox[{"If", "[", 
           RowBox[{
            RowBox[{
             RowBox[{"Length", "[", "adjacentParastichy", "]"}], " ", ">", " ",
-             "0"}], ",", "\n", "     ", 
+             "0"}], ",", "\[IndentingNewLine]", 
            RowBox[{
            "locateParastichyOptions", "[", "\"\<StraightnessWhenAdjacent\>\"",
-             "]"}], ",", "\n", "     ", 
+             "]"}], ",", "\[IndentingNewLine]", 
            RowBox[{
            "locateParastichyOptions", "[", 
-            "\"\<StraightnessWhenUnadjacent\>\"", "]"}]}], "\n", "     ", 
-          "]"}]}], ";", "\n", "   ", 
+            "\"\<StraightnessWhenUnadjacent\>\"", "]"}]}], 
+          "\[IndentingNewLine]", "]"}]}], ";", 
         RowBox[{"adjacentParastichyEnds", "  ", "=", " ", 
          RowBox[{"If", "[", 
           RowBox[{
@@ -1513,7 +1618,7 @@ Cell[BoxData[
              RowBox[{
               RowBox[{
                RowBox[{
-                RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], 
+                RowBox[{"adjacencyFunction", "[", "meshAssociation", "]"}], 
                 "[", "#", "]"}], " ", "&"}], ",", " ", 
               RowBox[{"{", 
                RowBox[{
@@ -1523,13 +1628,12 @@ Cell[BoxData[
         RowBox[{"adjacentParastichyCentre", "   ", "=", " ", 
          RowBox[{"Complement", "[", 
           RowBox[{"adjacentParastichy", ",", " ", "adjacentParastichyEnds"}], 
-          "]"}]}], ";", "\n", "   ", "\n", "   ", 
-        RowBox[{"decho", "[", "parastichy", "]"}], ";", "\n", "   ", 
+          "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
         RowBox[{"candidateContinues", " ", "=", " ", 
          RowBox[{
-          RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], "[", 
-          RowBox[{"Last", "@", "parastichy"}], "]"}]}], ";", "\n", "   ", 
-        "\n", "   ", 
+          RowBox[{"adjacencyFunction", "[", "meshAssociation", "]"}], "[", 
+          RowBox[{"Last", "@", "parastichy"}], "]"}]}], ";", "   ", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
         RowBox[{"candidateContinues", " ", "=", " ", 
          RowBox[{"Complement", "[", 
           RowBox[{"candidateContinues", ",", " ", "avoidPoints"}], "]"}]}], 
@@ -1546,28 +1650,28 @@ Cell[BoxData[
           RowBox[{"orderByStraightness", "[", 
            RowBox[{
            "meshAssociation", ",", " ", "parastichy", ",", " ", 
-            "candidateContinues"}], "]"}]}]}], ";", " ", 
-        RowBox[{"candidateInfo", " ", "=", " ", 
-         RowBox[{"Map", "[", "\n", "     ", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"Append", "[", 
-             RowBox[{"#", ",", " ", 
-              RowBox[{"\"\<Adjacency\>\"", " ", "->", " ", 
-               RowBox[{
-                RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], 
-                "[", 
-                RowBox[{"#", "[", "\"\<Node\>\"", "]"}], "]"}]}]}], "]"}], 
-            " ", "&"}], ",", " ", "candidateInfo"}], "]"}]}], ";", " ", 
+            "candidateContinues"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+        " ", 
         RowBox[{"candidateInfo", " ", "=", " ", 
          RowBox[{"Map", "[", 
           RowBox[{
            RowBox[{
             RowBox[{"Append", "[", 
-             RowBox[{"#", ",", " ", 
-              RowBox[{
-              "\"\<NextToAdjacentCentre\>\"", " ", "->", "  ", "\n", 
-               "        ", 
+             RowBox[{"#", ",", " ", "\[IndentingNewLine]", 
+              RowBox[{"\"\<Adjacency\>\"", " ", "->", " ", 
+               RowBox[{
+                RowBox[{"adjacencyFunction", "[", "meshAssociation", "]"}], 
+                "[", 
+                RowBox[{"#", "[", "\"\<Node\>\"", "]"}], "]"}]}]}], "]"}], 
+            " ", "&"}], ",", " ", "candidateInfo"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", " ", 
+        RowBox[{"candidateInfo", " ", "=", " ", 
+         RowBox[{"Map", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Append", "[", 
+             RowBox[{"#", ",", " ", "\[IndentingNewLine]", 
+              RowBox[{"\"\<NextToAdjacentCentre\>\"", " ", "->", "  ", 
                RowBox[{
                 RowBox[{"Length", "[", 
                  RowBox[{"Intersection", "[", 
@@ -1581,9 +1685,8 @@ Cell[BoxData[
           RowBox[{
            RowBox[{
             RowBox[{"Append", "[", 
-             RowBox[{"#", ",", " ", 
-              RowBox[{
-              "\"\<NextToAdjacentEnds\>\"", " ", "->", "  ", "\n", "        ", 
+             RowBox[{"#", ",", " ", "\[IndentingNewLine]", 
+              RowBox[{"\"\<NextToAdjacentEnds\>\"", " ", "->", "  ", 
                RowBox[{
                 RowBox[{"Length", "[", 
                  RowBox[{"Intersection", "[", 
@@ -1591,15 +1694,14 @@ Cell[BoxData[
                    RowBox[{"#", "[", "\"\<Adjacency\>\"", "]"}], ",", " ", 
                    "adjacentParastichyEnds"}], "]"}], "]"}], " ", ">", " ", 
                 "0"}]}]}], "]"}], " ", "&"}], ",", " ", "candidateInfo"}], 
-          "]"}]}], ";", " ", 
+          "]"}]}], ";", "\[IndentingNewLine]", " ", 
         RowBox[{"candidateInfo", " ", "=", " ", 
-         RowBox[{"Map", "[", "\n", "     ", 
+         RowBox[{"Map", "[", "     ", 
           RowBox[{
            RowBox[{
             RowBox[{"Append", "[", 
-             RowBox[{"#", ",", " ", 
-              RowBox[{
-              "\"\<NextToAdjacent\>\"", " ", "->", "  ", "\n", "        ", 
+             RowBox[{"#", ",", " ", "\[IndentingNewLine]", 
+              RowBox[{"\"\<NextToAdjacent\>\"", " ", "->", "   ", 
                RowBox[{
                 RowBox[{"Length", "[", 
                  RowBox[{"Intersection", "[", 
@@ -1607,14 +1709,14 @@ Cell[BoxData[
                    RowBox[{"#", "[", "\"\<Adjacency\>\"", "]"}], ",", " ", 
                    "adjacentParastichy"}], "]"}], "]"}], " ", ">", " ", 
                 "0"}]}]}], "]"}], " ", "&"}], ",", " ", "candidateInfo"}], 
-          "]"}]}], ";", " ", 
+          "]"}]}], ";", "\[IndentingNewLine]", " ", 
         RowBox[{"candidateInfo", " ", "=", " ", 
-         RowBox[{"Map", "[", "\n", "     ", 
+         RowBox[{"Map", "[", "   ", 
           RowBox[{
            RowBox[{
             RowBox[{"Append", "[", 
-             RowBox[{"#", ",", " ", 
-              RowBox[{"\"\<OnAdjacent\>\"", " ", "->", " ", "\n", "         ", 
+             RowBox[{"#", ",", " ", "\[IndentingNewLine]", 
+              RowBox[{"\"\<OnAdjacent\>\"", " ", "->", "   ", 
                RowBox[{
                 RowBox[{"Length", "[", 
                  RowBox[{"Intersection", "[", 
@@ -1623,22 +1725,21 @@ Cell[BoxData[
                     RowBox[{"#", "[", "\"\<Node\>\"", "]"}], "}"}], ",", " ", 
                    "adjacentParastichy"}], "]"}], "]"}], " ", ">", " ", 
                 "0"}]}]}], "]"}], " ", "&"}], ",", " ", "candidateInfo"}], 
-          "]"}]}], ";", "\n", "   ", 
+          "]"}]}], ";", 
         RowBox[{"candidateInfo", " ", "=", " ", 
-         RowBox[{"decho", "@", 
-          RowBox[{"Map", "[", "\n", "     ", 
+         RowBox[{"Map", "[", 
+          RowBox[{
            RowBox[{
-            RowBox[{
-             RowBox[{"Append", "[", 
-              RowBox[{"#", ",", " ", 
-               RowBox[{"\"\<Straightish\>\"", " ", "->", " ", 
-                RowBox[{"isStraightish", "[", "#", "]"}]}]}], "]"}], " ", 
-             "&"}], ",", " ", "candidateInfo"}], "]"}]}]}], ";", "\n", "   ", 
+            RowBox[{"Append", "[", 
+             RowBox[{"#", ",", "\[IndentingNewLine]", " ", 
+              RowBox[{"\"\<Straightish\>\"", " ", "->", " ", 
+               RowBox[{"isStraightish", "[", "#", "]"}]}]}], "]"}], " ", 
+            "&"}], ",", " ", "candidateInfo"}], "]"}]}], ";", "\n", "   ", 
         RowBox[{"(*", " ", 
          RowBox[{
          "screen", " ", "out", " ", "any", " ", "with", " ", "too", " ", 
-          "much", " ", "deviation", " ", "anyway"}], " ", "*)"}], " ", "\n", 
-        "   ", "\n", "   ", 
+          "much", " ", "deviation", " ", "anyway"}], " ", "*)"}], " ", 
+        "\[IndentingNewLine]", 
         RowBox[{"candidateInfo", " ", "=", "  ", 
          RowBox[{
           RowBox[{"Query", "[", 
@@ -1777,12 +1878,10 @@ Cell[BoxData[
         RowBox[{"deviationsNext", " ", "=", " ", 
          RowBox[{"Sort", "@", 
           RowBox[{"Abs", "[", "paraAngles", "]"}]}]}], ";", "\n", "   ", 
-        "deviationsNext"}]}], "\n", "   ", "]"}]}], ";"}], "\n", 
-   "\[IndentingNewLine]"}]}]], "Input",
- InitializationCell->True,
- CellLabel->
-  "2/15/21 17:13:43 (Local) \
-In[455]:=",ExpressionUUID->"76ea223f-8c2c-4947-9ea8-ff05b8f82dd0"],
+        "deviationsNext"}]}], "\n", "   ", "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n"}]}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"76ea223f-8c2c-4947-9ea8-ff05b8f82dd0"],
 
 Cell[BoxData[{
  RowBox[{
@@ -2064,7 +2163,7 @@ Cell[BoxData[{
          RowBox[{
           RowBox[{
            RowBox[{
-            RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], "[", 
+            RowBox[{"adjacencyFunction", "[", "meshAssociation", "]"}], "[", 
             "#", "]"}], "&"}], ",", " ", "familyPoints"}], "]"}]}]}], ";", 
       "\n", 
       RowBox[{"allAdjacentPoints", " ", "=", " ", 
@@ -2075,10 +2174,7 @@ Cell[BoxData[{
         RowBox[{"allAdjacentPoints", ",", " ", 
          RowBox[{"nodesInParastichyFamily", "[", "parastichyFamily", "]"}]}], 
         " ", "]"}]}], ";", "\n", "allAdjacentPoints"}]}], "\n", "]"}]}], 
-  ";"}]}], "Code",
- CellLabel->
-  "2/15/21 12:28:02 (Local) \
-In[112]:=",ExpressionUUID->"be645f4a-1ec5-42a2-a97d-351d1dab3f71"],
+  ";"}]}], "Code",ExpressionUUID->"be645f4a-1ec5-42a2-a97d-351d1dab3f71"],
 
 Cell[BoxData[
  RowBox[{
@@ -2095,9 +2191,11 @@ Cell[BoxData[
      RowBox[{
       RowBox[{"debugTest", " ", "=", " ", "False"}], ";", 
       "\[IndentingNewLine]", 
-      RowBox[{"avoidPoints", " ", "=", " ", 
-       RowBox[{"nodesInParastichyFamily", "[", "parastichyFamily", "]"}]}], 
-      ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"avoidPoints", " ", "=", " ", 
+         RowBox[{"nodesInParastichyFamily", "[", "parastichyFamily", "]"}]}], 
+        ";"}], "\[IndentingNewLine]", "*)"}], 
       RowBox[{"allAdjacentEdges", " ", "=", " ", 
        RowBox[{"GraphUnion", "@@", 
         RowBox[{"Map", "[", 
@@ -2556,7 +2654,7 @@ Cell[BoxData[
             RowBox[{"Intersection", "[", 
              RowBox[{"parastichy", ",", 
               RowBox[{
-               RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], 
+               RowBox[{"adjacencyFunction", "[", "meshAssociation", "]"}], 
                "[", "#", "]"}]}], "]"}]}], "}"}], "&"}], ",", "parastichy"}], 
         "]"}]}], ";", "\n", 
       RowBox[{"edgeList", " ", "=", " ", 
@@ -2585,10 +2683,8 @@ Cell[BoxData[
         RowBox[{"meshAssociation", ",", " ", 
          RowBox[{"Graph", "[", "edgeList", "]"}]}], "]"}]}], ";", "\n", 
       "path"}]}], "\n", "]"}]}], ";"}]], "Input",
- InitializationCell->True,
- CellLabel->
-  "2/15/21 12:28:02 (Local) \
-In[124]:=",ExpressionUUID->"70bf3f1a-54dc-4bc3-9028-1c5fb201242e"],
+ InitializationCell->
+  True,ExpressionUUID->"70bf3f1a-54dc-4bc3-9028-1c5fb201242e"],
 
 Cell[BoxData[{
  RowBox[{
@@ -2880,125 +2976,39 @@ Cell[BoxData[{
   "2/15/21 12:28:02 (Local) \
 In[130]:=",ExpressionUUID->"84d878d6-dd33-4fb8-a10a-037275e2a40e"],
 
-Cell[BoxData[
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"adjacencyGraph", "[", 
-     RowBox[{"meshAssociation_", ",", "vertexes_"}], "]"}], " ", ":=", " ", 
-    RowBox[{"Module", "[", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{
-       "g", ",", "edges", ",", "edge", ",", "adjacencies", ",", 
-        "vertexCoordinates"}], "}"}], ",", "\[IndentingNewLine]", 
-      RowBox[{"(*", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"Print", "[", 
-         RowBox[{
-         "\"\<Computing adjacency graph at \>\"", ",", " ", "vertexes"}], 
-         "]"}], ";", 
-        RowBox[{"adjacencies", "=", " ", 
-         RowBox[{"KeyTake", "[", 
-          RowBox[{
-           RowBox[{"meshAssociation", "[", "\"\<Adjacency\>\"", "]"}], ",", 
-           "vertexes"}], "]"}]}], ";", 
-        RowBox[{"adjacencies", "=", " ", 
-         RowBox[{"Map", "[", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"Intersection", "[", 
-             RowBox[{"vertexes", ",", "#"}], "]"}], "&"}], ",", 
-           "adjacencies"}], "]"}]}], ";", 
-        RowBox[{
-         RowBox[{"makeSortedEdge", "[", 
-          RowBox[{"v1_", ",", "v2_"}], "]"}], " ", ":=", " ", 
-         RowBox[{"UndirectedEdge", " ", "@@", " ", 
-          RowBox[{"Sort", "[", 
-           RowBox[{"{", 
-            RowBox[{"v1", ",", "v2"}], "}"}], "]"}]}]}], ";", 
-        RowBox[{
-         RowBox[{"edge", "[", 
-          RowBox[{"k_", ",", "v_"}], "]"}], " ", ":=", " ", 
-         RowBox[{"Map", "[", " ", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"makeSortedEdge", "[", 
-             RowBox[{"k", ",", "#"}], "]"}], "&"}], ",", "v"}], "]"}]}], ";", 
-        RowBox[{"edges", " ", "=", 
-         RowBox[{"DeleteDuplicates", "@", 
-          RowBox[{"Flatten", "[", 
-           RowBox[{"KeyValueMap", "[", 
-            RowBox[{"edge", ",", "adjacencies"}], "]"}], "]"}]}]}], ";", 
-        RowBox[{"vertexCoordinates", " ", ":=", " ", 
-         RowBox[{"graphCoordinates", "[", 
-          RowBox[{"meshAssociation", ",", "vertexes"}], "]"}]}], " ", ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"Print", "[", "vertexCoordinates", "]"}], ";", 
-        RowBox[{"vertexCoordinates", ":=", 
-         RowBox[{"Map", "[", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"meshCoordinates", "[", 
-             RowBox[{
-              RowBox[{"meshAssociation", "[", "\"\<Mesh\>\"", "]"}], ",", 
-              "#"}], "]"}], "&"}], ",", "vertexes"}], "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"Print", "[", "vertexCoordinates", "]"}], ";", 
-        RowBox[{"g1", "  ", "=", " ", 
-         RowBox[{"Graph", "[", 
-          RowBox[{"vertexes", ",", "edges", ",", 
-           RowBox[{"VertexLabels", " ", "->", " ", "\"\<Name\>\""}], ",", 
-           RowBox[{
-           "VertexCoordinates", " ", "->", " ", "vertexCoordinates"}]}], 
-          "]"}]}], ";"}], "\[IndentingNewLine]", "*)"}], 
-      "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{"g2", " ", "=", " ", 
-        RowBox[{"Subgraph", "[", 
-         RowBox[{
-          RowBox[{"meshAssociation", "[", "\"\<Graph\>\"", "]"}], ",", 
-          "vertexes", ",", 
-          RowBox[{"VertexLabels", " ", "->", " ", "\"\<Name\>\""}]}], "]"}]}],
-        ";", "\[IndentingNewLine]", "g2"}]}], "\[IndentingNewLine]", "\n", 
-     "]"}]}], ";"}], "\n"}]], "Input",
- InitializationCell->True,
- CellLabel->
-  "2/15/21 12:28:02 (Local) \
-In[133]:=",ExpressionUUID->"edad16cf-609c-4d48-8f5d-f38a880f72cc"],
-
 Cell[BoxData[{
  RowBox[{
   RowBox[{
-   RowBox[{"polygonsAtVertex", "[", 
-    RowBox[{"g_", ",", "v_"}], "]"}], " ", ":=", " ", 
-   RowBox[{"Module", "[", 
-    RowBox[{
-     RowBox[{"{", "edges", "}"}], ",", "\n", 
+   RowBox[{
+    RowBox[{"polygonsAtVertex", "[", 
+     RowBox[{"g_", ",", "v_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
      RowBox[{
-      RowBox[{"edges", " ", "=", " ", 
-       RowBox[{"EdgeList", "@", 
-        RowBox[{"NeighborhoodGraph", "[", 
-         RowBox[{"g", ",", "v"}], "]"}]}]}], ";", "\n", 
-      RowBox[{"edges", " ", "=", " ", 
-       RowBox[{"Cases", "[", 
-        RowBox[{"edges", ",", 
-         RowBox[{"Except", "[", " ", 
-          RowBox[{
-           RowBox[{"_", " ", "\[UndirectedEdge]", " ", "v"}], " ", "|", " ", 
-           RowBox[{"v", " ", "\[UndirectedEdge]", " ", "_"}]}], "]"}]}], 
-        "]"}]}], ";", "\n", 
-      RowBox[{"edges", "  ", "=", " ", 
-       RowBox[{"Apply", "[", 
-        RowBox[{"List", ",", "edges", ",", "1"}], "]"}]}], ";", "\n", 
-      RowBox[{"edges", " ", "=", " ", 
-       RowBox[{"Map", "[", 
-        RowBox[{
+      RowBox[{"{", "edges", "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"edges", " ", "=", " ", 
+        RowBox[{"EdgeList", "@", 
+         RowBox[{"NeighborhoodGraph", "[", 
+          RowBox[{"g", ",", "v"}], "]"}]}]}], ";", "\n", 
+       RowBox[{"edges", " ", "=", " ", 
+        RowBox[{"Cases", "[", 
+         RowBox[{"edges", ",", 
+          RowBox[{"Except", "[", " ", 
+           RowBox[{
+            RowBox[{"_", " ", "\[UndirectedEdge]", " ", "v"}], " ", "|", " ", 
+            RowBox[{"v", " ", "\[UndirectedEdge]", " ", "_"}]}], "]"}]}], 
+         "]"}]}], ";", "\n", 
+       RowBox[{"edges", "  ", "=", " ", 
+        RowBox[{"Apply", "[", 
+         RowBox[{"List", ",", "edges", ",", "1"}], "]"}]}], ";", "\n", 
+       RowBox[{"edges", " ", "=", " ", 
+        RowBox[{"Map", "[", 
          RowBox[{
-          RowBox[{"Polygon", "@", 
-           RowBox[{"Append", "[", 
-            RowBox[{"#", ",", "v"}], "]"}]}], "&"}], ",", "edges"}], "]"}]}], 
-      ";", "\n", "edges"}]}], " ", "\n", "]"}]}], ";"}], "\n", 
+          RowBox[{
+           RowBox[{"Polygon", "@", 
+            RowBox[{"Append", "[", 
+             RowBox[{"#", ",", "v"}], "]"}]}], "&"}], ",", "edges"}], "]"}]}],
+        ";", "\n", "edges"}]}], " ", "\n", "]"}]}], ";"}], "\n"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{
@@ -3029,14 +3039,12 @@ Cell[BoxData[{
          RowBox[{"meshPoints", ",", "meshPolygons"}], "]"}]}], ";", "\n", 
        RowBox[{"{", 
         RowBox[{"meshPoints", ",", "meshPolygons"}], "}"}]}]}], "\n", "]"}]}],
-    ";"}], "\n", "\n"}], "\n"}], "Code",
- CellLabel->
-  "2/15/21 12:28:02 (Local) \
-In[134]:=",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
+    ";"}], "\n", "\n"}], "\n"}], "Code",ExpressionUUID->"7d934c07-76a0-4a5f-\
+9037-ee7523bc7b4d"]
 }, Open  ]]
 },
 WindowSize->{718.5, 831.},
-WindowMargins->{{-5.25, Automatic}, {Automatic, 0}},
+WindowMargins->{{Automatic, -2.099999999999909}, {Automatic, 0}},
 WindowStatusArea->"",
 TaggingRules->{
  "WelcomeScreenSettings" -> {"FEStarting" -> False}, 
@@ -3059,67 +3067,66 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[558, 20, 1302, 34, 300, "Code",ExpressionUUID->"c6c4cce2-bc28-4439-ae0d-6afb0daf69fe"],
-Cell[1863, 56, 6411, 146, 794, "Code",ExpressionUUID->"545f80d8-56e3-47b6-8060-3a2155b76023"],
-Cell[8277, 204, 206, 5, 63, "Code",ExpressionUUID->"5cb0906a-7fd6-41ca-bd93-01a456c28bc8"],
-Cell[8486, 211, 390, 11, 63, "Code",ExpressionUUID->"266cd5b1-2123-4b41-8621-e7480adb92fc"],
+Cell[1863, 56, 6624, 151, 848, "Code",ExpressionUUID->"545f80d8-56e3-47b6-8060-3a2155b76023"],
+Cell[8490, 209, 206, 5, 63, "Code",ExpressionUUID->"5cb0906a-7fd6-41ca-bd93-01a456c28bc8"],
+Cell[8699, 216, 390, 11, 63, "Code",ExpressionUUID->"266cd5b1-2123-4b41-8621-e7480adb92fc"],
 Cell[CellGroupData[{
-Cell[8901, 226, 102, 0, 55, "Subsection",ExpressionUUID->"f0d4dbc7-8000-477d-a6d2-41c86a995399"],
-Cell[9006, 228, 12609, 346, 1240, "Code",ExpressionUUID->"7d3ee17a-750e-48b8-9523-9ce516590beb"]
+Cell[9114, 231, 102, 0, 55, "Subsection",ExpressionUUID->"f0d4dbc7-8000-477d-a6d2-41c86a995399"],
+Cell[9219, 233, 15913, 434, 1877, "Input",ExpressionUUID->"7d3ee17a-750e-48b8-9523-9ce516590beb",
+ InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21652, 579, 98, 0, 55, "Subsection",ExpressionUUID->"217b4cfc-7091-426b-b4ac-8966b4ce8f0c"],
-Cell[21753, 581, 1404, 41, 245, "Input",ExpressionUUID->"37db2415-c424-4b7f-be64-7d290b7571fa",
+Cell[25169, 672, 98, 0, 55, "Subsection",ExpressionUUID->"217b4cfc-7091-426b-b4ac-8966b4ce8f0c"],
+Cell[25270, 674, 1404, 41, 245, "Input",ExpressionUUID->"37db2415-c424-4b7f-be64-7d290b7571fa",
  InitializationCell->True],
-Cell[23160, 624, 2231, 55, 320, "Input",ExpressionUUID->"d3f2d60d-4435-48a4-be52-8b86c3b6f85d",
+Cell[26677, 717, 2231, 55, 320, "Input",ExpressionUUID->"d3f2d60d-4435-48a4-be52-8b86c3b6f85d",
  InitializationCell->True],
-Cell[25394, 681, 7803, 184, 770, "Input",ExpressionUUID->"d27eb31f-9685-4b44-b6ca-9d98105f73e6",
+Cell[28911, 774, 8191, 195, 832, "Input",ExpressionUUID->"d27eb31f-9685-4b44-b6ca-9d98105f73e6",
  InitializationCell->True],
-Cell[33200, 867, 2483, 59, 377, "Input",ExpressionUUID->"6f079890-0c30-49f9-a923-bceb2e315ea5",
+Cell[37105, 971, 2483, 59, 377, "Input",ExpressionUUID->"6f079890-0c30-49f9-a923-bceb2e315ea5",
  InitializationCell->True],
-Cell[35686, 928, 3383, 80, 382, "Input",ExpressionUUID->"756f00cc-3755-454d-a208-247637ce9458",
+Cell[39591, 1032, 3383, 80, 401, "Input",ExpressionUUID->"756f00cc-3755-454d-a208-247637ce9458",
  InitializationCell->True],
-Cell[39072, 1010, 2517, 63, 320, "Input",ExpressionUUID->"1d014996-9baf-42c8-a2cc-89ac1bc48b8e",
+Cell[42977, 1114, 2517, 63, 320, "Input",ExpressionUUID->"1d014996-9baf-42c8-a2cc-89ac1bc48b8e",
  InitializationCell->True],
-Cell[41592, 1075, 2273, 53, 345, "Input",ExpressionUUID->"aa52782f-2f77-4f6d-b567-77af59b4375b",
+Cell[45497, 1179, 2273, 53, 307, "Input",ExpressionUUID->"aa52782f-2f77-4f6d-b567-77af59b4375b",
  InitializationCell->True],
-Cell[43868, 1130, 884, 26, 122, "Code",ExpressionUUID->"dbb63815-f69a-4a96-bfec-9b2f1f193c64"],
-Cell[44755, 1158, 1909, 52, 224, "Code",ExpressionUUID->"c85247cb-971b-4af8-acc6-d28716b5ddbf"],
-Cell[46667, 1212, 5438, 144, 652, "Code",ExpressionUUID->"8d91e29a-16bb-4df2-99a4-fcf8eb6bdae2"],
-Cell[52108, 1358, 3287, 81, 489, "Input",ExpressionUUID->"e051c6ea-9b7a-4344-afed-0ec63275c8f0",
+Cell[47773, 1234, 884, 26, 122, "Code",ExpressionUUID->"dbb63815-f69a-4a96-bfec-9b2f1f193c64"],
+Cell[48660, 1262, 1909, 52, 224, "Code",ExpressionUUID->"c85247cb-971b-4af8-acc6-d28716b5ddbf"],
+Cell[50572, 1316, 5438, 144, 652, "Code",ExpressionUUID->"8d91e29a-16bb-4df2-99a4-fcf8eb6bdae2"],
+Cell[56013, 1462, 3287, 81, 489, "Input",ExpressionUUID->"e051c6ea-9b7a-4344-afed-0ec63275c8f0",
  InitializationCell->True],
-Cell[55398, 1441, 14611, 343, 1577, "Input",ExpressionUUID->"76ea223f-8c2c-4947-9ea8-ff05b8f82dd0",
+Cell[59303, 1545, 14551, 338, 1545, "Input",ExpressionUUID->"76ea223f-8c2c-4947-9ea8-ff05b8f82dd0",
  InitializationCell->True],
-Cell[70012, 1786, 2976, 82, 320, "Input",ExpressionUUID->"504ad3de-5291-4d89-8927-7f0ac3e8f56c",
+Cell[73857, 1885, 2976, 82, 320, "Input",ExpressionUUID->"504ad3de-5291-4d89-8927-7f0ac3e8f56c",
  InitializationCell->True],
-Cell[72991, 1870, 642, 16, 133, "Input",ExpressionUUID->"ecc020ae-fd64-4da8-8c04-0acd6e012dfe",
+Cell[76836, 1969, 642, 16, 133, "Input",ExpressionUUID->"ecc020ae-fd64-4da8-8c04-0acd6e012dfe",
  InitializationCell->True],
-Cell[73636, 1888, 2524, 58, 326, "Input",ExpressionUUID->"66768435-00b5-4a9d-92b3-461e76c140f5",
+Cell[77481, 1987, 2524, 58, 326, "Input",ExpressionUUID->"66768435-00b5-4a9d-92b3-461e76c140f5",
  InitializationCell->True],
-Cell[76163, 1948, 1810, 43, 283, "Input",ExpressionUUID->"322c5088-f8d9-44cb-b112-dc5e4d3df686",
+Cell[80008, 2047, 1810, 43, 283, "Input",ExpressionUUID->"322c5088-f8d9-44cb-b112-dc5e4d3df686",
  InitializationCell->True],
-Cell[77976, 1993, 3191, 87, 367, "Code",ExpressionUUID->"be645f4a-1ec5-42a2-a97d-351d1dab3f71"],
-Cell[81170, 2082, 4747, 106, 738, "Input",ExpressionUUID->"c1ab1a61-6202-4858-9b27-ab224e963ebe",
+Cell[81821, 2092, 3136, 84, 354, "Code",ExpressionUUID->"be645f4a-1ec5-42a2-a97d-351d1dab3f71"],
+Cell[84960, 2178, 4800, 108, 738, "Input",ExpressionUUID->"c1ab1a61-6202-4858-9b27-ab224e963ebe",
  InitializationCell->True],
-Cell[85920, 2190, 2362, 57, 457, "Input",ExpressionUUID->"bd123bb0-00cd-4325-b748-3131e98f621a",
+Cell[89763, 2288, 2362, 57, 457, "Input",ExpressionUUID->"bd123bb0-00cd-4325-b748-3131e98f621a",
  InitializationCell->True],
-Cell[88285, 2249, 1585, 42, 189, "Input",ExpressionUUID->"82855400-5408-449f-af68-370bf0c13ed9",
+Cell[92128, 2347, 1585, 42, 189, "Input",ExpressionUUID->"82855400-5408-449f-af68-370bf0c13ed9",
  InitializationCell->True],
-Cell[89873, 2293, 1333, 35, 171, "Code",ExpressionUUID->"3707e896-ac90-41c5-bd63-2e31683bd266"],
-Cell[91209, 2330, 2851, 76, 245, "Input",ExpressionUUID->"752f904d-5e31-44ab-914d-ea0b8146f2f7",
+Cell[93716, 2391, 1333, 35, 171, "Code",ExpressionUUID->"3707e896-ac90-41c5-bd63-2e31683bd266"],
+Cell[95052, 2428, 2851, 76, 245, "Input",ExpressionUUID->"752f904d-5e31-44ab-914d-ea0b8146f2f7",
  InitializationCell->True],
-Cell[94063, 2408, 5016, 128, 687, "Code",ExpressionUUID->"e9b0a34e-a121-475f-a643-57550abc01f4"],
-Cell[99082, 2538, 1970, 52, 208, "Input",ExpressionUUID->"70bf3f1a-54dc-4bc3-9028-1c5fb201242e",
+Cell[97906, 2506, 5016, 128, 687, "Code",ExpressionUUID->"e9b0a34e-a121-475f-a643-57550abc01f4"],
+Cell[102925, 2636, 1918, 50, 213, "Input",ExpressionUUID->"70bf3f1a-54dc-4bc3-9028-1c5fb201242e",
  InitializationCell->True],
-Cell[101055, 2592, 2060, 50, 283, "Input",ExpressionUUID->"3f1b1063-c893-4c9a-abf7-831c9e8274e1",
+Cell[104846, 2688, 2060, 50, 283, "Input",ExpressionUUID->"3f1b1063-c893-4c9a-abf7-831c9e8274e1",
  InitializationCell->True],
-Cell[103118, 2644, 3348, 86, 414, "Input",ExpressionUUID->"23e910ed-a1dc-4ea0-ae8e-0daf1b70bad7",
+Cell[106909, 2740, 3348, 86, 414, "Input",ExpressionUUID->"23e910ed-a1dc-4ea0-ae8e-0daf1b70bad7",
  InitializationCell->True],
-Cell[106469, 2732, 2972, 73, 452, "Input",ExpressionUUID->"bec8a550-880d-4270-b994-1ee9f1cc4e8b",
+Cell[110260, 2828, 2972, 73, 452, "Input",ExpressionUUID->"bec8a550-880d-4270-b994-1ee9f1cc4e8b",
  InitializationCell->True],
-Cell[109444, 2807, 2621, 73, 385, "Code",ExpressionUUID->"84d878d6-dd33-4fb8-a10a-037275e2a40e"],
-Cell[112068, 2882, 3477, 85, 433, "Input",ExpressionUUID->"edad16cf-609c-4d48-8f5d-f38a880f72cc",
- InitializationCell->True],
-Cell[115548, 2969, 2463, 65, 332, "Code",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
+Cell[113235, 2903, 2621, 73, 385, "Code",ExpressionUUID->"84d878d6-dd33-4fb8-a10a-037275e2a40e"],
+Cell[115859, 2978, 2459, 64, 337, "Code",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
 }, Open  ]]
 }
 ]
