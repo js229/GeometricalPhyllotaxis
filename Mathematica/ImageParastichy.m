@@ -720,23 +720,7 @@ graphLineDeviation[meshAssociation,ix123]
 
 
 (* ::Input::Initialization:: *)
-splitAtKinks[meshAssociation_,component_] := Module[{angles,res,kinks,edgesToDrop},
-(* component is an unforked directed path with one element *)
 
-
-vertices = VertexList[component];
-
-angleAtVertex = Map[vertexAngle[meshAssociation,component,#]&,vertices];
-
-angles = AssociationThread[vertices,angleAtVertex];
-kinks = Keys@Select[angles,
-		Abs[#] >locateParastichyOptions["StraightnessWhenAdjacent"]&];edgesToDrop = Map[
-	Cases[IncidenceList[component,#],#\[DirectedEdge] _]&,kinks];res = component;
-	res = EdgeDelete[res,Flatten@edgesToDrop];res  =connectedDirectedGraphComponents[res];
-	res = Select[res,VertexCount[#]>  locateParastichyOptions["MinimumThreadLength"]&];
-	Return[res];
-
-];
 splitAtKinks2[meshAssociation_,component_] := Module[{vertices,angleAtVertex,angles,res,kinks,edgesToDrop},
 (* component is an undirected path  *)
 If[VertexCount[component]<= 2,Return[Nothing[]]];

@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    138020,       3503]
-NotebookOptionsPosition[    133308,       3421]
-NotebookOutlinePosition[    133955,       3443]
-CellTagsIndexPosition[    133912,       3440]
+NotebookDataLength[    135357,       3433]
+NotebookOptionsPosition[    130646,       3351]
+NotebookOutlinePosition[    131293,       3373]
+CellTagsIndexPosition[    131250,       3370]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -3072,208 +3072,138 @@ Cell[BoxData[
   "2/16/21 16:14:26 (Local) \
 In[75]:=",ExpressionUUID->"23e910ed-a1dc-4ea0-ae8e-0daf1b70bad7"],
 
-Cell[BoxData[{
- RowBox[{
-  RowBox[{
-   RowBox[{"splitAtKinks", "[", 
-    RowBox[{"meshAssociation_", ",", "component_"}], "]"}], " ", ":=", " ", 
-   RowBox[{"Module", "[", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"angles", ",", "res", ",", "kinks", ",", "edgesToDrop"}], "}"}],
-      ",", "\n", 
-     RowBox[{"(*", " ", 
-      RowBox[{
-      "component", " ", "is", " ", "an", " ", "unforked", " ", "directed", 
-       " ", "path", " ", "with", " ", "one", " ", "element"}], " ", "*)"}], 
-     "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-     RowBox[{
-      RowBox[{"vertices", " ", "=", " ", 
-       RowBox[{"VertexList", "[", "component", "]"}]}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", 
-      RowBox[{"angleAtVertex", " ", "=", " ", 
-       RowBox[{"Map", "[", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"vertexAngle", "[", 
-           RowBox[{"meshAssociation", ",", "component", ",", "#"}], "]"}], 
-          "&"}], ",", "vertices"}], "]"}]}], ";", "\n", "\[IndentingNewLine]", 
-      RowBox[{"angles", " ", "=", " ", 
-       RowBox[{"AssociationThread", "[", 
-        RowBox[{"vertices", ",", "angleAtVertex"}], "]"}]}], ";", 
-      "\[IndentingNewLine]", 
-      RowBox[{"kinks", " ", "=", " ", 
-       RowBox[{"Keys", "@", 
-        RowBox[{"Select", "[", 
-         RowBox[{"angles", ",", "\n", "\t\t", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"Abs", "[", "#", "]"}], " ", ">", 
-            RowBox[{
-            "locateParastichyOptions", "[", 
-             "\"\<StraightnessWhenAdjacent\>\"", "]"}]}], "&"}]}], "]"}]}]}], 
-      ";", 
-      RowBox[{"edgesToDrop", " ", "=", " ", 
-       RowBox[{"Map", "[", "\[IndentingNewLine]", "\t", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"Cases", "[", 
-           RowBox[{
-            RowBox[{"IncidenceList", "[", 
-             RowBox[{"component", ",", "#"}], "]"}], ",", 
-            RowBox[{"#", "\[DirectedEdge]", " ", "_"}]}], "]"}], "&"}], ",", 
-         "kinks"}], "]"}]}], ";", 
-      RowBox[{"res", " ", "=", " ", "component"}], ";", "\n", "\t", 
-      RowBox[{"res", " ", "=", " ", 
-       RowBox[{"EdgeDelete", "[", 
-        RowBox[{"res", ",", 
-         RowBox[{"Flatten", "@", "edgesToDrop"}]}], "]"}]}], ";", 
-      RowBox[{"res", "  ", "=", 
-       RowBox[{"connectedDirectedGraphComponents", "[", "res", "]"}]}], ";", 
-      "\n", "\t", 
-      RowBox[{"res", " ", "=", " ", 
-       RowBox[{"Select", "[", 
-        RowBox[{"res", ",", 
-         RowBox[{
-          RowBox[{
-           RowBox[{"VertexCount", "[", "#", "]"}], ">", "  ", 
-           RowBox[{
-           "locateParastichyOptions", "[", "\"\<MinimumThreadLength\>\"", 
-            "]"}]}], "&"}]}], "]"}]}], ";", "\n", "\t", 
-      RowBox[{"Return", "[", "res", "]"}], ";"}]}], "\n", "\n", "]"}]}], 
-  ";"}], "\[IndentingNewLine]", 
- RowBox[{
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
   RowBox[{
    RowBox[{
-    RowBox[{"splitAtKinks2", "[", 
-     RowBox[{"meshAssociation_", ",", "component_"}], "]"}], " ", ":=", " ", 
-    RowBox[{"Module", "[", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{
-       "vertices", ",", "angleAtVertex", ",", "angles", ",", "res", ",", 
-        "kinks", ",", "edgesToDrop"}], "}"}], ",", "\n", 
-      RowBox[{"(*", " ", 
-       RowBox[{
-       "component", " ", "is", " ", "an", " ", "undirected", " ", "path"}], 
-       "  ", "*)"}], "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{"If", "[", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"VertexCount", "[", "component", "]"}], "\[LessEqual]", " ",
-           "2"}], ",", 
-         RowBox[{"Return", "[", 
-          RowBox[{"Nothing", "[", "]"}], "]"}]}], "]"}], ";", 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"vertices", " ", "=", " ", 
-        RowBox[{"VertexList", "[", "component", "]"}]}], ";", 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"angleAtVertex", " ", "=", " ", 
-        RowBox[{"Map", "[", 
-         RowBox[{
-          RowBox[{
-           RowBox[{"vertexAngleUndirected", "[", 
-            RowBox[{"meshAssociation", ",", "component", ",", "#"}], "]"}], 
-           "&"}], ",", "vertices"}], "]"}]}], ";", "\[IndentingNewLine]", 
-       RowBox[{"angles", " ", "=", " ", 
-        RowBox[{"AssociationThread", "[", 
-         RowBox[{"vertices", ",", "angleAtVertex"}], "]"}]}], ";", 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"kinks", " ", "=", " ", 
-        RowBox[{"Keys", "@", 
-         RowBox[{"Select", "[", 
-          RowBox[{"angles", ",", "\n", "\t\t", 
-           RowBox[{
-            RowBox[{
-             RowBox[{"Abs", "[", "#", "]"}], " ", ">", 
-             RowBox[{
-             "locateParastichyOptions", "[", 
-              "\"\<StraightnessWhenAdjacent\>\"", "]"}]}], "&"}]}], "]"}]}]}],
-        ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"res", " ", "=", " ", "component"}], ";", 
-       RowBox[{"res", " ", "=", " ", 
-        RowBox[{"VertexDelete", "[", 
-         RowBox[{"res", ",", "kinks"}], "]"}]}], ";", 
-       RowBox[{"res", "  ", "=", 
-        RowBox[{"ConnectedGraphComponents", "[", "res", "]"}]}], ";", 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"res", " ", "=", " ", 
-        RowBox[{"Select", "[", 
-         RowBox[{"res", ",", "\[IndentingNewLine]", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"VertexCount", "[", "#", "]"}], ">", "  ", 
-            RowBox[{
-            "locateParastichyOptions", "[", "\"\<MinimumThreadLength\>\"", 
-             "]"}]}], "&"}]}], "]"}]}], ";", 
-       RowBox[{"Return", "[", "res", "]"}], ";"}]}], "\n", "\n", "]"}]}], 
-   ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"splitAtSplits", "[", 
-    RowBox[{"meshAssociation_", ",", "component_"}], "]"}], " ", ":=", " ", 
-   RowBox[{"Module", "[", 
     RowBox[{
-     RowBox[{"{", 
+     RowBox[{"splitAtKinks2", "[", 
+      RowBox[{"meshAssociation_", ",", "component_"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
       RowBox[{
-      "vertices", ",", "angleAtVertex", ",", "angles", ",", "res", ",", 
-       "kinks", ",", "edgesToDrop"}], "}"}], ",", "\n", 
-     RowBox[{"(*", " ", 
-      RowBox[{
-      "component", " ", "is", " ", "an", " ", "undirected", " ", "path"}], 
-      "  ", "*)"}], "\[IndentingNewLine]", 
-     RowBox[{
-      RowBox[{"If", "[", 
-       RowBox[{
+       RowBox[{"{", 
         RowBox[{
-         RowBox[{"VertexCount", "[", "component", "]"}], "\[LessEqual]", " ", 
-         "2"}], ",", 
-        RowBox[{"Return", "[", 
-         RowBox[{"Nothing", "[", "]"}], "]"}]}], "]"}], ";", 
-      "\[IndentingNewLine]", 
-      RowBox[{"vertices", " ", "=", " ", 
-       RowBox[{"VertexList", "[", "component", "]"}]}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", 
-      RowBox[{"vertexEdgeCounts", " ", "=", " ", 
-       RowBox[{"Association", "@", 
-        RowBox[{"Map", "[", 
+        "vertices", ",", "angleAtVertex", ",", "angles", ",", "res", ",", 
+         "kinks", ",", "edgesToDrop"}], "}"}], ",", "\n", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "component", " ", "is", " ", "an", " ", "undirected", " ", "path"}], 
+        "  ", "*)"}], "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"If", "[", 
          RowBox[{
           RowBox[{
-           RowBox[{"#", "->", 
-            RowBox[{"vertexEdgeCount", "[", 
-             RowBox[{"component", ",", "#"}], "]"}]}], "&"}], ",", 
-          RowBox[{"VertexList", "[", "component", "]"}]}], "]"}]}]}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", 
-      RowBox[{"kinks", " ", "=", " ", 
-       RowBox[{"Keys", "@", 
-        RowBox[{"Select", "[", 
-         RowBox[{"vertexEdgeCounts", ",", 
+           RowBox[{"VertexCount", "[", "component", "]"}], "\[LessEqual]", 
+           " ", "2"}], ",", 
+          RowBox[{"Return", "[", 
+           RowBox[{"Nothing", "[", "]"}], "]"}]}], "]"}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"vertices", " ", "=", " ", 
+         RowBox[{"VertexList", "[", "component", "]"}]}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"angleAtVertex", " ", "=", " ", 
+         RowBox[{"Map", "[", 
           RowBox[{
-           RowBox[{"#", " ", ">", " ", "2"}], "&"}]}], "]"}]}]}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", 
-      RowBox[{"res", " ", "=", " ", "component"}], ";", 
-      RowBox[{"res", " ", "=", " ", 
-       RowBox[{"VertexDelete", "[", 
-        RowBox[{"res", ",", "kinks"}], "]"}]}], ";", 
-      RowBox[{"res", "  ", "=", 
-       RowBox[{"ConnectedGraphComponents", "[", "res", "]"}]}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", 
-      RowBox[{"res", " ", "=", " ", 
-       RowBox[{"Select", "[", 
-        RowBox[{"res", ",", "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{
-           RowBox[{"VertexCount", "[", "#", "]"}], ">", "  ", 
            RowBox[{
-           "locateParastichyOptions", "[", "\"\<MinimumThreadLength\>\"", 
-            "]"}]}], "&"}]}], "]"}]}], ";", 
-      RowBox[{"Return", "[", "res", "]"}], ";"}]}], "\n", "\n", "]"}]}], 
-  ";"}]}], "Input",
- InitializationCell->True,
- CellLabel->
-  "2/16/21 16:14:26 (Local) \
-In[78]:=",ExpressionUUID->"bec8a550-880d-4270-b994-1ee9f1cc4e8b"],
+            RowBox[{"vertexAngleUndirected", "[", 
+             RowBox[{"meshAssociation", ",", "component", ",", "#"}], "]"}], 
+            "&"}], ",", "vertices"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"angles", " ", "=", " ", 
+         RowBox[{"AssociationThread", "[", 
+          RowBox[{"vertices", ",", "angleAtVertex"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"kinks", " ", "=", " ", 
+         RowBox[{"Keys", "@", 
+          RowBox[{"Select", "[", 
+           RowBox[{"angles", ",", "\n", "\t\t", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Abs", "[", "#", "]"}], " ", ">", 
+              RowBox[{
+              "locateParastichyOptions", "[", 
+               "\"\<StraightnessWhenAdjacent\>\"", "]"}]}], "&"}]}], 
+           "]"}]}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"res", " ", "=", " ", "component"}], ";", 
+        RowBox[{"res", " ", "=", " ", 
+         RowBox[{"VertexDelete", "[", 
+          RowBox[{"res", ",", "kinks"}], "]"}]}], ";", 
+        RowBox[{"res", "  ", "=", 
+         RowBox[{"ConnectedGraphComponents", "[", "res", "]"}]}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"res", " ", "=", " ", 
+         RowBox[{"Select", "[", 
+          RowBox[{"res", ",", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"VertexCount", "[", "#", "]"}], ">", "  ", 
+             RowBox[{
+             "locateParastichyOptions", "[", "\"\<MinimumThreadLength\>\"", 
+              "]"}]}], "&"}]}], "]"}]}], ";", 
+        RowBox[{"Return", "[", "res", "]"}], ";"}]}], "\n", "\n", "]"}]}], 
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"splitAtSplits", "[", 
+      RowBox[{"meshAssociation_", ",", "component_"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "vertices", ",", "angleAtVertex", ",", "angles", ",", "res", ",", 
+         "kinks", ",", "edgesToDrop"}], "}"}], ",", "\n", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "component", " ", "is", " ", "an", " ", "undirected", " ", "path"}], 
+        "  ", "*)"}], "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"VertexCount", "[", "component", "]"}], "\[LessEqual]", 
+           " ", "2"}], ",", 
+          RowBox[{"Return", "[", 
+           RowBox[{"Nothing", "[", "]"}], "]"}]}], "]"}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"vertices", " ", "=", " ", 
+         RowBox[{"VertexList", "[", "component", "]"}]}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"vertexEdgeCounts", " ", "=", " ", 
+         RowBox[{"Association", "@", 
+          RowBox[{"Map", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"#", "->", 
+              RowBox[{"vertexEdgeCount", "[", 
+               RowBox[{"component", ",", "#"}], "]"}]}], "&"}], ",", 
+            RowBox[{"VertexList", "[", "component", "]"}]}], "]"}]}]}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"kinks", " ", "=", " ", 
+         RowBox[{"Keys", "@", 
+          RowBox[{"Select", "[", 
+           RowBox[{"vertexEdgeCounts", ",", 
+            RowBox[{
+             RowBox[{"#", " ", ">", " ", "2"}], "&"}]}], "]"}]}]}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"res", " ", "=", " ", "component"}], ";", 
+        RowBox[{"res", " ", "=", " ", 
+         RowBox[{"VertexDelete", "[", 
+          RowBox[{"res", ",", "kinks"}], "]"}]}], ";", 
+        RowBox[{"res", "  ", "=", 
+         RowBox[{"ConnectedGraphComponents", "[", "res", "]"}]}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        RowBox[{"res", " ", "=", " ", 
+         RowBox[{"Select", "[", 
+          RowBox[{"res", ",", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"VertexCount", "[", "#", "]"}], ">", "  ", 
+             RowBox[{
+             "locateParastichyOptions", "[", "\"\<MinimumThreadLength\>\"", 
+              "]"}]}], "&"}]}], "]"}]}], ";", 
+        RowBox[{"Return", "[", "res", "]"}], ";"}]}], "\n", "\n", "]"}]}], 
+    ";"}]}]}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"bec8a550-880d-4270-b994-1ee9f1cc4e8b"],
 
 Cell[BoxData[{
  RowBox[{
@@ -3465,7 +3395,7 @@ Cell[41785, 1083, 3434, 82, 414, "Input",ExpressionUUID->"756f00cc-3755-454d-a20
  InitializationCell->True],
 Cell[45222, 1167, 2506, 63, 320, "Input",ExpressionUUID->"1d014996-9baf-42c8-a2cc-89ac1bc48b8e",
  InitializationCell->True],
-Cell[47731, 1232, 2325, 55, 388, "Input",ExpressionUUID->"aa52782f-2f77-4f6d-b567-77af59b4375b",
+Cell[47731, 1232, 2325, 55, 358, "Input",ExpressionUUID->"aa52782f-2f77-4f6d-b567-77af59b4375b",
  InitializationCell->True],
 Cell[50059, 1289, 936, 28, 135, "Code",ExpressionUUID->"dbb63815-f69a-4a96-bfec-9b2f1f193c64"],
 Cell[50998, 1319, 1909, 52, 224, "Code",ExpressionUUID->"c85247cb-971b-4af8-acc6-d28716b5ddbf"],
@@ -3500,10 +3430,10 @@ Cell[112524, 2886, 2059, 50, 283, "Input",ExpressionUUID->"3f1b1063-c893-4c9a-ab
  InitializationCell->True],
 Cell[114586, 2938, 5284, 134, 620, "Input",ExpressionUUID->"23e910ed-a1dc-4ea0-ae8e-0daf1b70bad7",
  InitializationCell->True],
-Cell[119873, 3074, 8282, 201, 1277, "Input",ExpressionUUID->"bec8a550-880d-4270-b994-1ee9f1cc4e8b",
+Cell[119873, 3074, 5620, 131, 870, "Input",ExpressionUUID->"bec8a550-880d-4270-b994-1ee9f1cc4e8b",
  InitializationCell->True],
-Cell[128158, 3277, 2620, 73, 385, "Code",ExpressionUUID->"84d878d6-dd33-4fb8-a10a-037275e2a40e"],
-Cell[130781, 3352, 2511, 66, 350, "Code",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
+Cell[125496, 3207, 2620, 73, 385, "Code",ExpressionUUID->"84d878d6-dd33-4fb8-a10a-037275e2a40e"],
+Cell[128119, 3282, 2511, 66, 350, "Code",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
 }, Open  ]]
 }
 ]
