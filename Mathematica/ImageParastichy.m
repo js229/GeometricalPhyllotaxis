@@ -24,6 +24,7 @@ If[makePackage,
     BeginPackage["ImageParastichy`"];
     locateParastichyOptions::usage = "Global options for heuristics";
     makeTidyMesh::usage = "Delete duplicate points and remove over-large cells";
+    makeSunGraph::usage = "Delete duplicate points and remove over-large cells";
     meshExtendParastichy::usage = "Extend a line without large kinks"
 ];
 
@@ -73,6 +74,7 @@ makeSunGraph[seedCentres_] :=
 	
 	res = <|
 			"Graph" -> g
+			,"Mesh"-> dMesh (* only used for debug/plotting after this point *)
 			, "InnerBoundary" -> meshCellsOfMesh1InMesh2[boundary[[1]], dMesh]
 			, "OuterBoundary" -> meshCellsOfMesh1InMesh2[boundary[[2]], dMesh]
 	(*		, "Adjacency" -> meshAdjacencyAssociation[dMesh]
@@ -164,7 +166,7 @@ g = Graph[vertexList
 ,VertexCoordinates->Block[{x},MeshPrimitives[mesh,0]/. Point[x_]->x]];
 g
 ];
-meshToGraph[m_] := Print["mG called with head ", Head[m]];
+meshToGraph[m_] := Print["mG called with head :", Head[m],":"];
 
 If[makePackage,End[]]; (* Private *)
 
@@ -181,7 +183,7 @@ graphCoordinates[meshAssociation_Association,ix_] := graphCoordinates[meshAssoci
 
  
 graphCoordinates[g_Graph,ix_] := (AnnotationValue[{g,ix},VertexCoordinates]);
-graphCoordinates[g_,ix_] := Print["gC called with head ",Head[g]];
+graphCoordinates[g_,ix_] := Print["gC called with head :",Head[g],":"];
 
 
 
@@ -189,8 +191,8 @@ graphCoordinates[g_,ix_] := Print["gC called with head ",Head[g]];
 (* ::Input::Initialization:: *)
 createParastichyFamily[meshAssociation_,starter_,family_:1] := Module[{nextpara,paraList,mpf,pstart},
 pstart = parastichyStarter[meshAssociation,starter];If[Length[pstart]<2,Return[Missing["Can't make starter from ", starter]]];mpf = {};mpf = addToParastichyFamily[mpf,pstart,family];mpf = Nest[findAdjacentThreads[meshAssociation,#]&,mpf,locateParastichyOptions["FamilyGrowthSize"]];
-mpf = tidyParastichyFamily[meshAssociation,mpf];
-
+mpf = mergeParastichyFamilyOverlaps[meshAssociation,mpf];
+mpf = joinParastichyFamilyAdjacents[meshAssociation,mpf];
 If[locateParastichyOptions["Renumber"],
 mpf = renumberParastichyFamily[meshAssociation,mpf];
 ];
@@ -213,37 +215,44 @@ Return[Missing["No overlap"]];
 
 adjacencyFunction[meshAssociation_] := Function[{ix},AdjacencyList[meshAssociation["Graph"],ix]];
 
-
-findAnAdjacency[meshAssociation_,parastichyFamily_] := Module[{ix,jx,firstTail,secondHead,decho},
-decho[x_] := If[False,Echo[x,"fAA"],x];
-
-
+findTailHeadAdjacents[meshAssociation_,parastichyFamily_] := Module[{ix,jx,adjacents},
+adjacents = {};
 For[ix=1,ix<Length[parastichyFamily],ix++,
 For[jx = ix+1, jx<=Length[parastichyFamily],jx++,
-decho[{parastichyFamily[[ix]],parastichyFamily[[jx]]}];
-
-firstTail = Last[parastichyFamily[[ix]]["Members"]];
-secondHead =  First[parastichyFamily[[jx]]["Members"]];
-
-If[MemberQ[adjacencyFunction[meshAssociation][firstTail],secondHead]
-, Return[{parastichyFamily[[ix]]["Index"],parastichyFamily[[jx]]["Index"]}]];
-
-firstTail = Last[parastichyFamily[[jx]]["Members"]];
-secondHead =  First[parastichyFamily[[ix]]["Members"]];
-
-If[MemberQ[adjacencyFunction[meshAssociation][firstTail],secondHead]
-, Return[{parastichyFamily[[jx]]["Index"],parastichyFamily[[ix]]["Index"]}]];
-
-
+If[
+tailHeadAdjacentQ[meshAssociation,
+parastichyFamily[[ix]]["Members"],parastichyFamily[[jx]]["Members"]],
+adjacents = Append[adjacents,
+{parastichyFamily[[ix]]["Index"],parastichyFamily[[jx]]["Index"]}
+]
+];
 ]];
-Return[Missing["No adjacency"]];
+Return[adjacents];
+];
+
+
+tailHeadAdjacentQ[meshAssociation_,parastichy1_,parastichy2_] := Module[{firstTail,secondHead,adjacents},
+
+firstTail = Last[parastichy1];
+secondHead =  First[parastichy2];
+
+If[MemberQ[adjacencyFunction[meshAssociation][firstTail],secondHead]
+, Return[True]];
+
+firstTail = Last[parastichy2];
+secondHead =  First[parastichy1];
+
+If[MemberQ[adjacencyFunction[meshAssociation][firstTail],secondHead]
+,Return[True]];
+
+Return[False];
 ];
 
 
 
 
 (* ::Input::Initialization:: *)
-tidyParastichyFamily[meshAssociation_,parastichyFamily_] := Module[{ijx,n,mPF},
+mergeParastichyFamilyOverlaps[meshAssociation_,parastichyFamily_] := Module[{ijx,n,mPF,tailHeadAdjacents},
 mPF = parastichyFamily;
 
 For[n=0,n<100,n++,
@@ -252,10 +261,23 @@ If[MissingQ[ijx],Break[]];
 Print[n, " Overlap", ijx];
 mPF = mergeParastichySibs[meshAssociation,mPF,ijx];
 ];
-For[n=0,n<100,n++,
-ijx = findAnAdjacency[meshAssociation,mPF] ;
-If[MissingQ[ijx],Break[]];
+
+
+mPF
+];
+joinParastichyFamilyAdjacents[meshAssociation_,parastichyFamily_] := Module[{ijx,n,mPF,tailHeadAdjacents},
+mPF = parastichyFamily;
+
+
+tailHeadAdjacents = findTailHeadAdjacents[meshAssociation,mPF] ;
+While[Length[tailHeadAdjacents]>0,
+
+ijx = First[tailHeadAdjacents];
+tailHeadAdjacents = Drop[tailHeadAdjacents,1];
 mPF = mergeParastichySibs[meshAssociation,mPF,ijx];
+tailHeadAdjacents = Cases[tailHeadAdjacents,Except[ {ijx[[1]],_}]];
+tailHeadAdjacents = Cases[tailHeadAdjacents,Except[ {ijx[[2]],_}]];
+tailHeadAdjacents = Cases[tailHeadAdjacents,Except[ {_,ijx[[2]]}]];
 ];
 
 mPF
@@ -281,13 +303,9 @@ paraAdjacencyTable = Flatten@Table[paraAdjacencies[ix],{ix,Length[parastichyFami
 
 
 (* ::Input::Initialization:: *)
-renumberParastichyFamily[meshAssociation_,parastichyFamily_] := Module[{g,familyOrder,paraAdjacencyTable,res,family,para,i},
-paraAdjacencyTable =parastichyAdjacencyTable[meshAssociation,parastichyFamily]; g = Graph[Map[#["Index"]&,parastichyFamily],paraAdjacencyTable,VertexLabels->"Name"];
-familyOrder = topologicalSortByLongestPaths[g];
-res = {};family = First[parastichyFamily]["Family"];family=ToString[family]~~"A";For[i=1,i<= Length[familyOrder],i++,
-para = Query[SelectFirst[#["Index"]==familyOrder[[i]]&]]@parastichyFamily;res = addToParastichyFamily[res,para["Members"],family];
+renumberParastichyFamily[meshAssociation_,parastichyFamily_] := Module[{g,familyOrder,paraAdjacencyTable,res,family,para,i},paraAdjacencyTable =parastichyAdjacencyTable[meshAssociation,parastichyFamily]; g = Graph[Map[#["Index"]&,parastichyFamily],paraAdjacencyTable,VertexLabels->"Name"];familyOrder = topologicalSortByLongestPaths[g];res = {};family = First[parastichyFamily]["Family"];family=ToString[family]~~"A";For[i=1,i<= Length[familyOrder],i++,para = Query[SelectFirst[#["Index"]==familyOrder[[i]]&]]@parastichyFamily;res = addToParastichyFamily[res,para["Members"],family];
 	];
-	res
+res
 ];
 
 
@@ -326,13 +344,11 @@ res
 ];
 
 
+(* ::Input::Initialization:: *)
 addToParastichyFamily[mpf_,parastichy_] := addToParastichyFamily[mpf,parastichy,First[mpf]["Family"]];
-addToParastichyFamily[mpf_,parastichy_,family_] := Module[{ix,res,overlaps,maxIndex},
-res = mpf;
-maxIndex = If[Length[mpf]==0,0,Max[Map[#["Index"]&,mpf]]];
-res = Append[res,
-<| "Family"->family,"Index"-> maxIndex+1,"Members"->parastichy , "Head"-> First@parastichy|>];
-res
+
+addToParastichyFamily[mpf_,parastichy_,family_] := Module[{sib,maxIndex},maxIndex = If[Length[mpf]==0,0,Max[Map[#["Index"]&,mpf]]];sib = <| "Family"->family,"Index"-> maxIndex+1,"Members"->parastichy |>;
+Append[mpf,sib]
 ];
 
 dropParastichyElement[mpf_,ix_,dix_] := Module[{res,para,pix},
@@ -500,32 +516,70 @@ allAdjacentPoints
 
 
 (* ::Input::Initialization:: *)
-adjacentThreadsToParastichyFamily[meshAssociation_,parastichyFamily_]:=  Module[{allAdjacentEdges,allAdjacentGraph,allAdjacentComponents,adjacentThreads},
-debugTest = False;
-(*avoidPoints = nodesInParastichyFamily[parastichyFamily];
-*)allAdjacentEdges = GraphUnion@@Map[NeighborhoodGraph[meshAssociation["Graph"],#]&,nodesInParastichyFamily[parastichyFamily]];
-allAdjacentEdges = Graph[allAdjacentEdges,VertexLabels->"Name"];
-allAdjacentEdges = VertexDelete[allAdjacentEdges,nodesInParastichyFamily[parastichyFamily]];
 
-If[debugTest,
-Print[allAdjacentEdges]];
 
-If[VertexCount[allAdjacentEdges]<2,Return[]];
+orientThreadToParastichy[meshAssociation_,parastichy_,thread_] :=Module[{res},
 
-allAdjacentGraph = allAdjacentEdges;
-allAdjacentComponents =  ConnectedGraphComponents[allAdjacentGraph];allAdjacentComponents  =Select[allAdjacentComponents, VertexCount[#] >= locateParastichyOptions["MinimumThreadLength"]&];
+al = Map[
+ AdjacencyList[meshAssociation["Graph"],#]&,parastichy];
+alFirst = First@FirstPosition[Map[MemberQ[#,First[thread]]&,al],True];
+alLast = First@FirstPosition[Map[MemberQ[#,Last[thread]]&,al],True];
 
-If[debugTest,
-Print[allAdjacentComponents]];
+res = thread;
+If[alFirst>alLast,
+res = Reverse[res]];
+res
 
-allAdjacentComponents  =Map[makeDirectedPath[meshAssociation,#]&,allAdjacentComponents];allAdjacentComponents    = allAdjacentComponents /. Missing[_]->Nothing[];
-
-If[debugTest,
-Print[allAdjacentComponents]];
-allAdjacentComponents  = Map[splitAtKinks[meshAssociation,#]&,allAdjacentComponents];allAdjacentComponents  = Flatten @allAdjacentComponents;allAdjacentComponents    = allAdjacentComponents /. Missing[_]->Nothing[];adjacentThreads  =Map[TopologicalSort,allAdjacentComponents];
-
-adjacentThreads
 ];
+
+orientComponentToParastichy[meshAssociation_,parastichy_,component_] :=Module[{endPoints,thread},
+(* called here after split at Splits, so component has all edge counts 1 or 2 *)
+endPoints = Select[VertexList[component],vertexEdgeCount[component,#]==1&];
+If[Length[endPoints]!=2,Print[endPoints,component,"Endpoints not found in oCTP"];Abort[]];
+
+thread = FindPath[component,endPoints[[1]],endPoints[[2]]];
+If[Length[thread]!= 1,Print[endPoints,component,"Path not found in oCTP"]Abort[]];
+thread = First[thread];
+orientThreadToParastichy[meshAssociation,parastichy,thread]
+
+];
+
+
+
+adjacentThreadsToParastichy[meshAssociation_,parastichy_,avoidPoints_]:=  Module[{g,adjacentNodes,adjacentSubgraph,gList,largestAdjacentSubgraph,allAdjacentComponents,adjacentThreads},
+debugTest = False;
+
+g= meshAssociation["Graph"];
+adjacentNodes = Apply[Union,Map[AdjacencyList[g,#]& ,parastichy]];
+adjacentNodes = Complement[adjacentNodes,avoidPoints];
+
+
+adjacentSubgraph  = Subgraph[g,adjacentNodes,VertexLabels->"Name"];
+If[VertexCount[adjacentSubgraph]<2,Return[Nothing[]]];
+gList = ConnectedGraphComponents[adjacentSubgraph];
+
+gList =  Flatten@Map[splitAtKinks2[meshAssociation,#]&,gList];
+
+gList =  Flatten@Map[splitAtSplits[meshAssociation,#]&,gList];
+
+adjacentThreads = Map[orientComponentToParastichy[meshAssociation,parastichy,#]&,gList];
+
+Return[adjacentThreads];
+
+];
+
+adjacentThreadsToParastichyFamily[meshAssociation_,parastichyFamily_]:=  Module[{adjacentThreads,avoidPoints,parastichies},
+debugTest = False;
+avoidPoints =  nodesInParastichyFamily[parastichyFamily];
+parastichies = Map[#["Members"]&,parastichyFamily];
+adjacentThreads = Map[adjacentThreadsToParastichy[meshAssociation,#,avoidPoints]&,parastichies];
+adjacentThreads = Flatten[adjacentThreads,1];
+adjacentThreads
+
+
+
+];
+
 
 
 (* ::Input::Initialization:: *)
@@ -653,6 +707,16 @@ outPair = First@Cases[incidence, vertex \[DirectedEdge] _];
 ix123 = {First[inPair],First[outPair],Last[outPair]};
 graphLineDeviation[meshAssociation,ix123]
 ];
+vertexAngleUndirected[meshAssociation_,component_,vertex_] :=Module[{pairList,ix123},
+pairList = AdjacencyList[component,vertex];
+If[Length[pairList]==0,Return[Missing["Can't find incidence"]]];
+If[Length[pairList]==1,Return[0]];
+If[Length[pairList] > 2,Return[Missing["Too many incidences"]]];
+
+ix123 = {pairList[[1]],vertex,pairList[[2]]};
+
+graphLineDeviation[meshAssociation,ix123]
+];
 
 
 (* ::Input::Initialization:: *)
@@ -671,6 +735,40 @@ kinks = Keys@Select[angles,
 	res = EdgeDelete[res,Flatten@edgesToDrop];res  =connectedDirectedGraphComponents[res];
 	res = Select[res,VertexCount[#]>  locateParastichyOptions["MinimumThreadLength"]&];
 	Return[res];
+
+];
+splitAtKinks2[meshAssociation_,component_] := Module[{vertices,angleAtVertex,angles,res,kinks,edgesToDrop},
+(* component is an undirected path  *)
+If[VertexCount[component]<= 2,Return[Nothing[]]];
+
+vertices = VertexList[component];
+
+angleAtVertex = Map[vertexAngleUndirected[meshAssociation,component,#]&,vertices];
+angles = AssociationThread[vertices,angleAtVertex];
+
+kinks = Keys@Select[angles,
+		Abs[#] >locateParastichyOptions["StraightnessWhenAdjacent"]&];
+
+res = component;res = VertexDelete[res,kinks];res  =ConnectedGraphComponents[res];
+
+res = Select[res,
+VertexCount[#]>  locateParastichyOptions["MinimumThreadLength"]&];Return[res];
+
+];
+
+splitAtSplits[meshAssociation_,component_] := Module[{vertices,angleAtVertex,angles,res,kinks,edgesToDrop},
+(* component is an undirected path  *)
+If[VertexCount[component]<= 2,Return[Nothing[]]];
+vertices = VertexList[component];
+
+vertexEdgeCounts = Association@Map[#->vertexEdgeCount[component,#]&,VertexList[component]];
+
+kinks = Keys@Select[vertexEdgeCounts,# > 2&];
+
+res = component;res = VertexDelete[res,kinks];res  =ConnectedGraphComponents[res];
+
+res = Select[res,
+VertexCount[#]>  locateParastichyOptions["MinimumThreadLength"]&];Return[res];
 
 ];
 
