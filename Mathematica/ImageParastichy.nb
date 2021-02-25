@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    135357,       3433]
-NotebookOptionsPosition[    130646,       3351]
-NotebookOutlinePosition[    131293,       3373]
-CellTagsIndexPosition[    131250,       3370]
+NotebookDataLength[    138903,       3529]
+NotebookOptionsPosition[    133927,       3443]
+NotebookOutlinePosition[    134589,       3465]
+CellTagsIndexPosition[    134546,       3462]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -1381,7 +1381,7 @@ Cell[BoxData[{
      RowBox[{"mpf", ",", "parastichy", ",", 
       RowBox[{
        RowBox[{"First", "[", "mpf", "]"}], "[", "\"\<Family\>\"", "]"}]}], 
-     "]"}]}], ";"}], "\n"}], "\[IndentingNewLine]", 
+     "]"}]}], ";"}], "\[IndentingNewLine]"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{
@@ -2925,7 +2925,7 @@ Cell[BoxData[{
          RowBox[{"res", ",", 
           RowBox[{"DirectedEdge", " ", "@@@", " ", "path"}]}], "]"}]}], ";", 
        "\[IndentingNewLine]", "res"}]}], "\n", "]"}]}], ";"}], 
-  "\n"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{"directedPathHead", "[", "component_", "]"}], " ", ":=", "  ", 
@@ -3346,11 +3346,103 @@ Cell[BoxData[{
     ";"}], "\n", "\n"}], "\n"}], "Code",
  CellLabel->
   "2/16/21 16:14:26 (Local) \
-In[84]:=",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
+In[84]:=",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"graphVCA", "[", "g_", "]"}], " ", ":=", " ", 
+   RowBox[{"AssociationThread", "[", 
+    RowBox[{
+     RowBox[{"VertexList", "[", "g", "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"AnnotationValue", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"g", ",", 
+         RowBox[{"VertexList", "[", "g", "]"}]}], "}"}], ",", 
+       "VertexCoordinates"}], "]"}]}], "]"}]}], ";"}]], "Input",
+ InitializationCell->True,
+ CellLabel->
+  "2/17/21 10:56:02 (Local) \
+In[260]:=",ExpressionUUID->"afaffb66-151b-47d7-bc2a-d75855c28589"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"graphJoin", "[", "gList_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"vcas", ",", "g", ",", "vc"}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"vcas", " ", "=", " ", 
+        RowBox[{"Union", "@@", 
+         RowBox[{"Map", "[", 
+          RowBox[{"graphVCA", ",", "gList"}], "]"}]}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"g", " ", "=", " ", 
+        RowBox[{"GraphUnion", " ", "@@", "gList"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"vc", " ", "=", 
+        RowBox[{"Map", "[", 
+         RowBox[{"vcas", ",", " ", 
+          RowBox[{"VertexList", "[", "g", "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"g", " ", "=", " ", 
+        RowBox[{"Graph", "[", 
+         RowBox[{"g", ",", 
+          RowBox[{"VertexCoordinates", "\[Rule]", "vc"}]}], "]"}]}]}]}], 
+     "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"graphToParastichyFamily", "[", 
+    RowBox[{"meshAssociation_", ",", "g_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"gList", ",", "paths"}], "}"}], ",", "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"vList", " ", "=", " ", 
+       RowBox[{"Map", "[", 
+        RowBox[{"VertexList", ",", " ", 
+         RowBox[{"ConnectedGraphComponents", "[", "g", "]"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"vList", " ", "=", " ", 
+       RowBox[{"Select", "[", 
+        RowBox[{"vList", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Length", "[", "#", "]"}], ">", "1"}], "&"}]}], "]"}]}], 
+      ";", "\[IndentingNewLine]", 
+      RowBox[{"paths", " ", "=", " ", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"makeDirectedParastichy", "[", 
+           RowBox[{"meshAssociation", ",", "#"}], "]"}], "&"}], ",", 
+         "vList"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"aPF", "[", 
+        RowBox[{"mPF_", ",", "path_"}], "]"}], " ", ":=", " ", 
+       RowBox[{"addToParastichyFamily", "[", 
+        RowBox[{"mPF", ",", "path", ",", "3"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Fold", "[", " ", 
+       RowBox[{"aPF", ",", 
+        RowBox[{"{", "}"}], ",", "paths"}], "]"}]}]}], "\[IndentingNewLine]", 
+    "]"}]}], ";"}], "\[IndentingNewLine]"}], "Input",
+ InitializationCell->True,
+ CellLabel->
+  "2/17/21 11:34:34 (Local) \
+In[360]:=",ExpressionUUID->"0de7f3f9-0cb0-400d-a741-e8b35a9f5a51"]
 }, Open  ]]
 },
-WindowSize->{718.5, 825.75},
-WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowSize->{718.5, 831.},
+WindowMargins->{{Automatic, -2.099999999999909}, {Automatic, 0}},
 WindowStatusArea->"",
 TaggingRules->{
  "WelcomeScreenSettings" -> {"FEStarting" -> False}, 
@@ -3433,7 +3525,11 @@ Cell[114586, 2938, 5284, 134, 620, "Input",ExpressionUUID->"23e910ed-a1dc-4ea0-a
 Cell[119873, 3074, 5620, 131, 870, "Input",ExpressionUUID->"bec8a550-880d-4270-b994-1ee9f1cc4e8b",
  InitializationCell->True],
 Cell[125496, 3207, 2620, 73, 385, "Code",ExpressionUUID->"84d878d6-dd33-4fb8-a10a-037275e2a40e"],
-Cell[128119, 3282, 2511, 66, 350, "Code",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"]
+Cell[128119, 3282, 2511, 66, 350, "Code",ExpressionUUID->"7d934c07-76a0-4a5f-9037-ee7523bc7b4d"],
+Cell[130633, 3350, 582, 16, 77, "Input",ExpressionUUID->"afaffb66-151b-47d7-bc2a-d75855c28589",
+ InitializationCell->True],
+Cell[131218, 3368, 2693, 72, 369, "Input",ExpressionUUID->"0de7f3f9-0cb0-400d-a741-e8b35a9f5a51",
+ InitializationCell->True]
 }, Open  ]]
 }
 ]

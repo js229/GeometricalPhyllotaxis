@@ -795,3 +795,27 @@ mesh = MeshRegion[meshPoints,meshPolygons];
 
 
 
+
+
+(* ::Input::Initialization:: *)
+graphVCA[g_] := AssociationThread[VertexList[g],
+AnnotationValue[{g,VertexList[g]},VertexCoordinates]];
+
+
+(* ::Input::Initialization:: *)
+graphJoin[gList_] := Module[{vcas,g,vc},
+vcas = Union@@Map[graphVCA,gList];
+g = GraphUnion @@gList;
+vc =Map[vcas, VertexList[g]];
+g = Graph[g,VertexCoordinates->vc]
+];
+
+graphToParastichyFamily[meshAssociation_,g_] := Module[{gList,paths},
+
+vList = Map[VertexList, ConnectedGraphComponents[g]];
+vList = Select[vList,Length[#]>1&];
+paths = Map[makeDirectedParastichy[meshAssociation,#]&,vList];
+aPF[mPF_,path_] := addToParastichyFamily[mPF,path,3];
+Fold[ aPF,{},paths]
+];
+
