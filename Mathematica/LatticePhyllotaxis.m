@@ -146,13 +146,17 @@ pvectors = Append[pv,pthird]; (* sometimes the fourth can be the same length as 
 numberate[pvectors, h]
 ];
 rawpnumber[v_,h_] :=  Module[{m,d},
+If[v=={1,0},Return[0]];
+
 m =Abs[Round[v[[2]]/h ]];
 d = v[[1]];
 (* if d=-1/2, then there is another parastichy vector with d=1/2; if d not in [-1/2,1/2] also a complementary vector *)
 If[d== -1/2 || Round[d] != 0, m = hat[m]];
 m
 ];
-numberate[pvectors_, h_] := Module[{pnumbers,onepos,hatpos},pnumbers = Map[rawpnumber[#,h]&,pvectors];onepos = Position[pnumbers,1];If[Length[onepos]>= 2, hatpos = onepos[[2]]; pnumbers[[hatpos]] = hat[1]];Association[Map[#[[1]]->#[[2]] &,Transpose[{pnumbers,pvectors}]]]
+numberate[pvectors_, h_] := Module[{pnumbers,onepos,hatpos},pnumbers = Map[rawpnumber[#,h]&,pvectors];
+Print[pnumbers];
+onepos = Position[pnumbers,1,1];Print[onepos];If[Length[onepos]>= 2, hatpos = onepos[[2]]; pnumbers[[hatpos]] = hat[1]];Association[Map[#[[1]]->#[[2]] &,Transpose[{pnumbers,pvectors}]]]
 ];
 
 
