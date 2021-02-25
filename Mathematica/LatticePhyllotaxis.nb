@@ -1,0 +1,4921 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    181684,       4913]
+NotebookOptionsPosition[    174254,       4787]
+NotebookOutlinePosition[    174842,       4807]
+CellTagsIndexPosition[    174799,       4804]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Winding number", "Section",ExpressionUUID->"dafb00cf-9865-4e0d-8243-84db3f549a19"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"euclideanQCoefficients", "[", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1"}], "}"}], "]"}], " ", ":=", " ", 
+    RowBox[{"{", "}"}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "actually", " ", "this", " ", "is", " ", "implied", " ", "by", " ", 
+     "algo", " ", "anyway"}], ",", " ", 
+    RowBox[{"but", " ", "being", " ", "explicit"}]}], " ", "*)"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"euclideanQCoefficients", "[", 
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"r", ",", "q", ",", "i"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"i", "=", "0"}], ";", "\n", 
+       RowBox[{
+        RowBox[{"r", "[", 
+         RowBox[{"-", "1"}], "]"}], "=", "n"}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "in", " ", "this", " ", "order", " ", "so", " ", "that", " ", "if", 
+          " ", "m"}], "<", 
+         RowBox[{
+         "n", " ", "then", " ", "get", " ", "no", " ", "initial", " ", 
+          "zero"}]}], " ", "*)"}], "\n", 
+       RowBox[{
+        RowBox[{"r", "[", "0", "]"}], " ", "=", " ", "m"}], ";", "\n", 
+       RowBox[{"While", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"r", "[", "i", "]"}], " ", ">", " ", "0"}], "  ", ",", "\n", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"q", "[", "i", "]"}], " ", "=", " ", 
+           RowBox[{"Floor", "[", 
+            RowBox[{
+             RowBox[{"r", "[", 
+              RowBox[{"i", "-", "1"}], "]"}], "/", 
+             RowBox[{"r", "[", "i", "]"}]}], "]"}]}], ";", "\n", 
+          RowBox[{
+           RowBox[{"r", "[", 
+            RowBox[{"i", "+", "1"}], "]"}], " ", "=", " ", 
+           RowBox[{
+            RowBox[{"r", "[", 
+             RowBox[{"i", "-", "1"}], "]"}], " ", "-", " ", 
+            RowBox[{
+             RowBox[{"q", "[", "i", "]"}], " ", 
+             RowBox[{"r", "[", "i", "]"}]}]}]}], ";", "\n", 
+          RowBox[{"i", "++"}], ";"}]}], "\n", "]"}], ";", "\n", " ", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"q", "[", "j", "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"j", ",", "0", ",", 
+           RowBox[{"i", "-", "1"}]}], "}"}]}], "]"}]}]}], "\n", "]"}]}], 
+   ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"euclideanUVcoefficients", "[", 
+     RowBox[{"{", "}"}], "]"}], " ", ":=", " ", 
+    RowBox[{"{", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], "}"}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"ie", " ", "for", " ", "m"}], ",", 
+    RowBox[{"n", "=", "0"}], ",", 
+    RowBox[{"1", " ", ";", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"m", " ", "v"}], " ", "-", " ", 
+       RowBox[{"n", " ", "u"}]}], " ", "=", " ", 
+      RowBox[{"-", "1"}]}]}]}], " ", "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"euclideanUVcoefficients", "[", "q_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"i", ",", "u", ",", "v", ",", "qfunc"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"i", "=", "0"}], ";", "\n", 
+       RowBox[{
+        RowBox[{"u", "[", 
+         RowBox[{"-", "1"}], "]"}], "=", "1"}], ";", " ", 
+       RowBox[{
+        RowBox[{"v", "[", 
+         RowBox[{"-", "1"}], "]"}], "=", "0"}], ";", " ", "\n", 
+       RowBox[{
+        RowBox[{"u", "[", "0", "]"}], " ", "=", " ", "0"}], ";", " ", 
+       RowBox[{
+        RowBox[{"v", "[", "0", "]"}], "=", "1"}], ";", "\n", 
+       RowBox[{
+        RowBox[{"qfunc", "[", "i_", "]"}], " ", ":=", " ", 
+        RowBox[{"q", "[", 
+         RowBox[{"[", 
+          RowBox[{"i", "+", "1"}], "]"}], "]"}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{"qfunc", " ", "indexes", " ", "from", " ", "0"}], " ", "*)"}],
+        "\n", 
+       RowBox[{"For", "[", 
+        RowBox[{
+         RowBox[{"i", "=", "1"}], ",", 
+         RowBox[{"i", "<=", " ", 
+          RowBox[{"Length", "[", "q", "]"}]}], ",", " ", 
+         RowBox[{"i", "++"}], ",", "\n", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"u", "[", "i", "]"}], " ", "=", " ", 
+           RowBox[{
+            RowBox[{"u", "[", 
+             RowBox[{"i", "-", "2"}], "]"}], " ", "+", " ", 
+            RowBox[{
+             RowBox[{"qfunc", "[", 
+              RowBox[{"i", "-", "1"}], "]"}], " ", 
+             RowBox[{"u", "[", 
+              RowBox[{"i", "-", "1"}], "]"}]}]}]}], ";", "\n", 
+          RowBox[{
+           RowBox[{"v", "[", "i", "]"}], " ", "=", " ", 
+           RowBox[{
+            RowBox[{"v", "[", 
+             RowBox[{"i", "-", "2"}], "]"}], " ", "+", " ", 
+            RowBox[{
+             RowBox[{"qfunc", "[", 
+              RowBox[{"i", "-", "1"}], "]"}], " ", 
+             RowBox[{"v", "[", 
+              RowBox[{"i", "-", "1"}], "]"}]}]}]}], ";"}]}], "\n", "]"}], ";", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"u", "[", "1", "]"}], " ", "=", " ", "1"}], ";", " ", 
+         RowBox[{
+          RowBox[{"v", "[", "1", "]"}], " ", "=", " ", 
+          RowBox[{"q", "[", "0", "]"}]}], ";"}], "*)"}], "\n", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"u", "[", "i", "]"}], ",", 
+           RowBox[{"v", "[", "i", "]"}]}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"i", ",", "0", ",", 
+           RowBox[{"Length", "[", "q", "]"}]}], "}"}]}], "]"}]}]}], "\n", 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"makeEuclideanProductMatrix", "[", "q_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"A", ",", "P", ",", "qfunc"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"qfunc", "[", "i_", "]"}], " ", ":=", " ", 
+        RowBox[{"q", "[", 
+         RowBox[{"[", 
+          RowBox[{"i", "+", "1"}], "]"}], "]"}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{"qfunc", " ", "indexes", " ", "from", " ", "0"}], " ", "*)"}],
+        "\n", 
+       RowBox[{
+        RowBox[{"A", "[", "i_", "]"}], " ", ":=", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", " ", 
+           RowBox[{"0", ",", "1"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            RowBox[{"-", 
+             RowBox[{"qfunc", "[", "i", "]"}]}]}], "}"}]}], "}"}]}], ";", 
+       "\n", 
+       RowBox[{"P", " ", "=", " ", 
+        RowBox[{"IdentityMatrix", "[", "2", "]"}]}], ";", "\n", 
+       RowBox[{"For", "[", 
+        RowBox[{
+         RowBox[{"i", "=", "0"}], ",", 
+         RowBox[{"i", "<", 
+          RowBox[{"Length", "[", "q", "]"}]}], ",", 
+         RowBox[{"i", "++"}], ",", "\n", 
+         RowBox[{
+          RowBox[{"P", " ", "=", " ", 
+           RowBox[{
+            RowBox[{"A", "[", "i", "]"}], " ", ".", " ", "P"}]}], ";"}]}], 
+        "\n", "]"}], ";", "\n", "P"}]}], "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"euclideanProductMatrix", "[", "mn_", "]"}], " ", ":=", "   ", 
+    RowBox[{"makeEuclideanProductMatrix", "[", 
+     RowBox[{"euclideanQCoefficients", "[", "mn", "]"}], "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"euclideanHCF", "[", "mn_", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "res", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"res", " ", "=", "  ", 
+       RowBox[{
+        RowBox[{"euclideanProductMatrix", "[", "mn", "]"}], "  ", ".", "  ", 
+        RowBox[{"Reverse", "[", "mn", " ", "]"}]}]}], ";", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{"because", " ", "of", " ", "the", " ", "r"}], "-", 
+        RowBox[{"order", " ", "above"}]}], " ", "*)"}], " ", "\n", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"res", "[", 
+          RowBox[{"[", "2", "]"}], "]"}], " ", "!=", "0"}], " ", ",", " ", 
+        RowBox[{"Abort", "[", "]"}]}], "]"}], ";", "\n", 
+      RowBox[{"First", "[", "res", "]"}]}]}], "\n", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"euclideanDelta", "[", "mn_", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"q", ",", "res"}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"q", " ", "=", " ", 
+       RowBox[{"euclideanQCoefficients", "[", "mn", "]"}]}], ";", "\n", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"OddQ", "[", 
+         RowBox[{"Length", "[", "q", "]"}], "]"}], ",", "1", ",", 
+        RowBox[{"-", "1"}]}], "]"}]}]}], "\n", "]"}]}], ";"}]}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"d65299de-a7b4-4028-bfad-df211f871af8"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"euclideanUVDirect", "[", "mn_", "]"}], " ", ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"q", ",", "uvList"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"q", " ", "=", " ", 
+        RowBox[{"euclideanQCoefficients", "[", "mn", "]"}]}], ";", "\n", 
+       RowBox[{"uvList", " ", "=", " ", 
+        RowBox[{"euclideanUVcoefficients", "[", "q", "]"}]}], ";", " ", 
+       RowBox[{"(*", 
+        RowBox[{" ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"length", " ", "1"}], " ", "+", " ", 
+           RowBox[{"length", "[", "q", "]"}]}], ",", " ", 
+          RowBox[{
+           RowBox[{"unless", " ", "q"}], "=", 
+           RowBox[{
+            RowBox[{"{", "}"}], " ", "when", " ", 
+            RowBox[{"{", 
+             RowBox[{"0", ",", "1"}], "}"}]}]}]}], "}"}], " ", "*)"}], "\n", 
+       RowBox[{"uv", "=", " ", 
+        RowBox[{"uvList", "[", 
+         RowBox[{"[", " ", 
+          RowBox[{"Max", "[", 
+           RowBox[{"1", ",", 
+            RowBox[{"Length", "[", "q", "]"}]}], "]"}], " ", "]"}], "]"}]}], 
+       " ", ";", "\n", "uv"}]}], "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"euclideanUV", "[", "mn_", "]"}], " ", ":=", " ", 
+    RowBox[{"euclideanUVDirect", "[", "mn", "]"}]}], ";"}], " "}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"euclideanUV", "[", 
+    RowBox[{"mn_", ",", "ForDelta_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"mnDelta", ",", "uv"}], "}"}], ",", "\n", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+        "Euclid", " ", "yields", " ", "a", " ", "pair", " ", "with", " ", 
+         "mv"}], " ", "-", " ", "nu"}], "=", " ", 
+       RowBox[{
+        RowBox[{"\[PlusMinus]", " ", "1"}], " ", "but", " ", "we", " ", 
+        RowBox[{"don", "'"}], "t", " ", "know", " ", "the", " ", "sign"}]}], 
+      " ", "*)"}], "\n", 
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"euclideanDelta", "[", "mn", "]"}], "==", "ForDelta"}], ",", 
+        "\n", 
+        RowBox[{"uv", "=", " ", 
+         RowBox[{"euclideanUVDirect", "[", "mn", "]"}]}], ",", "\n", 
+        RowBox[{"uv", " ", "=", " ", 
+         RowBox[{"Reverse", "[", " ", 
+          RowBox[{"euclideanUVDirect", "[", 
+           RowBox[{"Reverse", "[", "mn", "]"}], "]"}], "]"}]}]}], "\n", "]"}],
+       ";", "\n", "uv"}]}], "\n", "]"}]}], ";"}]}], "Code",ExpressionUUID->\
+"1771017c-1420-4e16-8cc1-b9b9a686ae7d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"euclideanProof", "[", "mn_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"uv", ",", "str"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"uv", " ", "=", " ", 
+        RowBox[{"euclideanUV", "[", "mn", "]"}]}], ";", "\n", " ", 
+       RowBox[{"str", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"StringTemplate", "[", "\"\<``*``-``*``\>\"", "]"}], "[", 
+         RowBox[{
+          RowBox[{"mn", "[", 
+           RowBox[{"[", "1", "]"}], "]"}], ",", 
+          RowBox[{"uv", "[", 
+           RowBox[{"[", "2", "]"}], "]"}], ",", 
+          RowBox[{"mn", "[", 
+           RowBox[{"[", "2", "]"}], "]"}], ",", 
+          RowBox[{"uv", "[", 
+           RowBox[{"[", "1", "]"}], "]"}]}], "]"}]}], ";", "\n", 
+       RowBox[{"{", 
+        RowBox[{"str", ",", 
+         RowBox[{"ToExpression", "[", "str", "]"}], ",", 
+         RowBox[{"euclideanDelta", "[", "mn", "]"}]}], "}"}]}]}], "\n", 
+     "]"}]}], ";"}], "\n", "\n"}]], "Code",ExpressionUUID->"786c8c86-1bf7-\
+46c4-9fdf-6ffb07ce4d6c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Principal Vectors", "Section",ExpressionUUID->"71246585-5db0-4ca4-924e-1cdbf414d8c1"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"euclideanReduction", "[", "pq_", "]"}], "  ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "uv", ",", "it", ",", "firstShorter", ",", "dotPositive", ",", 
+       "reduceSecond", ",", "isPrincipal", ",", "positiveRise", ",", 
+       "positiveVec"}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"firstShorter", "[", 
+        RowBox[{"{", 
+         RowBox[{"u_", ",", "v_"}], "}"}], "]"}], " ", ":=", " ", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"u2", "=", 
+            RowBox[{"Simplify", "[", 
+             RowBox[{"u", " ", ".", " ", "u"}], "]"}]}], ",", 
+           RowBox[{"v2", "=", 
+            RowBox[{"Simplify", "[", 
+             RowBox[{"v", " ", ".", " ", "v"}], "]"}]}]}], "}"}], ",", 
+         RowBox[{"If", " ", "[", " ", 
+          RowBox[{
+           RowBox[{"u2", " ", "<", " ", "v2"}], ",", " ", 
+           RowBox[{"{", 
+            RowBox[{"u", ",", "v"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"v", ",", "u"}], "}"}]}], "]"}]}], "]"}]}], ";", "\n", 
+      RowBox[{
+       RowBox[{"dotPositive", "[", 
+        RowBox[{"{", 
+         RowBox[{"u_", ",", "v_"}], "}"}], "]"}], " ", ":=", " ", 
+       RowBox[{"If", " ", "[", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"u", " ", ".", " ", "v"}], " ", ">", " ", "0"}], ",", " ", 
+         RowBox[{"{", 
+          RowBox[{"u", ",", "v"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"u", ",", 
+           RowBox[{"-", "v"}]}], "}"}]}], "]"}]}], ";", "\n", 
+      RowBox[{
+       RowBox[{"reduceSecond", "[", 
+        RowBox[{"{", 
+         RowBox[{"u_", ",", "v_"}], "}"}], "]"}], " ", ":=", " ", 
+       RowBox[{"If", "[", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Abs", "[", 
+           RowBox[{"u", " ", ".", " ", 
+            RowBox[{"(", 
+             RowBox[{"v", "-", "u"}], ")"}]}], "]"}], "  ", ">", "  ", 
+          RowBox[{"Abs", "[", 
+           RowBox[{"u", " ", ".", " ", "v"}], " ", "]"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"u", ",", "v"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"u", ",", 
+           RowBox[{"u", "-", "v"}]}], "}"}]}], "]"}]}], ";", "\t", "\n", 
+      RowBox[{
+       RowBox[{"isPrincipal", "[", 
+        RowBox[{"{", 
+         RowBox[{"u_", ",", "v_"}], "}"}], "]"}], " ", ":=", " ", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"u2", "=", 
+            RowBox[{"Simplify", "[", 
+             RowBox[{"u", " ", ".", " ", "u"}], "]"}]}], ",", 
+           RowBox[{"v2", "=", 
+            RowBox[{"Simplify", "[", 
+             RowBox[{"v", " ", ".", " ", "v"}], "]"}]}]}], "}"}], ",", "\n", 
+         RowBox[{
+          RowBox[{"u2", "  ", "<=", "  ", "v2"}], " ", "&&", " ", 
+          RowBox[{"0", "  ", "<=", " ", 
+           RowBox[{"u", " ", ".", " ", "v"}]}], " ", "&&", " ", 
+          RowBox[{
+           RowBox[{"u", " ", ".", " ", "v"}], " ", "<=", " ", 
+           RowBox[{"u2", " ", "/", "2"}]}]}]}], "\n", "]"}]}], " ", ";", "\n", 
+      RowBox[{
+       RowBox[{"positiveRise", "[", "uvp_", "]"}], " ", ":=", " ", 
+       RowBox[{"Map", "[", 
+        RowBox[{"positiveVec", ",", "uvp"}], "]"}]}], ";", "\n", 
+      RowBox[{
+       RowBox[{"positiveVec", "[", 
+        RowBox[{"{", 
+         RowBox[{"ud_", ",", "uh_"}], "}"}], "]"}], " ", ":=", " ", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"uh", ">", "0"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"ud", ",", "uh"}], "}"}], ",", "\n", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"uh", "<", "0"}], ",", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "ud"}], ",", 
+             RowBox[{"-", "uh"}]}], "}"}], ",", " ", 
+           RowBox[{"(*", " ", 
+            RowBox[{"h", "=", "0"}], " ", "*)"}], " ", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"Abs", "[", "ud", "]"}], ",", "0"}], "}"}]}], "]"}]}], 
+        "]"}]}], ";", "\n", 
+      RowBox[{"uv", " ", "=", " ", "pq"}], ";", "\n", 
+      RowBox[{"it", "=", "1"}], ";", 
+      RowBox[{"While", "[", 
+       RowBox[{
+        RowBox[{"!", 
+         RowBox[{"isPrincipal", "[", "uv", "]"}]}], ",", " ", "\n", 
+        RowBox[{"{", "\n", 
+         RowBox[{
+          RowBox[{"it", "++"}], ";", "  ", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"it", ">", "20"}], ",", 
+            RowBox[{"Break", "[", "]"}]}], "]"}], ";", "\n", 
+          RowBox[{"uv", " ", "=", " ", 
+           RowBox[{"firstShorter", "[", "uv", "]"}]}], ";", "\n", 
+          RowBox[{"uv", " ", "=", " ", 
+           RowBox[{"dotPositive", "[", "uv", "]"}]}], ";", "\n", 
+          RowBox[{"uv", " ", "=", " ", 
+           RowBox[{"reduceSecond", "[", "uv", "]"}]}], ";", "\n", 
+          RowBox[{"uv", " ", "=", " ", 
+           RowBox[{"Simplify", " ", "/@", "uv"}]}], " ", ";"}], "\n", "}"}]}],
+        "]"}], ";", "\n", "\n", 
+      RowBox[{"uv", " ", "=", " ", 
+       RowBox[{"firstShorter", "[", "uv", "]"}]}], ";", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "not", " ", "needed", " ", "but", " ", "just", " ", "to", " ", "be", 
+        " ", "clear"}], " ", "*)"}], " ", "\n", 
+      RowBox[{"uv", " ", "=", " ", 
+       RowBox[{"positiveRise", "[", "uv", "]"}]}], ";", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{"only", " ", "do", " ", "this", " ", "at", " ", "the", " ", 
+        RowBox[{"end", " ", "!"}]}], " ", "*)"}], "\n", "uv"}]}], "\n", 
+    "]"}]}], ";"}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"3968a2a7-342e-4cc7-b6dc-0d81163f88bd"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"euclideanShortestPair", "[", 
+     RowBox[{"{", 
+      RowBox[{"pm_", ",", "pn_"}], "}"}], "]"}], " ", ":=", " ", "\n", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{
+      "in", " ", "the", " ", "lattice", " ", "generated", " ", "by", " ", 
+       "pm", " ", "and", " ", "pn"}], ",", " ", 
+      RowBox[{"what", " ", "is", " ", "the", " ", "shortest", " ", 
+       RowBox[{"pair", " ", "?"}]}]}], " ", "*)"}], "\n", 
+    RowBox[{"euclideanReduction", "[", 
+     RowBox[{"{", 
+      RowBox[{"pm", ",", "pn"}], "}"}], "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"tgetPrincipalVectorsDH", "[", 
+     RowBox[{"{", 
+      RowBox[{"d_", ",", "h_"}], "}"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "uv", "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"uv", "=", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"d", ",", "h"}], "}"}], ",", " ", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"1", "-", "d"}], ",", 
+            RowBox[{"-", "h"}]}], "}"}]}], "}"}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"1", ",", "0"}], ")"}], " ", "and", " ", 
+         RowBox[{"(", 
+          RowBox[{"d", ",", "h"}], ")"}], " ", "are", " ", "a", " ", 
+         "generating", " ", "pair"}], " ", "*)"}], "\n", 
+       RowBox[{"euclideanShortestPair", "[", "uv", "]"}]}]}], "\n", "]"}]}], 
+   ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"vectorNorm2", "[", "x_", "]"}], " ", ":=", " ", 
+    RowBox[{"Simplify", "[", 
+     RowBox[{"x", " ", ".", " ", "x"}], "]"}]}], ";"}], " ", "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"tgetThreeParastichyVectorsDH", "[", 
+    RowBox[{"{", 
+     RowBox[{"d_", ",", "h_"}], "}"}], "]"}], " ", ":=", " ", "\n", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "pv", ",", "psum", ",", "pdiff", ",", "pthird", ",", "pvectors"}], 
+      "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"pv", "=", 
+       RowBox[{"tgetPrincipalVectorsDH", "[", 
+        RowBox[{"{", 
+         RowBox[{"d", ",", "h"}], "}"}], "]"}]}], ";", "\n", 
+      RowBox[{"psum", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"pv", "[", 
+         RowBox[{"[", "1", "]"}], "]"}], "+", 
+        RowBox[{"pv", "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}]}], ";", "\n", 
+      RowBox[{"pdiff", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"pv", "[", 
+         RowBox[{"[", "1", "]"}], "]"}], "-", 
+        RowBox[{"pv", "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}]}], ";", " ", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"pdiff", "[", 
+          RowBox[{"[", "2", "]"}], "]"}], " ", "<", "0"}], ",", " ", 
+        RowBox[{"pdiff", " ", "=", " ", 
+         RowBox[{"-", "pdiff"}]}]}], "]"}], ";", "\n", 
+      RowBox[{"pthird", " ", "=", " ", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"vectorNorm2", "[", "psum", "]"}], "<=", " ", 
+          RowBox[{"vectorNorm2", "[", "pdiff", "]"}]}], ",", "psum", ",", 
+         "pdiff"}], "]"}]}], ";", "\n", 
+      RowBox[{"pvectors", " ", "=", " ", 
+       RowBox[{"Append", "[", 
+        RowBox[{"pv", ",", "pthird"}], "]"}]}], ";", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "sometimes", " ", "the", " ", "fourth", " ", "can", " ", "be", " ", 
+        "the", " ", "same", " ", "length", " ", "as", " ", "the", " ", 
+        "third", " ", "but", " ", "we", " ", 
+        RowBox[{"don", "'"}], "t", " ", "need", " ", "to", " ", "mark", " ", 
+        "this"}], " ", "*)"}], "\n", 
+      RowBox[{"numberate", "[", 
+       RowBox[{"pvectors", ",", " ", "h"}], "]"}]}]}], "\n", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"rawpnumber", "[", 
+    RowBox[{"v_", ",", "h_"}], "]"}], " ", ":=", "  ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"m", ",", "d"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"m", " ", "=", 
+       RowBox[{"Abs", "[", 
+        RowBox[{"Round", "[", 
+         RowBox[{
+          RowBox[{"v", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}],
+           "/", "h"}], " ", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"d", " ", "=", " ", 
+       RowBox[{"v", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}], 
+      ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"if", " ", "d"}], "=", 
+         RowBox[{
+          RowBox[{"-", "1"}], "/", "2"}]}], ",", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+          "then", " ", "there", " ", "is", " ", "another", " ", "parastichy", 
+           " ", "vector", " ", "with", " ", "d"}], "=", 
+          RowBox[{"1", "/", "2"}]}], ";", " ", 
+         RowBox[{"if", " ", "d", " ", "not", " ", 
+          RowBox[{"in", " ", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"-", "1"}], "/", "2"}], ",", 
+            RowBox[{"1", "/", "2"}]}], "]"}], " ", "also", " ", "a", " ", 
+          "complementary", " ", "vector"}]}]}], " ", "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"d", "\[Equal]", " ", 
+          RowBox[{
+           RowBox[{"-", "1"}], "/", "2"}]}], " ", "||", " ", 
+         RowBox[{
+          RowBox[{"Round", "[", "d", "]"}], " ", "\[NotEqual]", " ", "0"}]}], 
+        ",", " ", 
+        RowBox[{"m", " ", "=", " ", 
+         RowBox[{"hat", "[", "m", "]"}]}]}], "]"}], ";", 
+      "\[IndentingNewLine]", "m"}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"numberate", "[", 
+    RowBox[{"pvectors_", ",", " ", "h_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"pnumbers", ",", "onepos", ",", "hatpos"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"pnumbers", " ", "=", " ", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"rawpnumber", "[", 
+           RowBox[{"#", ",", "h"}], "]"}], "&"}], ",", "pvectors"}], "]"}]}], 
+      ";", 
+      RowBox[{"onepos", " ", "=", " ", 
+       RowBox[{"Position", "[", 
+        RowBox[{"pnumbers", ",", "1"}], "]"}]}], ";", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Length", "[", "onepos", "]"}], ">=", " ", "2"}], ",", " ", 
+        RowBox[{
+         RowBox[{"hatpos", " ", "=", " ", 
+          RowBox[{"onepos", "[", 
+           RowBox[{"[", "2", "]"}], "]"}]}], ";", " ", 
+         RowBox[{
+          RowBox[{"pnumbers", "[", 
+           RowBox[{"[", "hatpos", "]"}], "]"}], " ", "=", " ", 
+          RowBox[{"hat", "[", "1", "]"}]}]}]}], "]"}], ";", 
+      RowBox[{"Association", "[", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], "->", 
+           RowBox[{"#", "[", 
+            RowBox[{"[", "2", "]"}], "]"}]}], " ", "&"}], ",", 
+         RowBox[{"Transpose", "[", 
+          RowBox[{"{", 
+           RowBox[{"pnumbers", ",", "pvectors"}], "}"}], "]"}]}], "]"}], 
+       "]"}]}]}], "\n", "]"}]}], ";"}], "\n"}], "Input",
+ InitializationCell->True,
+ CellLabel->
+  "2/24/21 16:48:39 (Local) \
+In[309]:=",ExpressionUUID->"5f9d3a98-a46c-4729-b5b2-bbd9e7f9b1ef"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Lattice geometry", "Section",ExpressionUUID->"77926345-0f95-41d8-996a-3a72d3c1f138"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeCreateDH", "[", 
+     RowBox[{"{", 
+      RowBox[{"d_", ",", "0"}], "}"}], "]"}], " ", ":=", " ", "Nothing"}], 
+   ";", " ", 
+   RowBox[{"(*", " ", 
+    RowBox[{"silently", " ", "drop", " ", "from", " ", "lists"}], " ", "*)"}],
+    " ", "\n", "\n", 
+   RowBox[{
+    RowBox[{"latticeCreateDH", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"d_", ",", "h_"}], "}"}], ",", 
+      RowBox[{"cylinderLU_", ":", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "0.2"}], ",", "3.2"}], "}"}]}]}], "]"}], "  ", ":=", 
+    "  ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "lattice", "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"lattice", " ", "=", " ", 
+        RowBox[{"Association", " ", "[", "\n", 
+         RowBox[{
+          RowBox[{"\"\<d\>\"", "->", " ", "d"}], "\n", ",", 
+          RowBox[{"\"\<h\>\"", "->", " ", "h"}], "\n", ",", 
+          RowBox[{"\"\<cylinder\>\"", " ", "->", " ", 
+           RowBox[{"{", " ", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"-", "1"}], "/", "2"}], ",", 
+               RowBox[{"1", "/", "2"}]}], "}"}], ",", "cylinderLU"}], "}"}]}],
+           " ", "\n", 
+          RowBox[{"(*", " ", 
+           RowBox[{
+            RowBox[{"always", " ", "has", " ", "periodicity", " ", 
+             RowBox[{"(", 
+              RowBox[{"1", ",", "0"}], ")"}]}], ";", " ", 
+            RowBox[{
+            "this", " ", "is", " ", "how", " ", "much", " ", "of", " ", "it", 
+             " ", "we", " ", "display"}]}], " ", "*)"}], " ", "\n", ",", 
+          RowBox[{"\"\<parastichyVectors\>\"", " ", "->", "  ", 
+           RowBox[{"tgetThreeParastichyVectorsDH", "[", 
+            RowBox[{"{", 
+             RowBox[{"d", ",", "h"}], "}"}], "]"}]}]}], "\n", "]"}]}], ";", 
+       "\n", 
+       RowBox[{"lattice", " ", "=", " ", 
+        RowBox[{"Prepend", "[", 
+         RowBox[{"lattice", ",", 
+          RowBox[{"{", " ", 
+           RowBox[{"\"\<parastichyNumbers\>\"", "->", " ", 
+            RowBox[{
+            "latticeParastichyNumbersGroupedByLength", "[", "lattice", 
+             "]"}]}], "}"}]}], "]"}]}], ";", "\n", "lattice"}]}], "\n", 
+     "]"}]}], ";"}], "\n", "\n"}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"271f6e36-7b08-4aa4-9a63-151b065c5857"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeParastichyNumbersGroupedByLength", "[", "lattice_", "]"}],
+     " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"pv", ",", "pvlengths", ",", "pva"}], "}"}], ",", " ", "\n", 
+      RowBox[{
+       RowBox[{"pv", " ", "=", " ", 
+        RowBox[{"latticeParastichyVectors", "[", "lattice", "]"}]}], ";", 
+       "\n", 
+       RowBox[{"pvlengths", " ", "=", 
+        RowBox[{"Map", "[", 
+         RowBox[{"vectorNorm2", ",", "pv"}], "]"}]}], ";", "\n", 
+       RowBox[{"pva", " ", "=", " ", 
+        RowBox[{"GroupBy", "[", 
+         RowBox[{"pvlengths", ",", "Identity", ",", 
+          RowBox[{
+           RowBox[{"Sort", "[", 
+            RowBox[{"Keys", "[", "#", "]"}], "]"}], "&"}]}], "]"}]}], ";", 
+       "\n", 
+       RowBox[{"Association", "[", 
+        RowBox[{"Map", "[", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"pva", "[", "#", "]"}], "->", " ", "#"}], " ", "&"}], ",",
+           " ", 
+          RowBox[{"Keys", "[", "pva", "]"}]}], "]"}], "]"}]}]}], "\n", 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeParastichyNumbers", "[", "lattice_", "]"}], " ", ":=", 
+    "\n", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "pnumbers", "}"}], ",", " ", "\n", 
+      RowBox[{
+       RowBox[{"pnumbers", " ", "=", 
+        RowBox[{
+        "latticeParastichyNumbersGroupedByLength", "[", "lattice", "]"}]}], 
+       ";", "\n", 
+       RowBox[{"Flatten", "[", 
+        RowBox[{"Map", "[", 
+         RowBox[{"Sort", ",", 
+          RowBox[{"Keys", "[", "pnumbers", "]"}]}], "]"}], "]"}]}]}], "\n", 
+     "]"}]}], ";"}], "\n"}], "\n"}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"747d76d5-80d4-4ff4-9fb6-18e4fa01af7c"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeGetCylinder", "[", "lattice_", "]"}], " ", ":=", " ", 
+   RowBox[{"lattice", "[", "\"\<cylinder\>\"", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeGetCylinderLU", "[", "lattice_", "]"}], " ", ":=", " ", 
+   RowBox[{
+    RowBox[{"lattice", "[", "\"\<cylinder\>\"", "]"}], "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeSetCylinderLU", "[", 
+    RowBox[{"lattice_", ",", "cylinderLU_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"res", ",", "cyl"}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"res", " ", "=", "lattice"}], ";", "\n", 
+      RowBox[{"cyl", "=", " ", 
+       RowBox[{"lattice", "[", "\"\<cylinder\>\"", "]"}]}], ";", "\n", 
+      RowBox[{
+       RowBox[{"cyl", "[", 
+        RowBox[{"[", "2", "]"}], "]"}], " ", "=", " ", "cylinderLU"}], ";", 
+      "\n", 
+      RowBox[{
+       RowBox[{"res", "[", "\"\<cylinder\>\"", "]"}], " ", "=", " ", "cyl"}], 
+      ";", "\n", "res"}]}], "\n", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"latticeCylinderHeight", "[", "lattice_", "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "cylinderLU", "}"}], ",", "\n", 
+       RowBox[{
+        RowBox[{"cylinderLU", "=", " ", 
+         RowBox[{"latticeGetCylinderLU", "[", "lattice", "]"}]}], ";", "\n", 
+        RowBox[{
+         RowBox[{"cylinderLU", "[", 
+          RowBox[{"[", "2", "]"}], "]"}], "-", 
+         RowBox[{"cylinderLU", "[", 
+          RowBox[{"[", "1", "]"}], "]"}]}]}]}], "\n", "]"}]}], ";"}], "\n", 
+   "*)"}]}]}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"9fb040ce-c4ac-4e5e-ae0b-0b1b998cdaaa"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeLabel", "[", "lattice_", "]"}], " ", ":=", " ", "\n", 
+   RowBox[{"latticeParastichyNumbersGroupedByLength", "[", "lattice", "]"}]}],
+   ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeLabelText", "[", "lattice_", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"ll", " ", "=", "  ", 
+       RowBox[{"Keys", "@", 
+        RowBox[{"latticeLabel", "[", "lattice", "]"}]}]}], " ", ";", "\n", 
+      RowBox[{
+       RowBox[{"tos", "[", "x_", "]"}], " ", ":=", " ", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"x", "===", 
+          RowBox[{"hat", "[", "1", "]"}]}], ",", 
+         "\"\<\\!\\(\\*OverscriptBox[\\(1\\), \\(^\\)]\\)\>\"", ",", 
+         RowBox[{"ToString", "[", "x", "]"}]}], "]"}]}], ";", "\n", 
+      RowBox[{"ll", " ", "=", " ", 
+       RowBox[{"Map", "[", 
+        RowBox[{"tos", ",", "ll", ",", 
+         RowBox[{"{", "2", "}"}]}], "]"}]}], ";", "\n", 
+      RowBox[{"ll", " ", "=", " ", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"StringRiffle", "[", 
+           RowBox[{"#", ",", "\"\<=\>\""}], "]"}], "&"}], ",", "ll"}], 
+        "]"}]}], ";", "\n", 
+      RowBox[{"ll", " ", "=", " ", 
+       RowBox[{"StringRiffle", "[", 
+        RowBox[{
+         RowBox[{"Take", "[", 
+          RowBox[{"ll", ",", 
+           RowBox[{"UpTo", "[", "2", "]"}]}], "]"}], ",", "\"\<,\>\""}], 
+        "]"}]}]}]}], "\n", "]"}]}], ";"}]}], "Code",ExpressionUUID->"8f1e7f40-\
+bb03-414f-beb6-6d3cb343cd2f"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeLabelPosition", "[", "lattice_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "cyl", "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"cyl", "=", 
+        RowBox[{"latticeGetCylinder", "[", "lattice", "]"}]}], ";", "\n", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"cyl", "[", 
+          RowBox[{"[", 
+           RowBox[{"1", ",", "1"}], "]"}], "]"}], ",", 
+         RowBox[{"cyl", "[", 
+          RowBox[{"[", 
+           RowBox[{"2", ",", "2"}], "]"}], "]"}]}], "}"}]}]}], " ", 
+     RowBox[{"(*", " ", 
+      RowBox[{"top", " ", "left"}], " ", "*)"}], "\n", "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeParastichyVectors", "[", "lattice_", "]"}], " ", ":=", 
+    " ", 
+    RowBox[{"lattice", "[", "\"\<parastichyVectors\>\"", "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticePrincipalParastichyPair", "[", "lattice_", "]"}], " ", ":=",
+    " ", 
+   RowBox[{"Take", "[", 
+    RowBox[{
+     RowBox[{"latticeParastichyNumbers", "[", "lattice", "]"}], ",", "2"}], 
+    "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"latticePrincipal3ParastichyNumbers", "[", "lattice_", "]"}], " ", ":=", 
+  RowBox[{"Take", "[", 
+   RowBox[{
+    RowBox[{"latticeParastichyNumbers", "[", "lattice", "]"}], ",", "3"}], 
+   "]"}]}]}], "Code",ExpressionUUID->"d8dc7c93-074e-4218-aab6-f30e8f98101b"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticePoints", "[", "lattice_", "]"}], " ", ":=", "  ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "nmin", ",", "nmax", ",", "irange", ",", "points", ",", "h", ",", 
+        "cylinderLU"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"h", " ", "=", " ", 
+        RowBox[{"lattice", "[", "\"\<h\>\"", "]"}]}], ";", 
+       RowBox[{"cylinderLU", "=", 
+        RowBox[{
+         RowBox[{"lattice", "[", "\"\<cylinder\>\"", "]"}], "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}], ";", "\n", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"nmin", ",", "nmax"}], "}"}], "=", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Ceiling", "[", 
+           RowBox[{
+            RowBox[{"Min", "[", "cylinderLU", "]"}], "/", "h"}], "]"}], ",", 
+          RowBox[{"Floor", "[", 
+           RowBox[{
+            RowBox[{"Max", "[", "cylinderLU", "]"}], "/", "h"}], "]"}]}], 
+         "}"}]}], ";", "\n", 
+       RowBox[{"irange", " ", "=", " ", 
+        RowBox[{"{", 
+         RowBox[{"nmin", ",", "nmax"}], "}"}]}], ";", "\n", 
+       RowBox[{"points", " ", "=", " ", 
+        RowBox[{"N", "@", 
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"latticePoint", "[", 
+            RowBox[{"lattice", ",", "i"}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"i", ",", "nmin", ",", "nmax"}], "}"}]}], "]"}]}]}], ";", 
+       "\n", "points"}]}], "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeGraphicPoints", "[", "lattice_", "]"}], " ", ":=", "  ", 
+   RowBox[{"Point", "[", 
+    RowBox[{"latticePoints", "[", "lattice", "]"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeGraphicsPoint", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", "  ", 
+   RowBox[{"Point", "[", 
+    RowBox[{"latticePoint", "[", 
+     RowBox[{"lattice", ",", "m"}], "]"}], "]"}]}], ";"}], "\n"}], "Code",Expr\
+essionUUID->"160c58a1-ef3d-41cf-a124-21b773cca1eb"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"mod", "[", "x_", "]"}], " ", ":=", "  ", 
+    RowBox[{"x", " ", "-", " ", 
+     RowBox[{"Round", "[", "x", "]"}]}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"lpoint", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"d_", ",", "h_"}], "}"}], ",", "m_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"{", " ", 
+    RowBox[{
+     RowBox[{"mod", " ", "[", 
+      RowBox[{"d", " ", "m"}], "]"}], " ", ",", " ", 
+     RowBox[{"m", " ", "h"}]}], "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"lpoint", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"d_", ",", "h_"}], "}"}], ",", 
+     RowBox[{"hat", "[", "m_", "]"}]}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"j", ",", "jp", ",", "jm"}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"j", " ", "=", " ", 
+       RowBox[{"lpoint", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"d", ",", "h"}], "}"}], ",", "m"}], "]"}]}], ";", " ", 
+      RowBox[{"jp", " ", "=", " ", 
+       RowBox[{"j", " ", "-", " ", 
+        RowBox[{"{", 
+         RowBox[{"1", ",", "0"}], "}"}]}]}], ";", " ", 
+      RowBox[{"jm", " ", "=", " ", 
+       RowBox[{"j", "+", " ", 
+        RowBox[{"{", 
+         RowBox[{"1", ",", "0"}], "}"}]}]}], ";", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"should", " ", "just", " ", "test", " ", 
+          RowBox[{"j", "[", 
+           RowBox[{"[", "1", "]"}], "]"}]}], ">", "0"}], "..."}], " ", "*)"}],
+       " ", "\n", 
+      RowBox[{"If", "[", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"jp", " ", ".", " ", "jp"}], " ", "<", " ", 
+         RowBox[{"jm", " ", ".", " ", "jm"}]}], ",", " ", "jp", ",", "jm"}], 
+       "]"}]}]}], "\n", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"pvector", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"d_", ",", "h_"}], "}"}], ",", "m_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{"zeroParastichyQ", "[", "m", "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], ",", 
+     RowBox[{"lpoint", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"d", ",", "h"}], "}"}], ",", "m"}], "]"}]}], "]"}]}], ";", 
+  RowBox[{
+   RowBox[{"latticePoint", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", 
+   RowBox[{"lpoint", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"lattice", "[", "\"\<d\>\"", "]"}], ",", 
+       RowBox[{"lattice", "[", "\"\<h\>\"", "]"}]}], "}"}], ",", "m"}], 
+    "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeVector", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", 
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{"zeroParastichyQ", "[", "m", "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], ",", 
+     RowBox[{"latticePoint", "[", 
+      RowBox[{"lattice", ",", "m"}], "]"}]}], "]"}]}], ";"}]}], "Code",Express\
+ionUUID->"ed44a0b0-8df1-4677-b699-4ec099bc13d3"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticePointH", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", " ", 
+   RowBox[{
+    RowBox[{"latticePoint", "[", 
+     RowBox[{"lattice", ",", "m"}], "]"}], "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticePointD", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", " ", 
+   RowBox[{
+    RowBox[{"latticePoint", "[", 
+     RowBox[{"lattice", ",", "m"}], "]"}], "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeRise", "[", "lattice_", "]"}], " ", ":=", " ", 
+   RowBox[{"latticePointH", "[", 
+    RowBox[{"lattice", ",", "1"}], "]"}]}], ";", " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"will", " ", "be", " ", "the", " ", "same", " ", "as", " ", 
+     RowBox[{"lattice", "[", "\"\<h\>\"", "]"}], " ", "for", " ", "h"}], " ", 
+    ">", " ", "0"}], " ", "*)"}], " ", "\n", 
+  RowBox[{
+   RowBox[{"latticeDivergence", "[", "lattice_", "]"}], " ", ":=", " ", 
+   RowBox[{"latticePointD", "[", 
+    RowBox[{"lattice", ",", "1"}], "]"}]}], ";", " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"will", " ", "be", " ", "the", " ", "same", " ", "as", " ", 
+      RowBox[{"lattice", "[", "\"\<d\>\"", "]"}], " ", "for"}], " ", "-", 
+     RowBox[{"1", "/", "2"}]}], "<", "d", "<", 
+    RowBox[{"1", "/", "2"}]}], " ", "*)"}], " ", "\n", 
+  RowBox[{
+   RowBox[{"latticeVectorLength", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"mEnd", "=", " ", 
+       RowBox[{"latticeVector", "[", 
+        RowBox[{"lattice", ",", "m"}], "]"}]}], "}"}], ",", " ", 
+     RowBox[{"Sqrt", "[", 
+      RowBox[{"mEnd", " ", ".", " ", "mEnd"}], "]"}]}], "]"}]}], 
+  ";"}]}], "Code",ExpressionUUID->"31857182-9d4a-4c09-830d-2e0d13c97d84"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Parastichy lines", "Section",ExpressionUUID->"9046147e-0ca0-4272-b5af-5ffff81b37e9"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticePrincipal3ParastichyLines", "[", "lattice_", "]"}], " ", ":=",
+     " ", 
+    RowBox[{"Map", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"latticeParastichyLines", "[", 
+        RowBox[{"lattice", ",", "#"}], "]"}], "&"}], ",", 
+      RowBox[{"latticePrincipal3ParastichyNumbers", "[", "lattice", "]"}]}], 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticePrincipalParastichyLines", "[", "lattice_", "]"}], " ", ":=",
+     " ", 
+    RowBox[{"Map", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"latticeParastichyLines", "[", 
+        RowBox[{"lattice", ",", "#"}], "]"}], "&"}], ",", 
+      RowBox[{"latticePrincipalParastichyPair", "[", "lattice", "]"}]}], 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"barem", "[", "m_", "]"}], " ", ":=", 
+   RowBox[{"m", " ", "/.", " ", 
+    RowBox[{"hat", " ", "->", " ", "Identity"}]}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"zeroParastichyQ", "[", "m_", "]"}], " ", ":=", " ", 
+    RowBox[{
+     RowBox[{"barem", "[", "m", "]"}], " ", "==", " ", "0"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeParastichySlope", "[", 
+     RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"parastichyVectorM", ",", "pSlope"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"parastichyVectorM", " ", "=", " ", 
+        RowBox[{"latticePoint", "[", 
+         RowBox[{"lattice", ",", "m"}], "]"}]}], ";", "\n", " ", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"parastichyVectorM", "[", 
+           RowBox[{"[", "1", "]"}], "]"}], "==", "0"}], " ", ",", 
+         RowBox[{"Return", "[", "\[Infinity]", "]"}]}], "]"}], ";", "\n", 
+       RowBox[{
+        RowBox[{"parastichyVectorM", "[", 
+         RowBox[{"[", "2", "]"}], "]"}], "/", 
+        RowBox[{"parastichyVectorM", "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}]}]}], "\n", "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeParastichyVerticalSeparation", "[", 
+     RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"parastichyVectorM", ",", "pSlope"}], "}"}], ",", "\n", " ", 
+      RowBox[{
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"zeroParastichyQ", "[", "m", "]"}], ",", 
+         RowBox[{"Return", "[", 
+          RowBox[{"latticeRise", "[", "lattice", "]"}], "]"}]}], "]"}], ";", 
+       "\n", 
+       RowBox[{"parastichyVectorM", " ", "=", " ", 
+        RowBox[{"latticePoint", "[", 
+         RowBox[{"lattice", ",", "m"}], "]"}]}], ";", "\n", " ", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"parastichyVectorM", "[", 
+           RowBox[{"[", "1", "]"}], "]"}], "==", "0"}], " ", ",", 
+         RowBox[{"Return", "[", "0", "]"}]}], "]"}], ";", "\n", 
+       RowBox[{"pSlope", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"parastichyVectorM", "[", 
+          RowBox[{"[", "2", "]"}], "]"}], "/", 
+         RowBox[{"parastichyVectorM", "[", 
+          RowBox[{"[", "1", "]"}], "]"}]}]}], ";", "\n", 
+       RowBox[{
+        RowBox[{"latticeRise", "[", "lattice", "]"}], "/", "pSlope"}]}]}], 
+     "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeParastichyHorizontalSeparation", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"zeroParastichyQ", "[", "m", "]"}], ",", 
+        RowBox[{"Return", "[", "1", "]"}]}], "]"}], ";", "\n", 
+      RowBox[{"1", "/", 
+       RowBox[{"barem", "[", "m", "]"}]}]}]}], "\n", "]"}]}], 
+  ";"}], "\n"}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"ec135d8a-a107-4dc2-ad4a-43b270460e6d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"linelineIntersection", "[", 
+     RowBox[{"line1_", ",", "line2_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "x1", ",", "y1", ",", "x2", ",", "y2", ",", "x3", ",", "y3", ",", "x4",
+         ",", "y4", ",", "x", ",", "y"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", " ", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"x1", ",", "y1"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x2", ",", "y2"}], "}"}]}], " ", "}"}], " ", "=", " ", 
+        "line1"}], ";", "\n", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", " ", 
+           RowBox[{"x3", ",", "y3"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x4", ",", "y4"}], "}"}]}], "}"}], " ", "=", " ", 
+        "line2"}], ";", "\n", 
+       RowBox[{"m1", " ", "=", " ", 
+        RowBox[{"{", " ", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"x", ",", "y", ",", "1"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x1", ",", "y1", ",", "1"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x2", ",", "y2", ",", "1"}], "}"}]}], "}"}]}], ";", "\n", 
+       RowBox[{"m2", " ", "=", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", " ", 
+           RowBox[{"x", ",", "y", ",", "1"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x3", ",", "y3", ",", "1"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x4", ",", "y4", ",", "1"}], "}"}]}], "}"}]}], ";", "\n", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"x", ",", "y"}], "}"}], "  ", "/.", " ", 
+        RowBox[{
+         RowBox[{"Solve", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Det", "[", "m1", "]"}], "==", "0"}], ",", 
+             RowBox[{
+              RowBox[{"Det", "[", "m2", "]"}], "==", "0"}]}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"x", ",", "y"}], "}"}]}], "]"}], "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}]}]}], "\n", "]"}]}], ";"}], 
+  "\n"}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"0f597f0e-259c-4c9e-8547-bf6c0029a582"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeParastichyCylinderIntersection", "[", 
+    RowBox[{"lattice_", ",", "m_", ",", "type_"}], "]"}], " ", ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "arena", ",", "arenaBottomIntersection", ",", "arenaTopIntersection"}], 
+      "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"zeroParastichyQ", "[", "m", "]"}], ",", 
+        RowBox[{"Abort", "[", "]"}]}], "]"}], ";", "\n", 
+      RowBox[{"arena", " ", "=", " ", 
+       RowBox[{"latticeGetCylinder", "[", "lattice", "]"}]}], ";", "\n", 
+      RowBox[{"arenaBottomIntersection", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"linelineIntersection", "[", "\n", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", "  ", 
+             RowBox[{
+              RowBox[{"arena", "[", 
+               RowBox[{"[", 
+                RowBox[{"1", ",", "1"}], "]"}], "]"}], ",", " ", 
+              RowBox[{"arena", "[", 
+               RowBox[{"[", 
+                RowBox[{"2", ",", "1"}], "]"}], "]"}]}], "}"}], ",", 
+            RowBox[{"{", " ", 
+             RowBox[{
+              RowBox[{"arena", "[", 
+               RowBox[{"[", 
+                RowBox[{"1", ",", "2"}], "]"}], "]"}], ",", 
+              RowBox[{"arena", "[", 
+               RowBox[{"[", 
+                RowBox[{"2", ",", "1"}], "]"}], "]"}]}], "}"}]}], "}"}], ",", 
+          "\n", 
+          RowBox[{"{", " ", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"0", ",", "0"}], "}"}], ",", "  ", 
+            RowBox[{"latticeVector", "[", 
+             RowBox[{"lattice", ",", "m"}], "]"}]}], "}"}]}], "]"}], "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}], ";", "\n", 
+      RowBox[{"arenaTopIntersection", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"linelineIntersection", "[", "\n", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", "  ", 
+             RowBox[{
+              RowBox[{"arena", "[", 
+               RowBox[{"[", 
+                RowBox[{"1", ",", "1"}], "]"}], "]"}], ",", " ", 
+              RowBox[{"arena", "[", 
+               RowBox[{"[", 
+                RowBox[{"2", ",", "2"}], "]"}], "]"}]}], "}"}], ",", 
+            RowBox[{"{", " ", 
+             RowBox[{
+              RowBox[{"arena", "[", 
+               RowBox[{"[", 
+                RowBox[{"1", ",", "2"}], "]"}], "]"}], ",", 
+              RowBox[{"arena", "[", 
+               RowBox[{"[", 
+                RowBox[{"2", ",", "2"}], "]"}], "]"}]}], "}"}]}], "}"}], ",", 
+          "\n", 
+          RowBox[{"{", " ", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"0", ",", "0"}], "}"}], ",", "  ", 
+            RowBox[{"latticeVector", "[", 
+             RowBox[{"lattice", ",", "m"}], "]"}]}], "}"}]}], "]"}], "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}], ";", "\n", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"type", "===", "Bottom"}], ",", "\n", 
+        "arenaBottomIntersection", ",", "arenaTopIntersection"}], "]"}]}]}], 
+    "\n", "]"}]}], ";"}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"f7d5ea60-fa52-44f8-9723-1133378a324a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"use", " ", "funcs", " ", "above"}], " ", "..."}], "*)"}], " ", 
+  "\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeParastichyRange", "[", 
+     RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", "  ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "multiple", ",", "parastichyLine", ",", "arena", ",", "ilowerB", ",", 
+        " ", "iupperB", ",", "translationD"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"arena", " ", "=", " ", 
+        RowBox[{"latticeGetCylinder", "[", "lattice", "]"}]}], ";", "\n", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"zeroParastichyQ", "[", "m", "]"}], ",", "\n", 
+         RowBox[{
+          RowBox[{"translationD", " ", "=", " ", 
+           RowBox[{"latticeParastichyVerticalSeparation", "[", 
+            RowBox[{"lattice", ",", "0"}], "]"}]}], ";", "\n", 
+          RowBox[{"ilowerB", " ", "=", " ", 
+           RowBox[{"-", 
+            RowBox[{"Floor", "[", 
+             RowBox[{
+              RowBox[{"(", "  ", 
+               RowBox[{"-", " ", 
+                RowBox[{"arena", "[", 
+                 RowBox[{"[", 
+                  RowBox[{"2", ",", "1"}], "]"}], "]"}]}], ")"}], "/", 
+              "translationD"}], "]"}]}]}], ";", "\n", 
+          RowBox[{"iupperB", " ", "=", " ", 
+           RowBox[{"Floor", "[", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"arena", "[", 
+               RowBox[{"[", 
+                RowBox[{"2", ",", "2"}], "]"}], "]"}], ")"}], "/", " ", 
+             "translationD"}], "]"}]}], ";"}], "\n", ",", " ", 
+         RowBox[{"(*", " ", 
+          RowBox[{"or", " ", "a", " ", "slope"}], " ", "*)"}], " ", "\n", 
+         RowBox[{
+          RowBox[{"translationD", "=", " ", 
+           RowBox[{"Abs", "[", 
+            RowBox[{"latticeParastichyHorizontalSeparation", "[", 
+             RowBox[{"lattice", ",", "m"}], "]"}], "]"}]}], ";", "\n", 
+          RowBox[{"arenaBottomIntersection", " ", "=", " ", 
+           RowBox[{
+            RowBox[{"linelineIntersection", "[", "\n", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"{", "  ", 
+                 RowBox[{
+                  RowBox[{"arena", "[", 
+                   RowBox[{"[", 
+                    RowBox[{"1", ",", "1"}], "]"}], "]"}], ",", " ", 
+                  RowBox[{"arena", "[", 
+                   RowBox[{"[", 
+                    RowBox[{"2", ",", "1"}], "]"}], "]"}]}], "}"}], ",", 
+                RowBox[{"{", " ", 
+                 RowBox[{
+                  RowBox[{"arena", "[", 
+                   RowBox[{"[", 
+                    RowBox[{"1", ",", "2"}], "]"}], "]"}], ",", 
+                  RowBox[{"arena", "[", 
+                   RowBox[{"[", 
+                    RowBox[{"2", ",", "1"}], "]"}], "]"}]}], "}"}]}], "}"}], 
+              ",", "\n", 
+              RowBox[{"{", " ", 
+               RowBox[{
+                RowBox[{"{", 
+                 RowBox[{"0", ",", "0"}], "}"}], ",", "  ", 
+                RowBox[{"latticeVector", "[", 
+                 RowBox[{"lattice", ",", "m"}], "]"}]}], "}"}]}], "]"}], "[", 
+            RowBox[{"[", "1", "]"}], "]"}]}], ";", "\n", 
+          RowBox[{"arenaTopIntersection", " ", "=", " ", 
+           RowBox[{
+            RowBox[{"linelineIntersection", "[", "\n", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"{", "  ", 
+                 RowBox[{
+                  RowBox[{"arena", "[", 
+                   RowBox[{"[", 
+                    RowBox[{"1", ",", "1"}], "]"}], "]"}], ",", " ", 
+                  RowBox[{"arena", "[", 
+                   RowBox[{"[", 
+                    RowBox[{"2", ",", "2"}], "]"}], "]"}]}], "}"}], ",", 
+                RowBox[{"{", " ", 
+                 RowBox[{
+                  RowBox[{"arena", "[", 
+                   RowBox[{"[", 
+                    RowBox[{"1", ",", "2"}], "]"}], "]"}], ",", 
+                  RowBox[{"arena", "[", 
+                   RowBox[{"[", 
+                    RowBox[{"2", ",", "2"}], "]"}], "]"}]}], "}"}]}], "}"}], 
+              ",", "\n", 
+              RowBox[{"{", " ", 
+               RowBox[{
+                RowBox[{"{", 
+                 RowBox[{"0", ",", "0"}], "}"}], ",", "  ", 
+                RowBox[{"latticeVector", "[", 
+                 RowBox[{"lattice", ",", "m"}], "]"}]}], "}"}]}], "]"}], "[", 
+            RowBox[{"[", "1", "]"}], "]"}]}], ";", "\n", 
+          RowBox[{"ilowerB", " ", "=", " ", 
+           RowBox[{"-", 
+            RowBox[{"Floor", "[", 
+             RowBox[{
+              RowBox[{"(", " ", 
+               RowBox[{"arenaBottomIntersection", " ", "-", " ", 
+                RowBox[{"arena", "[", 
+                 RowBox[{"[", 
+                  RowBox[{"1", ",", "1"}], "]"}], "]"}]}], ")"}], "/", 
+              "translationD"}], "]"}]}]}], ";", "\n", 
+          RowBox[{"iupperB", " ", "=", " ", 
+           RowBox[{"Floor", "[", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"arena", "[", 
+                RowBox[{"[", 
+                 RowBox[{"1", ",", "2"}], "]"}], "]"}], "-", " ", 
+               "arenaBottomIntersection"}], " ", ")"}], "/", " ", 
+             "translationD"}], "]"}]}]}]}], "\n", "]"}], ";", "\n", 
+       RowBox[{"Return", "[", 
+        RowBox[{"{", 
+         RowBox[{"ilowerB", ",", "iupperB"}], "}"}], "]"}]}]}], "\n", "]"}]}],
+    ";"}]}]], "Code",ExpressionUUID->"c7232d2c-695f-4365-b510-a9b2e61cc8ec"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeParastichyLines", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", "  ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"ilower", ",", "iupper"}], " ", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"ilower", ",", "iupper"}], "}"}], "=", " ", 
+       RowBox[{"latticeParastichyRange", "[", 
+        RowBox[{"lattice", ",", "m"}], "]"}]}], ";", "\n", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{"latticeParastichyLines", "[", 
+         RowBox[{"lattice", ",", "m", ",", "i"}], "]"}], "\n", ",", 
+        RowBox[{"{", 
+         RowBox[{"i", ",", "ilower", ",", "iupper"}], "}"}]}], "]"}]}]}], 
+    "\n", "]"}]}], ";"}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"40674fc5-0c93-433a-a884-ebb2d09eb028"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeParastichyLines", "[", 
+     RowBox[{"lattice_", ",", "m_", ",", "through_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "pvecm", ",", "thr", ",", "pvecslope", ",", "bottom", ",", "top", ",", 
+        "wixrange", ",", "wixseq", ",", "xl", ",", "xr", ",", "xlr", ",", 
+        "xwlr", ",", "zofxfunc", ",", "zwlr", ",", "cylinder", ",", 
+        "cylinderLU", ",", "line"}], "}"}], ",", "\n", "\n", 
+      RowBox[{
+       RowBox[{"pvecm", " ", "=", " ", 
+        RowBox[{"latticePoint", "[", 
+         RowBox[{"lattice", ",", "m"}], "]"}]}], ";", "\n", 
+       RowBox[{"thr", " ", "=", " ", 
+        RowBox[{"latticePoint", "[", 
+         RowBox[{"lattice", ",", "through"}], "]"}]}], ";", "\n", 
+       RowBox[{"cylinder", " ", "=", " ", 
+        RowBox[{"latticeGetCylinder", "[", "lattice", "]"}]}], ";", "\n", 
+       RowBox[{"cylinderLU", " ", "=", " ", 
+        RowBox[{"cylinder", "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}], ";", "\n", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"zeroParastichyQ", "[", "m", "]"}], ",", "\n", 
+         RowBox[{
+          RowBox[{"v", " ", "=", " ", 
+           RowBox[{"latticeParastichyVerticalSeparation", "[", 
+            RowBox[{"lattice", ",", "0"}], "]"}]}], ";", "\n", 
+          RowBox[{"line", " ", "=", " ", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"cylinder", "[", 
+                RowBox[{"[", 
+                 RowBox[{"1", ",", "1"}], "]"}], "]"}], ",", 
+               RowBox[{"v", "*", "through"}]}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"cylinder", "[", 
+                RowBox[{"[", 
+                 RowBox[{"1", ",", "2"}], "]"}], "]"}], ",", 
+               RowBox[{"v", "*", "through"}]}], "}"}]}], "}"}]}]}], ",", "\n", 
+         RowBox[{"(*", " ", "or", " ", "*)"}], " ", "\n", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"pvecm", "[", 
+             RowBox[{"[", "1", "]"}], "]"}], "==", "0"}], ",", "\n", 
+           RowBox[{
+            RowBox[{"v", " ", "=", " ", 
+             RowBox[{"latticeParastichyHorizontalSeparation", "[", 
+              RowBox[{"lattice", ",", "1"}], "]"}]}], ";", "\n", 
+            RowBox[{"line", " ", "=", 
+             RowBox[{"{", " ", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"v", "*", "through"}], ",", 
+                 RowBox[{"cylinder", "[", 
+                  RowBox[{"[", 
+                   RowBox[{"2", ",", "1"}], "]"}], "]"}]}], "}"}], ",", 
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"v", "*", "through"}], ",", 
+                 RowBox[{"cylinder", "[", 
+                  RowBox[{"[", 
+                   RowBox[{"2", ",", "2"}], "]"}], "]"}]}], "}"}]}], 
+              "}"}]}]}], ",", "\n", 
+           RowBox[{"(*", " ", 
+            RowBox[{"or", " ", "general", " ", "case"}], " ", "*)"}], " ", 
+           "\n", 
+           RowBox[{
+            RowBox[{"pvecslope", " ", "=", " ", 
+             RowBox[{
+              RowBox[{"pvecm", "[", 
+               RowBox[{"[", "2", "]"}], "]"}], "/", 
+              RowBox[{"pvecm", "[", 
+               RowBox[{"[", "1", "]"}], "]"}]}]}], ";", "\n", 
+            RowBox[{"bottom", " ", "=", " ", 
+             RowBox[{"{", " ", 
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{"cylinderLU", "[", 
+                    RowBox[{"[", "1", "]"}], "]"}], "-", 
+                   RowBox[{"thr", "[", 
+                    RowBox[{"[", "2", "]"}], "]"}]}], ")"}], "/", 
+                 "pvecslope"}], " ", "+", 
+                RowBox[{"thr", "[", 
+                 RowBox[{"[", "1", "]"}], "]"}]}], ",", " ", 
+               RowBox[{"cylinderLU", "[", 
+                RowBox[{"[", "1", "]"}], "]"}]}], "}"}]}], ";", "\n", 
+            RowBox[{"top", "        ", "=", " ", 
+             RowBox[{"{", " ", 
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{"cylinderLU", "[", 
+                    RowBox[{"[", "2", "]"}], "]"}], "-", 
+                   RowBox[{"thr", "[", 
+                    RowBox[{"[", "2", "]"}], "]"}]}], ")"}], "/", 
+                 "pvecslope"}], "+", 
+                RowBox[{"thr", "[", 
+                 RowBox[{"[", "1", "]"}], "]"}]}], ",", 
+               RowBox[{"cylinderLU", "[", 
+                RowBox[{"[", "2", "]"}], "]"}]}], "}"}]}], ";", "\n", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{"pvecslope", "<", "0"}], ",", " ", "\n", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"top", ",", "bottom"}], "}"}], " ", "=", " ", 
+               RowBox[{"{", 
+                RowBox[{"bottom", ",", " ", "top"}], "}"}]}]}], "\n", "]"}], 
+            ";", " ", 
+            RowBox[{"(*", " ", 
+             RowBox[{
+              RowBox[{"split", " ", "the", " ", "x"}], "-", 
+              RowBox[{
+              "range", " ", "into", " ", "all", " ", "the", " ", "different", 
+               " ", "winding", " ", "numbers", " ", "and", " ", "return", " ",
+                "one", " ", "pair", " ", "of", " ", "endpoints", " ", "for", 
+               " ", "each", " ", "segment"}]}], " ", "*)"}], "\n", 
+            RowBox[{"wixrange", " ", "=", " ", 
+             RowBox[{"Floor", "[", 
+              RowBox[{"0.5", "+", 
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"First", "[", "bottom", "]"}], ",", 
+                 RowBox[{"First", "[", "top", "]"}]}], "}"}]}], "]"}]}], ";", 
+            "\n", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{"Max", "[", "wixrange", "]"}], "-", 
+                RowBox[{"Min", "[", "wixrange", "]"}]}], ">", "100"}], ",", 
+              "\n", 
+              RowBox[{
+               RowBox[{"Print", "[", "\"\<Too many parastichies\>\"", "]"}], 
+               ";", 
+               RowBox[{"Abort", "[", "]"}]}]}], "]"}], ";", "\n", 
+            RowBox[{"wixseq", " ", "=", " ", 
+             RowBox[{"Range", "[", 
+              RowBox[{
+               RowBox[{"wixrange", "[", 
+                RowBox[{"[", "1", "]"}], "]"}], ",", 
+               RowBox[{"wixrange", "[", 
+                RowBox[{"[", "2", "]"}], "]"}]}], "]"}]}], ";", "\n", 
+            RowBox[{"xl", " ", "=", " ", 
+             RowBox[{"wixseq", " ", "-", " ", 
+              RowBox[{"1", "/", "2"}]}]}], ";", "\n", 
+            RowBox[{"xr", " ", "=", " ", 
+             RowBox[{"wixseq", " ", "+", " ", 
+              RowBox[{"1", "/", "2"}]}]}], ";", "\n", 
+            RowBox[{"xlr", " ", "=", " ", 
+             RowBox[{"Transpose", "[", 
+              RowBox[{"{", 
+               RowBox[{"xl", ",", "xr"}], "}"}], "]"}]}], ";", "\n", 
+            RowBox[{
+             RowBox[{"xlr", "[", 
+              RowBox[{"[", 
+               RowBox[{"1", ",", "1"}], "]"}], "]"}], " ", "=", " ", 
+             RowBox[{"bottom", "[", 
+              RowBox[{"[", "1", "]"}], "]"}]}], ";", 
+            RowBox[{
+             RowBox[{"xlr", "[", 
+              RowBox[{"[", 
+               RowBox[{
+                RowBox[{"-", "1"}], ",", "2"}], "]"}], "]"}], "=", 
+             RowBox[{"top", "[", 
+              RowBox[{"[", "1", "]"}], "]"}]}], ";", "\n", 
+            RowBox[{"xwlr", " ", "=", "  ", 
+             RowBox[{"xlr", "-", 
+              RowBox[{"Transpose", "[", 
+               RowBox[{"{", 
+                RowBox[{"wixseq", ",", "wixseq"}], "}"}], "]"}]}]}], ";", 
+            "\n", 
+            RowBox[{"zofxfunc", " ", ":=", " ", 
+             RowBox[{"(", " ", 
+              RowBox[{"Interpolation", "[", 
+               RowBox[{
+                RowBox[{"{", " ", 
+                 RowBox[{"bottom", ",", " ", "top"}], "}"}], ",", " ", 
+                RowBox[{"InterpolationOrder", "->", "1"}]}], "]"}], ")"}]}], 
+            ";", "\n", 
+            RowBox[{"zwlr", " ", "=", " ", 
+             RowBox[{"Map", "[", " ", 
+              RowBox[{"zofxfunc", ",", "xlr"}], "]"}]}], ";", "\n", 
+            RowBox[{"line", " ", "=", " ", 
+             RowBox[{"Partition", "[", 
+              RowBox[{
+               RowBox[{"Transpose", "@", 
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{"Flatten", "@", "xwlr"}], ",", 
+                  RowBox[{"Flatten", "@", "zwlr"}]}], "}"}]}], ",", "2"}], 
+              "]"}]}]}]}], "\n", "]"}]}], "]"}], ";", "\n", 
+       RowBox[{"Line", "[", "line", "]"}]}]}], "\n", "]"}]}], ";"}], "\n", 
+  "\n"}]], "Code",ExpressionUUID->"eb907994-ab47-46b7-bd97-0ff7457c7cee"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeParallelogram", "[", 
+    RowBox[{"lattice_", ",", "m_", ",", "n_", ",", "through_"}], "]"}], " ", ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"origin", ",", "pm", ",", "pn"}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"origin", " ", "=", " ", 
+       RowBox[{"latticePoint", "[", 
+        RowBox[{"lattice", ",", "through"}], "]"}]}], ";", " ", 
+      RowBox[{"pm", "=", 
+       RowBox[{"latticePoint", "[", 
+        RowBox[{"lattice", ",", "m"}], "]"}]}], ";", 
+      RowBox[{"pn", "=", 
+       RowBox[{"latticePoint", "[", 
+        RowBox[{"lattice", ",", "n"}], "]"}]}], ";", "\n", " ", 
+      RowBox[{"{", " ", 
+       RowBox[{"origin", ",", " ", 
+        RowBox[{"origin", "+", "pm"}], ",", 
+        RowBox[{"origin", "+", "pm", "+", "pn"}], ",", 
+        RowBox[{"origin", "+", "pn"}], ",", "origin"}], "}"}]}]}], "\n", 
+    "]"}]}], ";"}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"a3249bf0-c159-4ec7-b33c-36858e93f1d7"],
+
+Cell[BoxData[""], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"fbad3bed-32b8-480c-becb-b59ea3a673e8"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeGraphicsCylinder", "[", "lattice_", "]"}], " ", ":=", "  ", 
+   RowBox[{"Rectangle", " ", "@@", " ", 
+    RowBox[{"Transpose", "[", 
+     RowBox[{"latticeGetCylinder", "[", "lattice", "]"}], "]"}]}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeGraphicsPlotRange", "[", "lattice_", "]"}], " ", ":=", 
+   "  ", 
+   RowBox[{"latticeGetCylinder", "[", "lattice", "]"}]}], 
+  ";"}], "\n"}], "Code",ExpressionUUID->"68c05707-c9a3-4aec-93a3-\
+4561ca180740"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Winding numbers", "Section",ExpressionUUID->"31f5f89c-75cc-447a-a7cf-89500a98046e"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeVectorComplex", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"latticePointComplex", "[", 
+    RowBox[{"lattice", ",", "m"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeVectorComplex", "[", 
+     RowBox[{"lattice_", ",", "0"}], "]"}], " ", ":=", "  ", "1"}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticePointComplex", "[", 
+    RowBox[{"lattice_", ",", "m_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "pt", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"pt", " ", "=", " ", 
+       RowBox[{"latticePoint", "[", 
+        RowBox[{"lattice", ",", "m"}], "]"}]}], ";", "\n", 
+      RowBox[{
+       RowBox[{"pt", "[", 
+        RowBox[{"[", "1", "]"}], "]"}], " ", "+", " ", 
+       RowBox[{"I", " ", 
+        RowBox[{"pt", "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}]}]}]}], "\n", "]"}]}], 
+  ";"}]}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"b754ac1a-a72e-47a4-a484-c7f4b7a1b7e7"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeUV", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"m_", ",", "n_"}], "}"}], ",", "delta_"}], "]"}], " ", ":=", 
+    " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "uv", "}"}], ",", "\n", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"the", " ", "uv", " ", "that", " ", "has", " ", "mv"}], " ",
+           "-", "nu"}], "=", " ", 
+         RowBox[{
+          RowBox[{"+", "1"}], " ", 
+          RowBox[{"(", 
+           RowBox[{"not", " ", "Delta"}], " ", ")"}]}]}], ",", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"v", " ", "pm"}], "-", " ", 
+          RowBox[{"u", " ", "pn"}]}], "=", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"p1", " ", "and", " ", "n", " ", "pm"}], " ", "-", " ", 
+           RowBox[{"m", " ", "p", " ", "n"}]}], "=", "p0"}]}]}], " ", "*)"}], 
+      "\n", 
+      RowBox[{
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"m", "==", "0"}], ",", 
+         RowBox[{"Return", "[", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "1"}], ",", "0"}], "}"}], "]"}]}], "]"}], ";", "\n", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"n", "==", "0"}], ",", 
+         RowBox[{"Return", "[", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "1"}], "}"}], "]"}]}], "]"}], ";", "\n", 
+       RowBox[{"uv", "=", "  ", 
+        RowBox[{"euclideanUV", "[", 
+         RowBox[{"{", 
+          RowBox[{"m", ",", 
+           RowBox[{"barem", "[", "n", "]"}]}], "}"}], "]"}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "natural", " ", "uv", " ", "may", " ", "be", " ", "plusminus", " ", 
+         "1"}], " ", "*)"}], "\n", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"delta", "<", "0"}], ",", 
+         RowBox[{"uv", " ", "=", " ", 
+          RowBox[{"-", "uv"}]}]}], "]"}], ";", "\n", "uv"}]}], "\n", "]"}]}], 
+   ";"}], "\n", 
+  RowBox[{"(*", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"latticePVtoGPTransform", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"m_", ",", "n_"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"u_", ",", "v_"}], "}"}], ",", "delta_"}], "]"}], " ", ":=", 
+     " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "}"}], ",", "\n", 
+       RowBox[{"LinearFractionalTransform", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"{", 
+            RowBox[{"-", "u"}], "}"}], "}"}], ",", 
+          RowBox[{"{", "v", "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", " ", "m"}], " ", "delta"}], "}"}], ",", 
+          RowBox[{"n", " ", "delta"}]}], "}"}], "]"}]}], "\n", 
+      RowBox[{"(*", " ", 
+       RowBox[{"will", " ", "map", " ", 
+        RowBox[{"zn", "/", "zm"}], " ", "to", " ", "z1"}], " ", "*)"}], " ", 
+      "\n", "]"}]}], ";"}], "\n", "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Clear", "[", "latticePVtoGPCoordinates", "]"}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"latticePVtoGPCoordinates", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"m_", ",", "n_"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"u_", ",", "v_"}], "}"}], ",", "delta_"}], "]"}], "[", 
+     RowBox[{"d_", ",", "h_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"g", ",", "res"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"g", " ", "=", " ", 
+        RowBox[{"LinearFractionalTransform", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"{", 
+             RowBox[{"-", "u"}], "}"}], "}"}], ",", 
+           RowBox[{"{", "v", "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", " ", "m"}], " ", "delta"}], "}"}], ",", 
+           RowBox[{"n", " ", "delta"}]}], "}"}], "]"}]}], ";", "\n", 
+       RowBox[{"res", " ", "=", " ", 
+        RowBox[{"ComplexExpand", "@", 
+         RowBox[{"ReIm", "@", 
+          RowBox[{"ComplexExpand", "@", 
+           RowBox[{"Simplify", "[", 
+            RowBox[{
+             RowBox[{"g", "[", 
+              RowBox[{"{", 
+               RowBox[{"d", "+", " ", 
+                RowBox[{"I", " ", "h"}]}], "}"}], "]"}], "[", 
+             RowBox[{"[", "1", "]"}], "]"}], "]"}]}]}]}]}], ";", "\n", 
+       RowBox[{"Simplify", "[", 
+        RowBox[{"res", " ", "/.", "   ", 
+         RowBox[{
+          RowBox[{"{", "  ", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"-", " ", "n"}], " ", "u"}], " ", "+", "  ", 
+            RowBox[{"m", " ", "v"}]}], "  ", "}"}], " ", "->", " ", "1"}]}], 
+        " ", "]"}]}]}], " ", "\n", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{
+       "nb", " ", "latticeUV", " ", "which", " ", "was", " ", "used", " ", 
+        "to", " ", "pick", " ", "u"}], ",", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"v", "  ", "picks", " ", "mv"}], "-", "nu"}], "=", "1"}], 
+       " ", ",", " ", 
+       RowBox[{"not", " ", "delta"}]}], " ", "*)"}], "\n", "]"}]}], ";"}], 
+  "\n", "\n", 
+  RowBox[{"(*", " ", 
+   RowBox[{"has", " ", "this", " ", "as", " ", 
+    RowBox[{"(", "unused", ")"}], "  ", "inverse", " ", "to", " ", 
+    "demonstrate", " ", "form"}], "*)"}], " "}], "\n", 
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+     "transformGeneratingPointToPrincipalVectors", "[", "lattice_", "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"m", ",", "n", ",", "u", ",", "v", ",", "delta"}], "}"}], ",",
+        "\n", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"m", ",", "n"}], "}"}], " ", "=", 
+         RowBox[{"latticePrincipalParastichyPair", "[", "lattice", "]"}]}], 
+        ";", "\n", 
+        RowBox[{"delta", " ", "=", " ", 
+         RowBox[{"latticeDelta", "[", "lattice", "]"}]}], ";", "\n", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"u", ",", "v"}], "}"}], " ", "=", " ", 
+         RowBox[{"lUV", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"m", ",", "n"}], "}"}], ",", "delta"}], "]"}]}], ";", 
+        "\n", 
+        RowBox[{"LinearFractionalTransform", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"{", 
+             RowBox[{"n", " ", "delta"}], "}"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"-", "v"}], "}"}], ",", 
+           RowBox[{"{", " ", 
+            RowBox[{"m", " ", "delta"}], "}"}], ",", 
+           RowBox[{"-", "u"}]}], "}"}], "]"}]}]}], 
+      RowBox[{"(*", " ", 
+       RowBox[{"maps", " ", "z1", " ", "to", " ", 
+        RowBox[{"zn", "/", "zm"}]}], " ", "*)"}], "\n", "]"}]}], ";"}], 
+   "*)"}]}]}], "Code",ExpressionUUID->"450c323d-a927-4f7a-8aa3-456b12c3cb17"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "no", " ", "computational", " ", "point", " ", "in", " ", "this"}], ",", 
+    " ", 
+    RowBox[{
+    "but", " ", "it", " ", "allows", " ", "us", " ", "to", " ", "check", " ", 
+     "the", " ", "functional", " ", "form"}]}], " ", "*)"}], "\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"generatingPointFromPrincipalVectors", "[", "lattice_", "]"}], 
+    " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "m", ",", "n", ",", "u", ",", "v", ",", "delta", ",", "zm", ",", "zn", 
+        ",", "z", ",", "g", ",", "d", ",", "h"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"m", ",", "n"}], "}"}], " ", "=", 
+        RowBox[{"latticePrincipalParastichyPair", "[", "lattice", "]"}]}], 
+       ";", "\n", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"zm", ",", "zn"}], "}"}], "=", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"latticeVectorComplex", "[", 
+           RowBox[{"lattice", ",", "m"}], "]"}], ",", 
+          RowBox[{"latticeVectorComplex", "[", 
+           RowBox[{"lattice", ",", "n"}], "]"}]}], "}"}]}], ";", "\n", 
+       RowBox[{"delta", " ", "=", " ", 
+        RowBox[{"latticeDelta", "[", "lattice", "]"}]}], ";", "\n", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"u", ",", "v"}], "}"}], " ", "=", " ", 
+        RowBox[{"latticeUV", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"m", ",", "n"}], "}"}], ",", "delta"}], "]"}]}], ";", "\n", 
+       RowBox[{"(*", " ", 
+        RowBox[{"will", " ", "map", " ", 
+         RowBox[{"zn", "/", "zm"}], " ", "to", " ", "z1"}], " ", "*)"}], " ", 
+       "\n", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"d", ",", "h"}], "}"}], " ", "=", " ", 
+        RowBox[{"ComplexExpand", "@", 
+         RowBox[{"ReIm", "@", 
+          RowBox[{"ComplexExpand", "[", 
+           RowBox[{"zn", "/", "zm"}], "]"}]}]}]}], ";", "\n", " ", 
+       RowBox[{
+        RowBox[{"latticePVtoGPCoordinates", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"m", ",", "n"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"u", ",", "v"}], "}"}], ",", "delta"}], "]"}], "[", 
+        RowBox[{"d", ",", "h"}], "]"}]}]}], "\n", "]"}]}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"latticeDelta", "[", "lattice_", "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"m", ",", "n"}], "}"}], ",", "\n", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"m", ",", "n"}], "}"}], "=", " ", 
+         RowBox[{"latticePrincipalParastichyPair", "[", "lattice", "]"}]}], 
+        ";", "\n", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"m", "==", "0"}], ",", 
+          RowBox[{"Return", "[", "1", "]"}]}], "]"}], ";", "\n", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"n", "==", "0"}], ",", 
+          RowBox[{"Return", "[", 
+           RowBox[{"-", "1"}], "]"}]}], "]"}], ";", "\n", " ", 
+        RowBox[{"euclideanDelta", "[", 
+         RowBox[{"{", 
+          RowBox[{"m", ",", 
+           RowBox[{"barem", "[", "n", "]"}]}], "}"}], "]"}]}]}], "\n", 
+      "]"}]}], ";"}], "\n", "\n"}]}]], "Code",ExpressionUUID->"f4dc216f-6f98-\
+4a12-b772-f3e685ccd847"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Renormalisations", "Section",ExpressionUUID->"120ec840-1542-465e-b6c1-6997170dd997"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeRenormalised", "[", "lattice_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "tran", ",", "lgpDH", ",", "transformedlgpDH", ",", "cylinderLU", ",", 
+        "hScale", ",", "pm", ",", "pn"}], "}"}], ",", "\n", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+        "rotate", " ", "and", " ", "scale", " ", "so", " ", "that", " ", 
+         "the", " ", "old", " ", "m"}], "-", 
+        RowBox[{
+        "th", " ", "parastichy", " ", "vector", " ", "is", " ", "now", " ", 
+         RowBox[{"(", 
+          RowBox[{"1", ",", "0"}], ")"}]}]}], " ", "*)"}], "\n", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"pm", ",", "pn"}], "}"}], " ", "=", " ", 
+        RowBox[{"latticePrincipalParastichyPair", "[", "lattice", "]"}]}], 
+       ";", "\n", "\n", 
+       RowBox[{"tran", " ", "=", " ", 
+        RowBox[{"latticeRenormalisationTransformation", "[", 
+         RowBox[{"lattice", ",", "pm"}], "]"}]}], " ", ";", "\n", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "that", " ", "maps", " ", "m", " ", "to", " ", "0.", " ", "we", " ", 
+         "need", " ", "a", " ", "linearly", " ", "independent", " ", "n"}], 
+        " ", "*)"}], "\n", 
+       RowBox[{"lgpDH", " ", "=", " ", 
+        RowBox[{"latticePoint", "[", 
+         RowBox[{"lattice", ",", "pn"}], "]"}]}], ";", "\n", 
+       RowBox[{"transformedlgpDH", " ", "=", " ", 
+        RowBox[{"tran", " ", "[", " ", "lgpDH", "]"}]}], ";", " ", "\n", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "pop", " ", "back", " ", "in", " ", "the", " ", "principal", " ", 
+         "strip"}], " ", "*)"}], " ", "\n", 
+       RowBox[{"transformedlgpDH", " ", "=", " ", 
+        RowBox[{"dhPrincipalPoint", "[", "transformedlgpDH", "]"}]}], ";", 
+       "\n", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"transformedlgpDH", "==", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+         RowBox[{"Abort", "[", "]"}]}], "]"}], ";", "\n", "\n", 
+       RowBox[{"cylinderLU", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"lattice", "[", "\"\<cylinder\>\"", "]"}], "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}], ";", "\n", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"work", " ", "out", " ", "the", " ", "h"}], "-", 
+          "scaling"}], ",", " ", 
+         RowBox[{
+         "so", " ", "the", " ", "new", " ", "display", " ", "cylinder", " ", 
+          "has", " ", "as", " ", "many", " ", "points", " ", "as", " ", "the",
+           " ", "old", " ", "one"}]}], " ", "*)"}], "\n", 
+       RowBox[{"If", "[", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"barem", "[", "pm", "]"}], " ", "!=", " ", "1"}], " ", ",", 
+         "\n", 
+         RowBox[{
+          RowBox[{"hScale", " ", "=", " ", 
+           RowBox[{
+            RowBox[{"transformedlgpDH", "[", 
+             RowBox[{"[", "2", "]"}], "]"}], "/", 
+            RowBox[{"lgpDH", "[", 
+             RowBox[{"[", "2", "]"}], "]"}]}]}], ";", "\n", 
+          RowBox[{"cylinderLU", " ", "=", " ", 
+           RowBox[{"hScale", " ", "*", " ", "cylinderLU"}]}], ";"}]}], "\n", 
+        "]"}], ";", "\n", 
+       RowBox[{"latticeCreateDH", "[", 
+        RowBox[{"transformedlgpDH", ",", "cylinderLU"}], "]"}]}]}], "\n", 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"dhPrincipalPoint", "[", 
+     RowBox[{"{", 
+      RowBox[{"d_", ",", "h_"}], "}"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"principald", ",", "principalh"}], "}"}], ",", "\n", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "intend", " ", "to", " ", "make", " ", "principal", " ", "point", " ", 
+        "dependent", " ", "on", " ", 
+        RowBox[{"lattice", "[", "\"\<cylinder\>\"", "]"}]}], " ", "*)"}], " ",
+       "\n", 
+      RowBox[{
+       RowBox[{"principald", " ", "=", " ", 
+        RowBox[{"mod", "[", "d", "]"}]}], ";", "\n", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"principald", "<", "0"}], ",", 
+         RowBox[{"principald", "=", 
+          RowBox[{"1", "+", "principald"}]}]}], "]"}], ";", "\n", 
+       RowBox[{"principalh", " ", "=", " ", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"h", ">", "0"}], ",", "h", ",", 
+          RowBox[{"-", "h"}]}], "]"}]}], ";", "\n", 
+       RowBox[{"{", 
+        RowBox[{"principald", ",", "principalh"}], "}"}]}]}], "\n", "]"}]}], 
+   ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeRenormalisationTransformation", "[", 
+     RowBox[{"lattice_", ",", "mvec_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "mEnd", ",", "mVectorLength", ",", "rot", ",", "sca", ",", "tran"}], 
+       "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"mEnd", " ", "=", " ", 
+        RowBox[{"latticePoint", "[", 
+         RowBox[{"lattice", ",", "mvec"}], "]"}]}], ";", "\n", 
+       RowBox[{"mVectorLength", " ", "=", " ", 
+        RowBox[{"latticeVectorLength", "[", 
+         RowBox[{"lattice", ",", "mvec"}], "]"}]}], ";", "\n", 
+       RowBox[{"rot", " ", "=", " ", 
+        RowBox[{"RotationTransform", "[", 
+         RowBox[{"{", 
+          RowBox[{"mEnd", ",", 
+           RowBox[{"{", 
+            RowBox[{"1", ",", "0"}], "}"}]}], "}"}], "]"}]}], ";", "\n", 
+       RowBox[{"sca", " ", "=", " ", 
+        RowBox[{"ScalingTransform", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"1", "/", "mVectorLength"}], ",", 
+           RowBox[{"1", "/", "mVectorLength"}]}], "}"}], "]"}]}], ";", "\n", 
+       RowBox[{"tran", " ", "=", " ", 
+        RowBox[{"Composition", "[", 
+         RowBox[{"sca", ",", "rot"}], "]"}]}], ";", "\n", "tran"}]}], "\n", 
+     "]"}]}], ";"}], "\n"}], "\n"}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"7ba1adf9-9d69-47f9-812c-0bdee4154695"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeMoebiusTransform", "[", 
+     RowBox[{"mp_", ",", "np_", ",", "Delta_"}], "]"}], "[", 
+    RowBox[{"{", 
+     RowBox[{"dp_", ",", "hp_"}], "}"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"u", ",", "v", ",", "dh"}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"dh", "[", 
+        RowBox[{"d_", ",", "h_", ",", "m_", ",", "n_", ",", "u_", ",", "v_"}],
+         "]"}], " ", ":=", "\n", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"d", "^", "2"}], "+", 
+               RowBox[{"h", "^", "2"}]}], " ", ")"}], "m", " ", "u"}], "+", 
+            RowBox[{"n", " ", "v"}], "-", 
+            RowBox[{"d", " ", 
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"n", " ", "u"}], "+", 
+               RowBox[{"m", " ", "v"}]}], ")"}]}]}], ")"}], "/", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"d", "^", "2"}], "+", 
+               RowBox[{"h", "^", "2"}]}], ")"}], 
+             RowBox[{"m", "^", "2"}]}], "-", 
+            RowBox[{"2", " ", "d", " ", "m", " ", "n"}], "+", 
+            RowBox[{"n", "^", "2"}]}], ")"}]}], ",", "\n", 
+         RowBox[{"h", " ", 
+          RowBox[{"1", " ", "/", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{"d", "^", "2"}], "+", 
+                RowBox[{"h", "^", "2"}]}], ")"}], 
+              RowBox[{"m", "^", "2"}]}], "-", 
+             RowBox[{"2", " ", "d", " ", "m", " ", "n"}], "+", 
+             RowBox[{"n", "^", "2"}]}], ")"}]}]}]}], "}"}]}], ";", "\n", 
+      RowBox[{
+       RowBox[{"dh", "[", 
+        RowBox[{
+        "d_", ",", "\[Infinity]", ",", "m_", ",", "n_", ",", "u_", ",", 
+         "v_"}], "]"}], " ", ":=", " ", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"u", "/", "m"}], ",", "0"}], "}"}]}], ";", "\n", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"u", ",", "v"}], "}"}], " ", "=", " ", 
+       RowBox[{"euclideanUV", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"mp", ",", "np"}], "}"}], ",", "Delta"}], "]"}]}], ";", 
+      "\n", 
+      RowBox[{"Simplify", "@", 
+       RowBox[{"dh", "[", 
+        RowBox[{"dp", ",", "hp", ",", "mp", ",", "np", ",", "u", ",", "v"}], 
+        "]"}]}]}]}], "\n", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"latticeMoebiusTransform", "[", 
+   RowBox[{"m_", ",", "n_"}], "]"}], " ", ":=", " ", 
+  RowBox[{"latticeMoebiusTransform", "[", 
+   RowBox[{"m", ",", "n", ",", "1"}], "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeMoebiusTransform", "[", 
+     RowBox[{"1", ",", "0"}], "]"}], "[", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "0"}], "}"}], "]"}], " ", ":=", " ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"1", "/", "2"}], ",", "\[Infinity]"}], "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeMoebiusTransform", "[", 
+     RowBox[{"1", ",", "0"}], "]"}], "[", 
+    RowBox[{"{", 
+     RowBox[{"0.", ",", "0."}], "}"}], "]"}], " ", ":=", " ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"1", "/", "2"}], ",", "\[Infinity]"}], "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeMoebiusTransform", "[", 
+     RowBox[{"0", ",", "1"}], "]"}], "[", 
+    RowBox[{"{", 
+     RowBox[{"d_", ",", "h_"}], "}"}], "]"}], "  ", ":=", " ", 
+   RowBox[{"{", 
+    RowBox[{"d", ",", "h"}], "}"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeMoebiusTransform", "[", 
+     RowBox[{"0", ",", "1", ",", "Delta_"}], "]"}], "[", 
+    RowBox[{"{", 
+     RowBox[{"d_", ",", "h_"}], "}"}], "]"}], "  ", ":=", " ", 
+   RowBox[{"{", 
+    RowBox[{"d", ",", "h"}], "}"}]}], ";"}]}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"a60dc9aa-eb69-42c0-8476-088c0ecdb808"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Lattices by transformation", "Section",ExpressionUUID->"4d850d9d-a43e-4628-a50b-f40398683284"],
+
+Cell[BoxData[""], "Input",ExpressionUUID->"634d7633-eb03-4f97-a11a-992d8c562bb6"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeHexagonal", " ", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"m_", ",", "n_"}], "}"}], ",", 
+      RowBox[{"cylinderLU_", ":", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "0.2"}], ",", "3.2"}], "}"}]}]}], "]"}], " ", ":=", " ", 
+    RowBox[{"latticeCreateDH", "[", 
+     RowBox[{
+      RowBox[{"latticeDHHexagonalUpper", "[", 
+       RowBox[{"{", 
+        RowBox[{"m", ",", "n"}], "}"}], "]"}], ",", "cylinderLU"}], "]"}]}], 
+   ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeTriplePoint", "[", 
+    RowBox[{"{", 
+     RowBox[{"m_", ",", "n_"}], "}"}], "]"}], " ", ":=", " ", 
+   RowBox[{"latticeDHHexagonalLower", "[", 
+    RowBox[{"{", 
+     RowBox[{"m", ",", "n"}], "}"}], "]"}]}], ";"}]}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"2dfe3646-0eed-47e4-a4f6-ba3736c3e885"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeDHHexagonalLower", "[", 
+    RowBox[{"{", 
+     RowBox[{"m_", ",", "n_"}], "}"}], "]"}], "  ", ":=", " ", 
+   RowBox[{
+    RowBox[{"latticeMoebiusTransform", "[", 
+     RowBox[{"m", ",", "n"}], "]"}], "[", " ", 
+    RowBox[{"{", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "1"}], "/", "2"}], ",", 
+      RowBox[{
+       RowBox[{"Sqrt", "[", "3", "]"}], "/", "2"}]}], "}"}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeDHHexagonalUpper", "[", 
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], "]"}], "  ", ":=", " ", 
+    RowBox[{
+     RowBox[{"latticeMoebiusTransform", "[", 
+      RowBox[{"m", ",", "n"}], "]"}], "[", " ", 
+     RowBox[{"{", " ", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], ",", 
+       RowBox[{
+        RowBox[{"Sqrt", "[", "3", "]"}], "/", "2"}]}], "}"}], "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeHexagonalLower", "[", 
+    RowBox[{"{", 
+     RowBox[{"m_", ",", "n_"}], "}"}], "]"}], ":=", "  ", 
+   RowBox[{"latticeCreateDH", "[", 
+    RowBox[{"latticeDHHexagonalLower", "[", 
+     RowBox[{"{", 
+      RowBox[{"m", ",", "n"}], "}"}], "]"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeHexagonalUpper", "[", 
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], "]"}], ":=", "  ", 
+    RowBox[{"latticeCreateDH", "[", 
+     RowBox[{"latticeDHHexagonalUpper", "[", 
+      RowBox[{"{", 
+       RowBox[{"m", ",", "n"}], "}"}], "]"}], "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeTouchingCircle", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], ",", 
+     RowBox[{"cylinderLU_", ":", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"-", "0.2"}], ",", "3.2"}], "}"}]}]}], "]"}], " ", ":=", " ", 
+   RowBox[{"latticeCreateDH", "[", "\n", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"latticeMoebiusTransform", "[", 
+       RowBox[{"m", ",", "n"}], "]"}], "[", " ", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Cos", "[", 
+         RowBox[{"5", 
+          RowBox[{"\[Pi]", "/", "12"}]}], "]"}], ",", 
+        RowBox[{"Sin", "[", 
+         RowBox[{"5", 
+          RowBox[{"\[Pi]", "/", "12"}]}], "]"}]}], "}"}], "]"}], "\n", ",", 
+     "cylinderLU"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeEquiLength", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], ",", 
+     RowBox[{"cylinderLU_", ":", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"-", "0.2"}], ",", "3.2"}], "}"}]}]}], "]"}], " ", ":=", " ", 
+   RowBox[{"(*", " ", 
+    RowBox[{"wrong", " ", "!"}], " ", "*)"}], "\n", 
+   RowBox[{"latticeCreateDH", "[", "\n", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"latticeMoebiusTransform", "[", 
+       RowBox[{"m", ",", "n"}], "]"}], "[", " ", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "1"}], "/", "2"}], ",", "1.2"}], "}"}], "]"}], "\n", 
+     ",", "cylinderLU"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeOrthogonal", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], ",", 
+     RowBox[{"cylinderLU_", ":", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"-", "0.2"}], ",", "3.2"}], "}"}]}]}], "]"}], " ", ":=", " ", 
+   RowBox[{"latticeCreateDH", "[", "\n", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"latticeMoebiusTransform", "[", 
+       RowBox[{"m", ",", "n"}], "]"}], "[", " ", 
+      RowBox[{"{", " ", 
+       RowBox[{"0", ",", "1"}], "}"}], "]"}], "\n", ",", "cylinderLU"}], 
+    "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeWithMN", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], ",", 
+     RowBox[{"cylinderLU_", ":", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"-", "0.2"}], ",", "3.2"}], "}"}]}]}], "]"}], " ", ":=", " ", 
+   RowBox[{"latticeCreateDH", "[", "\n", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"latticeMoebiusTransform", "[", 
+       RowBox[{"m", ",", "n"}], "]"}], "[", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Sqrt", "[", "3", "]"}], "/", 
+           RowBox[{"(", "2", ")"}]}], "-", ".25"}], ")"}]}], "}"}], "]"}], 
+     "\n", ",", "cylinderLU"}], "]"}]}], ";"}], "\n"}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"4d546aaa-4af5-4437-873c-9c4362adc80a"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"latticeCircles", "[", "lattice_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "latticeMargin", ",", "lplus", ",", "lminus", ",", "r", ",", 
+        "cylinderLU", ",", "latticep"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"cylinderLU", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"latticeGetCylinder", "[", "lattice", "]"}], "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}], ";", "\n", 
+       RowBox[{"cylinderLU", " ", "=", " ", 
+        RowBox[{"cylinderLU", " ", "+", " ", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", 
+            RowBox[{"latticeRise", "[", "lattice", "]"}]}], ",", 
+           RowBox[{"latticeRise", "[", "lattice", "]"}]}], "}"}]}]}], ";", 
+       "\n", 
+       RowBox[{"latticeMargin", " ", "=", " ", 
+        RowBox[{"latticeSetCylinderLU", "[", 
+         RowBox[{"lattice", ",", "cylinderLU"}], "]"}]}], ";", "\n", "\n", 
+       RowBox[{"latticep", " ", "=", "  ", 
+        RowBox[{"latticePoints", "[", "latticeMargin", "]"}]}], " ", ";", 
+       "\n", 
+       RowBox[{"lplus", " ", "=", " ", 
+        RowBox[{"latticep", "+", " ", 
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"1", ",", "0"}], "}"}], ",", 
+           RowBox[{"Length", "[", "latticep", "]"}]}], "]"}]}]}], ";", "\n", 
+       RowBox[{"lminus", " ", "=", "  ", 
+        RowBox[{"latticep", " ", "+", " ", 
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "1"}], ",", "0"}], "}"}], ",", 
+           RowBox[{"Length", "[", "latticep", "]"}]}], "]"}]}]}], ";", "\n", 
+       RowBox[{"r", " ", "=", 
+        RowBox[{"latticeDiskRadius", "[", "latticeMargin", "]"}]}], ";", "\n", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Circle", "[", 
+           RowBox[{"#", ",", "r"}], "]"}], "&"}], ",", 
+         RowBox[{"Join", "[", " ", 
+          RowBox[{"latticep", ",", "lplus", ",", "lminus"}], "]"}]}], 
+        "]"}]}]}], "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeDiskRadius", "[", "lattice_", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "pv1", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"pv1", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"latticeParastichyVectors", "[", "lattice", "]"}], "[", 
+        RowBox[{"First", "[", 
+         RowBox[{"latticePrincipalParastichyPair", "[", "lattice", "]"}], 
+         "]"}], "]"}]}], ";", "\n", 
+      RowBox[{
+       RowBox[{"Sqrt", "[", 
+        RowBox[{"pv1", " ", ".", " ", "pv1"}], "]"}], "/", "2"}]}]}], "\n", 
+    "]"}]}], ";"}]}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"70d8dcc1-a612-44f2-8551-a9711e17b982"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["van Iterson regions", "Section",ExpressionUUID->"326fb5ea-9225-4cd1-a35e-623fb280064d"],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{
+   RowBox[{
+   "pairs", " ", "of", " ", "points", " ", "define", " ", "circles", " ", 
+    "centred", " ", "on", " ", "the", " ", "h"}], "-", 
+   RowBox[{"d", " ", "axis"}]}], " ", "*)"}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"9cf5b32b-e4b0-48bc-b785-6bbf186ecc38"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "also", " ", "some", " ", "label", " ", "and", " ", "boundary", " ", 
+    "points", " ", "away", " ", "from", " ", "the", "  ", "corners"}], "*)"}],
+   "\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"inlabelh", " ", "=", " ", 
+     RowBox[{
+      RowBox[{"Sqrt", "[", "3", "]"}], "/", 
+      RowBox[{"(", 
+       RowBox[{"2", "+", "0.5"}], ")"}]}]}], ";"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{"viPrincipalRegionEdgePoints", "  ", "=", " ", 
+     RowBox[{"<|", "  ", 
+      RowBox[{"(*", " ", 
+       RowBox[{"used", " ", "for", " ", "labelling"}], " ", "*)"}], " ", "\n", 
+      RowBox[{
+       RowBox[{"labelInner", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "inlabelh"}], "}"}]}], ",", "\n", 
+       RowBox[{"labelOuter", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", 
+          RowBox[{"1", "/", "inlabelh"}]}], "}"}]}], ",", "\n", 
+       RowBox[{"minusInner", "->", "   ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"-", "1"}], "-", 
+           RowBox[{"Cos", "[", 
+            RowBox[{"5", 
+             RowBox[{"\[Pi]", "/", "6"}]}], "]"}]}], ",", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"5", 
+            RowBox[{"\[Pi]", "/", "6"}]}], "]"}]}], "}"}]}], ",", "\n", 
+       RowBox[{"plusInner", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"1", "+", 
+           RowBox[{"Cos", "[", 
+            RowBox[{"5", 
+             RowBox[{"\[Pi]", "/", "6"}]}], "]"}]}], ",", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"5", 
+            RowBox[{"\[Pi]", "/", "6"}]}], "]"}]}], "}"}]}], ",", "\n", 
+       RowBox[{"minusOuter", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"-", "1"}], "/", "2"}], ",", "1.1"}], "}"}]}], ",", "\n", 
+       RowBox[{"plusOuter", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"1", "/", "2"}], ",", "1.1"}], "}"}]}], ",", "\n", 
+       RowBox[{"unitCircle", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "1"}], "}"}]}]}], "\n", "|>"}]}], ";"}], "\n", 
+   "\n", 
+   RowBox[{
+    RowBox[{"viPrincipalRegionPoints", "  ", "=", " ", 
+     RowBox[{"<|", " ", "\n", 
+      RowBox[{
+       RowBox[{"minusUnit", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"-", "1"}], "/", "2"}], ",", 
+          RowBox[{
+           RowBox[{"Sqrt", "[", "3", "]"}], "/", "2"}]}], "}"}]}], " ", ",", 
+       "\n", 
+       RowBox[{"minusInfinity", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"-", "1"}], "/", "2"}], ",", "Infinity"}], "}"}]}], ",", 
+       "\n", 
+       RowBox[{"zero", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0"}], "}"}]}], ",", "\n", 
+       RowBox[{"plusUnit", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"1", "/", "2"}], ",", 
+          RowBox[{
+           RowBox[{"Sqrt", "[", "3", "]"}], "/", "2"}]}], "}"}]}], " ", ",", 
+       "\n", 
+       RowBox[{"plusInfinity", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"1", "/", "2"}], ",", "Infinity"}], "}"}]}]}], "\n", 
+      "|>"}]}], ";"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{"viPrincipalRegionBoundaryPairs01", " ", "=", " ", 
+     RowBox[{"<|", "\n", 
+      RowBox[{
+       RowBox[{"minusInner", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"viPrincipalRegionPoints", "[", "zero", "]"}], ",", 
+          RowBox[{"viPrincipalRegionPoints", "[", "minusUnit", "]"}]}], 
+         "}"}]}], "\n", ",", 
+       RowBox[{"unitCircle", " ", "->", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"viPrincipalRegionPoints", "[", "minusUnit", "]"}], ",", 
+          RowBox[{"viPrincipalRegionPoints", "[", "plusUnit", "]"}]}], 
+         "}"}]}], "\n", ",", 
+       RowBox[{"plusInner", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"viPrincipalRegionPoints", "[", "plusUnit", "]"}], ",", 
+          RowBox[{"viPrincipalRegionPoints", "[", "zero", "]"}]}], "}"}]}]}], 
+      "\n", "|>"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"viPrincipalRegionBoundaryPairs10", " ", "=", " ", 
+     RowBox[{"<|", "\n", 
+      RowBox[{
+       RowBox[{"minusOuter", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"viPrincipalRegionPoints", "[", "minusInfinity", "]"}], ",", 
+          RowBox[{"viPrincipalRegionPoints", "[", "minusUnit", "]"}]}], 
+         "}"}]}], "\n", ",", 
+       RowBox[{"unitCircle", " ", "->", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"viPrincipalRegionPoints", "[", "minusUnit", "]"}], ",", 
+          RowBox[{"viPrincipalRegionPoints", "[", "plusUnit", "]"}]}], 
+         "}"}]}], "\n", ",", 
+       RowBox[{"plusOuter", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"viPrincipalRegionPoints", "[", "plusUnit", "]"}], ",", 
+          RowBox[{"viPrincipalRegionPoints", "[", "plusInfinity", "]"}]}], 
+         "}"}]}]}], "\n", "|>"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"viRegion01", " ", "=", " ", 
+     RowBox[{"RegionDifference", "[", "\n", 
+      RowBox[{
+       RowBox[{"DiscretizeRegion", "[", 
+        RowBox[{
+         RowBox[{"Disk", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0"}], "}"}], ",", "1", ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "\[Pi]"}], "}"}]}], "]"}], ",", 
+         RowBox[{"MaxCellMeasure", "->", ".001"}]}], "]"}], ",", "\n", 
+       RowBox[{"DiscretizeRegion", "[", 
+        RowBox[{
+         RowBox[{"RegionUnion", "[", 
+          RowBox[{
+           RowBox[{"Disk", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{"1", ",", "0"}], "}"}], ",", "1", ",", 
+             RowBox[{"{", 
+              RowBox[{"0", ",", "\[Pi]"}], "}"}]}], "]"}], ",", 
+           RowBox[{"Disk", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "1"}], ",", "0"}], "}"}], ",", "1", ",", 
+             RowBox[{"{", 
+              RowBox[{"0", ",", "\[Pi]"}], "}"}]}], "]"}]}], "]"}], ",", 
+         RowBox[{"MaxCellMeasure", "->", ".001"}]}], "]"}]}], "\n", "]"}]}], 
+    ";"}], "\n", 
+   RowBox[{
+    RowBox[{"viRegion10", " ", "=", "  ", 
+     RowBox[{"RegionDifference", "[", "\n", 
+      RowBox[{
+       RowBox[{"DiscretizeRegion", "[", 
+        RowBox[{
+         RowBox[{"Rectangle", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"-", "1"}], "/", "2"}], ",", "0"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"1", "/", "2"}], ",", "1.2"}], "}"}]}], "]"}], ",", 
+         RowBox[{"MaxCellMeasure", "->", ".0009"}]}], "]"}], ",", "\n", 
+       RowBox[{"DiscretizeRegion", "[", 
+        RowBox[{
+         RowBox[{"Disk", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0"}], "}"}], ",", "1", ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "\[Pi]"}], "}"}]}], "]"}], ",", 
+         RowBox[{"MaxCellMeasure", "->", ".001"}]}], "]"}]}], "\n", "]"}]}], 
+    ";"}]}]}]], "Code",ExpressionUUID->"13e4de7d-b0e1-45cb-aca8-6c97cc62ae3d"],
+
+Cell[BoxData[""], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"131f1373-c489-45f5-9f2b-effac8f04c62"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"viRegionPoints", "[", 
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Map", "[", 
+     RowBox[{"Simplify", ",", 
+      RowBox[{"Map", "[", "\n", 
+       RowBox[{
+        RowBox[{"latticeMoebiusTransform", "[", 
+         RowBox[{"m", ",", "n"}], "]"}], ",", "viPrincipalRegionPoints"}], 
+       "]"}]}], "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"mirrorAt1", "[", "g_", "]"}], " ", ":=", " ", 
+   RowBox[{"GeometricTransformation", "[", 
+    RowBox[{"g", ",", 
+     RowBox[{"Composition", "[", 
+      RowBox[{
+       RowBox[{"TranslationTransform", "[", 
+        RowBox[{"{", 
+         RowBox[{"1", ",", "0"}], "}"}], "]"}], ",", "\n", 
+       RowBox[{"ReflectionTransform", "[", 
+        RowBox[{"{", 
+         RowBox[{"1", ",", "0"}], "}"}], "]"}]}], "]"}]}], "\n", "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"mirrorBoundaries", "[", "bdy_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "res", "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"res", " ", "=", " ", 
+        RowBox[{"KeyTake", "[", 
+         RowBox[{"bdy", ",", 
+          RowBox[{"{", 
+           RowBox[{
+           "plusOuter", ",", "minusOuter", ",", "plusInner", ",", 
+            "minusInner", ",", "unitCircle"}], "}"}]}], "]"}]}], ";", "\n", 
+       RowBox[{"res", " ", "=", " ", 
+        RowBox[{"Map", "[", 
+         RowBox[{"mirrorAt1", ",", "res"}], "]"}]}], ";", "\n", "res"}]}], 
+     "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"viRegionBoundaries", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"m_", ",", "n_"}], "}"}], ",", 
+    RowBox[{"doMirror_", ":", "False"}]}], "]"}], " ", ":=", " ", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"rpoints", ",", "pointPairsToCircles"}], "}"}], ",", "\n", "\n", 
+    "\n", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"pointPairsToCircles", "[", " ", 
+       RowBox[{"{", 
+        RowBox[{"p1_", ",", "p2_"}], "}"}], "]"}], " ", ":=", " ", "\n", 
+      RowBox[{"pairToCircle", "@", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{"latticeMoebiusTransform", "[", 
+          RowBox[{"m", ",", "n"}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"p1", ",", "p2"}], "}"}]}], "]"}]}]}], ";", "\n", "\n", 
+     RowBox[{"rpoints", " ", "=", " ", "\n", 
+      RowBox[{"<|", " ", 
+       RowBox[{
+        RowBox[{"\"\<01\>\"", " ", "->", 
+         RowBox[{"Union", "[", 
+          RowBox[{
+           RowBox[{"<|", 
+            RowBox[{"\"\<mn\>\"", "->", 
+             RowBox[{"{", 
+              RowBox[{"m", ",", "n"}], "}"}]}], "|>"}], ",", 
+           RowBox[{"Map", "[", 
+            RowBox[{
+            "pointPairsToCircles", ",", "viPrincipalRegionBoundaryPairs01"}], 
+            " ", "]"}]}], "]"}]}], "\n", ",", 
+        RowBox[{"\"\<10\>\"", " ", "->", " ", 
+         RowBox[{"Union", "[", 
+          RowBox[{
+           RowBox[{"<|", 
+            RowBox[{"\"\<mn\>\"", "->", 
+             RowBox[{"{", 
+              RowBox[{"n", ",", "m"}], "}"}]}], "|>"}], ",", 
+           RowBox[{"Map", "[", 
+            RowBox[{
+            "pointPairsToCircles", ",", "viPrincipalRegionBoundaryPairs10"}], 
+            " ", "]"}]}], "]"}]}]}], "\n", "|>"}]}], ";", "\n", 
+     RowBox[{"If", "[", 
+      RowBox[{"doMirror", ",", 
+       RowBox[{"rpoints", " ", "=", 
+        RowBox[{"Map", "[", 
+         RowBox[{"mirrorBoundaries", ",", "rpoints"}], "]"}]}]}], "]"}], ";", 
+     "\n", "\n", "rpoints"}]}], "\n", "]"}], " "}]}], "Code",ExpressionUUID->\
+"edbb26f2-93fa-43c4-93ef-681df26d4c21"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"linecircleIntersection", "[", 
+     RowBox[{"lineD_", ",", 
+      RowBox[{"Circle", "[", 
+       RowBox[{"centre_", ",", "r_", ",", "theta_"}], "]"}]}], "]"}], " ", ":=",
+     " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\n", 
+      RowBox[{"Sqrt", "[", 
+       RowBox[{
+        RowBox[{"r", "^", "2"}], " ", "-", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"lineD", "-", 
+           RowBox[{"centre", "[", 
+            RowBox[{"[", "1", "]"}], "]"}]}], ")"}], "^", "2"}]}], "]"}]}], 
+     "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"viTouchingCircleBranch", "[", 
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], "]"}], " ", ":=", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"viRegionBoundaries", "[", 
+       RowBox[{"{", 
+        RowBox[{"m", ",", "n"}], "}"}], "]"}], "[", "\"\<10\>\"", "]"}], "[", 
+     "unitCircle", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"circleToRest", "[", 
+    RowBox[{"Circle", "[", 
+     RowBox[{"xy_", ",", "r_", ",", "\[Theta]12_"}], "]"}], "]"}], " ", ":=", 
+   " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\[Theta]1", ",", "\[Theta]2"}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"\[Theta]1", ",", "\[Theta]2"}], "}"}], "=", 
+       RowBox[{"Sort", "[", "\[Theta]12", "]"}]}], ";", "\n", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Circle", "[", 
+         RowBox[{"xy", ",", "r", ",", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "\[Theta]1"}], "}"}]}], "]"}], ",", 
+        RowBox[{"Circle", "[", 
+         RowBox[{"xy", ",", "r", ",", 
+          RowBox[{"{", 
+           RowBox[{"\[Theta]2", ",", "\[Pi]"}], "}"}]}], "]"}]}], "}"}]}]}], 
+    "\n", "]"}]}], ";"}], "\n"}], "Code",ExpressionUUID->"fa7f58e3-9803-4d70-bf9c-7acc59d0839e"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"viTouchingSecondaryBranch", "[", 
+     RowBox[{"{", 
+      RowBox[{"m_", ",", "n_"}], "}"}], "]"}], " ", ":=", " ", 
+    RowBox[{"circleToRest", "@", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"viRegionBoundaries", "[", 
+        RowBox[{"{", 
+         RowBox[{"m", ",", "n"}], "}"}], "]"}], "[", "\"\<10\>\"", "]"}], "[",
+       "unitCircle", "]"}]}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"viOpposedCircleBranch", "[", "mn_", "]"}], "  ", ":=", " ", 
+   RowBox[{"getCircleBranch", "[", 
+    RowBox[{"mn", ",", "\"\<Opposed\>\""}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"viNonOpposedCircleBranch", "[", "mn_", "]"}], "  ", ":=", " ", 
+   RowBox[{"getCircleBranch", "[", 
+    RowBox[{"mn", ",", "\"\<NonOpposed\>\""}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"getCircleBranch", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"m_", ",", "n_"}], "}"}], ",", "type_"}], "]"}], " ", ":=", 
+    " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "centre", ",", "branch", ",", "branchEndsD", ",", "branchEndsH", ",", 
+        "orthoPointD"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"branch", " ", "=", " ", 
+        RowBox[{"viTouchingCircleBranch", "[", 
+         RowBox[{"{", 
+          RowBox[{"m", ",", "n"}], "}"}], "]"}]}], ";", "\n", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"centre", ",", "r", ",", "theta12"}], "}"}], " ", "=", " ", 
+        RowBox[{"Apply", "[", 
+         RowBox[{"List", ",", "branch"}], "]"}]}], ";", "\n", 
+       RowBox[{"branchEndsD", " ", "=", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"centre", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], "+", " ", 
+           RowBox[{"r", " ", 
+            RowBox[{"Cos", "[", 
+             RowBox[{"theta12", "[", 
+              RowBox[{"[", "1", "]"}], "]"}], "]"}]}]}], ",", 
+          RowBox[{
+           RowBox[{"centre", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], "+", " ", 
+           RowBox[{"r", " ", 
+            RowBox[{"Cos", "[", 
+             RowBox[{"theta12", "[", 
+              RowBox[{"[", "2", "]"}], "]"}], "]"}]}]}]}], "}"}]}], ";", "\n", 
+       RowBox[{"branchEndsH", " ", "=", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"centre", "[", 
+            RowBox[{"[", "2", "]"}], "]"}], "+", " ", 
+           RowBox[{"r", " ", 
+            RowBox[{"Sin", "[", 
+             RowBox[{"theta12", "[", 
+              RowBox[{"[", "1", "]"}], "]"}], "]"}]}]}], ",", 
+          RowBox[{
+           RowBox[{"centre", "[", 
+            RowBox[{"[", "2", "]"}], "]"}], "+", " ", 
+           RowBox[{"r", " ", 
+            RowBox[{"Sin", "[", 
+             RowBox[{"theta12", "[", 
+              RowBox[{"[", "2", "]"}], "]"}], "]"}]}]}]}], "}"}]}], ";", "\n", 
+       RowBox[{"orthoPointD", " ", "=", " ", 
+        RowBox[{"viOrthostichyD", "[", 
+         RowBox[{"{", 
+          RowBox[{"m", ",", 
+           RowBox[{"n", "-", "m"}]}], "}"}], "]"}]}], ";", "\n", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"!", 
+          RowBox[{"IntervalMemberQ", "[", 
+           RowBox[{
+            RowBox[{"Interval", "[", "branchEndsD", "]"}], ",", 
+            "orthoPointD"}], "]"}]}], ",", "\n", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"type", "==", "\"\<Opposed\>\""}], ",", " ", 
+           RowBox[{"Return", "[", "branch", "]"}], ",", 
+           RowBox[{"Return", "[", 
+            RowBox[{"Nothing", "[", "]"}], "]"}]}], "]"}]}], "]"}], ";", "\n",
+        "\n", 
+       RowBox[{"orthoPointH", " ", "=", " ", 
+        RowBox[{"linecircleIntersection", "[", 
+         RowBox[{"orthoPointD", ",", "branch"}], "]"}]}], ";", "\n", 
+       RowBox[{"orthopt", " ", "=", " ", 
+        RowBox[{"{", 
+         RowBox[{"orthoPointD", ",", "orthoPointH"}], "}"}]}], ";", "\n", 
+       RowBox[{"branchEndOrder", " ", "=", " ", 
+        RowBox[{"Ordering", "[", "branchEndsH", "]"}]}], ";", "\n", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"lowerpt", ",", "triplept"}], "}"}], "  ", "=", " ", 
+        RowBox[{
+         RowBox[{"Transpose", "[", 
+          RowBox[{"{", 
+           RowBox[{"branchEndsD", ",", "branchEndsH"}], "}"}], "]"}], "[", 
+         RowBox[{"[", "branchEndOrder", "]"}], "]"}]}], ";", "\n", 
+       RowBox[{"res", " ", "=", " ", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"type", "==", "\"\<Opposed\>\""}], ",", "\n", 
+          RowBox[{"Circle", "[", 
+           RowBox[{"centre", ",", "r", ",", 
+            RowBox[{"Sort", "@", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"xyToArg", "[", 
+                RowBox[{"branch", ",", "orthopt"}], "]"}], ",", 
+               RowBox[{"xyToArg", "[", 
+                RowBox[{"branch", ",", "lowerpt"}], "]"}]}], "}"}]}]}], "]"}],
+           ",", "\n", 
+          RowBox[{"Circle", "[", 
+           RowBox[{"centre", ",", "r", ",", 
+            RowBox[{"Sort", "@", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"xyToArg", "[", 
+                RowBox[{"branch", ",", "triplept"}], "]"}], ",", 
+               RowBox[{"xyToArg", "[", 
+                RowBox[{"branch", ",", "orthopt"}], "]"}]}], "}"}]}]}], 
+           "]"}]}], "\n", "]"}]}], ";", "\n", 
+       RowBox[{"Return", "[", "res", "]"}], ";"}]}], "\n", "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"xyToArg", "[", 
+   RowBox[{
+    RowBox[{"Circle", "[", 
+     RowBox[{"centre_", ",", "r_", ",", "theta_"}], "]"}], ",", "xy_"}], " ", 
+   "]"}], ":=", " ", 
+  RowBox[{"ArcTan", " ", "@@", " ", 
+   RowBox[{"(", " ", 
+    RowBox[{"xy", " ", "-", " ", "centre"}], ")"}]}]}]}], "Code",ExpressionUUI\
+D->"b2b22de7-8ad3-459f-877f-695eb387f4e0"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"pairToCircle", "[", 
+    RowBox[{"{", 
+     RowBox[{"p1_", ",", "p2_"}], "}"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "dp", ",", "rp", ",", "todr2", ",", "x1", ",", "y1", ",", "x2", ",", 
+       "c2", ",", "y2", ",", "d", ",", "r2"}], "}"}], ",", "\n", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{
+       "given", " ", "two", " ", "points", " ", "on", " ", "an", " ", "axis", 
+        " ", "semicircle"}], ",", " ", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"or", " ", "a", " ", "line"}], ")"}], " ", "calc", " ", 
+        "the", " ", "region", " ", "between", " ", "then"}]}], " ", "*)"}], 
+     "\n", 
+     RowBox[{
+      RowBox[{"If", "[", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"p1", "[", 
+          RowBox[{"[", "1", "]"}], "]"}], "==", 
+         RowBox[{"p2", "[", 
+          RowBox[{"[", "1", "]"}], "]"}]}], ",", "\n", 
+        RowBox[{"Return", "[", " ", 
+         RowBox[{"Line", "[", 
+          RowBox[{"{", 
+           RowBox[{"p1", ",", "p2"}], "}"}], "]"}], "]"}]}], "]"}], ";", "\n", 
+      RowBox[{"todr2", " ", "=", " ", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"First", "@", 
+          RowBox[{"Simplify", "@", 
+           RowBox[{"Solve", "[", "  ", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"(", 
+                   RowBox[{"x1", "-", "d"}], ")"}], "^", "2"}], " ", "+", " ", 
+                 RowBox[{"y1", "^", "2"}]}], " ", "\[Equal]", " ", "r2"}], 
+               ",", " ", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"(", 
+                   RowBox[{"x2", "-", "d"}], ")"}], "^", "2"}], " ", "+", " ", 
+                 RowBox[{"y2", "^", "2"}]}], " ", "\[Equal]", " ", "r2"}]}], 
+              "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"d", ",", "r2"}], "}"}]}], "]"}]}]}], ";"}], "*)"}], 
+       "\n", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"x1", "^", "2"}], "-", 
+            RowBox[{"x2", "^", "2"}], "+", 
+            RowBox[{"y1", "^", "2"}], "-", 
+            RowBox[{"y2", "^", "2"}]}], ")"}], "/", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"2", " ", "x1"}], "-", 
+            RowBox[{"2", " ", "x2"}]}], ")"}]}], ",", 
+         RowBox[{
+          RowBox[{"1", "/", 
+           RowBox[{"(", 
+            RowBox[{"4", " ", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"x1", "-", "x2"}], ")"}], "^", "2"}]}], ")"}]}], " ", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"x1", "^", "4"}], "-", 
+            RowBox[{"4", " ", 
+             RowBox[{"x1", "^", "3"}], " ", "x2"}], "+", 
+            RowBox[{"x2", "^", "4"}], "+", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"y1", "^", "2"}], "-", 
+               RowBox[{"y2", "^", "2"}]}], ")"}], "^", "2"}], "+", 
+            RowBox[{"2", " ", 
+             RowBox[{"x2", "^", "2"}], " ", 
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"y1", "^", "2"}], "+", 
+               RowBox[{"y2", "^", "2"}]}], ")"}]}], "-", 
+            RowBox[{"4", " ", "x1", " ", "x2", " ", 
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"x2", "^", "2"}], "+", 
+               RowBox[{"y1", "^", "2"}], "+", 
+               RowBox[{"y2", "^", "2"}]}], ")"}]}], "+", 
+            RowBox[{"2", " ", 
+             RowBox[{"x1", "^", "2"}], " ", 
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"3", " ", 
+                RowBox[{"x2", "^", "2"}]}], "+", 
+               RowBox[{"y1", "^", "2"}], "+", 
+               RowBox[{"y2", "^", "2"}]}], ")"}]}]}], ")"}]}]}], "}"}]}], ";",
+       "\n", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"dp", ",", "rp"}], "}"}], " ", "=", " ", 
+       RowBox[{"(", "  ", 
+        RowBox[{"todr2", " ", "/.", " ", 
+         RowBox[{"{", " ", 
+          RowBox[{
+           RowBox[{"x1", "->", 
+            RowBox[{"p1", "[", 
+             RowBox[{"[", "1", "]"}], "]"}]}], ",", " ", 
+           RowBox[{"y1", "->", " ", 
+            RowBox[{"p1", "[", 
+             RowBox[{"[", "2", "]"}], "]"}]}], ",", 
+           RowBox[{"x2", "->", " ", 
+            RowBox[{"p2", "[", 
+             RowBox[{"[", "1", "]"}], "]"}]}], ",", 
+           RowBox[{"y2", "->", " ", 
+            RowBox[{"p2", "[", 
+             RowBox[{"[", "2", "]"}], "]"}]}]}], "}"}]}], " ", ")"}]}], " ", 
+      ";", "\n", 
+      RowBox[{"p1Arg", " ", "=", " ", 
+       RowBox[{"ArcTan", " ", "@@", "  ", 
+        RowBox[{"(", " ", 
+         RowBox[{"p1", " ", "-", " ", 
+          RowBox[{"{", 
+           RowBox[{"dp", ",", "0"}], "}"}]}], " ", ")"}]}]}], ";", "\n", 
+      RowBox[{"p2Arg", " ", "=", " ", 
+       RowBox[{"ArcTan", " ", "@@", "  ", 
+        RowBox[{"(", " ", 
+         RowBox[{"p2", " ", "-", " ", 
+          RowBox[{"{", 
+           RowBox[{"dp", ",", "0"}], "}"}]}], " ", ")"}]}]}], ";", "\n", 
+      RowBox[{"Return", "[", 
+       RowBox[{"Circle", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"dp", ",", "0"}], "}"}], ",", 
+         RowBox[{"Sqrt", "[", "rp", "]"}], ",", 
+         RowBox[{"Sort", "@", 
+          RowBox[{"{", 
+           RowBox[{"p1Arg", ",", "p2Arg"}], "}"}]}]}], "]"}], "]"}]}]}], "\n",
+     "]"}]}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"viRegion", "[", 
+   RowBox[{"{", 
+    RowBox[{"m_", ",", "n_"}], "}"}], "]"}], " ", ":=", " ", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"pts01", ",", "pts10", ",", "rb01", ",", "rb10"}], "}"}], ",", 
+    "\n", "\n", 
+    RowBox[{
+     RowBox[{"pts01", " ", "=", " ", 
+      RowBox[{"Map", "[", 
+       RowBox[{
+        RowBox[{"latticeMoebiusTransform", "[", 
+         RowBox[{"m", ",", "n"}], "]"}], ",", 
+        RowBox[{"MeshCoordinates", "[", "viRegion01", "]"}]}], "]"}]}], ";", 
+     "\n", 
+     RowBox[{"rb01", " ", "=", " ", 
+      RowBox[{"MeshRegion", "[", 
+       RowBox[{"pts01", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"MeshCells", "[", 
+           RowBox[{"viRegion01", ",", "0"}], "]"}], ",", "\n", 
+          RowBox[{"MeshCells", "[", 
+           RowBox[{"viRegion01", ",", "1"}], "]"}], ",", 
+          RowBox[{"MeshCells", "[", 
+           RowBox[{"viRegion01", ",", "2"}], "]"}]}], "}"}]}], "]"}]}], ";", 
+     "\n", 
+     RowBox[{"pts10", " ", "=", " ", 
+      RowBox[{
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{"latticeMoebiusTransform", "[", 
+          RowBox[{"n", ",", "m"}], "]"}], ",", 
+         RowBox[{"MeshCoordinates", "[", "viRegion01", "]"}]}], "]"}], "\n", "/.",
+        " ", 
+       RowBox[{"ComplexInfinity", "->", " ", "1.2"}]}]}], ";", "\n", 
+     RowBox[{"rb10", " ", "=", " ", 
+      RowBox[{"MeshRegion", "[", 
+       RowBox[{"pts10", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"MeshCells", "[", 
+           RowBox[{"viRegion10", ",", "0"}], "]"}], ",", "\n", 
+          RowBox[{"MeshCells", "[", 
+           RowBox[{"viRegion10", ",", "1"}], "]"}], ",", 
+          RowBox[{"MeshCells", "[", 
+           RowBox[{"viRegion10", ",", "2"}], "]"}]}], "}"}]}], "]"}]}], ";", 
+     "\n", 
+     RowBox[{"<|", " ", 
+      RowBox[{
+       RowBox[{"\"\<01\>\"", "->", "rb01"}], " ", ",", " ", 
+       RowBox[{"\"\<10\>\"", "->", " ", "rb10"}]}], " ", "|>"}]}]}], "\n", 
+   "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"viRegion", "[", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "1"}], "}"}], "]"}], " ", ":=", " ", "\n", 
+   RowBox[{"<|", " ", 
+    RowBox[{
+     RowBox[{"\"\<01\>\"", "->", "viRegion01"}], " ", ",", " ", 
+     RowBox[{"\"\<10\>\"", "->", " ", "viRegion10"}]}], " ", "|>"}]}], 
+  ";"}]}], "Code",ExpressionUUID->"c577d799-8d51-4ff6-91db-86279f622ef3"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"viOrthostichyD", "[", 
+    RowBox[{"{", 
+     RowBox[{"m_", ",", "n_"}], "}"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"v", ",", "w"}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"v", ",", "w"}], "}"}], " ", "=", " ", 
+       RowBox[{"euclideanUV", "[", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", 
+          RowBox[{"m", "+", "n"}]}], "}"}], "]"}]}], ";", "\n", 
+      RowBox[{"w", "/", 
+       RowBox[{"(", 
+        RowBox[{"n", "+", "m"}], ")"}]}]}]}], "\n", "]"}]}], ";"}]], "Code",Ex\
+pressionUUID->"fc159696-db6a-49fe-b409-e57f6d8c1a40"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", "\n", "\n", "\n", "*)"}], "\n", "\n", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"viTriplePoint", "[", 
+      RowBox[{"{", 
+       RowBox[{"m_", ",", "n_"}], "}"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "delta", ",", "tp", ",", "tp1", ",", "tp2", ",", "transform"}], "}"}],
+        ",", "\n", "\n", 
+       RowBox[{
+        RowBox[{"transform", " ", "=", "  ", 
+         RowBox[{"latticeMoebiusTransform", "[", 
+          RowBox[{"m", ",", "n"}], "]"}]}], ";", "\n", 
+        RowBox[{"(*", " ", 
+         RowBox[{
+         "two", " ", "candidates", " ", "from", " ", "either", " ", "end", 
+          " ", "of", " ", "the", " ", "principal", " ", "unit", " ", 
+          "circle"}], " ", "*)"}], " ", "\n", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"tp1", ",", "tp2"}], "}"}], " ", "=", " ", 
+         RowBox[{"Map", "[", 
+          RowBox[{"transform", ",", 
+           RowBox[{
+           "viPrincipalRegionBoundaryPairs01", "[", "unitCircle", "]"}]}], 
+          "]"}]}], ";", "\n", 
+        RowBox[{"(*", " ", 
+         RowBox[{"we", " ", "need", " ", "the", " ", "lower"}], " ", "*)"}], 
+        "\n", 
+        RowBox[{"tp", " ", "=", " ", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"tp1", "[", 
+             RowBox[{"[", "2", "]"}], "]"}], "<", 
+            RowBox[{"tp2", "[", 
+             RowBox[{"[", "2", "]"}], "]"}]}], ",", " ", "tp1", ",", "tp2"}], 
+          "]"}]}], ";", "\n", "tp"}]}], "\n", "]"}]}], ";"}], "\n", 
+   "\n"}]}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"c2ec9d56-732b-4870-83dc-b199ce1df128"],
+
+Cell[CellGroupData[{
+
+Cell["Get Region and Transform to work together", "Subsection",ExpressionUUID->"7151a561-8371-40cf-b9d7-0e40d21a4a5a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"https", ":"}], "//", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"mathematica", ".", "stackexchange", ".", "com"}], "/", 
+        "questions"}], "/", "11430"}], "/", "why"}], "-", "doesnt", "-", 
+     "normal", "-", "work", "-", "on", "-", "geometrictransformation"}]}], 
+   " ", "*)"}], "\n", "\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"NormalizeGraphics", "[", "g_", "]"}], ":=", 
+    RowBox[{"Internal`InheritedBlock", "[", 
+     RowBox[{
+      RowBox[{"{", "System`Private`InternalNormal", "}"}], ",", 
+      RowBox[{
+       RowBox[{"Unprotect", "[", "System`Private`InternalNormal", "]"}], ";", 
+       "\n", 
+       RowBox[{
+        RowBox[{"System`Private`InternalNormal", "[", 
+         RowBox[{
+          RowBox[{"gr", ":", 
+           RowBox[{
+           "_Rotate", "|", "_Translate", "|", "_Scale", "|", 
+            "_GeometricTransformation"}]}], ",", "_"}], "]"}], ":=", 
+        RowBox[{"Module", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"tmp", "=", 
+            RowBox[{"Quiet", "[", 
+             RowBox[{
+              RowBox[{"transform2D", "[", "gr", "]"}], ",", 
+              RowBox[{"TransformedRegion", "::", "reg"}]}], "]"}]}], "}"}], 
+          ",", 
+          RowBox[{"tmp", "/;", 
+           RowBox[{
+            RowBox[{"Head", "[", "tmp", "]"}], "=!=", 
+            "TransformedRegion"}]}]}], "]"}]}], ";", "\n", 
+       RowBox[{"Normal", "[", 
+        RowBox[{"g", ",", 
+         RowBox[{"{", 
+          RowBox[{
+          "Rotate", ",", "Scale", ",", "Translate", ",", 
+           "GeometricTransformation"}], "}"}]}], "]"}]}]}], "]"}]}], "\n", 
+   "\n", 
+   RowBox[{
+    RowBox[{"transform2D", "[", 
+     RowBox[{"Rotate", "[", 
+      RowBox[{"g_", ",", "r_", ",", "p___"}], "]"}], "]"}], ":=", 
+    RowBox[{"TransformedRegion", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"RotationTransform", "[", 
+       RowBox[{"r", ",", 
+        RowBox[{"absolutePosition", "[", 
+         RowBox[{"g", ",", "p"}], "]"}]}], "]"}]}], "]"}]}], "\n", "\n", 
+   RowBox[{
+    RowBox[{"transform2D", "[", 
+     RowBox[{"Translate", "[", 
+      RowBox[{"g_", ",", "t_"}], "]"}], "]"}], ":=", 
+    RowBox[{"TransformedRegion", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"TranslationTransform", "[", "t", "]"}]}], "]"}]}], "\n", "\n", 
+   RowBox[{
+    RowBox[{"transform2D", "[", 
+     RowBox[{"Scale", "[", 
+      RowBox[{"g_", ",", "s_", ",", "p___"}], "]"}], "]"}], ":=", 
+    RowBox[{"TransformedRegion", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"ScalingTransform", "[", 
+       RowBox[{"s", ",", 
+        RowBox[{"absolutePosition", "[", 
+         RowBox[{"g", ",", "p"}], "]"}]}], "]"}]}], "]"}]}], "\n", "\n", 
+   RowBox[{
+    RowBox[{"transform2D", "[", 
+     RowBox[{"GeometricTransformation", "[", 
+      RowBox[{"g_", ",", "tf_"}], "]"}], "]"}], ":=", 
+    RowBox[{"TransformedRegion", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"tf", "/.", 
+       RowBox[{
+        RowBox[{"Except", "[", "_TransformationRegion", "]"}], ":>", 
+        RowBox[{"AffineTransform", "[", "tf", "]"}]}]}]}], "]"}]}], "\n", 
+   "\n", 
+   RowBox[{
+    RowBox[{"absolutePosition", "[", "g_", "]"}], ":=", 
+    RowBox[{"absolutePosition", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"{", 
+       RowBox[{"Center", ",", "Center"}], "}"}]}], "]"}]}], "\n", 
+   RowBox[{
+    RowBox[{"absolutePosition", "[", 
+     RowBox[{"g_", ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"h", ":", 
+         RowBox[{"(", 
+          RowBox[{"Left", "|", "Center", "|", "Right"}], ")"}]}], ",", 
+        RowBox[{"v", ":", 
+         RowBox[{"(", 
+          RowBox[{"Top", "|", "Center", "|", "Bottom"}], ")"}]}]}], "}"}]}], 
+     "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"hrange", ",", "vrange"}], "}"}], ",", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"hrange", ",", "vrange"}], "}"}], "=", 
+        RowBox[{
+         RowBox[{"RegionBounds", "[", "g", "]"}], "[", 
+         RowBox[{"[", 
+          RowBox[{";;", "2"}], "]"}], "]"}]}], ";", "\n", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Replace", "[", 
+           RowBox[{"h", ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"Left", "->", "Min"}], ",", 
+              RowBox[{"Center", "->", "Mean"}], ",", 
+              RowBox[{"Right", "->", "Max"}]}], "}"}]}], "]"}], "[", "hrange",
+           "]"}], ",", 
+         RowBox[{
+          RowBox[{"Replace", "[", 
+           RowBox[{"v", ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"Bottom", "->", "Min"}], ",", 
+              RowBox[{"Center", "->", "Mean"}], ",", 
+              RowBox[{"Top", "->", "Max"}]}], "}"}]}], "]"}], "[", "vrange", 
+          "]"}]}], "}"}]}]}], "]"}]}], "\n", 
+   RowBox[{
+    RowBox[{"absolutePosition", "[", 
+     RowBox[{"g_", ",", "spec_"}], "]"}], ":=", "spec"}]}]}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"6ee4c1a5-230a-49d0-bc04-e3bbf8f6a143"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["3 d through a spline", "Section",ExpressionUUID->"0a79b818-3575-492a-bdfc-8e6d14fea23f"],
+
+Cell["used for diagrams to be obsoleted by stem functions", "Text",ExpressionUUID->"e332bf78-ab80-4b9e-b624-8b83e54c5349"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"latticeAddStem", "[", 
+    RowBox[{"lattice_", ",", "shape_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "res", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"res", " ", "=", " ", 
+       RowBox[{"Append", "[", 
+        RowBox[{"lattice", ",", 
+         RowBox[{"spline3D", "->", " ", "shape"}]}], "]"}]}], ";", "\n", 
+      RowBox[{"shapeLU", " ", "=", " ", 
+       RowBox[{"MinMax", "@", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"shape", "[", 
+            RowBox[{"0", ",", "0"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}], ",", 
+          RowBox[{
+           RowBox[{"shape", "[", 
+            RowBox[{"0", ",", "1"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}]}], "}"}]}]}], ";", "\n", 
+      RowBox[{"res", " ", "=", " ", 
+       RowBox[{"latticeSetCylinderLU", "[", 
+        RowBox[{"res", ",", "shapeLU"}], "]"}]}], ";", "\n", "res"}]}], "\n", 
+    "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"lattice3DradiusFunction", "[", 
+     RowBox[{"lattice_", ",", "v_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "xy", "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"xy", "=", 
+        RowBox[{"Take", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"lattice", "[", "spline3D", "]"}], "[", 
+           RowBox[{"0", ",", "v"}], "]"}], ",", "2"}], "]"}]}], ";", 
+       RowBox[{"Sqrt", "[", 
+        RowBox[{"xy", " ", ".", " ", "xy"}], "]"}]}]}], "\n", "]"}]}], ";"}], 
+  "\n", 
+  RowBox[{"(*", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"lattice3DZFunction", "[", 
+      RowBox[{"lattice_", ",", "v_"}], "]"}], " ", ":=", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"lattice", "[", "spline3D", "]"}], "[", 
+       RowBox[{"0", ",", "v"}], "]"}], "[", 
+      RowBox[{"[", "3", "]"}], "]"}]}], ";"}], "\n", "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"lattice3DDHToUV", "[", "lattice_", "]"}], "[", 
+    RowBox[{"{", 
+     RowBox[{"d_", ",", "h_"}], "}"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "shapeLU", "}"}], ",", "\n", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{
+       "d", " ", "maps", " ", "to", " ", "u", " ", "as", " ", "this", " ", 
+        "is", " ", "periodic", " ", "in", " ", "spline"}], ",", "  ", 
+       RowBox[{
+       "v", " ", "goes", " ", "from", " ", "0", " ", "to", " ", "1", " ", 
+        "as", " ", "h", " ", "goes", " ", "over", " ", "shapeLU", " ", "of", 
+        " ", "spline", " ", "z", " ", "values"}]}], " ", "*)"}], " ", "\n", 
+     RowBox[{
+      RowBox[{"shapeLU", " ", "=", " ", 
+       RowBox[{"MinMax", "@", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"lattice", "[", "spline3D", "]"}], "[", 
+            RowBox[{"0", ",", "0"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}], ",", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"lattice", "[", "spline3D", "]"}], "[", 
+            RowBox[{"0", ",", "1"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}]}], "}"}]}]}], ";", "\n", 
+      RowBox[{
+       RowBox[{"vofh", "[", "hp_", "]"}], " ", ":=", " ", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"hp", "-", 
+          RowBox[{"shapeLU", "[", 
+           RowBox[{"[", "1", "]"}], "]"}]}], ")"}], "/", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"shapeLU", "[", 
+           RowBox[{"[", "2", "]"}], "]"}], "-", 
+          RowBox[{"shapeLU", "[", 
+           RowBox[{"[", "1", "]"}], "]"}]}], ")"}]}]}], ";", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "v", " ", "from", " ", "0", " ", "to", " ", "1", " ", "over", " ", 
+        "shape"}], " ", "*)"}], "\n", 
+      RowBox[{"{", 
+       RowBox[{"d", ",", 
+        RowBox[{"vofh", "[", "h", "]"}]}], "}"}]}]}], "\n", "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"lattice3DPosition", "[", 
+     RowBox[{"lattice_", ",", 
+      RowBox[{"{", 
+       RowBox[{"d_", ",", "h_"}], "}"}]}], "]"}], " ", ":=", " ", 
+    RowBox[{
+     RowBox[{"lattice", "[", "spline3D", "]"}], " ", "@@", 
+     RowBox[{
+      RowBox[{"lattice3DDHToUV", "[", "lattice", "]"}], "[", 
+      RowBox[{"{", 
+       RowBox[{"d", ",", "h"}], "}"}], "]"}]}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"lattice3DPoints", "[", "lattice_", "]"}], " ", ":=", " ", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"cylinderLU", ",", "shapeLU", ",", "subLattice"}], "}"}], ",", 
+    "\n", 
+    RowBox[{
+     RowBox[{"cylinderLU", "=", " ", 
+      RowBox[{
+       RowBox[{"latticeGetCylinder", "[", "lattice", "]"}], "[", 
+       RowBox[{"[", "2", "]"}], "]"}]}], ";", "\n", 
+     RowBox[{"shapeLU", " ", "=", " ", 
+      RowBox[{"MinMax", "@", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"lattice", "[", "spline3D", "]"}], "[", 
+           RowBox[{"0", ",", "0"}], "]"}], "[", 
+          RowBox[{"[", "3", "]"}], "]"}], ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"lattice", "[", "spline3D", "]"}], "[", 
+           RowBox[{"0", ",", "1"}], "]"}], "[", 
+          RowBox[{"[", "3", "]"}], "]"}]}], "}"}]}]}], ";", "\n", 
+     RowBox[{"cylinderLU", " ", "=", " ", 
+      RowBox[{"MinMax", "@", 
+       RowBox[{"IntervalIntersection", "[", 
+        RowBox[{
+         RowBox[{"Interval", "@", "cylinderLU"}], ",", 
+         RowBox[{"Interval", "@", "shapeLU"}]}], "]"}]}]}], ";", "\n", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{
+       "ensure", " ", "cylinder", " ", "is", " ", "within", " ", "shape"}], 
+       ",", " ", 
+       RowBox[{
+       "so", " ", "its", " ", "h", " ", "will", " ", "map", " ", "to", " ", 
+        "a", " ", "v", " ", 
+        RowBox[{
+         RowBox[{"within", " ", "[", 
+          RowBox[{"0", ",", "1"}], "]"}], ".", " ", "Otherwise"}], " ", "the",
+         " ", "spline", " ", "is", " ", "unevaluated", " ", "and", " ", 
+        "slows", " ", "down", " ", "the", " ", "graphics"}]}], " ", "*)"}], 
+     " ", "\n", 
+     RowBox[{"subLattice", " ", "=", " ", 
+      RowBox[{"latticeSetCylinderLU", "[", 
+       RowBox[{"lattice", ",", "cylinderLU"}], "]"}]}], ";", "\n", 
+     RowBox[{"Map", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"lattice3DPosition", "[", 
+         RowBox[{"lattice", ",", "#"}], "]"}], "&"}], ",", 
+       RowBox[{"latticePoints", "[", "subLattice", "]"}]}], "]"}]}]}], "\n", 
+   "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"lattice3DParastichyOfV", "[", 
+     RowBox[{"lattice_", ",", "m_", ",", "n_"}], "]"}], "[", "v_", "]"}], " ",
+    ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"dL", ",", "pslope", ",", "h", ",", "vscale"}], "}"}], ",", 
+     "\n", 
+     RowBox[{
+      RowBox[{"dL", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"latticeParastichyCylinderIntersection", "[", 
+         RowBox[{"lattice", ",", "m", ",", "Bottom"}], "]"}], "+", "\n", 
+        RowBox[{"n", "*", 
+         RowBox[{"latticeParastichyHorizontalSeparation", "[", 
+          RowBox[{"lattice", ",", "m"}], "]"}]}]}]}], ";", "\n", 
+      RowBox[{"pslope", " ", "=", " ", 
+       RowBox[{"latticeParastichySlope", "[", 
+        RowBox[{"lattice", ",", "m"}], "]"}]}], ";", "\n", 
+      RowBox[{"shapeLU", " ", "=", " ", 
+       RowBox[{"MinMax", "@", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"lattice", "[", "spline3D", "]"}], "[", 
+            RowBox[{"0", ",", "0"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}], ",", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"lattice", "[", "spline3D", "]"}], "[", 
+            RowBox[{"0", ",", "1"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}]}], "}"}]}]}], ";", "\n", 
+      RowBox[{"vscale", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"shapeLU", "[", 
+         RowBox[{"[", "2", "]"}], "]"}], "-", 
+        RowBox[{"shapeLU", "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}]}], ";", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "h", " ", "ranges", " ", "over", " ", "this", " ", "as", " ", "v", " ",
+         "goes", " ", "from", " ", "0", " ", "to", " ", "1"}], " ", "*)"}], 
+      " ", "\n", 
+      RowBox[{"h", " ", "=", "  ", 
+       RowBox[{"v", " ", "*", " ", "vscale"}]}], " ", ";", " ", "\n", 
+      RowBox[{"lattice3DPosition", "[", 
+       RowBox[{"lattice", ",", 
+        RowBox[{"{", " ", 
+         RowBox[{
+          RowBox[{"dL", " ", "+", 
+           RowBox[{"h", " ", "/", "pslope"}]}], ",", "h"}], "}"}]}], 
+       "]"}]}]}], " ", "\n", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"lattice3DParastichyOfV", "[", 
+     RowBox[{"lattice_", ",", "m_"}], "]"}], "[", "v_", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"ilower", ",", "iupper"}], " ", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"ilower", ",", "iupper"}], "}"}], "=", " ", 
+       RowBox[{"latticeParastichyRange", "[", 
+        RowBox[{"lattice", ",", "m"}], "]"}]}], ";", "\n", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"lattice3DParastichyOfV", "[", 
+          RowBox[{"lattice", ",", "m", ",", "n"}], "]"}], "[", "v", "]"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "ilower", ",", "iupper"}], "}"}]}], "]"}]}]}], 
+    "\n", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"lattice3DPointsUpToV", "[", 
+    RowBox[{"lattice_", ",", "v_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "pts", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"pts", " ", "=", " ", 
+       RowBox[{"lattice3DPoints", "[", "lattice", "]"}]}], ";", "\n", 
+      RowBox[{"Select", "[", 
+       RowBox[{"pts", ",", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Last", "[", "#", "]"}], " ", "<", "   ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"lattice", "[", "spline3D", "]"}], "[", 
+            RowBox[{"0", ",", "v"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}]}], "&"}]}], "]"}]}]}], "\n", 
+    "]"}]}], ";"}], "\n"}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"59e08977-0f76-452e-9af6-a2440b990a9a"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Stem shape functions", "Section",ExpressionUUID->"ed8ddcf0-71d9-4eac-80ea-60c4e1cffce2"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"stemSmoothRadiusFunctionV", "[", 
+    RowBox[{"radiusF_", ",", 
+     RowBox[{"nPoints_", ":", "12"}]}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"stemPoints", ",", "radiusFunction"}], "}"}], ",", "\n", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+      "helper", " ", "smooth", " ", "function", " ", "for", " ", "v", " ", 
+       RowBox[{"in", " ", "[", 
+        RowBox[{"0", ",", "1"}], "]"}]}], " ", "*)"}], "\n", 
+     RowBox[{
+      RowBox[{"stemPoints", " ", "=", " ", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"radiusF", "[", 
+          RowBox[{"v", "/", "nPoints"}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"v", ",", "0", ",", "nPoints"}], "}"}]}], "]"}]}], ";", 
+      "\n", 
+      RowBox[{"radiusFunction", "=", 
+       RowBox[{"BSplineFunction", "[", "stemPoints", "]"}]}], ";", "\n", 
+      "radiusFunction"}]}], "\n", "]"}]}], ";"}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"66e2aad7-8082-45bd-b590-744c333e3e65"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemMakeSurfaceFunctionUV", "[", 
+     RowBox[{"lattice_", ",", "circumferenceFunction_", ",", 
+      RowBox[{"nPoints_", ":", "12"}]}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"cylinderLU", ",", "r"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"cylinderLU", " ", "=", 
+        RowBox[{"latticeGetCylinderLU", "[", "lattice", "]"}]}], ";", "\n", 
+       RowBox[{
+        RowBox[{"r", "[", "v_", "]"}], " ", ":=", " ", 
+        RowBox[{
+         RowBox[{"circumferenceFunction", "[", "v", "]"}], "/", 
+         RowBox[{"(", 
+          RowBox[{"2", "\[Pi]"}], ")"}]}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "a", " ", "radius", " ", "function", " ", "of", " ", "1", " ", 
+          "will", " ", "correspond", " ", "to", " ", "a", " ", "cylinder", 
+          " ", "with", " ", "circumference", "  ", "2", " ", "pi"}], "  ", 
+         ".."}], " ", "*)"}], " ", "\n", 
+       RowBox[{"Function", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"u", ",", "v"}], "}"}], ",", " ", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"r", "[", "v", "]"}], " ", "*", " ", 
+            RowBox[{"Cos", "[", " ", 
+             RowBox[{"2", " ", "\[Pi]", " ", "u"}], "]"}]}], ",", " ", 
+           RowBox[{
+            RowBox[{"r", "[", "v", "]"}], " ", "*", " ", 
+            RowBox[{"Sin", "[", " ", 
+             RowBox[{"2", " ", "\[Pi]", " ", "u"}], "]"}]}], ",", " ", 
+           RowBox[{"stemHeightFunction", "[", 
+            RowBox[{"lattice", ",", "v"}], "]"}]}], "}"}]}], " ", "]"}]}]}], 
+     "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemArcLengthOfV", "[", "stem_", "]"}], "[", "v_", "]"}], " ", ":=",
+    " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "}"}], ",", "\n", 
+     RowBox[{"N", "@", 
+      RowBox[{"ArcLength", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"stemRadiusFunctionV", "[", "stem", "]"}], "[", "s", "]"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{"s", ",", "0", ",", "v"}], "}"}]}], "]"}]}]}], "\n", "]"}]}],
+   ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"stemVInverseArcLengthFunctionS", "[", "stem_", "]"}], " ", ":=", 
+   " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "sofVTable", "}"}], ",", "\n", 
+     RowBox[{"(*", " ", 
+      RowBox[{"maps", " ", 
+       RowBox[{"(", 
+        RowBox[{"0", ",", 
+         RowBox[{"arclength", "[", 
+          RowBox[{"v", "=", "1"}], "]"}]}], " ", ")"}], " ", "to", " ", 
+       RowBox[{"(", 
+        RowBox[{"0", ",", "1"}], ")"}]}], "  ", "*)"}], " ", "\n", 
+     RowBox[{
+      RowBox[{"sofVTable", " ", "=", " ", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"stemArcLengthOfV", "[", "stem", "]"}], "[", "v", "]"}], 
+           ",", "v"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"v", ",", "0", ",", "1", ",", "0.01"}], "}"}]}], "]"}]}], 
+      ";", "\n", 
+      RowBox[{"Interpolation", "[", "sofVTable", "]"}]}]}], " ", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "store", " ", "this", " ", "result", " ", "in", " ", "the", " ", "stem", 
+      RowBox[{"<|", "|>"}], " ", "so", " ", "we", " ", 
+      RowBox[{"don", "'"}], "t", " ", "recalculate"}], " ", "*)"}], " ", "\n",
+     "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemAreaDifferentialOfV", "[", "stem_", "]"}], "[", "v_", "]"}], 
+   " ", ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "x", "}"}], ",", 
+     RowBox[{"2", " ", "\[Pi]", " ", 
+      RowBox[{
+       RowBox[{"stemRadiusFunctionV", "[", "stem", "]"}], "[", "v", "]"}], 
+      " ", "*", "\n", 
+      RowBox[{"Sqrt", "[", " ", 
+       RowBox[{
+        RowBox[{"1", " ", "+", " ", 
+         RowBox[{
+          RowBox[{"(", " ", 
+           RowBox[{"D", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"stemRadiusFunctionV", "[", "stem", "]"}], "[", "x", 
+              "]"}], ",", "x"}], "]"}], ")"}], "^", "2"}]}], " ", "/.", " ", 
+        RowBox[{"x", "->", "v"}]}], "]"}]}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"stemSurfaceAreaBelowV", "[", "stem_", "]"}], "[", "v_", "]"}], 
+    " ", ":=", " ", "\n", 
+    RowBox[{"NIntegrate", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"stemAreaDifferentialOfV", "[", "stem", "]"}], "[", "w", "]"}],
+       ",", 
+      RowBox[{"{", 
+       RowBox[{"w", ",", "0", ",", "v"}], "}"}]}], "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemVConstantAreaFunctionT", "[", "stem_", "]"}], " ", ":=", 
+    "  ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "tofVTable", "}"}], ",", "\n", 
+      RowBox[{"(*", " ", 
+       RowBox[{"maps", " ", 
+        RowBox[{"(", 
+         RowBox[{"0", ",", 
+          RowBox[{"shape", " ", "surface", " ", "area"}]}], " ", ")"}], " ", 
+        "to", " ", 
+        RowBox[{"(", 
+         RowBox[{"0", ",", "1"}], ")"}]}], "  ", "*)"}], " ", "\n", 
+      RowBox[{
+       RowBox[{"tofVTable", " ", "=", " ", 
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"stemSurfaceAreaBelowV", "[", "stem", "]"}], "[", "v", 
+             "]"}], ",", "v"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"v", ",", "0", ",", "1", ",", "0.01"}], "}"}]}], "]"}]}], 
+       ";", "\n", 
+       RowBox[{"Interpolation", "[", "tofVTable", "]"}]}]}], " ", "\n", 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"stemAddShape", "[", 
+    RowBox[{"lattice_", ",", "circumferenceFunction_"}], "]"}], " ", ":=", 
+   " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "stem", ",", "surfaceFunctionUV", ",", "shapeLU", ",", 
+       "vFunctionArcLength"}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"surfaceFunctionUV", " ", "=", " ", 
+       RowBox[{"stemMakeSurfaceFunctionUV", "[", 
+        RowBox[{"lattice", ",", "circumferenceFunction"}], "]"}]}], ";", "\n", 
+      RowBox[{"stem", " ", "=", " ", 
+       RowBox[{"Append", "[", 
+        RowBox[{"lattice", ",", 
+         RowBox[{"{", "\n", 
+          RowBox[{
+           RowBox[{"\"\<surfaceXYZofUV\>\"", "->", " ", "surfaceFunctionUV"}],
+            ",", 
+           RowBox[{
+           "\"\<circumferenceFunctionV\>\"", "->", 
+            "circumferenceFunction"}]}], "\n", "}"}]}], "]"}]}], ";", "\n", 
+      RowBox[{"shapeLU", " ", "=", " ", 
+       RowBox[{"MinMax", "@", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"surfaceFunctionUV", "[", 
+            RowBox[{"0", ",", "0"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}], ",", 
+          RowBox[{
+           RowBox[{"surfaceFunctionUV", "[", 
+            RowBox[{"0", ",", "1"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}]}], "}"}]}]}], ";", "\n", 
+      RowBox[{"stem", " ", "=", " ", 
+       RowBox[{"latticeSetCylinderLU", "[", 
+        RowBox[{"stem", ",", "shapeLU"}], "]"}]}], ";", "\n", 
+      RowBox[{"vFunctionArcLength", " ", "=", " ", 
+       RowBox[{"stemVInverseArcLengthFunctionS", "[", "stem", "]"}]}], ";", 
+      "\n", 
+      RowBox[{"stem", " ", "=", " ", 
+       RowBox[{"Append", "[", 
+        RowBox[{"stem", ",", 
+         RowBox[{"{", "\n", 
+          RowBox[{
+          "\"\<vArcLengthInverseS\>\"", "->", " ", "vFunctionArcLength"}], 
+          "\n", "}"}]}], "]"}]}], ";", "\n", 
+      RowBox[{"vFunctionArea", " ", "=", " ", 
+       RowBox[{"stemVConstantAreaT", "[", "stem", "]"}]}], ";", "\n", 
+      RowBox[{"stem", " ", "=", " ", 
+       RowBox[{"Append", "[", 
+        RowBox[{"stem", ",", 
+         RowBox[{"{", 
+          RowBox[{"\"\<arcLengthSRange\>\"", "->", " ", 
+           RowBox[{"N", "@", 
+            RowBox[{"{", 
+             RowBox[{"0", ",", 
+              RowBox[{
+               RowBox[{"stemArcLengthOfV", "[", "stem", "]"}], "[", "1", 
+               "]"}]}], "}"}]}]}], "}"}]}], "]"}]}], ";", "\n", "stem"}]}], 
+    "\n", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"stemRadiusFunctionV", "[", "stem_", "]"}], " ", ":=", " ", 
+  RowBox[{"Function", "[", 
+   RowBox[{"v", ",", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"stem", "[", "\"\<circumferenceFunctionV\>\"", "]"}], "[", "v", 
+      "]"}], "/", 
+     RowBox[{"(", 
+      RowBox[{"2", "\[Pi]"}], ")"}]}]}], "]"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemShapeFunctionUV", "[", "stem_", "]"}], " ", ":=", " ", 
+    RowBox[{"stem", "[", "\"\<surfaceXYZofUV\>\"", "]"}]}], ";"}], 
+  " "}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemShapeFunctionUS", "[", "stem_", "]"}], " ", ":=", " ", 
+    RowBox[{"Function", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"u", ",", "s"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"stemShapeFunctionUV", "[", "stem", "]"}], "[", 
+       RowBox[{"u", ",", 
+        RowBox[{
+         RowBox[{"stem", "[", "\"\<vArcLengthInverseS\>\"", "]"}], "[", "s", 
+         "]"}]}], "]"}]}], "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"stemShapeLU", "[", "lattice_", "]"}], " ", ":=", " ", 
+   RowBox[{"MinMax", "@", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"stemShapeFunctionUV", "[", "lattice", "]"}], "[", 
+        RowBox[{"0", ",", "0"}], "]"}], "[", 
+       RowBox[{"[", "3", "]"}], "]"}], ",", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"stemShapeFunctionUV", "[", "lattice", "]"}], "[", 
+        RowBox[{"0", ",", "1"}], "]"}], "[", 
+       RowBox[{"[", "3", "]"}], "]"}]}], "}"}]}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemHeightFunction", "[", 
+     RowBox[{"lattice_", ",", "v_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"cylinderLU", "=", 
+        RowBox[{"latticeGetCylinderLU", "[", "lattice", "]"}]}], "}"}], ",", 
+      "\n", 
+      RowBox[{
+       RowBox[{"cylinderLU", "[", 
+        RowBox[{"[", "1", "]"}], "]"}], " ", "+", " ", 
+       RowBox[{"v", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"cylinderLU", "[", 
+           RowBox[{"[", "2", "]"}], "]"}], " ", "-", 
+          RowBox[{"cylinderLU", "[", 
+           RowBox[{"[", "1", "]"}], "]"}]}], ")"}]}]}]}], "\n", "]"}]}], 
+   ";"}], "\n", "\n"}], "\n"}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"9e4f3636-5a29-406a-940e-387e6a02b4a2"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"stemPointsUpToV", "[", 
+    RowBox[{"lattice_", ",", "v_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "pts", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"pts", " ", "=", " ", 
+       RowBox[{"stemPoints", "[", "lattice", "]"}]}], ";", "\n", 
+      RowBox[{"Select", "[", 
+       RowBox[{"pts", ",", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Last", "[", "#", "]"}], " ", "<", "   ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"stemShapeFunctionUV", "[", "lattice", "]"}], "[", 
+            RowBox[{"0", ",", "v"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}]}], "&"}]}], "]"}]}]}], "\n", 
+    "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemArcPointsUpToV", "[", 
+     RowBox[{"lattice_", ",", "v_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "pts", "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"pts", " ", "=", " ", 
+        RowBox[{"stemArcPoints", "[", "lattice", "]"}]}], ";", "\n", 
+       RowBox[{"Select", "[", 
+        RowBox[{"pts", ",", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Last", "[", "#", "]"}], " ", "<", "   ", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"stemShapeFunctionUV", "[", "lattice", "]"}], "[", 
+             RowBox[{"0", ",", "v"}], "]"}], "[", 
+            RowBox[{"[", "3", "]"}], "]"}]}], "&"}]}], "]"}]}]}], "\n", 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemPoints", "[", "lattice_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"cylinderLU", ",", "shapeLU", ",", "subLattice"}], "}"}], ",", 
+      "\n", 
+      RowBox[{
+       RowBox[{"cylinderLU", "=", " ", 
+        RowBox[{"latticeGetCylinderLU", "[", "lattice", "]"}]}], ";", "\n", 
+       RowBox[{"shapeLU", " ", "=", " ", 
+        RowBox[{"MinMax", "@", 
+         RowBox[{"{", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"stemShapeFunctionUV", "[", "lattice", "]"}], "[", 
+             RowBox[{"0", ",", "0"}], "]"}], "[", 
+            RowBox[{"[", "3", "]"}], "]"}], ",", " ", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"stemShapeFunctionUV", "[", "lattice", "]"}], "[", 
+             RowBox[{"0", ",", "1"}], "]"}], "[", 
+            RowBox[{"[", "3", "]"}], "]"}]}], "}"}]}]}], ";", "\n", 
+       RowBox[{"cylinderLU", " ", "=", " ", 
+        RowBox[{"MinMax", "@", 
+         RowBox[{"IntervalIntersection", "[", 
+          RowBox[{
+           RowBox[{"Interval", "@", "cylinderLU"}], ",", 
+           RowBox[{"Interval", "@", "shapeLU"}]}], "]"}]}]}], ";", "\n", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "ensure", " ", "cylinder", " ", "is", " ", "within", " ", "shape"}], 
+         ",", " ", 
+         RowBox[{
+         "so", " ", "its", " ", "h", " ", "will", " ", "map", " ", "to", " ", 
+          "a", " ", "v", " ", 
+          RowBox[{
+           RowBox[{"within", " ", "[", 
+            RowBox[{"0", ",", "1"}], "]"}], ".", " ", "Otherwise"}], " ", 
+          "the", " ", "spline", " ", "is", " ", "unevaluated", " ", "and", 
+          " ", "slows", " ", "down", " ", "the", " ", "graphics"}]}], " ", 
+        "*)"}], " ", "\n", 
+       RowBox[{"subLattice", " ", "=", " ", 
+        RowBox[{"latticeSetCylinderLU", "[", 
+         RowBox[{"lattice", ",", "cylinderLU"}], "]"}]}], ";", "\n", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"stemPositionDH", "[", 
+           RowBox[{"lattice", ",", "#"}], "]"}], "&"}], ",", 
+         RowBox[{"latticePoints", "[", "subLattice", "]"}]}], "]"}]}]}], "\n",
+      "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"stemArcPoints", "[", "lattice_", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"cylinderLU", ",", "shapeLU", ",", "subLattice"}], "}"}], ",", 
+     "\n", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"display", " ", "points", " ", "with", " ", "0"}], "<", "v", 
+        "<", " ", 
+        RowBox[{
+        "1", " ", "\n", "but", " ", "map", " ", "h", " ", "to", " ", 
+         "arclength", " ", "s"}]}], ",", " ", 
+       RowBox[{"not", " ", "v"}], ",", " ", 
+       RowBox[{
+       "so", " ", "need", " ", "a", " ", "slightly", " ", "taller", " ", 
+        "lattice"}]}], " ", "*)"}], "\n", 
+     RowBox[{
+      RowBox[{"cylinderLU", "=", " ", 
+       RowBox[{"latticeGetCylinderLU", "[", "lattice", "]"}]}], ";", "\n", 
+      RowBox[{"shapeLU", " ", "=", " ", 
+       RowBox[{"MinMax", "@", 
+        RowBox[{"{", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"stemShapeFunctionUV", "[", "lattice", "]"}], "[", 
+            RowBox[{"0", ",", "0"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}], ",", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"stemShapeFunctionUV", "[", "lattice", "]"}], "[", 
+            RowBox[{"0", ",", "1"}], "]"}], "[", 
+           RowBox[{"[", "3", "]"}], "]"}]}], "}"}]}]}], ";", "\n", 
+      RowBox[{"cylinderLU", " ", "=", " ", 
+       RowBox[{"MinMax", "@", 
+        RowBox[{"IntervalIntersection", "[", 
+         RowBox[{
+          RowBox[{"Interval", "@", "cylinderLU"}], ",", 
+          RowBox[{"Interval", "@", "shapeLU"}]}], "]"}]}]}], ";", "\n", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+        "ensure", " ", "cylinder", " ", "is", " ", "within", " ", "shape"}], 
+        ",", " ", 
+        RowBox[{
+        "so", " ", "its", " ", "h", " ", "will", " ", "map", " ", "to", " ", 
+         "a", " ", "v", " ", 
+         RowBox[{
+          RowBox[{"within", " ", "[", 
+           RowBox[{"0", ",", "1"}], "]"}], ".", " ", "Otherwise"}], " ", 
+         "the", " ", "spline", " ", "is", " ", "unevaluated", " ", "and", " ",
+          "slows", " ", "down", " ", "the", " ", "graphics"}]}], " ", "*)"}], 
+      " ", "\n", 
+      RowBox[{"subLattice", " ", "=", " ", 
+       RowBox[{"latticeSetCylinderLU", "[", 
+        RowBox[{"lattice", ",", "cylinderLU"}], "]"}]}], ";", "\n", 
+      RowBox[{"Map", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"stemArcPositionDH", "[", 
+          RowBox[{"lattice", ",", "#"}], "]"}], "&"}], ",", 
+        RowBox[{"latticePoints", "[", "subLattice", "]"}]}], "]"}]}]}], "\n", 
+    "]"}]}], ";"}]}], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"bcdae9f6-03b1-469c-92f5-54075be29bc4"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"stemPositionDH", "[", 
+    RowBox[{"lattice_", ",", 
+     RowBox[{"{", 
+      RowBox[{"d_", ",", "h_"}], "}"}]}], "]"}], " ", ":=", " ", 
+   RowBox[{
+    RowBox[{"stemShapeFunctionUV", "[", "lattice", "]"}], " ", "@@", 
+    RowBox[{
+     RowBox[{"stemDHToUV", "[", "lattice", "]"}], "[", 
+     RowBox[{"{", 
+      RowBox[{"d", ",", "h"}], "}"}], "]"}]}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"stemArcPositionDH", "[", 
+    RowBox[{"lattice_", ",", 
+     RowBox[{"{", 
+      RowBox[{"d_", ",", "h_"}], "}"}]}], "]"}], " ", ":=", " ", 
+   RowBox[{
+    RowBox[{"stemShapeFunctionUS", "[", "lattice", "]"}], " ", "@@", 
+    RowBox[{
+     RowBox[{"stemDHToUS", "[", "lattice", "]"}], "[", 
+     RowBox[{"{", 
+      RowBox[{"d", ",", "h"}], "}"}], "]"}]}]}], ";"}]}], "Code",ExpressionUUI\
+D->"7720d08e-c2ce-4c6e-ac33-5d185da4d7de"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"stemDHToUV", "[", "lattice_", "]"}], "[", 
+     RowBox[{"{", 
+      RowBox[{"d_", ",", "h_"}], "}"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "shapeLU", "}"}], ",", "\n", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+        "d", " ", "maps", " ", "to", " ", "u", " ", "as", " ", "this", " ", 
+         "is", " ", "periodic", " ", "in", " ", "spline"}], ",", "  ", 
+        RowBox[{
+        "v", " ", "goes", " ", "from", " ", "0", " ", "to", " ", "1", " ", 
+         "as", " ", "h", " ", "goes", " ", "over", " ", "shapeLU", " ", "of", 
+         " ", "spline", " ", "z", " ", "values"}]}], " ", "*)"}], " ", "\n", 
+      RowBox[{
+       RowBox[{"shapeLU", " ", "=", " ", 
+        RowBox[{"stemShapeLU", "[", "lattice", "]"}]}], ";", "\n", 
+       RowBox[{
+        RowBox[{"vofh", "[", "hp_", "]"}], " ", ":=", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"hp", "-", 
+           RowBox[{"shapeLU", "[", 
+            RowBox[{"[", "1", "]"}], "]"}]}], ")"}], "/", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"shapeLU", "[", 
+            RowBox[{"[", "2", "]"}], "]"}], "-", 
+           RowBox[{"shapeLU", "[", 
+            RowBox[{"[", "1", "]"}], "]"}]}], ")"}]}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{
+         "v", " ", "from", " ", "0", " ", "to", " ", "1", " ", "over", " ", 
+          "shape", " ", "height"}], ",", " ", 
+         RowBox[{"not", " ", "over", " ", "arc", " ", 
+          RowBox[{"length", " ", "!"}]}]}], " ", "*)"}], "\n", 
+       RowBox[{"{", 
+        RowBox[{"d", ",", 
+         RowBox[{"vofh", "[", "h", "]"}]}], "}"}]}]}], "\n", "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemDHToUS", "[", "lattice_", "]"}], "[", 
+    RowBox[{"{", 
+     RowBox[{"d_", ",", "h_"}], "}"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"shapeLU", ",", "s", ",", "v"}], "}"}], ",", "\n", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{
+       "d", " ", "maps", " ", "to", " ", "u", " ", "as", " ", "this", " ", 
+        "is", " ", "periodic", " ", "in", " ", "spline"}], ",", " ", "\n", 
+       RowBox[{"v", " ", "from", " ", "0", " ", "to", " ", "1"}], " ", ",", 
+       "  ", 
+       RowBox[{
+       "s", " ", "from", " ", "0", " ", "to", " ", "arclength", "  ", "which",
+         " ", "is", " ", "the", " ", "top", " ", "of", " ", "the", " ", 
+        "lattice", " ", "cylinder"}]}], " ", "*)"}], " ", "\n", 
+     RowBox[{
+      RowBox[{"shapeLU", " ", "=", " ", 
+       RowBox[{"stemShapeLU", "[", "lattice", "]"}]}], ";", "\n", 
+      RowBox[{"s", " ", "=", "  ", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"h", "-", 
+          RowBox[{"shapeLU", "[", 
+           RowBox[{"[", "1", "]"}], "]"}]}], ")"}], "/", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"shapeLU", "[", 
+           RowBox[{"[", "2", "]"}], "]"}], "-", 
+          RowBox[{"shapeLU", "[", 
+           RowBox[{"[", "1", "]"}], "]"}]}], ")"}]}]}], ";", "\n", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+        "v", " ", "from", " ", "0", " ", "to", " ", "1", " ", "over", " ", 
+         "shape", " ", "height"}], ",", " ", 
+        RowBox[{"not", " ", "over", " ", "arc", " ", 
+         RowBox[{"length", " ", "!"}]}]}], " ", "*)"}], "\n", 
+      RowBox[{"{", 
+       RowBox[{"d", ",", "s"}], "}"}]}]}], "\n", "]"}]}], ";"}]}], "Code",Expr\
+essionUUID->"5c4247fd-a7cd-4206-b517-c62471ef7213"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemParastichyOfS", "[", 
+     RowBox[{"stem_", ",", "m_", ",", "n_"}], "]"}], "[", "v_", "]"}], " ", ":=",
+    " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"stemParastichyOfV", "[", 
+       RowBox[{"stem", ",", "m", ",", "n"}], "]"}], "[", 
+      RowBox[{
+       RowBox[{"stemVInverseArcLengthFunctionS", "[", "stem", "]"}], "[", "v",
+        "]"}], " ", "]"}]}], "\n", "]"}]}], ";"}]], "Code",ExpressionUUID->\
+"86a01d75-debd-4aeb-80ce-c6791159548e"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"stemParastichyOfV", "[", 
+      RowBox[{"stem_", ",", "m_", ",", "n_"}], "]"}], "[", "v_", "]"}], " ", ":=",
+     " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"dL", ",", "pslope", ",", "h", ",", "vscale", ",", "shapeLU"}],
+        "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"dL", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"latticeParastichyCylinderIntersection", "[", 
+          RowBox[{"stem", ",", "m", ",", "Bottom"}], "]"}], "+", "\n", 
+         RowBox[{"n", "*", 
+          RowBox[{"latticeParastichyHorizontalSeparation", "[", 
+           RowBox[{"stem", ",", "m"}], "]"}]}]}]}], ";", "\n", 
+       RowBox[{"pslope", " ", "=", " ", 
+        RowBox[{"latticeParastichySlope", "[", 
+         RowBox[{"stem", ",", "m"}], "]"}]}], ";", "\n", 
+       RowBox[{"shapeLU", " ", "=", 
+        RowBox[{"stemShapeLU", "[", "stem", "]"}]}], ";", "\n", 
+       RowBox[{"vscale", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"shapeLU", "[", 
+          RowBox[{"[", "2", "]"}], "]"}], "-", 
+         RowBox[{"shapeLU", "[", 
+          RowBox[{"[", "1", "]"}], "]"}]}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+        "h", " ", "ranges", " ", "over", " ", "this", " ", "as", " ", "v", 
+         " ", "goes", " ", "from", " ", "0", " ", "to", " ", "1"}], " ", 
+        "*)"}], " ", "\n", 
+       RowBox[{"h", " ", "=", "  ", 
+        RowBox[{"v", " ", "*", " ", "vscale"}]}], " ", ";", " ", "\n", 
+       RowBox[{"stemPositionDH", "[", 
+        RowBox[{"stem", ",", 
+         RowBox[{"{", " ", 
+          RowBox[{
+           RowBox[{"dL", " ", "+", 
+            RowBox[{"h", " ", "/", "pslope"}]}], ",", "h"}], "}"}]}], 
+        "]"}]}]}], " ", "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"stemArcLengthParastichyOfV", "[", 
+      RowBox[{"stem_", ",", "m_", ",", "n_"}], "]"}], "[", "v_", "]"}], " ", ":=",
+     " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"dL", ",", "pslope", ",", "h", ",", "vscale", ",", "shapeLU"}],
+        "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"dL", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"latticeParastichyCylinderIntersection", "[", 
+          RowBox[{"stem", ",", "m", ",", "Bottom"}], "]"}], "+", "\n", 
+         RowBox[{"n", "*", 
+          RowBox[{"latticeParastichyHorizontalSeparation", "[", 
+           RowBox[{"stem", ",", "m"}], "]"}]}]}]}], ";", "\n", 
+       RowBox[{"pslope", " ", "=", " ", 
+        RowBox[{"latticeParastichySlope", "[", 
+         RowBox[{"stem", ",", "m"}], "]"}]}], ";", "\n", 
+       RowBox[{"shapeLU", " ", "=", 
+        RowBox[{"stemShapeLU", "[", "stem", "]"}]}], ";", "\n", 
+       RowBox[{"vscale", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"shapeLU", "[", 
+          RowBox[{"[", "2", "]"}], "]"}], "-", 
+         RowBox[{"shapeLU", "[", 
+          RowBox[{"[", "1", "]"}], "]"}]}]}], ";", " ", "\n", 
+       RowBox[{"h", " ", "=", "  ", 
+        RowBox[{"v", " ", "*", " ", "vscale", " ", "*", 
+         RowBox[{
+          RowBox[{"stem", "[", "\"\<arcLengthSRange\>\"", "]"}], "[", 
+          RowBox[{"[", "2", "]"}], "]"}]}]}], ";", " ", "\n", 
+       RowBox[{"stemArcPositionDH", "[", 
+        RowBox[{"stem", ",", 
+         RowBox[{"{", " ", 
+          RowBox[{
+           RowBox[{"dL", " ", "+", 
+            RowBox[{"h", " ", "/", "pslope"}]}], ",", "h"}], "}"}]}], 
+        "]"}]}]}], " ", "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemParastichyOfV", "[", 
+     RowBox[{"lattice_", ",", "m_"}], "]"}], "[", "v_", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"ilower", ",", "iupper"}], " ", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"ilower", ",", "iupper"}], "}"}], "=", " ", 
+       RowBox[{"latticeParastichyRange", "[", 
+        RowBox[{"lattice", ",", "m"}], "]"}]}], ";", "\n", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"stemParastichyOfV", "[", 
+          RowBox[{"lattice", ",", "m", ",", "n"}], "]"}], "[", "v", "]"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "ilower", ",", "iupper"}], "}"}]}], "]"}]}]}], 
+    "\n", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"stemArcLengthParastichyOfV", "[", 
+     RowBox[{"lattice_", ",", "m_"}], "]"}], "[", "v_", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"ilower", ",", "iupper"}], " ", "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"ilower", ",", "iupper"}], "}"}], "=", " ", 
+       RowBox[{"latticeParastichyRange", "[", 
+        RowBox[{"lattice", ",", "m"}], "]"}]}], ";", "\n", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"stemArcLengthParastichyOfV", "[", 
+          RowBox[{"lattice", ",", "m", ",", "n"}], "]"}], "[", "v", "]"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "ilower", ",", "iupper"}], "}"}]}], "]"}]}]}], 
+    "\n", "]"}]}], ";"}]}], "Code",ExpressionUUID->"2cffcd16-486f-4a8f-a49c-\
+774e91d06a08"]
+}, Open  ]]
+},
+WindowSize->{718.5, 831.},
+WindowMargins->{{Automatic, -2.099999999999909}, {Automatic, 0}},
+TaggingRules->{
+ "WelcomeScreenSettings" -> {"FEStarting" -> False}, 
+  "CodeFormatter" -> {
+   "ToolbarState" -> False, "ToolbarAccentColor" -> RGBColor["#2497b7"]}},
+FrontEndVersion->"12.2 for Microsoft Windows (64-bit) (December 12, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"69b45cde-221a-446a-9819-08e78d1dbbdd"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 88, 0, 66, "Section",ExpressionUUID->"dafb00cf-9865-4e0d-8243-84db3f549a19"],
+Cell[671, 24, 8802, 245, 982, "Input",ExpressionUUID->"d65299de-a7b4-4028-bfad-df211f871af8",
+ InitializationCell->True],
+Cell[9476, 271, 2589, 69, 318, "Code",ExpressionUUID->"1771017c-1420-4e16-8cc1-b9b9a686ae7d"],
+Cell[12068, 342, 1112, 29, 158, "Code",ExpressionUUID->"786c8c86-1bf7-46c4-9fdf-6ffb07ce4d6c"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13217, 376, 91, 0, 66, "Section",ExpressionUUID->"71246585-5db0-4ca4-924e-1cdbf414d8c1"],
+Cell[13311, 378, 5736, 146, 551, "Input",ExpressionUUID->"3968a2a7-342e-4cc7-b6dc-0d81163f88bd",
+ InitializationCell->True],
+Cell[19050, 526, 7449, 204, 763, "Input",ExpressionUUID->"5f9d3a98-a46c-4729-b5b2-bbd9e7f9b1ef",
+ InitializationCell->True]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26536, 735, 90, 0, 66, "Section",ExpressionUUID->"77926345-0f95-41d8-996a-3a72d3c1f138"],
+Cell[26629, 737, 2389, 62, 326, "Input",ExpressionUUID->"271f6e36-7b08-4aa4-9a63-151b065c5857",
+ InitializationCell->True],
+Cell[29021, 801, 1842, 52, 288, "Input",ExpressionUUID->"747d76d5-80d4-4ff4-9fb6-18e4fa01af7c",
+ InitializationCell->True],
+Cell[30866, 855, 1792, 48, 288, "Input",ExpressionUUID->"9fb040ce-c4ac-4e5e-ae0b-0b1b998cdaaa",
+ InitializationCell->True],
+Cell[32661, 905, 1602, 42, 193, "Code",ExpressionUUID->"8f1e7f40-bb03-414f-beb6-6d3cb343cd2f"],
+Cell[34266, 949, 1460, 42, 193, "Code",ExpressionUUID->"d8dc7c93-074e-4218-aab6-f30e8f98101b"],
+Cell[35729, 993, 2047, 54, 229, "Code",ExpressionUUID->"160c58a1-ef3d-41cf-a124-21b773cca1eb"],
+Cell[37779, 1049, 3041, 92, 193, "Code",ExpressionUUID->"ed44a0b0-8df1-4677-b699-4ec099bc13d3"],
+Cell[40823, 1143, 1897, 49, 122, "Code",ExpressionUUID->"31857182-9d4a-4c09-830d-2e0d13c97d84"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[42757, 1197, 90, 0, 66, "Section",ExpressionUUID->"9046147e-0ca0-4272-b5af-5ffff81b37e9"],
+Cell[42850, 1199, 4021, 112, 70, "Input",ExpressionUUID->"ec135d8a-a107-4dc2-ad4a-43b270460e6d",
+ InitializationCell->True],
+Cell[46874, 1313, 2271, 64, 70, "Input",ExpressionUUID->"0f597f0e-259c-4c9e-8547-bf6c0029a582",
+ InitializationCell->True],
+Cell[49148, 1379, 3228, 84, 70, "Input",ExpressionUUID->"f7d5ea60-fa52-44f8-9723-1133378a324a",
+ InitializationCell->True],
+Cell[52379, 1465, 5590, 134, 70, "Code",ExpressionUUID->"c7232d2c-695f-4365-b510-a9b2e61cc8ec"],
+Cell[57972, 1601, 861, 23, 70, "Input",ExpressionUUID->"40674fc5-0c93-433a-a884-ebb2d09eb028",
+ InitializationCell->True],
+Cell[58836, 1626, 8982, 209, 70, "Code",ExpressionUUID->"eb907994-ab47-46b7-bd97-0ff7457c7cee"],
+Cell[67821, 1837, 1037, 26, 70, "Input",ExpressionUUID->"a3249bf0-c159-4ec7-b33c-36858e93f1d7",
+ InitializationCell->True],
+Cell[68861, 1865, 111, 2, 70, "Input",ExpressionUUID->"fbad3bed-32b8-480c-becb-b59ea3a673e8",
+ InitializationCell->True],
+Cell[68975, 1869, 520, 14, 70, "Code",ExpressionUUID->"68c05707-c9a3-4aec-93a3-4561ca180740"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[69532, 1888, 89, 0, 52, "Section",ExpressionUUID->"31f5f89c-75cc-447a-a7cf-89500a98046e"],
+Cell[69624, 1890, 1077, 32, 157, "Input",ExpressionUUID->"b754ac1a-a72e-47a4-a484-c7f4b7a1b7e7",
+ InitializationCell->True],
+Cell[70704, 1924, 6897, 196, 567, "Code",ExpressionUUID->"450c323d-a927-4f7a-8aa3-456b12c3cb17"],
+Cell[77604, 2122, 3361, 90, 354, "Code",ExpressionUUID->"f4dc216f-6f98-4a12-b772-f3e685ccd847"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[81002, 2217, 90, 0, 66, "Section",ExpressionUUID->"120ec840-1542-465e-b6c1-6997170dd997"],
+Cell[81095, 2219, 6026, 150, 813, "Input",ExpressionUUID->"7ba1adf9-9d69-47f9-812c-0bdee4154695",
+ InitializationCell->True],
+Cell[87124, 2371, 4086, 119, 270, "Input",ExpressionUUID->"a60dc9aa-eb69-42c0-8476-088c0ecdb808",
+ InitializationCell->True]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[91247, 2495, 100, 0, 66, "Section",ExpressionUUID->"4d850d9d-a43e-4628-a50b-f40398683284"],
+Cell[91350, 2497, 81, 0, 28, "Input",ExpressionUUID->"634d7633-eb03-4f97-a11a-992d8c562bb6"],
+Cell[91434, 2499, 898, 27, 101, "Input",ExpressionUUID->"2dfe3646-0eed-47e4-a4f6-ba3736c3e885",
+ InitializationCell->True],
+Cell[92335, 2528, 4447, 138, 438, "Input",ExpressionUUID->"4d546aaa-4af5-4437-873c-9c4362adc80a",
+ InitializationCell->True],
+Cell[96785, 2668, 2869, 73, 363, "Input",ExpressionUUID->"70d8dcc1-a612-44f2-8551-a9711e17b982",
+ InitializationCell->True]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[99691, 2746, 93, 0, 66, "Section",ExpressionUUID->"326fb5ea-9225-4cd1-a35e-623fb280064d"],
+Cell[99787, 2748, 329, 8, 44, "Input",ExpressionUUID->"9cf5b32b-e4b0-48bc-b785-6bbf186ecc38",
+ InitializationCell->True],
+Cell[100119, 2758, 7326, 195, 728, "Code",ExpressionUUID->"13e4de7d-b0e1-45cb-aca8-6c97cc62ae3d"],
+Cell[107448, 2955, 111, 2, 44, "Input",ExpressionUUID->"131f1373-c489-45f5-9f2b-effac8f04c62",
+ InitializationCell->True],
+Cell[107562, 2959, 3678, 101, 514, "Code",ExpressionUUID->"edbb26f2-93fa-43c4-93ef-681df26d4c21"],
+Cell[111243, 3062, 1958, 58, 229, "Code",ExpressionUUID->"fa7f58e3-9803-4d70-bf9c-7acc59d0839e"],
+Cell[113204, 3122, 5866, 152, 478, "Code",ExpressionUUID->"b2b22de7-8ad3-459f-877f-695eb387f4e0"],
+Cell[119073, 3276, 8024, 218, 478, "Code",ExpressionUUID->"c577d799-8d51-4ff6-91db-86279f622ef3"],
+Cell[127100, 3496, 696, 21, 70, "Code",ExpressionUUID->"fc159696-db6a-49fe-b409-e57f6d8c1a40"],
+Cell[127799, 3519, 1730, 46, 70, "Input",ExpressionUUID->"c2ec9d56-732b-4870-83dc-b199ce1df128",
+ InitializationCell->True],
+Cell[CellGroupData[{
+Cell[129554, 3569, 118, 0, 70, "Subsection",ExpressionUUID->"7151a561-8371-40cf-b9d7-0e40d21a4a5a"],
+Cell[129675, 3571, 5092, 141, 70, "Input",ExpressionUUID->"6ee4c1a5-230a-49d0-bc04-e3bbf8f6a143",
+ InitializationCell->True]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[134816, 3718, 94, 0, 70, "Section",ExpressionUUID->"0a79b818-3575-492a-bdfc-8e6d14fea23f"],
+Cell[134913, 3720, 122, 0, 70, "Text",ExpressionUUID->"e332bf78-ab80-4b9e-b624-8b83e54c5349"],
+Cell[135038, 3722, 10411, 282, 70, "Input",ExpressionUUID->"59e08977-0f76-452e-9af6-a2440b990a9a",
+ InitializationCell->True]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[145486, 4009, 94, 0, 70, "Section",ExpressionUUID->"ed8ddcf0-71d9-4eac-80ea-60c4e1cffce2"],
+Cell[145583, 4011, 1076, 28, 70, "Input",ExpressionUUID->"66e2aad7-8082-45bd-b590-744c333e3e65",
+ InitializationCell->True],
+Cell[146662, 4041, 10620, 295, 70, "Input",ExpressionUUID->"9e4f3636-5a29-406a-940e-387e6a02b4a2",
+ InitializationCell->True],
+Cell[157285, 4338, 6587, 168, 70, "Input",ExpressionUUID->"bcdae9f6-03b1-469c-92f5-54075be29bc4",
+ InitializationCell->True],
+Cell[163875, 4508, 885, 25, 70, "Code",ExpressionUUID->"7720d08e-c2ce-4c6e-ac33-5d185da4d7de"],
+Cell[164763, 4535, 3616, 92, 70, "Code",ExpressionUUID->"5c4247fd-a7cd-4206-b517-c62471ef7213"],
+Cell[168382, 4629, 578, 16, 70, "Code",ExpressionUUID->"86a01d75-debd-4aeb-80ce-c6791159548e"],
+Cell[168963, 4647, 5275, 137, 70, "Code",ExpressionUUID->"2cffcd16-486f-4a8f-a49c-774e91d06a08"]
+}, Open  ]]
+}
+]
+*)
+
