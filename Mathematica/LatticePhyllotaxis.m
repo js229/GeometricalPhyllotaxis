@@ -155,8 +155,7 @@ If[d== -1/2 || Round[d] != 0, m = hat[m]];
 m
 ];
 numberate[pvectors_, h_] := Module[{pnumbers,onepos,hatpos},pnumbers = Map[rawpnumber[#,h]&,pvectors];
-Print[pnumbers];
-onepos = Position[pnumbers,1,1];Print[onepos];If[Length[onepos]>= 2, hatpos = onepos[[2]]; pnumbers[[hatpos]] = hat[1]];Association[Map[#[[1]]->#[[2]] &,Transpose[{pnumbers,pvectors}]]]
+onepos = Position[pnumbers,1,1];If[Length[onepos]>= 2, hatpos = onepos[[2]]; pnumbers[[hatpos]] = hat[1]];Association[Map[#[[1]]->#[[2]] &,Transpose[{pnumbers,pvectors}]]]
 ];
 
 
