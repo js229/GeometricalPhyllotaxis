@@ -440,48 +440,10 @@ Line[line]
 
 
 (* ::Input::Initialization:: *)
-(*latticeParastichyLines[lattice_,m_,through_] := Module[{pvecm,thr,pvecslope,bottom,top,cylinder,cylinderLU,line,i,lastXZ,nextX,nextZ,v},
-pvecm = latticePoint[lattice,m];thr = latticePoint[lattice,through];cylinder = latticeGetCylinder[lattice];cylinderLU = cylinder\[LeftDoubleBracket]2\[RightDoubleBracket];If[zeroParastichyQ[m],
-v = latticeParastichyVerticalSeparation[lattice,0];line = {{cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket],v*through},{cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket],v*through}},(* or *) 
-If[pvecm[[1]]==0,
-v = latticeParastichyHorizontalSeparation[lattice,1];line ={ {v*through,cylinder\[LeftDoubleBracket]2,1\[RightDoubleBracket]},{v*through,cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket]}},
-(* or general case *) 
-pvecslope = pvecm\[LeftDoubleBracket]2\[RightDoubleBracket]/pvecm\[LeftDoubleBracket]1\[RightDoubleBracket];bottom = { (cylinderLU\[LeftDoubleBracket]1\[RightDoubleBracket]-thr\[LeftDoubleBracket]2\[RightDoubleBracket])/pvecslope +thr\[LeftDoubleBracket]1\[RightDoubleBracket], cylinderLU\[LeftDoubleBracket]1\[RightDoubleBracket]};top        = { (cylinderLU\[LeftDoubleBracket]2\[RightDoubleBracket]-thr\[LeftDoubleBracket]2\[RightDoubleBracket])/pvecslope+thr\[LeftDoubleBracket]1\[RightDoubleBracket],cylinderLU\[LeftDoubleBracket]2\[RightDoubleBracket]};
-line = {};
-lastXZ = bottom;
-i=0;
-While[
-nextX = If[pvecslope>0, cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket],cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket] ];
-nextZ = lastXZ\[LeftDoubleBracket]2\[RightDoubleBracket]+(nextX-lastXZ\[LeftDoubleBracket]1\[RightDoubleBracket])* pvecslope;
-If[nextZ> cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket],
-nextZ =  cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket];
-nextX = lastXZ\[LeftDoubleBracket]1\[RightDoubleBracket]+(nextZ-lastXZ\[LeftDoubleBracket]2\[RightDoubleBracket])/pvecslope
-];
-line = Append[line,{lastXZ,{nextX,nextZ}}];
-i++;
-i< 50 && nextZ  < cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket],
-(* While body *)
-lastXZ = Last@Last[line];
-lastXZ\[LeftDoubleBracket]1\[RightDoubleBracket] = If[pvecslope>0, cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket] ]
-]
-]
-];
-
-Line[line]
-];
-*)
-
-
-
-(* ::Input::Initialization:: *)
 latticeParallelogram[lattice_,m_,n_,through_] :=Module[{origin,pm,pn},
 origin = latticePoint[lattice,through]; pm=latticePoint[lattice,m];pn=latticePoint[lattice,n];
  { origin, origin+pm,origin+pm+pn,origin+pn,origin}
 ];
-
-
-(* ::Input::Initialization:: *)
-
 
 
 latticeGraphicsCylinder[lattice_] :=  Rectangle @@ Transpose[latticeGetCylinder[lattice]];
@@ -590,6 +552,15 @@ latticeTriplePoint[{m_,n_}] := latticeDHHexagonalLower[{m,n}];
 
 
 (* ::Input::Initialization:: *)
+latticeDHNonOpposedTC[{m_,n_}]  := Module[{xy,r,angles,circle},
+circle =  viiPrimaryNonOpposed[{m,n}];
+If[circle==Nothing,Return[Nothing]];
+{xy,r,angles} = List @@ circle;
+angles = Mean[angles];
+xy + r * {Cos[angles],Sin[angles]}
+]
+
+(* to be updated below  here *)
 latticeDHHexagonalLower[{m_,n_}]  := latticeMoebiusTransform[m,n][ { -1/2,Sqrt[3]/2}];
 latticeDHHexagonalUpper[{m_,n_}]  := latticeMoebiusTransform[m,n][ { 1/2,Sqrt[3]/2}];
 
@@ -721,29 +692,7 @@ circleToRest[Circle[xy_,r_,\[Theta]12_]] := Module[{\[Theta]1,\[Theta]2},
 
 viTouchingSecondaryBranch[{m_,n_}] := circleToRest@viRegionBoundaries[{m,n}]["10"][unitCircle];
 
-viOpposedCircleBranch[mn_]  := getCircleBranch[mn,"Opposed"];
-viNonOpposedCircleBranch[mn_]  := getCircleBranch[mn,"NonOpposed"];
-getCircleBranch[{m_,n_},type_] := Module[{centre,branch,branchEndsD,branchEndsH,orthoPointD},
-branch = viTouchingCircleBranch[{m,n}];
-{centre,r,theta12} = Apply[List,branch];
-branchEndsD = {centre[[1]]+ r Cos[theta12[[1]]],centre[[1]]+ r Cos[theta12[[2]]]};
-branchEndsH = {centre[[2]]+ r Sin[theta12[[1]]],centre[[2]]+ r Sin[theta12[[2]]]};
-orthoPointD = viOrthostichyD[{m,n-m}];
-If[!IntervalMemberQ[Interval[branchEndsD],orthoPointD],
-If[type=="Opposed", Return[branch],Return[Nothing[]]]];
 
-orthoPointH = linecircleIntersection[orthoPointD,branch];
-orthopt = {orthoPointD,orthoPointH};
-branchEndOrder = Ordering[branchEndsH];
-{lowerpt,triplept}  = Transpose[{branchEndsD,branchEndsH}][[branchEndOrder]];
-res = If[type=="Opposed",
-Circle[centre,r,Sort@{xyToArg[branch,orthopt],xyToArg[branch,lowerpt]}],
-Circle[centre,r,Sort@{xyToArg[branch,triplept],xyToArg[branch,orthopt]}]
-];
-Return[res];
-];
-
-xyToArg[Circle[centre_,r_,theta_],xy_ ]:= ArcTan @@ ( xy - centre)
 
 
 pairToCircle[{p1_,p2_}] := Module[{dp,rp,todr2,x1,y1,x2,c2,y2,d,r2},
@@ -778,25 +727,43 @@ viRegion[{0,1}] :=
 
 
 (* ::Input::Initialization:: *)
-
+viiPrimaryIsEverNonOpposed[mn_] := Module[{m,n},
+{m,n} = Sort[mn];
+m < n - m 
+];
 viiPrimaryOpposed[mn_]  := getCircleBranch[mn,"Opposed"];
 viiPrimaryNonOpposed[mn_]  := getCircleBranch[mn,"NonOpposed"];
+
+getCircleBranch[{m_,n_},type_] := Module[{centre,r,theta12,branch},
+mn = Sort[{m,n}];
+branch = viiPrimarySegment[mn];
+If[!viiPrimaryIsEverNonOpposed[mn],
+	If[type=="Opposed", Return[branch],Return[Nothing[]]]];
+angle = circleAngleAtLine[branch,viiOrthostichyD[mn]];
+upperpt = viiTriplePoint[viiUpperPair[mn]];
+lowerpt = viiTriplePoint[mn];
+
+{centre,r,theta12} = Apply[List,branch];
+If[type=="NonOpposed",
+res = Circle[centre,r,Sort@{xyToArg[branch,upperpt],angle}]
+,
+res = Circle[centre,r,Sort@{xyToArg[branch,lowerpt],angle}]
+];
+Return[res];
+];
 viiOrthostichyD[{m_,n_}] := Module[{u,v},
-{u,v} = windingNumberPair[{m,n}];
-v/n
+{u,v} = euclideanUV[{m,n}];
+res = v/n;
+ If[res>1/2,res = 1-res];
+res
 ]
 
-
-getCircleBranch[{m_,n_},type_] := Module[{centre,r,theta12,branch,branchBoundingBoxD,branchBoundingBoxH,orthoPointD,orthoPointH,orthopt,branchEndOrder},branch = viiPrimarySegment[{m,n}];{centre,r,theta12} = Apply[List,branch];
-
-{branchBoundingBoxD ,branchBoundingBoxH} = Transpose[viiPrimaryBoundingBox[{m,n}]];
-   orthoPointD = viiOrthostichyD[{m,n}];If[!IntervalMemberQ[Interval[branchBoundingBoxD],orthoPointD],
-	If[type=="Opposed", Return[branch],Return[Nothing[]]]];orthoPointH = linecircleIntersection[orthoPointD,branch];orthopt = {orthoPointD,orthoPointH};branchEndOrder = Ordering[branchBoundingBoxH];{lowerpt,triplept}  = Transpose[{viiPrimaryBoundingBox[{m,n}]}][[branchEndOrder]];res = If[type=="Opposed",Circle[centre,r,Sort@{xyToArg[branch,orthopt],xyToArg[branch,lowerpt]}],Circle[centre,r,Sort@{xyToArg[branch,triplept],xyToArg[branch,orthopt]}]];Return[res];
-];
-
 xyToArg[Circle[centre_,r_,theta_],xy_ ]:= ArcTan @@ ( xy - centre)
-linecircleIntersection[lineD_,Circle[centre_,r_,theta_]] := Module[{},Sqrt[r^2 - (lineD-centre[[1]])^2]
-];
+
+
+circleAngleAtLine[circle_,d_] := xyToArg[circle, linecircleIntersectionDH[d,circle]]
+linecircleIntersectionDH[d_,circle_] := {d,linecircleIntersection[d,circle]}
+linecircleIntersection[lineD_,Circle[centre_,r_,theta_]] := Sqrt[r^2 - (lineD-centre[[1]])^2];
 
 
 
@@ -811,9 +778,11 @@ dbar = ( n v - m u )/(n^2-m^2);
 Circle[ { dbar, 0},r,{0,\[Pi]}]
 ];
 
+viiUpperPair[{m_,n_}] := {Abs[n-m],Min[m,n]}
+
 viiPrimaryBoundingBox[mn_] :=  Module[{upperTP,lowerTP,m,n},
 {m,n}= mn;
-upperTP = viiTriplePoint[{Abs[n-m],Min[m,n]}];
+upperTP = viiTriplePoint[viiUpperPair[{m,n}]];
 lowerTP = viiTriplePoint[{m,n}];
 {lowerTP,upperTP}
 ];
@@ -836,6 +805,7 @@ viiNonPrimarySegments[{1,1}] = {Line[{{1/2,0},{1/2,1/(2 \[Sqrt]3)}}],Line[{{1/2,
 viiNonPrimarySegments[{1,2}] ={
  Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}], Circle[{2/3,0},1/3,{5\[Pi]/6,\[Pi]}]};
 
+(* split  half circle  at points p1 and p2 *)
 subSegment[Circle[xy_,r_,angles___],p1_,p2_] := Module[{angle1,angle2},
 {angle1,angle2} = Sort@N[ {ArcTan @@ (p1-xy),ArcTan @@ (p2-xy)}];
 Circle[xy,r,{angle1,angle2}]
@@ -845,6 +815,8 @@ remainderSegments[Circle[xy_,r_,angles___],p1_,p2_] := Module[{angle1,angle2},
 {Circle[xy,r,{0,angle1}],Circle[xy,r,{angle2,\[Pi]}]}
 ];
 subSegment[InfiniteLine[_],p1_,p2_] := Line[{p1,p2}];
+(* by angles *)
+
 
 
 
@@ -878,6 +850,7 @@ viiRegion[{0,1},"All"] := RegionUnion[viiRegion[{0,1},"Ordered"],viiRegion[Rever
 viiRegion[{1,0},"All"] = viiRegion[{0,1},"All"];viiRegion[{1,1},"All"] := viiRegion[{1,1},"Ordered"];
 viiRegion[{1,0}] := viiRegion[{1,0},"Ordered"]
 
+viiRegion[mn_,"All"] := RegionUnion[viiRegion[mn,"Ordered"],viiRegion[Reverse@mn,"Ordered"]];
 
 (* 1,1 *) 
 (*
@@ -1043,16 +1016,6 @@ mvnu1 = Solve[ m v - n u ==1, v][[1]];
 {z1d,z1h} = 
  Simplify/@( ComplexExpand@ ReIm [gMNUV[{m,n},{u,v}][d+ I h]] );{z1d,z1h} - viiMoebiusTransform[{{m,n},{u,v}}][{d,h}] /. mvnu1]
 ]
-
-
-viiOrthostichyD[{m_,n_}] := Module[{v,w},
-{v,w} = euclideanUV[{n,m+n}];
-w/(n+m)
-];
-
-
-(* ::Input::Initialization:: *)
-
 
 
 (* ::Input::Initialization:: *)
