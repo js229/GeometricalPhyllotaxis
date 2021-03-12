@@ -80,6 +80,7 @@ uv
 ];
 
 (*  m v - n u = hcf(m,n); 0\[LessEqual]u<m, 0\[LessEqual]v<n apart from the m=0 case *) 
+(* in particular wnp has m v - n u = +1 regardless of euclideanDelta *)
 windingNumberPair[{0,0}] := {\[Infinity],\[Infinity]};
 windingNumberPair[{0,n_}] := {-1,0};
 windingNumberPair[{m_,0}] := {0,1};
@@ -108,6 +109,32 @@ uv = euclideanUV[mn];str = StringTemplate["``*``-``*``=``"][mn[[1]],uv[[2]],mn[[
 ];
 
 *)
+
+
+(* ::Input::Initialization:: *)
+mnuvi[m_,n_,u_,v_] := Module[{dmaster,minterval,ninterval},
+(* interval on which [md]=u and [nd]=v *)
+dmaster = Interval[{0,1/2}];
+minterval =  (u+Interval[ {-1/2,1/2}])/m;
+ninterval =  (v+Interval[ {-1/2,1/2}])/n;
+IntervalIntersection[dmaster,minterval,ninterval]
+];generatingInterval[{m_,n_}] :=  Module[{u,v,up,vp,resplus,resminus,res,dmaster},
+dmaster = Interval[{0,1/2}];
+{u,v }= windingNumberPair[{m,n}];
+
+resplus=mnuvi[m,n,u,v];
+vp = n-v; up = m- u;
+resminus =mnuvi[m,n,up,vp];
+res = IntervalUnion[resminus,resplus];
+res];
+generatingOpposedInterval[{m_,n_}] := Module[{res,u,v},
+{u,v}=windingNumberPair[{m,n}];
+res  = If[m==1, Interval[{1/(2n),1/n}],
+Interval[{u/m,v/n}]
+];
+If[Min[res]>= 1/2,res = 1-res];
+res
+];
 
 
 (* ::Input::Initialization:: *)
@@ -218,11 +245,7 @@ cyl[[2]] = cylinderLU;
 res["cylinder"] = cyl;
 res
 ];
-(*latticeCylinderHeight[lattice_] := Module[{cylinderLU},
-cylinderLU= latticeGetCylinderLU[lattice];
-cylinderLU[[2]]-cylinderLU[[1]]
-];
-*)
+
 
 
 latticeLabel[lattice_] := 
@@ -266,9 +289,7 @@ j = lpoint[{d,h},m]; jp = j - {1,0}; jm = j+ {1,0}; (* should just test j[[1]]>0
 If[ jp . jp < jm . jm, jp,jm]
 ];
 
-(*pvector[{d_,h_},m_] := If[zeroParastichyQ[m],{1,0},lpoint[{d,h},m]];
 
-*)
 
 latticePoint[lattice_,m_] :=lpoint[{lattice["d"],lattice["h"]},m];
 latticePointWithCopies[lattice_,m_] := Module[{cylinder,lp,i,x},
@@ -348,37 +369,6 @@ arenaBottomIntersection,arenaTopIntersection]
 
 (* ::Input::Initialization:: *)
 (* use funcs above ...*) 
-(*latticeParastichyRangeObsolete[lattice_,m_] :=  Module[{multiple,parastichyLine,arena,ilowerB, iupperB,translationD},
-arena = latticeGetCylinder[lattice];
-If[zeroParastichyQ[m],
-translationD = latticeParastichyVerticalSeparation[lattice,0];ilowerB = -Floor[(  - arena\[LeftDoubleBracket]2,1\[RightDoubleBracket])/translationD];iupperB = Floor[(arena\[LeftDoubleBracket]2,2\[RightDoubleBracket])/ translationD];
-Return[{ilowerB,iupperB}]
-];
-(* or a slope *)
-translationD= Abs[latticeParastichyHorizontalSeparation[lattice,m]];arenaBottomIntersection = linelineIntersection[{{  arena\[LeftDoubleBracket]1,1\[RightDoubleBracket], arena\[LeftDoubleBracket]2,1\[RightDoubleBracket]},{ arena\[LeftDoubleBracket]1,2\[RightDoubleBracket],arena\[LeftDoubleBracket]2,1\[RightDoubleBracket]}},{ {0,0},  latticeVector[lattice,m]}]\[LeftDoubleBracket]1\[RightDoubleBracket];arenaTopIntersection = linelineIntersection[{{  arena\[LeftDoubleBracket]1,1\[RightDoubleBracket], arena\[LeftDoubleBracket]2,2\[RightDoubleBracket]},{ arena\[LeftDoubleBracket]1,2\[RightDoubleBracket],arena\[LeftDoubleBracket]2,2\[RightDoubleBracket]}},{ {0,0},  latticeVector[lattice,m]}]\[LeftDoubleBracket]1\[RightDoubleBracket];ilowerB = -Floor[( arenaBottomIntersection - arena\[LeftDoubleBracket]1,1\[RightDoubleBracket])/translationD];iupperB = Floor[(arena\[LeftDoubleBracket]1,2\[RightDoubleBracket]- arenaBottomIntersection )/ translationD];Return[{ilowerB,iupperB}]
-];*)
-
-
-(* ::Input::Initialization:: *)
-(* use funcs above ...*) 
-(*latticeParastichyPointsThrough[lattice_,m_] :=  Module[{multiple,parastichyLine,arena,ilowerB, iupperB,translationD},
-arena = latticeGetCylinder[lattice];
-If[zeroParastichyQ[m],
-translationD = latticeParastichyVerticalSeparation[lattice,0];ilowerB = -Floor[(  - arena\[LeftDoubleBracket]2,1\[RightDoubleBracket])/translationD];iupperB = Floor[(arena\[LeftDoubleBracket]2,2\[RightDoubleBracket])/ translationD];
-Return[Table[i,{i,ilowerB,iupperB}]]
-];
-(* or a slope *)
-translationD= Abs[latticeParastichyHorizontalSeparation[lattice,m]];
-(* special case *)  
-(*If[translationD\[Equal]1,Return[{1,hat[1]}]];
-*)
-arenaBottomIntersection = linelineIntersection[{{  arena\[LeftDoubleBracket]1,1\[RightDoubleBracket], arena\[LeftDoubleBracket]2,1\[RightDoubleBracket]},{ arena\[LeftDoubleBracket]1,2\[RightDoubleBracket],arena\[LeftDoubleBracket]2,1\[RightDoubleBracket]}},{ {0,0},  latticeVector[lattice,m]}]\[LeftDoubleBracket]1\[RightDoubleBracket];arenaTopIntersection = linelineIntersection[{{  arena\[LeftDoubleBracket]1,1\[RightDoubleBracket], arena\[LeftDoubleBracket]2,2\[RightDoubleBracket]},{ arena\[LeftDoubleBracket]1,2\[RightDoubleBracket],arena\[LeftDoubleBracket]2,2\[RightDoubleBracket]}},{ {0,0},  latticeVector[lattice,m]}]\[LeftDoubleBracket]1\[RightDoubleBracket];ilowerB = -Floor[( arenaBottomIntersection - arena\[LeftDoubleBracket]1,1\[RightDoubleBracket])/translationD];iupperB = Floor[(arena\[LeftDoubleBracket]1,2\[RightDoubleBracket]- arenaBottomIntersection )/ translationD];Return[Table[i,{i,ilowerB,iupperB}]]
-
-];*)
-
-
-(* ::Input::Initialization:: *)
-(* use funcs above ...*) 
 latticeParastichyXZThrough[lattice_,m_] :=  Module[{multiple,parastichyLine,arena,ilowerB, iupperB,translationD},
 arena = latticeGetCylinder[lattice];
 If[zeroParastichyQ[m],
@@ -401,6 +391,7 @@ latticeParastichyLines[lattice_,m_] :=  Module[{xtable },
 xtable= latticeParastichyXZThrough[lattice,m];
  Map[latticeParastichyLinesThroughXZ[lattice,m,#]&,xtable]
 ];
+latticeParastichyLines[lattice_,m_,k_] := latticeParastichyLinesThroughXZ[lattice,m,latticePoint[lattice,k]];
 
 
 (* ::Input::Initialization:: *)
@@ -534,15 +525,68 @@ mEnd = latticePoint[lattice,mvec];mVectorLength = latticeVectorLength[lattice,mv
 
 
 (* ::Input::Initialization:: *)
-latticeMoebiusTransform[mp_,np_,Delta_][{dp_,hp_}] := Module[{u,v,dh},
-dh[d_,h_,m_,n_,u_,v_] :={((d^2+h^2 )m u+n v-d (n u+m v))/((d^2+h^2)m^2-2 d m n+n^2),h 1 /((d^2+h^2)m^2-2 d m n+n^2)};dh[d_,\[Infinity],m_,n_,u_,v_] := {u/m,0};{u,v} = euclideanUV[{mp,np},Delta];Simplify@dh[dp,hp,mp,np,u,v]
-];
 
-latticeMoebiusTransform[m_,n_] := latticeMoebiusTransform[m,n,1]
-latticeMoebiusTransform[1,0][{0,0}] := {1/2,\[Infinity]};
-latticeMoebiusTransform[1,0][{0.,0.}] := {1/2,\[Infinity]};
-latticeMoebiusTransform[0,1][{d_,h_}]  := {d,h};
-latticeMoebiusTransform[0,1,Delta_][{d_,h_}]  := {d,h};
+(* relative to (0,1 ) not used *) 
+hMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= windingNumberPair[{m,n}];hMNUV[m,n,u,v,w]];
+hMNRealPair[{m_,n_}] := Function[{xy},Module[{x,y},{x,y}=xy; ReIm[hMN[{m,n}][x +  I y]]]];
+hMNRealPairReflection[{m_,n_}] := Function[{xy},Module[{x,y},
+{x,y} = hMNRealPair[{m,n}][xy];
+{1-x,y}
+]];
+hMNInDHalf[{m_,n_}] := If[euclideanDelta[{m,n}]==1,hMNRealPair[{m,n}],hMNRealPairReflection[{m,n}]];
+
+hMNUV[m_,n_,u_,v_,w_]:=(-u w + v)/(-m w + n);
+hMNUV[m_,n_,u_,v_,DirectedInfinity[_]]:=u/m;
+
+
+(* ::Input::Initialization:: *)
+(* relative to (1,0)  *) 
+
+gMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= windingNumberPair[{m,n}];gMNUV[m,n,u,v,w]];
+gMNRealPair[{m_,n_}] := Function[{xy},Module[{x,y},{x,y}=xy; ReIm[gMN[{m,n}][x +  I y]]]];
+gMNRealPairReflection[{m_,n_}] := Function[{xy},Module[{x,y},
+{x,y} = gMNRealPair[{m,n}][xy];
+{1-x,y}
+]];
+gMNInDHalf[{m_,n_}] :=Function[{xy},
+Module[{x,y},
+{x,y} = N@gMNRealPair[{m,n}][xy];
+x = x-Round[x];
+If[x<0,x=-x];
+{x,y}
+]];
+(*gMNInDHalf[{m_,n_}]  := 
+ If[euclideanDelta[{m,n}]\[Equal]1,gMNRealPair[{m,n}],gMNRealPairReflection[{m,n}]];
+*)
+gMNUV[m_,n_,u_,v_,w_]:=(v w + u)/(n w + m);
+gMNUV[m_,n_,u_,v_,DirectedInfinity[_]]:=v/n;
+
+
+(* ::Input::Initialization:: *)
+viiMoebiusTransform[{{m_,n_},{u_,v_}}][{d_,h_}] := 
+{(d^2 m u+h^2 m u+n v-d (n u+m v))/(d^2 m^2+h^2 m^2-2 d m n+n^2),h/(d^2 m^2+h^2 m^2-2 d m n+n^2)}
+
+
+
+
+(* ::Input::Initialization:: *)
+
+Module[{mvnu1,z1d,z1h},
+Block[{d,h,m,v,n,u},
+mvnu1 = Solve[ m v - n u ==1, v][[1]];
+{z1d,z1h} = 
+ Simplify/@( ComplexExpand@ ReIm [gMNUV[{m,n},{u,v}][d+ I h]] );{z1d,z1h} - viiMoebiusTransform[{{m,n},{u,v}}][{d,h}] /. mvnu1]
+]
+
+
+(* ::Input::Initialization:: *)
+latticeMoebiusTransform[mn_][dh_] := gMNInDHalf[mn][dh];
+
+
+latticeMoebiusTransform[{1,0}][{0,0}] := {1/2,\[Infinity]};
+latticeMoebiusTransform[{1,0}][{0.,0.}] := {1/2,\[Infinity]};
+latticeMoebiusTransform[{0,1}][{d_,h_}]  := {d,h};
+
 
 
 (* ::Input::Initialization:: *)
@@ -561,44 +605,35 @@ xy + r * {Cos[angles],Sin[angles]}
 ]
 
 (* to be updated below  here *)
-latticeDHHexagonalLower[{m_,n_}]  := latticeMoebiusTransform[m,n][ { -1/2,Sqrt[3]/2}];
-latticeDHHexagonalUpper[{m_,n_}]  := latticeMoebiusTransform[m,n][ { 1/2,Sqrt[3]/2}];
+latticeDHHexagonalLower[{m_,n_}]  := latticeMoebiusTransform[{m,n}][ { -1/2,Sqrt[3]/2}];
+latticeDHHexagonalUpper[{m_,n_}]  := latticeMoebiusTransform[{m,n}][ { 1/2,Sqrt[3]/2}];
 
 latticeHexagonalLower[{m_,n_}]:=  latticeCreateDH[latticeDHHexagonalLower[{m,n}]];
 latticeHexagonalUpper[{m_,n_}]:=  latticeCreateDH[latticeDHHexagonalUpper[{m,n}]];
 
 latticeTouchingCircle[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
-latticeMoebiusTransform[m,n][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}]
+latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}]
 ,cylinderLU];
 latticeEquiLength[{m_,n_},cylinderLU_:{-0.2,3.2}] := (* wrong ! *)
 latticeCreateDH[
-latticeMoebiusTransform[m,n][ {-1/2,1.2}]
+latticeMoebiusTransform[{m,n}][ {-1/2,1.2}]
 ,cylinderLU];
 latticeOrthogonal[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
-latticeMoebiusTransform[m,n][ { 0,1}]
+latticeMoebiusTransform[{m,n}][ { 0,1}]
 ,cylinderLU];
 latticeWithMN[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
-latticeMoebiusTransform[m,n][{0,(Sqrt[3]/(2)-.25)}]
+latticeMoebiusTransform[{m,n}][{0,(Sqrt[3]/(2)-.25)}]
 ,cylinderLU];
 
 
 
 (* ::Input::Initialization:: *)
-latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},
-cylinderLU = latticeGetCylinder[lattice][[2]];
-cylinderLU = cylinderLU + {-latticeRise[lattice],latticeRise[lattice]};
-latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];
-
-latticep =  latticePoints[latticeMargin] ;
-lplus = latticep+ Table[{1,0},Length[latticep]];
-lminus =  latticep + Table[{-1,0},Length[latticep]];
-r =latticeDiskRadius[latticeMargin];
-Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
+latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetCylinder[lattice][[2]];cylinderLU = cylinderLU + {-latticeRise[lattice],latticeRise[lattice]};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
 ];
 
 latticeDiskRadius[lattice_] := Module[{pv1},
-pv1 = latticeParastichyVectors[lattice][First[latticePrincipalParastichyPair[lattice]]];
-Sqrt[pv1 . pv1]/2
+	pv1 = latticeParastichyVectors[lattice][First[latticePrincipalParastichyPair[lattice]]];
+	Norm[pv1 ]/2
 ];
 
 
@@ -607,17 +642,9 @@ Sqrt[pv1 . pv1]/2
 
 
 (* also some label and boundary points away from the  corners*)
-inlabelh = Sqrt[3]/(2+0.5);
+(*inlabelh = Sqrt[3]/(2+0.5);
 
-viPrincipalRegionEdgePoints  = <|  (* used for labelling *) 
-labelInner -> {0,inlabelh},
-labelOuter -> {0,1/inlabelh},
-minusInner->   {-1-Cos[5\[Pi]/6],Sin[5\[Pi]/6]},
-plusInner -> {1+Cos[5\[Pi]/6],Sin[5\[Pi]/6]},
-minusOuter -> {-1/2,1.1},
-plusOuter -> {1/2,1.1},
-unitCircle -> {0,1}
-|>;
+
 
 viPrincipalRegionPoints  = <| 
 minusUnit -> {-1/2,Sqrt[3]/2} ,
@@ -644,15 +671,15 @@ DiscretizeRegion[RegionUnion[Disk[{1,0},1,{0,\[Pi]}],Disk[{-1,0},1,{0,\[Pi]}]],M
 viRegion10 =  RegionDifference[
 DiscretizeRegion[Rectangle[{-1/2,0},{1/2,1.2}],MaxCellMeasure->.0009],
 DiscretizeRegion[Disk[{0,0},1,{0,\[Pi]}],MaxCellMeasure->.001]
-];
+];*)
 
 
 (* ::Input::Initialization:: *)
 
 
 
-viRegionPoints[{m_,n_}] := Map[Simplify,Map[
-latticeMoebiusTransform[m,n],viPrincipalRegionPoints]
+(*viRegionPoints[{m_,n_}] := Map[Simplify,Map[
+latticeMoebiusTransform[{m,n}],viPrincipalRegionPoints]
 ];
 
 mirrorAt1[g_] := GeometricTransformation[g,Composition[TranslationTransform[{1,0}],
@@ -668,7 +695,7 @@ viRegionBoundaries[{m_,n_},doMirror_:False] := Module[{rpoints,pointPairsToCircl
 
 
 pointPairsToCircles[ {p1_,p2_}] := 
-pairToCircle@Map[latticeMoebiusTransform[m,n],{p1,p2}];
+pairToCircle@Map[latticeMoebiusTransform[{m,n}],{p1,p2}];
 
 rpoints = 
 <| "01" ->Union[<|"mn"->{m,n}|>,Map[pointPairsToCircles,viPrincipalRegionBoundaryPairs01 ]]
@@ -677,25 +704,25 @@ rpoints =
 If[doMirror,rpoints =Map[mirrorBoundaries,rpoints]];
 
 rpoints
-] 
+] *)
 
 
-
+(*
 viTouchingCircleBranch[{m_,n_}] := viRegionBoundaries[{m,n}]["10"][unitCircle];
 
 circleToRest[Circle[xy_,r_,\[Theta]12_]] := Module[{\[Theta]1,\[Theta]2},
 {\[Theta]1,\[Theta]2}=Sort[\[Theta]12];
 {Circle[xy,r,{0,\[Theta]1}],Circle[xy,r,{\[Theta]2,\[Pi]}]}
 ];
+*)
+
+
+(*viTouchingSecondaryBranch[{m_,n_}] := circleToRest@viRegionBoundaries[{m,n}]["10"][unitCircle];
+*)
 
 
 
-viTouchingSecondaryBranch[{m_,n_}] := circleToRest@viRegionBoundaries[{m,n}]["10"][unitCircle];
-
-
-
-
-pairToCircle[{p1_,p2_}] := Module[{dp,rp,todr2,x1,y1,x2,c2,y2,d,r2},
+(*pairToCircle[{p1_,p2_}] := Module[{dp,rp,todr2,x1,y1,x2,c2,y2,d,r2},
 (* given two points on an axis semicircle, (or a line) calc the region between then *)
 If[ p1[[1]]==p2[[1]],
 Return[ Line[{p1,p2}]]];
@@ -709,7 +736,7 @@ Return[Circle[{dp,0},Sqrt[rp],Sort@{p1Arg,p2Arg}]]
 
 viRegion[{m_,n_}] := Module[{pts01,pts10,rb01,rb10},
 
-pts01 = Map[latticeMoebiusTransform[m,n],MeshCoordinates[viRegion01]];
+pts01 = Map[latticeMoebiusTransform[{m,n}],MeshCoordinates[viRegion01]];
 rb01 = MeshRegion[pts01,{MeshCells[viRegion01,0],
 MeshCells[viRegion01,1],MeshCells[viRegion01,2]}];
 pts10 = Map[latticeMoebiusTransform[n,m],MeshCoordinates[viRegion01]]
@@ -719,7 +746,7 @@ MeshCells[viRegion10,1],MeshCells[viRegion10,2]}];
 <| "01"->rb01 , "10"-> rb10 |>
 ]
 viRegion[{0,1}] := 
-<| "01"->viRegion01 , "10"-> viRegion10 |>;
+<| "01"->viRegion01 , "10"-> viRegion10 |>;*)
 
 
 (* ::Input::Initialization:: *)
@@ -734,7 +761,7 @@ m < n - m
 viiPrimaryOpposed[mn_]  := getCircleBranch[mn,"Opposed"];
 viiPrimaryNonOpposed[mn_]  := getCircleBranch[mn,"NonOpposed"];
 
-getCircleBranch[{m_,n_},type_] := Module[{centre,r,theta12,branch},
+getCircleBranch[{m_,n_},type_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
 mn = Sort[{m,n}];
 branch = viiPrimarySegment[mn];
 If[!viiPrimaryIsEverNonOpposed[mn],
@@ -751,7 +778,7 @@ res = Circle[centre,r,Sort@{xyToArg[branch,lowerpt],angle}]
 ];
 Return[res];
 ];
-viiOrthostichyD[{m_,n_}] := Module[{u,v},
+viiOrthostichyD[{m_,n_}] := Module[{u,v,res},
 {u,v} = euclideanUV[{m,n}];
 res = v/n;
  If[res>1/2,res = 1-res];
@@ -961,61 +988,6 @@ viiTouchingCircleLabelNonPrimary[mn_] :=  gMNInDHalf[mn][{-Sqrt[3]/2,1/2}];
 (* ::Input::Initialization:: *)
 viiTouchingCircleLabelNonPrimary[{1,2}] = gMNInDHalf[{1,2}][{Sqrt[3]/2,1/2}];
 
-
-
-(* ::Input::Initialization:: *)
-
-(* relative to (0,1 *) 
-hMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= windingNumberPair[{m,n}];hMNUV[m,n,u,v,w]];
-hMNRealPair[{m_,n_}] := Function[{xy},Module[{x,y},{x,y}=xy; ReIm[hMN[{m,n}][x +  I y]]]];
-hMNRealPairReflection[{m_,n_}] := Function[{xy},Module[{x,y},
-{x,y} = hMNRealPair[{m,n}][xy];
-{1-x,y}
-]];
-hMNInDHalf[{m_,n_}] := If[euclideanDelta[{m,n}]==1,hMNRealPair[{m,n}],hMNRealPairReflection[{m,n}]];
-
-hMNUV[m_,n_,u_,v_,w_]:=(-u w + v)/(-m w + n);
-hMNUV[m_,n_,u_,v_,DirectedInfinity[_]]:=u/m;
-
-
-(* ::Input::Initialization:: *)
-(* relative to (1,0)  *) 
-
-gMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= windingNumberPair[{m,n}];gMNUV[m,n,u,v,w]];
-gMNRealPair[{m_,n_}] := Function[{xy},Module[{x,y},{x,y}=xy; ReIm[gMN[{m,n}][x +  I y]]]];
-gMNRealPairReflection[{m_,n_}] := Function[{xy},Module[{x,y},
-{x,y} = gMNRealPair[{m,n}][xy];
-{1-x,y}
-]];
-gMNInDHalf[{m_,n_}] :=Function[{xy},
-Module[{x,y},
-{x,y} = N@gMNRealPair[{m,n}][xy];
-x = x-Round[x];
-If[x<0,x=-x];
-{x,y}
-]];
-(*gMNInDHalf[{m_,n_}]  := 
- If[euclideanDelta[{m,n}]\[Equal]1,gMNRealPair[{m,n}],gMNRealPairReflection[{m,n}]];
-*)
-gMNUV[m_,n_,u_,v_,w_]:=(v w + u)/(n w + m);
-gMNUV[m_,n_,u_,v_,DirectedInfinity[_]]:=v/n;
-
-
-(* ::Input::Initialization:: *)
-viiMoebiusTransform[{{m_,n_},{u_,v_}}][{d_,h_}] := 
-{(d^2 m u+h^2 m u+n v-d (n u+m v))/(d^2 m^2+h^2 m^2-2 d m n+n^2),h/(d^2 m^2+h^2 m^2-2 d m n+n^2)}
-
-
-
-
-(* ::Input::Initialization:: *)
-
-Module[{mvnu1,z1d,z1h},
-Block[{d,h,m,v,n,u},
-mvnu1 = Solve[ m v - n u ==1, v][[1]];
-{z1d,z1h} = 
- Simplify/@( ComplexExpand@ ReIm [gMNUV[{m,n},{u,v}][d+ I h]] );{z1d,z1h} - viiMoebiusTransform[{{m,n},{u,v}}][{d,h}] /. mvnu1]
-]
 
 
 (* ::Input::Initialization:: *)
