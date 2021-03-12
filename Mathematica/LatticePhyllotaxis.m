@@ -203,15 +203,14 @@ onepos = Position[pnumbers,1,1];If[Length[onepos]>= 2, hatpos = onepos[[2]]; pnu
 (* ::Input::Initialization:: *)
 latticeCreateDH[{d_,0}] := Nothing; (* silently drop from lists *) 
 
-latticeCreateDH[{d_,h_},cylinderLU_:{-0.2,3.2}]  :=  Module[{lattice},
+latticeCreateDH[{d_,h_},cylinderLU_:{-0.2,3.2},firstnEqual_:1]  :=  Module[{lattice},
 lattice = Association [
 "d"-> d
 ,"h"-> h
 ,"cylinder" -> { {-1/2,1/2},cylinderLU} 
-(* always has periodicity (1,0); this is how much of it we display *) 
-,"parastichyVectors" ->  tgetThreeParastichyVectorsDH[{d,h}]
+(* always has periodicity (1,0); this is how much of it we display *) ,"parastichyVectors" ->  tgetThreeParastichyVectorsDH[{d,h}]
 ];
-lattice = Prepend[lattice,{ "parastichyNumbers"-> latticeParastichyNumbersGroupedByLength[lattice]}];
+lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];
 lattice
 ];
 
@@ -219,17 +218,24 @@ lattice
 
 
 (* ::Input::Initialization:: *)
-latticeParastichyNumbersGroupedByLength[lattice_] := Module[{pv,pvlengths,pva}, 
-pv = latticeParastichyVectors[lattice];
-pvlengths =Map[vectorNorm2,pv];
-pva = GroupBy[pvlengths,Identity,Sort[Keys[#]]&];
-Association[Map[ pva[#]-> # &, Keys[pva]]]
+(*tgetParastichyNumbersGroupedByLength[lattice_] := Module[{pv,pvlengths,pva}, 
+pv = latticeParastichyVectors[lattice];pvlengths =Map[vectorNorm2,pv];pva = GroupBy[pvlengths,Identity,Sort[Keys[#]]&];Association[Map[ pva[#]-> # &, Keys[pva]]]
+];*)
+
+tgetParastichyNumbersGroupedByLength[lattice_,firstnEqual_] := Module[{pv,pvlengths,pva,i}, 
+pv = latticeParastichyVectors[lattice];pvlengths =Map[vectorNorm2,pv];
+pvlengths = Sort[pvlengths];
+(*  only if we make eg hexagonal lattices *)
+For[i=2,i<=firstnEqual,i++,
+pvlengths[[i]] = pvlengths[[1]]
+];
+pva = GroupBy[pvlengths,Identity,Sort[Keys[#]]&];Association[Map[ pva[#]-> # &, Keys[pva]]]
 ];
 
-latticeParastichyNumbers[lattice_] :=
-Module[{pnumbers}, 
-pnumbers =latticeParastichyNumbersGroupedByLength[lattice];
-Flatten[Map[Sort,Keys[pnumbers]]]
+latticeParastichyNumbersGroupedByLength[lattice_] := Keys[lattice["parastichyNumbers"]];
+
+latticeParastichyNumbers[lattice_] := Module[{pnumbers}, 
+pnumbers =latticeParastichyNumbersGroupedByLength[lattice];Flatten[Map[Sort,pnumbers]]
 ];
 
 
@@ -248,14 +254,10 @@ res
 
 
 
-latticeLabel[lattice_] := 
-latticeParastichyNumbersGroupedByLength[lattice];
-latticeLabelText[lattice_] := Module[{},
-ll =  Keys@latticeLabel[lattice] ;
-tos[x_] := If[x===hat[1],"\!\(\*OverscriptBox[\(1\), \(^\)]\)",ToString[x]];
-ll = Map[tos,ll,{2}];
-ll = Map[StringRiffle[#,"="]&,ll];
-ll = StringRiffle[Take[ll,UpTo[2]],","]
+(* ::Input::Initialization:: *)
+latticeLabel[lattice_] := latticeParastichyNumbersGroupedByLength[lattice];
+latticeLabelText[lattice_] := Module[{ll,tos},
+ll =  latticeLabel[lattice] ;tos[x_] := If[x===hat[1],"\!\(\*OverscriptBox[\(1\), \(^\)]\)",ToString[x]];ll = Map[tos,ll,{2}];ll = Map[StringRiffle[#,"="]&,ll];ll = StringRiffle[Take[ll,UpTo[2]],","]
 ];
 
 
@@ -505,6 +507,43 @@ If[n==0,Return[-1]];
 
 
 (* ::Input::Initialization:: *)
+latticeSetDiskScaling[lattice_,func_] := Append[lattice,"DiskScalingFunction"->func];
+latticeGetDiskScaling[lattice_] := lattice["DiskScalingFunction"];
+latticeGetDisk[lattice_] := Module[{cylinderLU,func,innerOuter},
+cylinderLU = latticeGetCylinderLU[lattice];
+func = latticeGetDiskScaling[lattice];
+innerOuter = Map[func,Reverse[cylinderLU]];
+innerOuter= Map[Ramp,innerOuter];
+innerOuter = Sort[innerOuter];
+If[First@innerOuter==0,Disk[{0,0},Last[innerOuter]],Annulus[{0,0},innerOuter]]
+];
+latticeXZToDisk[lattice_] := Function[{xz},
+Module[{x,z,r},
+{x,z} = xz;
+r = latticeGetDiskScaling[lattice][z];
+r * { Cos[2 \[Pi] x], Sin[2\[Pi] x]} 
+]
+];
+
+latticeDiskPoints[lattice_] :=  Map[latticeXZToDisk[lattice],latticePoints[lattice]]
+
+latticeDiskParastichyFunction[lattice_,m_,k_] := Module[{cylinderLU,xInner,xOuter,data,xzfunc,scalefunc,func},
+cylinderLU= latticeGetCylinderLU[lattice];
+xOuter = latticeParastichyCylinderIntersection[lattice,m,Bottom]+ k * latticeParastichyHorizontalSeparation[lattice,m];
+xInner = xOuter + (cylinderLU[[2]]-cylinderLU[[1]])/latticeParastichySlope[lattice,m];
+data = { { {0}, {xOuter,cylinderLU[[1]]}},{{1},{xInner,cylinderLU[[2]]}}};
+xzfunc = Interpolation[data,InterpolationOrder->1];
+scalefunc = latticeXZToDisk[lattice];
+func = Function[{t},scalefunc[xzfunc[t]]];
+func
+];
+
+
+
+
+
+
+(* ::Input::Initialization:: *)
 latticeRenormalised[lattice_] := Module[{tran,zn,w1,pm,pn},
 (* rotate and scale so that the old m-th parastichy vector is now (1,0) *){pm,pn} = latticePrincipalParastichyPair[lattice];tran = latticeRenormalisationTransformation[lattice,pm] ;(* that maps m to 0. we need a linearly independent n *)zn = latticePoint[lattice,pn];w1 = tran [ zn]; 
  (* should already have -1/2<d<1/2; role of this is to change w_-1 to w1 *)  
@@ -590,9 +629,12 @@ latticeMoebiusTransform[{0,1}][{d_,h_}]  := {d,h};
 
 
 (* ::Input::Initialization:: *)
-latticeHexagonal [{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[latticeDHHexagonalUpper[{m,n}],cylinderLU];
 
-latticeTriplePoint[{m_,n_}] := latticeDHHexagonalLower[{m,n}];
+
+latticeHexagonal [{m_,n_},cylinderLU_:{-0.2,3.2}] := 
+latticeCreateDH[latticeDHHexagonal[{m,n}],cylinderLU,3];
+
+
 
 
 (* ::Input::Initialization:: *)
@@ -604,26 +646,16 @@ angles = Mean[angles];
 xy + r * {Cos[angles],Sin[angles]}
 ]
 
-(* to be updated below  here *)
-latticeDHHexagonalLower[{m_,n_}]  := latticeMoebiusTransform[{m,n}][ { -1/2,Sqrt[3]/2}];
-latticeDHHexagonalUpper[{m_,n_}]  := latticeMoebiusTransform[{m,n}][ { 1/2,Sqrt[3]/2}];
 
-latticeHexagonalLower[{m_,n_}]:=  latticeCreateDH[latticeDHHexagonalLower[{m,n}]];
-latticeHexagonalUpper[{m_,n_}]:=  latticeCreateDH[latticeDHHexagonalUpper[{m,n}]];
+latticeTriplePoint[{m_,n_}] := latticeDHHexagonal[{m,n}];latticeDHHexagonal[{m_,n_}]  := latticeMoebiusTransform[{m,n}][ { 1/2,Sqrt[3]/2}];
+
 
 latticeTouchingCircle[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
-latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}]
-,cylinderLU];
-latticeEquiLength[{m_,n_},cylinderLU_:{-0.2,3.2}] := (* wrong ! *)
-latticeCreateDH[
-latticeMoebiusTransform[{m,n}][ {-1/2,1.2}]
-,cylinderLU];
-latticeOrthogonal[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
-latticeMoebiusTransform[{m,n}][ { 0,1}]
-,cylinderLU];
+latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}],cylinderLU,2];
+latticeEquiLength[{m_,n_},cylinderLU_:{-0.2,3.2}] := (* wrong ! *)latticeCreateDH[latticeMoebiusTransform[{m,n}][ {-1/2,1.2}],cylinderLU];
+latticeOrthogonal[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[latticeMoebiusTransform[{m,n}][ { 0,1}],cylinderLU,2];
 latticeWithMN[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
-latticeMoebiusTransform[{m,n}][{0,(Sqrt[3]/(2)-.25)}]
-,cylinderLU];
+latticeMoebiusTransform[{m,n}][{0,(Sqrt[3]/(2)-.25)}],cylinderLU];
 
 
 

@@ -6,20 +6,31 @@ jStyle::usage = "Association with styling defaults";
 
 Begin["`Private`"]
 
-jCylinderColour  = LightGreen;
-jParastichyColour = <| 1 -> Red, 2 -> Blue, 3 -> Green,
+
+
+
+ParastichyColour = <| 
+1 -> Red, 
+2 -> Blue,
+3 -> Green,
 4->Black |>;
 
+SetAttributes[jExport,HoldFirst];
 
-fontFamily = "Gill Sans Nova Medium";
-jFont[size_] := {FontFamily-> fontFamily,FontSize-> size};
+jExport[fig_] := Module[{figname},
+figname=SymbolName[Unevaluated[fig]];
+(*Export[StringJoin[figname,".jpg"],fig,ImageResolution->600];
+*)Export[StringJoin[figname,".pdf"],fig,ImageResolution->600];
+fig
+];
 
 jStyle = Association[
-	"CylinderColour"-> jCylinderColour,
-	"FontDirective" -> jFont,
-	"ParastichyColour" -> jParastichyColour
+	"CylinderColour"-> LightGreen,
+	"FontFamily" -> "Courier",
+	"ParastichyColour" -> ParastichyColour,
+	"ArrowheadSpec" -> 0.02
 	];
-	
+
 End[]
 
 EndPackage[]
