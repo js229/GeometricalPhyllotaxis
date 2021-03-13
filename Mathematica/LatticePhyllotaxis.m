@@ -209,6 +209,7 @@ lattice = Association [
 ,"h"-> h
 ,"cylinder" -> { {-1/2,1/2},cylinderLU} 
 (* always has periodicity (1,0); this is how much of it we display *) ,"parastichyVectors" ->  tgetThreeParastichyVectorsDH[{d,h}]
+,"scalings"-> <||>
 ];
 lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];
 lattice
@@ -370,8 +371,8 @@ arenaBottomIntersection,arenaTopIntersection]
 
 
 (* ::Input::Initialization:: *)
-(* use funcs above ...*) 
-latticeParastichyXZThrough[lattice_,m_] :=  Module[{multiple,parastichyLine,arena,ilowerB, iupperB,translationD},
+
+latticeParastichyXZThrough[lattice_,m_] :=  Module[{arena,ilowerB, iupperB,translationD,arenaBottomIntersection},
 arena = latticeGetCylinder[lattice];
 If[zeroParastichyQ[m],
 translationD = latticeParastichyVerticalSeparation[lattice,0];ilowerB = -Floor[(  - arena[[2,1]])/translationD];iupperB = Floor[(arena[[2,2]])/ translationD];
@@ -379,9 +380,6 @@ Return[Table[{arena[[1,1]],i *  translationD},{i,ilowerB,iupperB}]]
 ];
 (* or a slope *)
 translationD= Abs[latticeParastichyHorizontalSeparation[lattice,m]];
-(* special case *)  
-(*If[translationD\[Equal]1,Return[{1,hat[1]}]];
-*)
 
 arenaBottomIntersection = linelineIntersection[{{  arena[[1,1]], arena[[2,1]]},{ arena[[1,2]],arena[[2,1]]}},{ {0,0},  latticeVector[lattice,m]}][[1]];ilowerB = -Floor[( arenaBottomIntersection - arena[[1,1]])/translationD];iupperB = Floor[(arena[[1,2]]- arenaBottomIntersection )/ translationD];Return[Table[{arenaBottomIntersection+ i *  translationD,arena[[2,1]]},{i,ilowerB,iupperB}]]
 
@@ -507,8 +505,15 @@ If[n==0,Return[-1]];
 
 
 (* ::Input::Initialization:: *)
-latticeSetDiskScaling[lattice_,func_] := Append[lattice,"DiskScalingFunction"->func];
-latticeGetDiskScaling[lattice_] := lattice["DiskScalingFunction"];
+latticeSetDiskScaling[lattice_,funcNameValue_] := 
+Module[{res},
+res = lattice;
+res["scalings"] = AppendTo[res["scalings"],funcNameValue];
+res
+];
+
+
+latticeGetDiskScaling[lattice_] := First@ lattice["scalings"];
 latticeGetDisk[lattice_] := Module[{cylinderLU,func,innerOuter},
 cylinderLU = latticeGetCylinderLU[lattice];
 func = latticeGetDiskScaling[lattice];
@@ -667,122 +672,6 @@ latticeDiskRadius[lattice_] := Module[{pv1},
 	pv1 = latticeParastichyVectors[lattice][First[latticePrincipalParastichyPair[lattice]]];
 	Norm[pv1 ]/2
 ];
-
-
-(* ::Input::Initialization:: *)
-(* pairs of points define circles centred on the h-d axis *)
-
-
-(* also some label and boundary points away from the  corners*)
-(*inlabelh = Sqrt[3]/(2+0.5);
-
-
-
-viPrincipalRegionPoints  = <| 
-minusUnit -> {-1/2,Sqrt[3]/2} ,
-minusInfinity -> {-1/2,Infinity},
-zero -> {0,0},
-plusUnit -> {1/2,Sqrt[3]/2} ,
-plusInfinity -> {1/2,Infinity}
-|>;
-
-viPrincipalRegionBoundaryPairs01 = <|
-minusInner -> {viPrincipalRegionPoints[zero],viPrincipalRegionPoints[minusUnit]}
-,unitCircle ->{viPrincipalRegionPoints[minusUnit],viPrincipalRegionPoints[plusUnit]}
-,plusInner -> {viPrincipalRegionPoints[plusUnit],viPrincipalRegionPoints[zero]}
-|>;
-viPrincipalRegionBoundaryPairs10 = <|
-minusOuter -> {viPrincipalRegionPoints[minusInfinity],viPrincipalRegionPoints[minusUnit]}
-,unitCircle ->{viPrincipalRegionPoints[minusUnit],viPrincipalRegionPoints[plusUnit]}
-,plusOuter -> {viPrincipalRegionPoints[plusUnit],viPrincipalRegionPoints[plusInfinity]}
-|>;
-viRegion01 = RegionDifference[
-DiscretizeRegion[Disk[{0,0},1,{0,\[Pi]}],MaxCellMeasure->.001],
-DiscretizeRegion[RegionUnion[Disk[{1,0},1,{0,\[Pi]}],Disk[{-1,0},1,{0,\[Pi]}]],MaxCellMeasure->.001]
-];
-viRegion10 =  RegionDifference[
-DiscretizeRegion[Rectangle[{-1/2,0},{1/2,1.2}],MaxCellMeasure->.0009],
-DiscretizeRegion[Disk[{0,0},1,{0,\[Pi]}],MaxCellMeasure->.001]
-];*)
-
-
-(* ::Input::Initialization:: *)
-
-
-
-(*viRegionPoints[{m_,n_}] := Map[Simplify,Map[
-latticeMoebiusTransform[{m,n}],viPrincipalRegionPoints]
-];
-
-mirrorAt1[g_] := GeometricTransformation[g,Composition[TranslationTransform[{1,0}],
-ReflectionTransform[{1,0}]]
-];
-mirrorBoundaries[bdy_] := Module[{res},
-res = KeyTake[bdy,{plusOuter,minusOuter,plusInner,minusInner,unitCircle}];
-res = Map[mirrorAt1,res];
-res
-];
-
-viRegionBoundaries[{m_,n_},doMirror_:False] := Module[{rpoints,pointPairsToCircles},
-
-
-pointPairsToCircles[ {p1_,p2_}] := 
-pairToCircle@Map[latticeMoebiusTransform[{m,n}],{p1,p2}];
-
-rpoints = 
-<| "01" ->Union[<|"mn"->{m,n}|>,Map[pointPairsToCircles,viPrincipalRegionBoundaryPairs01 ]]
-,"10" -> Union[<|"mn"->{n,m}|>,Map[pointPairsToCircles,viPrincipalRegionBoundaryPairs10 ]]
-|>;
-If[doMirror,rpoints =Map[mirrorBoundaries,rpoints]];
-
-rpoints
-] *)
-
-
-(*
-viTouchingCircleBranch[{m_,n_}] := viRegionBoundaries[{m,n}]["10"][unitCircle];
-
-circleToRest[Circle[xy_,r_,\[Theta]12_]] := Module[{\[Theta]1,\[Theta]2},
-{\[Theta]1,\[Theta]2}=Sort[\[Theta]12];
-{Circle[xy,r,{0,\[Theta]1}],Circle[xy,r,{\[Theta]2,\[Pi]}]}
-];
-*)
-
-
-(*viTouchingSecondaryBranch[{m_,n_}] := circleToRest@viRegionBoundaries[{m,n}]["10"][unitCircle];
-*)
-
-
-
-(*pairToCircle[{p1_,p2_}] := Module[{dp,rp,todr2,x1,y1,x2,c2,y2,d,r2},
-(* given two points on an axis semicircle, (or a line) calc the region between then *)
-If[ p1[[1]]==p2[[1]],
-Return[ Line[{p1,p2}]]];
-todr2 = (*First@Simplify@Solve[  {(x1-d)^2 + y1^2 \[Equal] r2, (x2-d)^2 + y2^2 \[Equal] r2},{d,r2}];*)
-{(x1^2-x2^2+y1^2-y2^2)/(2 x1-2 x2),1/(4 (x1-x2)^2) (x1^4-4 x1^3 x2+x2^4+(y1^2-y2^2)^2+2 x2^2 (y1^2+y2^2)-4 x1 x2 (x2^2+y1^2+y2^2)+2 x1^2 (3 x2^2+y1^2+y2^2))};
-{dp,rp} = (  todr2 /. { x1->p1[[1]], y1-> p1[[2]],x2-> p2[[1]],y2-> p2[[2]]} ) ;
-p1Arg = ArcTan @@  ( p1 - {dp,0} );
-p2Arg = ArcTan @@  ( p2 - {dp,0} );
-Return[Circle[{dp,0},Sqrt[rp],Sort@{p1Arg,p2Arg}]]
-]
-
-viRegion[{m_,n_}] := Module[{pts01,pts10,rb01,rb10},
-
-pts01 = Map[latticeMoebiusTransform[{m,n}],MeshCoordinates[viRegion01]];
-rb01 = MeshRegion[pts01,{MeshCells[viRegion01,0],
-MeshCells[viRegion01,1],MeshCells[viRegion01,2]}];
-pts10 = Map[latticeMoebiusTransform[n,m],MeshCoordinates[viRegion01]]
-/. ComplexInfinity-> 1.2;
-rb10 = MeshRegion[pts10,{MeshCells[viRegion10,0],
-MeshCells[viRegion10,1],MeshCells[viRegion10,2]}];
-<| "01"->rb01 , "10"-> rb10 |>
-]
-viRegion[{0,1}] := 
-<| "01"->viRegion01 , "10"-> viRegion10 |>;*)
-
-
-(* ::Input::Initialization:: *)
-
 
 
 (* ::Input::Initialization:: *)
@@ -1041,6 +930,28 @@ absolutePosition[g_]:=absolutePosition[g,{Center,Center}]
 absolutePosition[g_,{h:(Left|Center|Right),v:(Top|Center|Bottom)}]:=Module[{hrange,vrange},{hrange,vrange}=RegionBounds[g][[;;2]];
 {Replace[h,{Left->Min,Center->Mean,Right->Max}][hrange],Replace[v,{Bottom->Min,Center->Mean,Top->Max}][vrange]}]
 absolutePosition[g_,spec_]:=spec
+
+
+(* ::Input::Initialization:: *)
+
+diskProjection[lattice_,type_] := Module[{h,scaling,zmax,r1,res},
+h = latticeRise[lattice];
+r1 = 1 - 2 \[Pi] h; 
+Switch[type,
+"EqualArea",
+scaling = Function[z,Ramp@Sqrt[1- (1-r1^2) z /h]];
+zmax =   h / (1-r1^2),
+"Logarithmic",
+scaling = Function[z, Exp[-z Log[1/r1] /h]];
+zmax = latticeGetCylinderLU[lattice][[2]],
+_, Print[" dP type ",type];Abort[]
+];
+res =  latticeSetCylinderLU[lattice,{0,zmax}];
+res =  latticeSetDiskScaling[res,type->scaling];
+res
+];
+
+
 
 
 (* ::Input::Initialization:: *)
