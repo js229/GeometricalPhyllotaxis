@@ -665,10 +665,11 @@ latticeTriplePoint[{m_,n_}] := latticeDHHexagonal[{m,n}];latticeDHHexagonal[{m_,
 
 latticeTouchingCircle[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
 latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}],cylinderLU,2];
-latticeEquiLength[{m_,n_},cylinderLU_:{-0.2,3.2}] := (* wrong ! *)latticeCreateDH[latticeMoebiusTransform[{m,n}][ {-1/2,1.2}],cylinderLU];
+latticeEquiLength[{m_,n_},cylinderLU_:{-0.2,3.2}] := (* ie p numbers are (m+n),m=n *)latticeCreateDH[latticeMoebiusTransform[{m,n}][ {Cos[\[Pi]/6],Sin[\[Pi]/6]}],cylinderLU];
 latticeOrthogonal[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[latticeMoebiusTransform[{m,n}][ { 0,1}],cylinderLU,2];
 latticeWithMN[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
-latticeMoebiusTransform[{m,n}][{0,(Sqrt[3]/(2)-.25)}],cylinderLU];
+latticeMoebiusTransform[{m,n}][{0.1,(Sqrt[3]/(2)-.25)}],cylinderLU];
+
 
 
 
@@ -810,7 +811,7 @@ viiRegion[mn_,"All"] := RegionUnion[viiRegion[mn,"Ordered"],viiRegion[Reverse@mn
 
 (* 1,1 *) 
 If["Fix bug with region order",
-
+(
 viiRegion[{1,1},"Ordered","Minus"]  :=   
 RegionIntersection[ Rectangle[{0,0},{1/2,1}]
 ,RegionDifference[Disk[{1,0},1,{0,\[Pi]}],
@@ -847,8 +848,7 @@ viiRegion[mn_,"All"] := Module[{m,n,outer,inner,outer1,outer2,inner1,inner2},
 outer1 = viiMNSemiCircle[{Abs[n-m],m}]/. Circle->Disk;outer2 = viiMNSemiCircle[{Abs[n-m],n}]/. Circle->Disk;
 If[euclideanDelta[{m,n}]==1,
 outer = RegionDifference[outer2,outer1],
-outer = RegionIntersection[outer1,outer2],
-
+outer = RegionIntersection[outer1,outer2]
 ];
 inner1 = viiMNSemiCircle[{m,n+m}]/. Circle->Disk;
 inner2 = viiMNSemiCircle[{n,n+m}]/. Circle->Disk;
@@ -875,7 +875,7 @@ RegionDifference[outer,inner]
 RegionIntersection[outer,inner]
 ]
 ]
-(* end of code unused cos of bug *)]
+)(* end of code unused cos of bug *)];
 
 base["Ordered", sign_] :=  base["Ordered", sign] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered",sign]]];
 base["Ordered"] :=  base["Ordered"] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered"]]];
