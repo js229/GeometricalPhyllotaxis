@@ -505,44 +505,65 @@ If[n==0,Return[-1]];
 
 
 (* ::Input::Initialization:: *)
-latticeSetDiskScaling[lattice_,funcNameValue_] := 
+latticeSetScaling[lattice_,funcNameValue_] := 
 Module[{res},
 res = lattice;
 res["scalings"] = AppendTo[res["scalings"],funcNameValue];
 res
 ];
+latticeScaling[lattice_,type_] :=lattice["scalings"][type];
 
 
-latticeGetDiskScaling[lattice_] := First@ lattice["scalings"];
-latticeGetDisk[lattice_] := Module[{cylinderLU,func,innerOuter},
+latticeDisk[lattice_] := Module[{cylinderLU,func,innerOuter},
 cylinderLU = latticeGetCylinderLU[lattice];
-func = latticeGetDiskScaling[lattice];
+func[z_] := latticeScaling[lattice,"Disk"][{0,z}][[1]];
 innerOuter = Map[func,Reverse[cylinderLU]];
 innerOuter= Map[Ramp,innerOuter];
 innerOuter = Sort[innerOuter];
 If[First@innerOuter==0,Disk[{0,0},Last[innerOuter]],Annulus[{0,0},innerOuter]]
 ];
-latticeXZToDisk[lattice_] := Function[{xz},
-Module[{x,z,r},
-{x,z} = xz;
-r = latticeGetDiskScaling[lattice][z];
-r * { Cos[2 \[Pi] x], Sin[2\[Pi] x]} 
-]
+
+latticeArenaRegion[lattice_] := Module[{region,cylinder},
+cylinder= latticeGetCylinder[lattice];
+region =ParametricRegion[latticeScaling[lattice,"Arena"][{x,z}],{{x,cylinder[[1,1]],cylinder[[1,2]]},{z,cylinder[[2,1]],cylinder[[2,2]]}}];
+region
 ];
 
-latticeDiskPoints[lattice_] :=  Map[latticeXZToDisk[lattice],latticePoints[lattice]]
+latticeStemRegion[lattice_] :=  Module[{cylinderLU,zmax},
+cylinderLU= latticeGetCylinderLU[lattice];
+zmax = lattice["scalings"]["Stem"][{0,cylinderLU[[2]]}][[2]];
+Rectangle[ {-1/2,0},{1/2,zmax}]
+];
 
-latticeDiskParastichyFunction[lattice_,m_,k_] := Module[{cylinderLU,xInner,xOuter,data,xzfunc,scalefunc,func},
+
+
+latticePoints[lattice_,type_] :=  Map[latticeScaling[lattice,type],latticePoints[lattice]]
+latticePoints[lattice_,"Disk"] :=  Map[latticeScaling[lattice,"Disk"],latticePoints[lattice]]
+
+
+
+latticeParastichyFunction[lattice_,m_,k_,type_] := Module[{cylinderLU,xInner,xOuter,data,xzfunc,scalefunc,func},
+scalefunc = latticeScaling[lattice,type];
+If[type=="Disk",
 cylinderLU= latticeGetCylinderLU[lattice];
 xOuter = latticeParastichyCylinderIntersection[lattice,m,Bottom]+ k * latticeParastichyHorizontalSeparation[lattice,m];
 xInner = xOuter + (cylinderLU[[2]]-cylinderLU[[1]])/latticeParastichySlope[lattice,m];
 data = { { {0}, {xOuter,cylinderLU[[1]]}},{{1},{xInner,cylinderLU[[2]]}}};
 xzfunc = Interpolation[data,InterpolationOrder->1];
-scalefunc = latticeXZToDisk[lattice];
 func = Function[{t},scalefunc[xzfunc[t]]];
+];
+If[type=="Arena",
+segments =Take[First[List@@latticeParastichyLines[lattice,m,k]],1];
+(* only until the first periodic transform *)
+interp[seg_][t_] :={Interpolation[{{{seg[[1,2]]},seg[[1]]},{{seg[[2,2]]},seg[[2]]}},InterpolationOrder->1][t],
+seg[[1,2]]<= t < seg[[2,2]]};
+func = Function[{t},scalefunc[Piecewise[Map[interp[#][t]&,segments]]]];
+];
+
 func
 ];
 
+latticeDiskParastichyFunction[lattice_,m_,k_] := latticeParastichyFunction[lattice,m,k,"Disk"]
 
 
 
@@ -801,18 +822,19 @@ viiRegion[{1,0}] := viiRegion[{1,0},"Ordered"]
 viiRegion[mn_,"All"] := RegionUnion[viiRegion[mn,"Ordered"],viiRegion[Reverse@mn,"Ordered"]];
 
 (* 1,1 *) 
-(*
+If["Fix bug with region order",
+
 viiRegion[{1,1},"Ordered","Minus"]  :=   
 RegionIntersection[ Rectangle[{0,0},{1/2,1}]
 ,RegionDifference[Disk[{1,0},1,{0,\[Pi]}],
-viiMNOrthoCircle[{1,1}] /. Circle\[Rule] Disk
+viiMNOrthoCircle[{1,1}] /. Circle-> Disk
 ]
 ];
 
 viiRegion[{1,1},"Ordered","Plus"]  :=   
 RegionIntersection[ Rectangle[{0,0},{1/2,1}]
 ,RegionDifference[
-viiMNOrthoCircle[{1,1}] /. Circle\[Rule] Disk
+viiMNOrthoCircle[{1,1}] /. Circle-> Disk
 ,Disk[{1/3,0},1/3,{0,\[Pi]}]
 ]
 ];
@@ -822,27 +844,27 @@ viiRegion[{1,1},"Ordered"] :=RegionUnion[viiRegion[{1,1},"Ordered","Plus"],viiRe
 viiRegion[{2,1},"Ordered"] := Module[{m,n,outer,inner1,inner2},
 outer = Rectangle[{0,0},{1/2,1}];
 inner1 = Disk[{2/3,0},1/3,{0,\[Pi]}];
-inner2 = viiMNSemiCircle[{1,3}]/. Circle\[Rule]Disk;
+inner2 = viiMNSemiCircle[{1,3}]/. Circle->Disk;
 RegionDifference[ RegionIntersection[outer,inner1],inner2]
 ];
 viiRegion[{1,2},"Ordered"] := Module[{m,n,outer,inner1,inner2},
 outer = Disk[{1/3,0},1/3,{0,\[Pi]}];
 inner1 =Disk[{2/3,0},1/3,{0,\[Pi]}];
-inner2 = viiMNSemiCircle[{2,3}]/. Circle\[Rule]Disk;
+inner2 = viiMNSemiCircle[{2,3}]/. Circle->Disk;
 RegionDifference[outer,RegionUnion[inner1,inner2]]
 ];
 
 (* this is the bit that will probably work if i concentrate. but it doesn't *)
 viiRegion[mn_,"All"] := Module[{m,n,outer,inner,outer1,outer2,inner1,inner2},
 {m,n}= Sort[mn];
-outer1 = viiMNSemiCircle[{Abs[n-m],m}]/. Circle\[Rule]Disk;outer2 = viiMNSemiCircle[{Abs[n-m],n}]/. Circle\[Rule]Disk;
-If[euclideanDelta[{m,n}]\[Equal]1,
+outer1 = viiMNSemiCircle[{Abs[n-m],m}]/. Circle->Disk;outer2 = viiMNSemiCircle[{Abs[n-m],n}]/. Circle->Disk;
+If[euclideanDelta[{m,n}]==1,
 outer = RegionDifference[outer2,outer1],
 outer = RegionIntersection[outer1,outer2],
 
 ];
-inner1 = viiMNSemiCircle[{m,n+m}]/. Circle\[Rule]Disk;
-inner2 = viiMNSemiCircle[{n,n+m}]/. Circle\[Rule]Disk;
+inner1 = viiMNSemiCircle[{m,n+m}]/. Circle->Disk;
+inner2 = viiMNSemiCircle[{n,n+m}]/. Circle->Disk;
 inner = RegionUnion[inner1,inner2];
 RegionDifference[outer,inner]
 ];
@@ -850,7 +872,7 @@ RegionDifference[outer,inner]
 viiRegion[mn_,"Ordered"] := Module[{m,n,outer,inner},
 {m,n}=mn;
 outer = viiRegion[mn,"All"];
-inner = viiMNSemiCircle[{m,n}]/. Circle\[Rule]Disk;
+inner = viiMNSemiCircle[{m,n}]/. Circle->Disk;
 If[m<n,
 RegionDifference[outer,inner]
 ,
@@ -859,18 +881,14 @@ RegionIntersection[outer,inner]
 ];
 
 viiRegion[mn_,"Ordered",sign_] := Module[{m,n,outer,inner},
-outer =  viiRegion[mn,"Ordered"];inner = viiMNOrthoCircle[mn]/. Circle\[Rule]Disk;
-If[sign\[Equal]"Minus",
+outer =  viiRegion[mn,"Ordered"];inner = viiMNOrthoCircle[mn]/. Circle->Disk;
+If[sign=="Minus",
 RegionDifference[outer,inner]
 ,
 RegionIntersection[outer,inner]
 ]
-];
-
-*)
-
-Clear[viiPolygon]
-Clear[base];
+]
+(* end of code unused cos of bug *)]
 
 base["Ordered", sign_] :=  base["Ordered", sign] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered",sign]]];
 base["Ordered"] :=  base["Ordered"] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered"]]];
@@ -913,6 +931,7 @@ viiTouchingCircleLabelNonPrimary[{1,2}] = gMNInDHalf[{1,2}][{Sqrt[3]/2,1/2}];
 
 (* ::Input::Initialization:: *)
 (* https://mathematica.stackexchange.com/questions/11430/why-doesnt-normal-work-on-geometrictransformation *)
+(* at one point this was needed - may not be at present *) 
 
 NormalizeGraphics[g_]:=Internal`InheritedBlock[{System`Private`InternalNormal},Unprotect[System`Private`InternalNormal];
 System`Private`InternalNormal[gr:_Rotate|_Translate|_Scale|_GeometricTransformation,_]:=Module[{tmp=Quiet[transform2D[gr],TransformedRegion::reg]},tmp/;Head[tmp]=!=TransformedRegion];
@@ -934,22 +953,44 @@ absolutePosition[g_,spec_]:=spec
 
 (* ::Input::Initialization:: *)
 
-diskProjection[lattice_,type_] := Module[{h,scaling,zmax,r1,res},
+latticeDiskProjection[lattice_,type_] := Module[{h,diskscaling,zmax,r1,res,arenascaling,stemscaling,ztor},
 h = latticeRise[lattice];
 r1 = 1 - 2 \[Pi] h; 
+
 Switch[type,
 "EqualArea",
-scaling = Function[z,Ramp@Sqrt[1- (1-r1^2) z /h]];
+ztor = Function[z,Ramp@Sqrt[1- (1-r1^2) z /h]];
 zmax =   h / (1-r1^2),
 "Logarithmic",
-scaling = Function[z, Exp[-z Log[1/r1] /h]];
+ztor = Function[z, Exp[-z Log[1/r1] /h]];
 zmax = latticeGetCylinderLU[lattice][[2]],
-_, Print[" dP type ",type];Abort[]
+_, Print[" lDP type ",type];Abort[]
 ];
+
+diskscaling = Function[{xz},Module[{x,z,r},
+{x,z}=xz;
+r = ztor[z];
+r * { Cos[2 \[Pi] x], Sin[2\[Pi] x]} 
+]];
+
 res =  latticeSetCylinderLU[lattice,{0,zmax}];
-res =  latticeSetDiskScaling[res,type->scaling];
+res =  latticeSetScaling[res,"Disk"->diskscaling];
+
+arenascaling = Function[{xz},Module[{x,z,r},{x,z}=xz; 
+r =  diskscaling[{0,z}][[1]];
+{r * x ,z}
+]];
+res = latticeSetScaling[res,"Arena"->arenascaling];
+
+stemscaling = Function[{xz},Module[{x,z,r},{x,z}=xz; 
+r =  diskscaling[{0,z}][[1]];
+{ x ,   r* z}
+]];
+
+res = latticeSetScaling[res,"Stem"->stemscaling];
 res
 ];
+
 
 
 
