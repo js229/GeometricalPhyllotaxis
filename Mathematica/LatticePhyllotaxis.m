@@ -505,19 +505,21 @@ latticeDiskParastichyFunction[lattice_,m_,k_] := latticeParastichyFunction[latti
 
 (* ::Input::Initialization:: *)
 
-latticeDiskProjection[lattice_,type_] := Module[{h,diskscaling,zMax,rAtZMax,r1,res,arenascaling,stemscaling,zToR,zScale},
+latticeDiskProjection[lattice_,type_] := Module[{h,diskscaling,zMin,zMax,rAtZMax,r1,res,arenascaling,stemscaling,zNormalise , zToR,zScale},
 h = latticeRise[lattice];
 r1 = 1 - 2 \[Pi] h; 
-(* assumes cylinderLU[[1]]\[Equal]0 *) 
+
 Switch[type,
 "EqualArea",
 zToR = Function[z,Ramp@Sqrt[1- (1-r1^2) z /h]];
-zMax =   h / (1-r1^2),
+{zMin,zMax} = {0,  h / (1-r1^2)},
 "Logarithmic",
 zToR = Function[z, Exp[-z Log[1/r1] /h]];
-zMax = latticeGetCylinderLU[lattice][[2]],
+{zMin,zMax}  = latticeGetCylinderLU[lattice],
 _, Print[" lDP type ",type];Abort[]
 ];
+zNormalise[z_] := (z - zMin )/(zMax - zMin );
+
 
 diskscaling = Function[{xz},Module[{x,z,r},
 {x,z}=xz;
@@ -527,6 +529,9 @@ r * { Cos[2 \[Pi] x], Sin[2\[Pi] x]}
 
 res =  latticeSetCylinderLU[lattice,{0,zMax}];
 res =  latticeSetScaling[res,"Disk"->diskscaling];
+
+res = latticeSetScaling[res,"ZNormalise"->zNormalise[z_]];
+
 
 arenascaling = Function[{xz},Module[{x,z,r},{x,z}=xz; 
 r =  zToR[z];
@@ -541,13 +546,22 @@ Solve[D[ z Exp[-z Log[1/r1] /h],z]\[Equal]0,z]*)
 zScale = h/Log[1/r1];
 rAtZMax = zToR[zScale];
 
-stemscaling = Function[{xz},Module[{x,z,r,scaledZ,fz},{x,z}=xz; 
+stemexpscaling = Function[{xz},Module[{x,z,r,scaledZ,fz},{x,z}=xz; 
 scaledZ = z * zScale/ zMax; (* 0 to zscale *)
 r =  zToR[scaledZ]; (*  0 to rAtZMax *)
 fz = r * scaledZ * zMax /(zScale * rAtZMax); (* 0 to zMax *) 
 { x ,  fz}
 ]];
 
+
+res = latticeSetScaling[res,"StemExponential"->stemexpscaling];
+
+stemscaling = Function[{xz},Module[{x,z,k,n,a,b},{x,z}=xz; 
+(* through (0,1), (1, n h ) and ( k, infinity ) so two params *)
+zinf = 1.1; f1 = 10 ;
+fz =  ( zinf +  (- f1+ zinf ( f1  -1) )(z/zMax))/(zinf  - (z/zMax));
+{x ,  zMax * z *  fz }
+]];
 res = latticeSetScaling[res,"Stem"->stemscaling];
 res
 ];
