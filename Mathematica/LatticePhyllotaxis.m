@@ -219,14 +219,11 @@ lattice
 
 
 (* ::Input::Initialization:: *)
-(*tgetParastichyNumbersGroupedByLength[lattice_] := Module[{pv,pvlengths,pva}, 
-pv = latticeParastichyVectors[lattice];pvlengths =Map[vectorNorm2,pv];pva = GroupBy[pvlengths,Identity,Sort[Keys[#]]&];Association[Map[ pva[#]-> # &, Keys[pva]]]
-];*)
 
 tgetParastichyNumbersGroupedByLength[lattice_,firstnEqual_] := Module[{pv,pvlengths,pva,i}, 
 pv = latticeParastichyVectors[lattice];pvlengths =Map[vectorNorm2,pv];
-pvlengths = Sort[pvlengths];
-(*  only if we make eg hexagonal lattices *)
+pvlengths = SortBy[pvlengths,N];
+(*  only if we make eg hexagonal lattices, the lengths may be algebraically but not numerically equal so we force them *)
 For[i=2,i<=firstnEqual,i++,
 pvlengths[[i]] = pvlengths[[1]]
 ];
@@ -258,7 +255,13 @@ res
 (* ::Input::Initialization:: *)
 latticeLabel[lattice_] := latticeParastichyNumbersGroupedByLength[lattice];
 latticeLabelText[lattice_] := Module[{ll,tos},
-ll =  latticeLabel[lattice] ;tos[x_] := If[x===hat[1],"\!\(\*OverscriptBox[\(1\), \(^\)]\)",ToString[x]];ll = Map[tos,ll,{2}];ll = Map[StringRiffle[#,"="]&,ll];ll = StringRiffle[Take[ll,UpTo[2]],","]
+ll =  latticeLabel[lattice] ;
+
+tos[hat[n_]] := "\!\(\*OverscriptBox[\(" <> ToString[n] <> "\), \(^\)]\)";
+tos[n_] := ToString[n];
+
+(*tos[x_] := If[x===hat[1],"\!\(\*OverscriptBox[\(1\), \(^\)]\)",ToString[x]];*)
+ll = Map[tos,ll,{2}];ll = Map[StringRiffle[#,"="]&,ll];ll = StringRiffle[Take[ll,UpTo[2]],","]
 ];
 
 
@@ -530,7 +533,7 @@ r * { Cos[2 \[Pi] x], Sin[2\[Pi] x]}
 res =  latticeSetCylinderLU[lattice,{0,zMax}];
 res =  latticeSetScaling[res,"Disk"->diskscaling];
 
-res = latticeSetScaling[res,"ZNormalise"->zNormalise[z_]];
+res = latticeSetScaling[res,"ZNormalise"->zNormalise];
 
 
 arenascaling = Function[{xz},Module[{x,z,r},{x,z}=xz; 
@@ -556,11 +559,12 @@ fz = r * scaledZ * zMax /(zScale * rAtZMax); (* 0 to zMax *)
 
 res = latticeSetScaling[res,"StemExponential"->stemexpscaling];
 
-stemscaling = Function[{xz},Module[{x,z,k,n,a,b},{x,z}=xz; 
+stemscaling = Function[{xz},Module[{x,z,zinf,f1,zNorm,fz},{x,z}=xz; 
 (* through (0,1), (1, n h ) and ( k, infinity ) so two params *)
 zinf = 1.1; f1 = 10 ;
-fz =  ( zinf +  (- f1+ zinf ( f1  -1) )(z/zMax))/(zinf  - (z/zMax));
-{x ,  zMax * z *  fz }
+zNorm = 1-zNormalise[z];
+fz =  ( zinf +  (- f1+ zinf ( f1  -1) )zNorm)/(zinf  - zNorm);
+{x , z*  fz }
 ]];
 res = latticeSetScaling[res,"Stem"->stemscaling];
 res
