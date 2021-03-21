@@ -508,6 +508,26 @@ latticeDiskParastichyFunction[lattice_,m_,k_] := latticeParastichyFunction[latti
 
 (* ::Input::Initialization:: *)
 
+latticeStemStretch[lattice_,sOfT_] := Module[
+{zMin,zMax,tOfZ,sOfZ,wOfZ,res},
+
+{zMin,zMax}= latticeGetCylinderLU[lattice];
+tOfZ[z_] := (z - zMin )/(zMax - zMin ); (* in 0,1 *)
+sOfZ[z_]:= tOfZ[z]*sOfT[tOfZ[z]]; (* z s(z) in normalised coords *)
+wOfZ[z_] := zMin *(1- sOfZ[z]/sOfT[1] )+  zMax* sOfZ[z]/sOfT[1]; (* goes from zmin to zmax *)
+
+
+
+res = latticeSetScaling[lattice,"StemStretch"->wOfZ];
+res
+];
+
+
+
+
+
+(* ::Input::Initialization:: *)
+
 latticeDiskProjection[lattice_,type_] := Module[{h,diskscaling,zMin,zMax,rAtZMax,r1,res,arenascaling,stemscaling,zNormalise , zToR,zScale},
 h = latticeRise[lattice];
 r1 = 1 - 2 \[Pi] h; 
