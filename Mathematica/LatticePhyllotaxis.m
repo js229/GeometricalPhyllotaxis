@@ -280,6 +280,7 @@ latticePrincipal3ParastichyNumbers[lattice_] :=Take[latticeParastichyNumbers[lat
 latticePoints[lattice_] :=  Module[{nmin,nmax,irange,points,h,cylinderLU},h = lattice["h"];cylinderLU=lattice["cylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};points = N@Flatten[Table[latticePointWithCopies[lattice,i],{i,nmin,nmax}],1];
 points
 ];
+(* extensions to noneuclidean latticePoints[lattice_,type_] below
 
 latticeGraphicPoints[lattice_] :=  Point[latticePoints[lattice]];
 latticeGraphicsPoint[lattice_,m_] :=  Point[latticePoint[lattice,m]];
@@ -488,7 +489,7 @@ xInner = xOuter + (cylinderLU[[2]]-cylinderLU[[1]])/latticeParastichySlope[latti
 data = { { {0}, {xOuter,cylinderLU[[1]]}},{{1},{xInner,cylinderLU[[2]]}}};
 xzfunc = Interpolation[data,InterpolationOrder->1];
 func = Function[{t},scalefunc[xzfunc[t]]];
-, (* for "Arena", "Stem", need the image of the parastichy line in the cylinder *) 
+, (* for "Arena", "StemStretch", need the image of the parastichy line in the cylinder *) 
 segments =First[List@@latticeParastichyLines[lattice,m,k]];
 segments = Take[segments,1];
 (* only until the first periodic transform *)
@@ -509,16 +510,16 @@ latticeDiskParastichyFunction[lattice_,m_,k_] := latticeParastichyFunction[latti
 (* ::Input::Initialization:: *)
 
 latticeStemStretch[lattice_,sOfT_] := Module[
-{zMin,zMax,tOfZ,sOfZ,wOfZ,res},
+{zMin,zMax,tOfZ,sOfZ,wOfZ,func,res},
 
 {zMin,zMax}= latticeGetCylinderLU[lattice];
 tOfZ[z_] := (z - zMin )/(zMax - zMin ); (* in 0,1 *)
 sOfZ[z_]:= tOfZ[z]*sOfT[tOfZ[z]]; (* z s(z) in normalised coords *)
 wOfZ[z_] := zMin *(1- sOfZ[z]/sOfT[1] )+  zMax* sOfZ[z]/sOfT[1]; (* goes from zmin to zmax *)
 
+func = Function[{x,z},{ x, wOfZ[z]}];
 
-
-res = latticeSetScaling[lattice,"StemStretch"->wOfZ];
+res = latticeSetScaling[lattice,"StemStretch"->func];
 res
 ];
 
