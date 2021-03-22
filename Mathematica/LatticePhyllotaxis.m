@@ -280,7 +280,7 @@ latticePrincipal3ParastichyNumbers[lattice_] :=Take[latticeParastichyNumbers[lat
 latticePoints[lattice_] :=  Module[{nmin,nmax,irange,points,h,cylinderLU},h = lattice["h"];cylinderLU=lattice["cylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};points = N@Flatten[Table[latticePointWithCopies[lattice,i],{i,nmin,nmax}],1];
 points
 ];
-(* extensions to noneuclidean latticePoints[lattice_,type_] below
+(* extensions to noneuclidean latticePoints[lattice_,type_] below *)
 
 latticeGraphicPoints[lattice_] :=  Point[latticePoints[lattice]];
 latticeGraphicsPoint[lattice_,m_] :=  Point[latticePoint[lattice,m]];
@@ -396,9 +396,18 @@ xtable= latticeParastichyXZThrough[lattice,m];
  Map[latticeParastichyLinesThroughXZ[lattice,m,#]&,xtable]
 ];
 latticeParastichyLines[lattice_,m_,k_] := latticeParastichyLinesThroughXZ[lattice,m,latticePoint[lattice,k]];
+latticeParastichyLinesAbove[lattice_,m_,k_] := latticeParastichyLinesAboveXZ[lattice,m,latticePoint[lattice,k]];
 
 
 (* ::Input::Initialization:: *)
+latticeParastichyLinesAboveXZ[lattice_,m_,throughxz_] := Module[{res,cylinderLU,lines},
+cylinderLU = latticeGetCylinderLU[lattice];
+cylinderLU[[1]] = throughxz [[2]];
+res = latticeSetCylinderLU[lattice,cylinderLU];
+lines = latticeParastichyLinesThroughXZ[res,m,throughxz];
+lines
+];
+
 latticeParastichyLinesThroughXZ[lattice_,m_,throughxz_] := Module[{pvecslope,bottom,top,cylinder,cylinderLU,line,i,lastXZ,nextX,nextZ,v},
 
 cylinder = latticeGetCylinder[lattice];cylinderLU = cylinder[[2]];If[zeroParastichyQ[m], (* parastichy is horizontal *)
@@ -480,7 +489,7 @@ latticePoints[lattice_,type_] :=  Map[latticeScaling[lattice,type],latticePoints
 
 
 
-latticeParastichyFunction[lattice_,m_,k_,type_] := Module[{cylinderLU,xInner,xOuter,data,xzfunc,scalefunc,func},
+latticeParastichyFunctions[lattice_,m_,k_,type_] := Module[{cylinderLU,xInner,xOuter,data,xzfunc,scalefunc,funcs,interp,segments},
 scalefunc = latticeScaling[lattice,type];
 If[type=="Disk", (* mapping to periodic coordinates *)
 cylinderLU= latticeGetCylinderLU[lattice];
@@ -488,21 +497,17 @@ xOuter = latticeParastichyCylinderIntersection[lattice,m,Bottom]+ k * latticePar
 xInner = xOuter + (cylinderLU[[2]]-cylinderLU[[1]])/latticeParastichySlope[lattice,m];
 data = { { {0}, {xOuter,cylinderLU[[1]]}},{{1},{xInner,cylinderLU[[2]]}}};
 xzfunc = Interpolation[data,InterpolationOrder->1];
-func = Function[{t},scalefunc[xzfunc[t]]];
+funcs = {Function[{t},scalefunc[xzfunc[t]]]};
 , (* for "Arena", "StemStretch", need the image of the parastichy line in the cylinder *) 
-segments =First[List@@latticeParastichyLines[lattice,m,k]];
-segments = Take[segments,1];
-(* only until the first periodic transform *)
-interp[seg_][t_] :={Interpolation[{{{seg[[1,2]]},seg[[1]]},{{seg[[2,2]]},seg[[2]]}},InterpolationOrder->1][t],
-seg[[1,2]]<= t < seg[[2,2]]};
-func = Function[{t},scalefunc[Piecewise[Map[interp[#][t]&,segments]]]];
+segments =First[List@@latticeParastichyLinesAbove[lattice,m,k]];
+interp[seg_]:= Function[t,seg[[1]](1-t)+ seg[[2]] t ];
+funcs = Map[Function[t,scalefunc[interp[#][t]]]&,segments];
 ];
 
-func
+funcs
 ];
 
-latticeDiskParastichyFunction[lattice_,m_,k_] := latticeParastichyFunction[lattice,m,k,"Disk"]
-
+latticeDiskParastichyFunction[lattice_,m_,k_] := First@latticeParastichyFunctions[lattice,m,k,"Disk"]
 
 
 
@@ -510,14 +515,16 @@ latticeDiskParastichyFunction[lattice_,m_,k_] := latticeParastichyFunction[latti
 (* ::Input::Initialization:: *)
 
 latticeStemStretch[lattice_,sOfT_] := Module[
-{zMin,zMax,tOfZ,sOfZ,wOfZ,func,res},
+(* t in [0,1], s[t] should be increasing from s[0]=0 to s[1]=smax 
+designed so that s'(t) is rise at t corresponsing to z *)
+{zMin,zMax,tOfZ,sOfZ,wOfZ,sMax,func,res},
 
 {zMin,zMax}= latticeGetCylinderLU[lattice];
 tOfZ[z_] := (z - zMin )/(zMax - zMin ); (* in 0,1 *)
-sOfZ[z_]:= tOfZ[z]*sOfT[tOfZ[z]]; (* z s(z) in normalised coords *)
-wOfZ[z_] := zMin *(1- sOfZ[z]/sOfT[1] )+  zMax* sOfZ[z]/sOfT[1]; (* goes from zmin to zmax *)
+sOfZ[z_]:= sOfT[tOfZ[z]]; (*  s(z) in normalised coords *)
+wOfZ[z_] := zMin  + (zMax-zMin)* sOfZ[z]/sOfT[1]; (* goes from zMin to zMax  as SOfZ[zmax]=sOfT[1] *)
 
-func = Function[{x,z},{ x, wOfZ[z]}];
+func = Function[{xz},Module[{x,z},{x,z}=xz;{ x, wOfZ[z]}]];
 
 res = latticeSetScaling[lattice,"StemStretch"->func];
 res
