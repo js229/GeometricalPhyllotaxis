@@ -91,6 +91,9 @@ If[Delta>0,Return[{u,v}]];
 {u,v} = {m - u, n - v};
 Return[{u,v}]
 ];
+(* avoid the symbolic Delta 
+windingNumberPair[{Fibonacci[k_],Fibonacci[j_]}] := {Fibonacci[k-2],Fibonacci[k-1]} /; j\[Equal]k+1
+*)
 
 euclideanUV[mn_] := euclideanUVDirect[mn]; 
 euclideanUV[mn_,ForDelta_] := Module[{mnDelta,uv},
@@ -649,6 +652,13 @@ gMNRealPairReflection[{m_,n_}] := Function[{xy},Module[{x,y},
 gMNInDHalf[{m_,n_}] :=Function[{xy},
 Module[{x,y},
 {x,y} = N@gMNRealPair[{m,n}][xy];
+x = x-Round[x];
+If[x<0,x=-x];
+{x,y}
+]];
+gMNInDHalfExact[{m_,n_}] :=Function[{xy},
+Module[{x,y},
+{x,y} = gMNRealPair[{m,n}][xy];
 x = x-Round[x];
 If[x<0,x=-x];
 {x,y}
