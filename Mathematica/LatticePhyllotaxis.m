@@ -465,7 +465,11 @@ res = lattice;
 res["scalings"] = AppendTo[res["scalings"],funcNameValue];
 res
 ];
-latticeScaling[lattice_,type_] :=lattice["scalings"][type];
+latticeScaling[lattice_,type_] := Module[{res},
+res = lattice["scalings"][type];
+If[MissingQ[res],Print["No ", type , " scaling set"]];
+res
+];
 
 
 latticeDisk[lattice_] := Module[{cylinderLU,func,innerOuter},
