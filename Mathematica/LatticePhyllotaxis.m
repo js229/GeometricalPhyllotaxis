@@ -245,12 +245,15 @@ pnumbers =latticeParastichyNumbersGroupedByLength[lattice];Flatten[Map[Sort,pnum
 (* ::Input::Initialization:: *)
 latticeGetCylinder[lattice_] := lattice["cylinder"];
 latticeGetCylinderLU[lattice_] := lattice["cylinder"][[2]];
+
+(* scalingfunctions might add their own latticeGetCylinderLU[lattice,func] for display purposes *)
+
 latticeSetCylinderLU[lattice_,cylinderLU_] := Module[{res,cyl},
-res =lattice;
-cyl= lattice["cylinder"];
-cyl[[2]] = cylinderLU;
-res["cylinder"] = cyl;
-res
+	res =lattice;
+	cyl= lattice["cylinder"];
+	cyl[[2]] = cylinderLU;
+	res["cylinder"] = cyl;
+	res
 ];
 
 
@@ -283,7 +286,7 @@ latticePrincipal3ParastichyNumbers[lattice_] :=Take[latticeParastichyNumbers[lat
 latticePoints[lattice_] :=  Module[{nmin,nmax,irange,points,h,cylinderLU},h = lattice["h"];cylinderLU=lattice["cylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};points = N@Flatten[Table[latticePointWithCopies[lattice,i],{i,nmin,nmax}],1];
 points
 ];
-(* extensions to noneuclidean latticePoints[lattice_,type_] below *)
+(* extensions to noneuclidean latticePoints[lattice_,scalingFunction_] below *)
 
 latticeGraphicPoints[lattice_] :=  Point[latticePoints[lattice]];
 latticeGraphicsPoint[lattice_,m_] :=  Point[latticePoint[lattice,m]];
@@ -363,7 +366,7 @@ m2 = {{ x,y,1},{x3,y3,1},{x4,y4,1}};
 
 
 (* ::Input::Initialization:: *)
-latticeParastichyCylinderIntersection[lattice_,m_,type_] :=Module[{arena,arenaBottomIntersection,arenaTopIntersection},
+latticeParastichyCylinderIntersection[lattice_,m_,topbottom_] :=Module[{arena,arenaBottomIntersection,arenaTopIntersection},
 If[zeroParastichyQ[m],Abort[]];
 arena = latticeGetCylinder[lattice];
 arenaBottomIntersection = linelineIntersection[
@@ -372,7 +375,7 @@ arenaBottomIntersection = linelineIntersection[
 arenaTopIntersection = linelineIntersection[
 {{  arena[[1,1]], arena[[2,2]]},{ arena[[1,2]],arena[[2,2]]}},
 { {0,0},  latticeVector[lattice,m]}][[1]];
-If[type===Bottom,
+If[topbottom===Bottom,
 arenaBottomIntersection,arenaTopIntersection]
 ];
 
@@ -465,40 +468,19 @@ res = lattice;
 res["scalings"] = AppendTo[res["scalings"],funcNameValue];
 res
 ];
-latticeScaling[lattice_,type_] := Module[{res},
-res = lattice["scalings"][type];
-If[MissingQ[res],Print["No ", type , " scaling set"]];
+latticeScaling[lattice_,scalingFunction_] := Module[{res},
+res = lattice["scalings"][scalingFunction];
+If[MissingQ[res],Print["No ", scalingFunction , " scaling set"]];
 res
 ];
 
-
-latticeDisk[lattice_] := Module[{cylinderLU,func,innerOuter},
-cylinderLU = latticeGetCylinderLU[lattice];
-func[z_] := latticeScaling[lattice,"Disk"][{0,z}][[1]];
-innerOuter = Map[func,Reverse[cylinderLU]];
-innerOuter= Map[Ramp,innerOuter];
-innerOuter = Sort[innerOuter];
-If[First@innerOuter==0,Disk[{0,0},Last[innerOuter]],Annulus[{0,0},innerOuter]]
-];
-
-latticeArenaRegion[lattice_] := Module[{region,cylinder},
-cylinder= latticeGetCylinder[lattice];
-region =ParametricRegion[latticeScaling[lattice,"Arena"][{x,z}],{{x,cylinder[[1,1]],cylinder[[1,2]]},{z,cylinder[[2,1]],cylinder[[2,2]]}}];
-region
-];
-
-(* for stem, same as euclidean lattice *)
-latticeStemRegion[lattice_] :=  Rectangle@@Transpose@latticeGetCylinder[lattice]
+latticePoints[lattice_,scalingFunction_] :=  Map[latticeScaling[lattice,scalingFunction],latticePoints[lattice]]
 
 
 
-latticePoints[lattice_,type_] :=  Map[latticeScaling[lattice,type],latticePoints[lattice]]
-
-
-
-latticeParastichyFunctions[lattice_,m_,k_,type_] := Module[{cylinderLU,xInner,xOuter,data,xzfunc,scalefunc,funcs,interp,segments},
-scalefunc = latticeScaling[lattice,type];
-If[type=="Disk", (* mapping to periodic coordinates *)
+latticeParastichyFunctions[lattice_,m_,k_,scalingFunction_] := Module[{cylinderLU,xInner,xOuter,data,xzfunc,scalefunc,funcs,interp,segments},
+scalefunc = latticeScaling[lattice,scalingFunction];
+If[scalingFunction=="Disk", (* mapping to periodic coordinates *)
 cylinderLU= latticeGetCylinderLU[lattice];
 xOuter = latticeParastichyCylinderIntersection[lattice,m,Bottom]+ k * latticeParastichyHorizontalSeparation[lattice,m];
 xInner = xOuter + (cylinderLU[[2]]-cylinderLU[[1]])/latticeParastichySlope[lattice,m];
@@ -514,96 +496,12 @@ funcs = Map[Function[t,scalefunc[interp[#][t]]]&,segments];
 funcs
 ];
 
-latticeDiskParastichyFunction[lattice_,m_,k_] := First@latticeParastichyFunctions[lattice,m,k,"Disk"]
 
 
 
 
 (* ::Input::Initialization:: *)
 
-latticeStemStretch[lattice_,sOfT_] := Module[
-(* t in [0,1], s[t] should be increasing from s[0]=0 to s[1]=smax 
-designed so that s'(t) is rise at t corresponsing to z *)
-{zMin,zMax,tOfZ,sOfZ,wOfZ,sMax,func,res},
-
-{zMin,zMax}= latticeGetCylinderLU[lattice];
-tOfZ[z_] := (z - zMin )/(zMax - zMin ); (* in 0,1 *)
-sOfZ[z_]:= sOfT[tOfZ[z]]; (*  s(z) in normalised coords *)
-wOfZ[z_] := zMin  + (zMax-zMin)* sOfZ[z]/sOfT[1]; (* goes from zMin to zMax  as SOfZ[zmax]=sOfT[1] *)
-
-func = Function[{xz},Module[{x,z},{x,z}=xz;{ x, wOfZ[z]}]];
-
-res = latticeSetScaling[lattice,"StemStretch"->func];
-res
-];
-
-
-
-
-
-(* ::Input::Initialization:: *)
-
-latticeDiskProjection[lattice_,type_] := Module[{h,diskscaling,zMin,zMax,rAtZMax,r1,res,arenascaling,stemscaling,zNormalise , zToR,zScale},
-h = latticeRise[lattice];
-r1 = 1 - 2 \[Pi] h; 
-
-Switch[type,
-"EqualArea",
-zToR = Function[z,Ramp@Sqrt[1- (1-r1^2) z /h]];
-{zMin,zMax} = {0,  h / (1-r1^2)},
-"Logarithmic",
-zToR = Function[z, Exp[-z Log[1/r1] /h]];
-{zMin,zMax}  = latticeGetCylinderLU[lattice],
-_, Print[" lDP type ",type];Abort[]
-];
-zNormalise[z_] := (z - zMin )/(zMax - zMin );
-
-
-diskscaling = Function[{xz},Module[{x,z,r},
-{x,z}=xz;
-r = zToR[z];
-r * { Cos[2 \[Pi] x], Sin[2\[Pi] x]} 
-]];
-
-res =  latticeSetCylinderLU[lattice,{0,zMax}];
-res =  latticeSetScaling[res,"Disk"->diskscaling];
-
-res = latticeSetScaling[res,"ZNormalise"->zNormalise];
-
-
-arenascaling = Function[{xz},Module[{x,z,r},{x,z}=xz; 
-r =  zToR[z];
-{r * x ,z}
-]];
-res = latticeSetScaling[res,"Arena"->arenascaling];
-
-(* we want the z-coordinate to be r(z) z 
-for the logarithmic scaling that is z exp[-z] so we further scale
-z so as to only be in the region where zexp[-z) is increasing
-Solve[D[ z Exp[-z Log[1/r1] /h],z]\[Equal]0,z]*)
-zScale = h/Log[1/r1];
-rAtZMax = zToR[zScale];
-
-stemexpscaling = Function[{xz},Module[{x,z,r,scaledZ,fz},{x,z}=xz; 
-scaledZ = z * zScale/ zMax; (* 0 to zscale *)
-r =  zToR[scaledZ]; (*  0 to rAtZMax *)
-fz = r * scaledZ * zMax /(zScale * rAtZMax); (* 0 to zMax *) 
-{ x ,  fz}
-]];
-
-
-res = latticeSetScaling[res,"StemExponential"->stemexpscaling];
-
-stemscaling = Function[{xz},Module[{x,z,zinf,f1,zNorm,fz},{x,z}=xz; 
-(* through (0,1), (1, n h ) and ( k, infinity ) so two params *)
-zinf = 1.1; f1 = 10 ;
-zNorm = 1-zNormalise[z];
-fz =  ( zinf +  (- f1+ zinf ( f1  -1) )zNorm)/(zinf  - zNorm);
-{x , z*  fz }
-]];
-res = latticeSetScaling[res,"Stem"->stemscaling];
-res
-];
 
 
 
@@ -751,17 +649,17 @@ m < n - m
 viiPrimaryOpposed[mn_]  := getCircleBranch[mn,"Opposed"];
 viiPrimaryNonOpposed[mn_]  := getCircleBranch[mn,"NonOpposed"];
 
-getCircleBranch[{m_,n_},type_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
+getCircleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
 mn = Sort[{m,n}];
 branch = viiPrimarySegment[mn];
 If[!viiPrimaryIsEverNonOpposed[mn],
-	If[type=="Opposed", Return[branch],Return[Nothing[]]]];
+	If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
 angle = circleAngleAtLine[branch,viiOrthostichyD[mn]];
 upperpt = viiTriplePoint[viiUpperPair[mn]];
 lowerpt = viiTriplePoint[mn];
 
 {centre,r,theta12} = Apply[List,branch];
-If[type=="NonOpposed",
+If[scalingFunction=="NonOpposed",
 res = Circle[centre,r,Sort@{xyToArg[branch,upperpt],angle}]
 ,
 res = Circle[centre,r,Sort@{xyToArg[branch,lowerpt],angle}]
