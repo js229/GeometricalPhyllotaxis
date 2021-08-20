@@ -210,11 +210,16 @@ latticeCreateDH[{d_,h_},cylinderLU_:{-0.2,3.2},firstnEqual_:1]  :=  Module[{latt
 lattice = Association [
 "d"-> d
 ,"h"-> h
+(* always has periodicity (1,0); this is how much of it we display *) 
 ,"cylinder" -> { {-1/2,1/2},cylinderLU} 
-(* always has periodicity (1,0); this is how much of it we display *) ,"parastichyVectors" ->  tgetThreeParastichyVectorsDH[{d,h}]
+(* the region of the unscaled, Euclidean cylinder we display  nodes from; normally the same, but not if we are applying a scaling to it *)
+,"nodeCylinder" -> { {-1/2,1/2},cylinderLU} 
+,"parastichyVectors" ->  tgetThreeParastichyVectorsDH[{d,h}]
 ,"scalings"-> <||>
 ];
 lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];
+lattice = Append[lattice,
+{"namedLatticePoints"-> lNamedLatticePoints[lattice]}];
 lattice
 ];
 
@@ -245,15 +250,29 @@ pnumbers =latticeParastichyNumbersGroupedByLength[lattice];Flatten[Map[Sort,pnum
 (* ::Input::Initialization:: *)
 latticeGetCylinder[lattice_] := lattice["cylinder"];
 latticeGetCylinderLU[lattice_] := lattice["cylinder"][[2]];
+latticeGetNodeCylinder[lattice_] := lattice["nodeCylinder"];
+latticeGetNodeCylinderLU[lattice_] := lattice["nodeCylinder"][[2]];
 
-(* scalingfunctions might add their own latticeGetCylinderLU[lattice,func] for display purposes *)
-
-latticeSetCylinderLU[lattice_,cylinderLU_] := Module[{res,cyl},
-	res =lattice;
-	cyl= lattice["cylinder"];
-	cyl[[2]] = cylinderLU;
-	res["cylinder"] = cyl;
-	res
+latticeSetDisplayCylinderLU[lattice_,cylinderLU_] := Module[{res,cyl},
+res =lattice;
+cyl= lattice["cylinder"];
+cyl[[2]] = cylinderLU;
+res["cylinder"] = cyl;
+res
+];
+(* resets both clyinder and nodeCylinder, might break otherwise *)
+latticeSetCylinderLU[lattice_,cylinderLU_] := Module[{res},
+res = lattice;
+res =latticeSetDisplayCylinderLU[res,cylinderLU] ;
+res =latticeSetNodeCylinderLU[res,cylinderLU] ;
+res
+];
+latticeSetNodeCylinderLU[lattice_,cylinderLU_] := Module[{res,cyl},
+res =lattice;
+cyl= lattice["nodeCylinder"];
+cyl[[2]] = cylinderLU;
+res["nodeCylinder"] = cyl;
+res
 ];
 
 
@@ -283,10 +302,28 @@ latticePrincipal3ParastichyNumbers[lattice_] :=Take[latticeParastichyNumbers[lat
 
 
 (* ::Input::Initialization:: *)
-latticePoints[lattice_] :=  Module[{nmin,nmax,irange,points,h,cylinderLU},h = lattice["h"];cylinderLU=lattice["cylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};points = N@Flatten[Table[latticePointWithCopies[lattice,i],{i,nmin,nmax}],1];
+lNamedLatticePoints[lattice_] := Module[{nmin,nmax,irange,points,h,cylinderLU},h = lattice["h"];cylinderLU=lattice["nodeCylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};points = Association[ Table[i->N@First@latticePointWithCopies[lattice,i],{i,nmin,nmax}]];
+points
+]; 
+(* will break any multijugacy *) 
+
+lCalculateLatticePoints[lattice_] :=  Module[{nmin,nmax,irange,points,h,cylinderLU},h = lattice["h"];cylinderLU=lattice["nodeCylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};points = N@Flatten[Table[latticePointWithCopies[lattice,i],{i,nmin,nmax}],1];
 points
 ];
-(* extensions to noneuclidean latticePoints[lattice_,scalingFunction_] below *)
+
+latticePoints[lattice_] := Values[lattice["namedLatticePoints"] ];
+latticeNamedPoints[lattice_]  := lattice["namedLatticePoints"];
+
+
+latticePoints[lattice_,scalingFunction_] :=  Module[{},
+(* if there is a scaling function, it takes the original set of points and maps them to {0,scaling[cylinderU] *)
+Map[latticeScaling[lattice,scalingFunction],latticePoints[lattice]]
+];
+latticeNamedPoints[lattice_,scalingFunction_] :=  Module[{},
+Map[latticeScaling[lattice,scalingFunction],latticeNamedPoints[lattice]]
+];
+
+
 
 latticeGraphicPoints[lattice_] :=  Point[latticePoints[lattice]];
 latticeGraphicsPoint[lattice_,m_] :=  Point[latticePoint[lattice,m]];
@@ -323,6 +360,43 @@ latticePointD[lattice_,m_] := latticePoint[lattice,m][[1]];
 latticeRise[lattice_] := latticePointH[lattice,1]; (* will be the same as lattice["h"] for h > 0 *) 
 latticeDivergence[lattice_] := latticePointD[lattice,1]; (* will be the same as lattice["d"] for -1/2<d<1/2 *) 
 latticeVectorLength[lattice_,m_] :=  Norm[ latticeVector[lattice,m]];
+
+
+(* ::Input::Initialization:: *)
+latticeGraphicRegion[lattice_,scalingFunction_] := Module[{},
+Switch[scalingFunction,
+"Disk",glatticeDisk[lattice],
+"Arena",glatticeArenaRegion[lattice],
+"StemStretch",glatticeStemRegion[lattice]
+]
+];
+
+
+glatticeDisk[lattice_] := Module[{cylinderLU,func,innerOuter},
+cylinderLU = latticeGetCylinderLU[lattice];
+func[z_] := latticeScaling[lattice,"Disk"][{0,z}][[1]];
+innerOuter = Map[func,Reverse[cylinderLU]];
+innerOuter= Map[Ramp ,innerOuter];
+innerOuter = Sort[innerOuter];
+If[First@innerOuter==0,Disk[{0,0},Last[innerOuter]],Annulus[{0,0},innerOuter]]
+];
+
+glatticeArenaRegion[lattice_] := Module[{region,cylinder},
+cylinder= latticeGetCylinder[lattice];
+region =ParametricRegion[latticeScaling[lattice,"Arena"][{x,z}],{{x,cylinder[[1,1]],cylinder[[1,2]]},{z,cylinder[[2,1]],cylinder[[2,2]]}}];
+region
+];
+
+(* for stem, same as euclidean lattice *)
+glatticeStemRegion[lattice_] :=  Rectangle@@Transpose@latticeGetCylinder[lattice]
+
+
+
+
+(* ::Input::Initialization:: *)
+latticeDiskParastichyFunction[lattice_,m_,k_] := First@latticeParastichyFunctions[lattice,m,k,"Disk"]
+
+
 
 
 (* ::Input::Initialization:: *)
@@ -368,7 +442,7 @@ m2 = {{ x,y,1},{x3,y3,1},{x4,y4,1}};
 (* ::Input::Initialization:: *)
 latticeParastichyCylinderIntersection[lattice_,m_,topbottom_] :=Module[{arena,arenaBottomIntersection,arenaTopIntersection},
 If[zeroParastichyQ[m],Abort[]];
-arena = latticeGetCylinder[lattice];
+arena = latticeGetNodeCylinder[lattice];
 arenaBottomIntersection = linelineIntersection[
 {{  arena[[1,1]], arena[[2,1]]},{ arena[[1,2]],arena[[2,1]]}},
 { {0,0},  latticeVector[lattice,m]}][[1]];
@@ -382,8 +456,9 @@ arenaBottomIntersection,arenaTopIntersection]
 
 (* ::Input::Initialization:: *)
 
+(* this is a set of xz points on the euclidean cylinder through which m distinct m-parastichies will go *)
 latticeParastichyXZThrough[lattice_,m_] :=  Module[{arena,ilowerB, iupperB,translationD,arenaBottomIntersection},
-arena = latticeGetCylinder[lattice];
+arena = latticeGetNodeCylinder[lattice];
 If[zeroParastichyQ[m],
 translationD = latticeParastichyVerticalSeparation[lattice,0];ilowerB = -Floor[(  - arena[[2,1]])/translationD];iupperB = Floor[(arena[[2,2]])/ translationD];
 Return[Table[{arena[[1,1]],i *  translationD},{i,ilowerB,iupperB}]]
@@ -407,16 +482,17 @@ latticeParastichyLinesAbove[lattice_,m_,k_] := latticeParastichyLinesAboveXZ[lat
 
 (* ::Input::Initialization:: *)
 latticeParastichyLinesAboveXZ[lattice_,m_,throughxz_] := Module[{res,cylinderLU,lines},
-cylinderLU = latticeGetCylinderLU[lattice];
+cylinderLU = latticeGetNodeCylinderLU[lattice];
 cylinderLU[[1]] = throughxz [[2]];
-res = latticeSetCylinderLU[lattice,cylinderLU];
+res = latticeSetNodeCylinderLU[lattice,cylinderLU];
 lines = latticeParastichyLinesThroughXZ[res,m,throughxz];
 lines
 ];
 
+(* this is the set of segments on the rectangle of the cylinder-cts m-parastichy though a point xz *)
 latticeParastichyLinesThroughXZ[lattice_,m_,throughxz_] := Module[{pvecslope,bottom,top,cylinder,cylinderLU,line,i,lastXZ,nextX,nextZ,v},
 
-cylinder = latticeGetCylinder[lattice];cylinderLU = cylinder[[2]];If[zeroParastichyQ[m], (* parastichy is horizontal *)
+cylinder = latticeGetNodeCylinder[lattice];cylinderLU = cylinder[[2]];If[zeroParastichyQ[m], (* parastichy is horizontal *)
 line = {{cylinder[[1,1]],throughxz[[2]]},{cylinder[[1,2]],throughxz[[2]]}},
 (* or *) 
 If[latticePoint[lattice,m][[1]]==0, (* parastichy is vertical *) 
@@ -474,21 +550,21 @@ If[MissingQ[res],Print["No ", scalingFunction , " scaling set"]];
 res
 ];
 
-latticePoints[lattice_,scalingFunction_] :=  Map[latticeScaling[lattice,scalingFunction],latticePoints[lattice]]
 
 
 
 latticeParastichyFunctions[lattice_,m_,k_,scalingFunction_] := Module[{cylinderLU,xInner,xOuter,data,xzfunc,scalefunc,funcs,interp,segments},
 scalefunc = latticeScaling[lattice,scalingFunction];
 If[scalingFunction=="Disk", (* mapping to periodic coordinates *)
-cylinderLU= latticeGetCylinderLU[lattice];
+cylinderLU= latticeGetNodeCylinderLU[lattice];
 xOuter = latticeParastichyCylinderIntersection[lattice,m,Bottom]+ k * latticeParastichyHorizontalSeparation[lattice,m];
 xInner = xOuter + (cylinderLU[[2]]-cylinderLU[[1]])/latticeParastichySlope[lattice,m];
 data = { { {0}, {xOuter,cylinderLU[[1]]}},{{1},{xInner,cylinderLU[[2]]}}};
 xzfunc = Interpolation[data,InterpolationOrder->1];
 funcs = {Function[{t},scalefunc[xzfunc[t]]]};
 , (* for "Arena", "StemStretch", need the image of the parastichy line in the cylinder *) 
-segments =First[List@@latticeParastichyLinesAbove[lattice,m,k]];
+(*segments =First[List@@latticeParastichyLinesAbove[lattice,m,k]];*)
+segments =First[List@@latticeParastichyLines[lattice,m,k]];
 interp[seg_]:= Function[t,seg[[1]](1-t)+ seg[[2]] t ];
 funcs = Map[Function[t,scalefunc[interp[#][t]]]&,segments];
 ];
@@ -632,7 +708,7 @@ latticeMoebiusTransform[{m,n}][{0.1,(Sqrt[3]/(2)-.25)}],cylinderLU];
 
 
 (* ::Input::Initialization:: *)
-latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetCylinder[lattice][[2]];cylinderLU = cylinderLU + {-latticeRise[lattice],latticeRise[lattice]};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
+latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];cylinderLU = cylinderLU + {-latticeRise[lattice],latticeRise[lattice]};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
 ];
 
 latticeDiskRadius[lattice_] := Module[{pv1},
@@ -918,7 +994,7 @@ vofh[hp_] := (hp-shapeLU[[1]])/(shapeLU[[2]]-shapeLU[[1]]); (* v from 0 to 1 ove
 lattice3DPosition[lattice_,{d_,h_}] := lattice[spline3D] @@lattice3DDHToUV[lattice][{d,h}];
 
 lattice3DPoints[lattice_] := Module[{cylinderLU,shapeLU,subLattice},
-cylinderLU= latticeGetCylinder[lattice][[2]];
+cylinderLU= latticeGetNodeCylinder[lattice][[2]];
 shapeLU = MinMax@{lattice[spline3D][0,0][[3]],lattice[spline3D][0,1][[3]]};
 cylinderLU = MinMax@IntervalIntersection[Interval@cylinderLU,Interval@shapeLU];
 (* ensure cylinder is within shape, so its h will map to a v within [0,1]. Otherwise the spline is unevaluated and slows down the graphics *) 
@@ -956,7 +1032,7 @@ radiusFunction
 
 (* ::Input::Initialization:: *)
 stemMakeSurfaceFunctionUV[lattice_,circumferenceFunction_,nPoints_:12] := Module[{cylinderLU,r},
-cylinderLU =latticeGetCylinderLU[lattice];
+cylinderLU =latticeGetNodeCylinderLU[lattice];
 r[v_] := circumferenceFunction[v]/(2\[Pi]); (* a radius function of 1 will correspond to a cylinder with circumference  2 pi  .. *) 
 Function[{u,v}, {r[v] * Cos[ 2 \[Pi] u], r[v] * Sin[ 2 \[Pi] u], stemHeightFunction[lattice,v]} ]
 ];
@@ -1002,7 +1078,7 @@ stemShapeFunctionUV[stem][u,stem["vArcLengthInverseS"][s]]
 ];
 
 stemShapeLU[lattice_] := MinMax@{stemShapeFunctionUV[lattice][0,0][[3]],stemShapeFunctionUV[lattice][0,1][[3]]};
-stemHeightFunction[lattice_,v_] := Module[{cylinderLU=latticeGetCylinderLU[lattice]},
+stemHeightFunction[lattice_,v_] := Module[{cylinderLU=latticeGetNodeCylinderLU[lattice]},
 cylinderLU[[1]] + v (cylinderLU[[2]] -cylinderLU[[1]])
 ];
 
@@ -1021,7 +1097,7 @@ Select[pts, Last[#] <   stemShapeFunctionUV[lattice][0,v][[3]]&]
 ];
 
 stemPoints[lattice_] := Module[{cylinderLU,shapeLU,subLattice},
-cylinderLU= latticeGetCylinderLU[lattice];
+cylinderLU= latticeGetNodeCylinderLU[lattice];
 shapeLU = MinMax@{ stemShapeFunctionUV[lattice][0,0][[3]], stemShapeFunctionUV[lattice][0,1][[3]]};
 cylinderLU = MinMax@IntervalIntersection[Interval@cylinderLU,Interval@shapeLU];
 (* ensure cylinder is within shape, so its h will map to a v within [0,1]. Otherwise the spline is unevaluated and slows down the graphics *) 
@@ -1032,7 +1108,7 @@ Map[stemPositionDH[lattice,#]&,latticePoints[subLattice]]
 stemArcPoints[lattice_] := Module[{cylinderLU,shapeLU,subLattice},
 (* display points with 0<v< 1 
 but map h to arclength s, not v, so need a slightly taller lattice *)
-cylinderLU= latticeGetCylinderLU[lattice];
+cylinderLU= latticeGetNodeCylinderLU[lattice];
 shapeLU = MinMax@{ stemShapeFunctionUV[lattice][0,0][[3]], stemShapeFunctionUV[lattice][0,1][[3]]};
 cylinderLU = MinMax@IntervalIntersection[Interval@cylinderLU,Interval@shapeLU];
 (* ensure cylinder is within shape, so its h will map to a v within [0,1]. Otherwise the spline is unevaluated and slows down the graphics *) 
