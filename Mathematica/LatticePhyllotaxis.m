@@ -463,14 +463,7 @@ m2 = {{ x,y,1},{x3,y3,1},{x4,y4,1}};
 latticeParastichyCylinderIntersection[lattice_,m_,topbottom_] :=Module[{arena,arenaBottomIntersection,arenaTopIntersection},
 If[zeroParastichyQ[m],Abort[]];
 arena = latticeGetNodeCylinder[lattice];
-arenaBottomIntersection = linelineIntersection[
-{{  arena[[1,1]], arena[[2,1]]},{ arena[[1,2]],arena[[2,1]]}},
-{ {0,0},  latticeVector[lattice,m]}][[1]];
-arenaTopIntersection = linelineIntersection[
-{{  arena[[1,1]], arena[[2,2]]},{ arena[[1,2]],arena[[2,2]]}},
-{ {0,0},  latticeVector[lattice,m]}][[1]];
-If[topbottom===Bottom,
-arenaBottomIntersection,arenaTopIntersection]
+arenaBottomIntersection = linelineIntersection[{{  arena[[1,1]], arena[[2,1]]},{ arena[[1,2]],arena[[2,1]]}},{ {0,0},  latticeVector[lattice,m]}][[1]];arenaTopIntersection = linelineIntersection[{{  arena[[1,1]], arena[[2,2]]},{ arena[[1,2]],arena[[2,2]]}},{ {0,0},  latticeVector[lattice,m]}][[1]];If[topbottom===Bottom,arenaBottomIntersection,arenaTopIntersection]
 ];
 
 
@@ -885,9 +878,9 @@ RegionIntersection[outer,inner]
 ]
 )(* end of code unused cos of bug *)];
 
-base["Ordered", sign_] :=  base["Ordered", sign] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered",sign]]];
-base["Ordered"] :=  base["Ordered"] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered"]]];
-base["All"] :=  base["All"] = regionToPolygon[
+tRegionBase["Ordered", sign_] :=  tRegionBase["Ordered", sign] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered",sign]]];
+tRegionBase["Ordered"] :=  tRegionBase["Ordered"] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered"]]];
+tRegionBase["All"] :=  tRegionBase["All"] = regionToPolygon[
 DiscretizeRegion[viiRegion[{1,0},"All"]]];
 
 transformPolygon[poly_,function_] := Polygon[ function  /@ (First@Apply[List,poly])];
@@ -895,9 +888,9 @@ transformPolygon[poly_,function_] := Polygon[ function  /@ (First@Apply[List,pol
 (* special case *) 
 viiPolygon[{0,1},args__] :=  regionToPolygon[DiscretizeRegion[viiRegion[{0,1},args]]];
 (* base case *)
-viiPolygon[{1,0},args__] :=  base[args]
+viiPolygon[{1,0},args__] :=  tRegionBase[args]
 (* transform case *)
-viiPolygon[mn_,args__] :=  transformPolygon[base[args],gMNInDHalf[mn]]
+viiPolygon[mn_,args__] :=  transformPolygon[tRegionBase[args],gMNInDHalf[mn]]
 viiPolygon[mn_] := viiPolygon[mn,"All"]
 
 regionToPolygon[r_] := Module[{rb,g,cblines,x,y,xy,c},
@@ -983,48 +976,53 @@ funcs
 
 
 (* ::Input::Initialization:: *)
-
-
-
-(* ::Input::Initialization:: *)
-stemMakeSurfaceFunctionUV[lattice_,circumferenceFunction_,nPoints_:12] := Module[{cylinderLU,r},
-cylinderLU =latticeGetNodeCylinderLU[lattice];
-r[v_] := circumferenceFunction[v]/(2\[Pi]); (* a radius function of 1 will correspond to a cylinder with circumference  2 pi  .. *) 
-Function[{u,v}, {r[v] * Cos[ 2 \[Pi] u], r[v] * Sin[ 2 \[Pi] u], stemHeightFunction[lattice,v]} ]
-];
-
-stemArcLengthOfV[stem_][v_] := Module[{},
-N@ArcLength[stemRadiusFunctionV[stem][s],{s,0,v}]
-];
-stemVInverseArcLengthFunctionS[stem_] := Module[{sofVTable},
-(* maps (0,arclength[v=1] ) to (0,1)  *) 
-sofVTable = Table[{stemArcLengthOfV[stem][v],v},{v,0,1,0.01}];
-Interpolation[sofVTable] (* store this result in the stem<||> so we don't recalculate *) 
-];
-stemAreaDifferentialOfV[stem_][v_] :=Module[{x},2 \[Pi] stemRadiusFunctionV[stem][v] *
-Sqrt[ 1 + ( D[stemRadiusFunctionV[stem][x],x])^2 /. x->v]];
-stemSurfaceAreaBelowV[stem_][v_] := 
-NIntegrate[stemAreaDifferentialOfV[stem][w],{w,0,v}];
-
-stemVConstantAreaFunctionT[stem_] :=  Module[{tofVTable},
-(* maps (0,shape surface area ) to (0,1)  *) 
-tofVTable = Table[{stemSurfaceAreaBelowV[stem][v],v},{v,0,1,0.01}];
-Interpolation[tofVTable] 
-];
-
-stemAddShape[lattice_,circumferenceFunction_] := Module[{stem,surfaceFunctionUV,shapeLU,vFunctionArcLength},
+stemAddShape[lattice_,circumferenceFunction_] := Module[{stem,surfaceFunctionUV,displayCylinder,vFunctionArcLength,xyScaling,radius,rmax},
 surfaceFunctionUV = stemMakeSurfaceFunctionUV[lattice,circumferenceFunction];stem = Append[lattice,
 {
 "surfaceXYZofUV"-> surfaceFunctionUV,
 "circumferenceFunctionV"->circumferenceFunction
 }
 ];
-shapeLU = MinMax@{surfaceFunctionUV[0,0][[3]],surfaceFunctionUV[0,1][[3]]};stem = latticeSetCylinderLU[stem,shapeLU];
+displayCylinder = latticeGetCylinder[stem];
+radius[v_?NumericQ] := stemRadiusFunctionV[stem][v];
+rmax =1.05 * FindMaximum[{radius[v],0< v<1},{v,1/2}][[1]];
+
+displayCylinder = {{-rmax,rmax}, MinMax@{surfaceFunctionUV[0,0][[3]],surfaceFunctionUV[0,1][[3]]}};stem = latticeSetDisplayCylinder[stem,displayCylinder];
+
 vFunctionArcLength = stemVInverseArcLengthFunctionS[stem];
-stem = Append[stem,{"vArcLengthInverseS"-> vFunctionArcLength}];vFunctionArea = stemVConstantAreaT[stem];stem = Append[stem,{"arcLengthSRange"-> N@{0,stemArcLengthOfV[stem][1]}}];
+stem = Append[stem,{"vArcLengthInverseS"-> vFunctionArcLength}];stem = Append[stem,{"arcLengthSRange"-> N@{0,stemArcLengthOfV[stem][1]}}];
 stem
 ];
 
+
+
+(* ::Input::Initialization:: *)
+stemMakeSurfaceFunctionUV[lattice_,circumferenceFunction_,nPoints_:12] := Module[{cylinderLU,r},
+cylinderLU =latticeGetNodeCylinderLU[lattice];r[v_] := circumferenceFunction[v]/(2\[Pi]); (* a radius function of 1 will correspond to a cylinder with circumference  2 pi  .. *) Function[{u,v}, {r[v] * Cos[ 2 \[Pi] u], r[v] * Sin[ 2 \[Pi] u], stemHeightFunctionCylinder[cylinderLU,v]} ]
+];
+stemHeightFunctionCylinder[cylinderLU_,v_] := cylinderLU[[1]] + v (cylinderLU[[2]] -cylinderLU[[1]]);
+
+
+stemArcLengthOfV[stem_][v_] := Module[{},
+N@ArcLength[stemRadiusFunctionV[stem][s],{s,0,v}]
+];
+
+stemVInverseArcLengthFunctionS[stem_] := Module[{sofVTable},
+(* maps (0,arclength[v=1] ) to (0,1)  *) 
+sofVTable = Table[{stemArcLengthOfV[stem][v],v},{v,0,1,0.01}];Interpolation[sofVTable] (* store this result in the stem<||> so we don't recalculate *) 
+];
+
+(*
+stemAreaDifferentialOfV[stem_][v_] :=Module[{x},
+2 \[Pi] stemRadiusFunctionV[stem][v] *
+Sqrt[ 1 + ( D[stemRadiusFunctionV[stem][x],x])^2 /. x->v]];
+
+stemSurfaceAreaBelowV[stem_][v_] := NIntegrate[stemAreaDifferentialOfV[stem][w],{w,0,v}];
+
+stemVConstantAreaFunctionT[stem_] :=  Module[{tofVTable},
+(* maps (0,shape surface area ) to (0,1)  *) tofVTable = Table[{stemSurfaceAreaBelowV[stem][v],v},{v,0,1,0.01}];Interpolation[tofVTable] 
+];
+*)
 stemRadiusFunctionV[stem_] := Function[v,stem["circumferenceFunctionV"][v]/(2\[Pi])]
 stemShapeFunctionUV[stem_] := stem["surfaceXYZofUV"]; 
 stemShapeFunctionUS[stem_] := Function[{u,s},
@@ -1032,9 +1030,9 @@ stemShapeFunctionUV[stem][u,stem["vArcLengthInverseS"][s]]
 ];
 
 stemShapeLU[lattice_] := MinMax@{stemShapeFunctionUV[lattice][0,0][[3]],stemShapeFunctionUV[lattice][0,1][[3]]};
-stemHeightFunction[lattice_,v_] := Module[{cylinderLU=latticeGetNodeCylinderLU[lattice]},
-cylinderLU[[1]] + v (cylinderLU[[2]] -cylinderLU[[1]])
-];
+
+
+
 
 
 
@@ -1046,8 +1044,7 @@ pts = stemPoints[lattice];
 Select[pts, Last[#] <   stemShapeFunctionUV[lattice][0,v][[3]]&]
 ];
 stemArcPointsUpToV[lattice_,v_] := Module[{pts},
-pts = stemArcPoints[lattice];
-Select[pts, Last[#] <   stemShapeFunctionUV[lattice][0,v][[3]]&]
+pts = stemArcPoints[lattice];Select[pts, Last[#] <   stemShapeFunctionUV[lattice][0,v][[3]]&]
 ];
 
 stemPoints[lattice_] := Module[{cylinderLU,shapeLU,subLattice},
@@ -1075,11 +1072,12 @@ stemPositionDH[lattice_,{d_,h_}] := stemShapeFunctionUV[lattice] @@stemDHToUV[la
 stemArcPositionDH[lattice_,{d_,h_}] := stemShapeFunctionUS[lattice] @@stemDHToUS[lattice][{d,h}];
 
 
-stemDHToUV[lattice_][{d_,h_}] := Module[{shapeLU},
-(* d maps to u as this is periodic in spline,  v goes from 0 to 1 as h goes over shapeLU of spline z values *) 
-shapeLU = stemShapeLU[lattice];
-vofh[hp_] := (hp-shapeLU[[1]])/(shapeLU[[2]]-shapeLU[[1]]); (* v from 0 to 1 over shape height, not over arc length ! *)
-{d,vofh[h]}
+stemDHToUV[lattice_][{d_,h_}] := Module[{shapeLU,vofh},
+	(* d maps to u as this is periodic in spline,  
+	v goes from 0 to 1 as h goes over shapeLU of spline z values *) 
+	shapeLU = stemShapeLU[lattice];
+	vofh[hp_] := (hp-shapeLU[[1]])/(shapeLU[[2]]-shapeLU[[1]]); (* v from 0 to 1 over shape height, not over arc length ! *)
+	{d,vofh[h]}
 ];
 
 stemDHToUS[lattice_][{d_,h_}] := Module[{shapeLU,s,v},
@@ -1092,40 +1090,23 @@ s =  (h-shapeLU[[1]])/(shapeLU[[2]]-shapeLU[[1]]);
 ];
 
 
-stemParastichyOfS[stem_,m_,n_][v_] := Module[{},
-stemParastichyOfV[stem,m,n][stemVInverseArcLengthFunctionS[stem][v] ]
-];
+(*stemParastichyOfS[stem_,m_,n_][v_] := 	stemParastichyOfV[stem,m,n][stemVInverseArcLengthFunctionS[stem][v] ];*)
 
 
 (* ::Input::Initialization:: *)
-stemParastichyOfV[stem_,m_,n_][v_] := Module[{dL,pslope,h,vscale,shapeLU},
-dL = latticeParastichyCylinderIntersection[stem,m,Bottom]+
-n*latticeParastichyHorizontalSeparation[stem,m];
-pslope = latticeParastichySlope[stem,m];
-shapeLU =stemShapeLU[stem];
-vscale = shapeLU[[2]]-shapeLU[[1]]; (* h ranges over this as v goes from 0 to 1 *) 
+(*stemParastichyOfV[stem_,m_,n_][v_] := Module[{dL,pslope,h,vscale,shapeLU},
+dL = latticeParastichyCylinderIntersection[stem,m,Bottom]+n*latticeParastichyHorizontalSeparation[stem,m];pslope = latticeParastichySlope[stem,m];shapeLU =stemShapeLU[stem];vscale = shapeLU[[2]]-shapeLU[[1]]; (* h ranges over this as v goes from 0 to 1 *) 
 h =  v * vscale ; 
 stemPositionDH[stem,{ dL +h /pslope,h}] 
 ];
-
+*)
 stemArcLengthParastichyOfV[stem_,m_,n_][v_] := Module[{dL,pslope,h,vscale,shapeLU},
-dL = latticeParastichyCylinderIntersection[stem,m,Bottom]+
-n*latticeParastichyHorizontalSeparation[stem,m];
-pslope = latticeParastichySlope[stem,m];
-shapeLU =stemShapeLU[stem];
-vscale = shapeLU[[2]]-shapeLU[[1]]; 
+dL = latticeParastichyCylinderIntersection[stem,m,Bottom]+n*latticeParastichyHorizontalSeparation[stem,m];pslope = latticeParastichySlope[stem,m];shapeLU =stemShapeLU[stem];vscale = shapeLU[[2]]-shapeLU[[1]]; 
 h =  v * vscale *stem["arcLengthSRange"][[2]]; 
 stemArcPositionDH[stem,{ dL +h /pslope,h}] 
 ];
 
-stemParastichyOfV[lattice_,m_][v_] := Module[{ilower,iupper },
-{ilower,iupper}= latticeParastichyRangeObsolete[lattice,m];
-Table[stemParastichyOfV[lattice,m,n][v],{n,ilower,iupper}]
-];
-stemArcLengthParastichyOfV[lattice_,m_][v_] := Module[{ilower,iupper },
-{ilower,iupper}= latticeParastichyRangeObsolete[lattice,m];
-Table[stemArcLengthParastichyOfV[lattice,m,n][v],{n,ilower,iupper}]
-];
+
 
 
 (* ::Input::Initialization:: *)
