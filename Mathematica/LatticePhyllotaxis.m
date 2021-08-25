@@ -976,55 +976,77 @@ funcs
 
 
 (* ::Input::Initialization:: *)
+
 stemAddShape[lattice_,circumferenceFunction_] := Module[{stem,surfaceFunctionUV,displayCylinder,vFunctionArcLength,xyScaling,radius,rmax},
-surfaceFunctionUV = stemMakeSurfaceFunctionUV[lattice,circumferenceFunction];stem = Append[lattice,
-{
-"surfaceXYZofUV"-> surfaceFunctionUV,
-"circumferenceFunctionV"->circumferenceFunction
-}
-];
+stem =  Append[lattice,{"circumferenceFunctionV"->circumferenceFunction}];
+vFunctionArcLength = tcalcStemVofS[stem]; (* hide gory details behinf local var name *)
+stem = Append[stem,{"vArcLengthInverseS"-> vFunctionArcLength}];stem = Append[stem,{"arcLengthSRange"-> N@{0,stemSOfV[stem][1]}}];
+
+surfaceFunctionUV = stemMakeSurfaceFunctionUV[stem];
+stem = Append[stem, {"surfaceXYZofUV"-> surfaceFunctionUV}];
 displayCylinder = latticeGetCylinder[stem];
-radius[v_?NumericQ] := stemRadiusFunctionV[stem][v];
-rmax =1.05 * FindMaximum[{radius[v],0< v<1},{v,1/2}][[1]];
+rmax =tFindMaxRadius[stem];
 
 displayCylinder = {{-rmax,rmax}, MinMax@{surfaceFunctionUV[0,0][[3]],surfaceFunctionUV[0,1][[3]]}};stem = latticeSetDisplayCylinder[stem,displayCylinder];
 
-vFunctionArcLength = stemVInverseArcLengthFunctionS[stem];
-stem = Append[stem,{"vArcLengthInverseS"-> vFunctionArcLength}];stem = Append[stem,{"arcLengthSRange"-> N@{0,stemArcLengthOfV[stem][1]}}];
 stem
 ];
+stemShapeFunctionUV[stem_] := stem["surfaceXYZofUV"]; 
+stemRadiusFunctionV[stem_] :=Function[v,stem["circumferenceFunctionV"][v]/(2\[Pi])];
+stemVofS[stem_] := stem["vArcLengthInverseS"]; 
+
+stemSetDisplayRadius[stem_,radius_] := Module[{},
+displayCylinder = latticeGetCylinder[stem];
+displayCylinder[[1]] = 1.05* {-radius,radius};
+latticeSetDisplayCylinder[stem,displayCylinder]
+];
+
+tFindMaxRadius[stem_] := Module[{radius,rmax}, (* often fails... *)
+radius[v_?NumericQ] := stemRadiusFunctionV[stem][v];
+Off[NIntegrate::inumr,Interpolation::indat];
+rmax =1.05 * FindMaximum[{radius[v],0< v<1},{v,1/2}][[1]];
+On[NIntegrate::inumr,Interpolation::indat];
+rmax
+];
+
 
 
 
 (* ::Input::Initialization:: *)
-stemMakeSurfaceFunctionUV[lattice_,circumferenceFunction_,nPoints_:12] := Module[{cylinderLU,r},
-cylinderLU =latticeGetNodeCylinderLU[lattice];r[v_] := circumferenceFunction[v]/(2\[Pi]); (* a radius function of 1 will correspond to a cylinder with circumference  2 pi  .. *) Function[{u,v}, {r[v] * Cos[ 2 \[Pi] u], r[v] * Sin[ 2 \[Pi] u], stemHeightFunctionCylinder[cylinderLU,v]} ]
+(* true but not needed
+stemRadiusFunctionS[stem_] :=Function[s,stemRadiusFunctionV[stem][stem["vArcLengthInverseS"][s]]];
+*)
+(* work in arc length parameter s *)
+stemSOfV[stem_] := Module[{func=stemRadiusFunctionV[stem]}, Function[{v},
+Block[{s},N@ArcLength[func[s],{s,0,v}]]]];
+(* invert *) 
+tcalcStemVofS[stem_] := Module[{sofVTable},
+      (* maps (0,smax ) to (0,1)  *) 
+sofVTable = Table[{stemSOfV[stem][v],v},{v,0,1,0.01}];Interpolation[sofVTable] (* store instance stem<||> so we don't recalculate *) 
 ];
-stemHeightFunctionCylinder[cylinderLU_,v_] := cylinderLU[[1]] + v (cylinderLU[[2]] -cylinderLU[[1]]);
 
-
-stemArcLengthOfV[stem_][v_] := Module[{},
-N@ArcLength[stemRadiusFunctionV[stem][s],{s,0,v}]
+stemMakeSurfaceFunctionUV[stem_] := Module[{cylinderLU,surfaceCylinderLU,r,smax},
+smax = stem["arcLengthSRange"][[2]];
+cylinderLU =latticeGetNodeCylinderLU[stem];
+surfaceCylinderLU = {0, (cylinderLU[[2]]-cylinderLU[[1]])/smax};
+r = stemRadiusFunctionV[stem];
+(* a radius function of 1 will correspond to a cylinder with circumference  2 pi  .. *) Function[{u,v}, {r[v] * Cos[ 2 \[Pi] u], r[v] * Sin[ 2 \[Pi] u], tHeightFunctionCylinder[surfaceCylinderLU,v]} ]
 ];
-
-stemVInverseArcLengthFunctionS[stem_] := Module[{sofVTable},
-(* maps (0,arclength[v=1] ) to (0,1)  *) 
-sofVTable = Table[{stemArcLengthOfV[stem][v],v},{v,0,1,0.01}];Interpolation[sofVTable] (* store this result in the stem<||> so we don't recalculate *) 
-];
+tHeightFunctionCylinder[cylinderLU_,v_] := cylinderLU[[1]] + v (cylinderLU[[2]] -cylinderLU[[1]]);
+tSFunctionCylinder[cylinderLU_,h_] := (h-cylinderLU[[1]])/(cylinderLU[[2]] -cylinderLU[[1]])
 
 (*
-stemAreaDifferentialOfV[stem_][v_] :=Module[{x},
-2 \[Pi] stemRadiusFunctionV[stem][v] *
-Sqrt[ 1 + ( D[stemRadiusFunctionV[stem][x],x])^2 /. x->v]];
-
-stemSurfaceAreaBelowV[stem_][v_] := NIntegrate[stemAreaDifferentialOfV[stem][w],{w,0,v}];
-
-stemVConstantAreaFunctionT[stem_] :=  Module[{tofVTable},
-(* maps (0,shape surface area ) to (0,1)  *) tofVTable = Table[{stemSurfaceAreaBelowV[stem][v],v},{v,0,1,0.01}];Interpolation[tofVTable] 
+stemSurfaceFunctionUS[stem_] := Module[{surfaceFunction,sFunction},
+surfaceFunction = stem["surfaceXYZofUV"];
+sFunction = stem["vArcLengthInverseS"];
+Function[{u,s},surfaceFunction[u,sFunction[s]]]
 ];
-*)
-stemRadiusFunctionV[stem_] := Function[v,stem["circumferenceFunctionV"][v]/(2\[Pi])]
-stemShapeFunctionUV[stem_] := stem["surfaceXYZofUV"]; 
+
+
+
+
+
+
 stemShapeFunctionUS[stem_] := Function[{u,s},
 stemShapeFunctionUV[stem][u,stem["vArcLengthInverseS"][s]]
 ];
@@ -1032,29 +1054,63 @@ stemShapeFunctionUV[stem][u,stem["vArcLengthInverseS"][s]]
 stemShapeLU[lattice_] := MinMax@{stemShapeFunctionUV[lattice][0,0][[3]],stemShapeFunctionUV[lattice][0,1][[3]]};
 
 
-
+*)
 
 
 
 
 
 (* ::Input::Initialization:: *)
-stemPointsUpToV[lattice_,v_] := Module[{pts},
+(*stemParastichyOfV[stem_,m_,n_][v_] := Module[{dL,pslope,h,vscale,shapeLU},
+dL = latticeParastichyCylinderIntersection[stem,m,Bottom]+n*latticeParastichyHorizontalSeparation[stem,m];pslope = latticeParastichySlope[stem,m];shapeLU =stemShapeLU[stem];vscale = shapeLU[[2]]-shapeLU[[1]]; (* h ranges over this as v goes from 0 to 1 *) 
+h =  v * vscale ; 
+stemPositionDH[stem,{ dL +h /pslope,h}] 
+];
+*)
+stemParastichyOfV[stem_,m_,n_][v_] := Module[{s},
+s =  stemSOfV[stem][v]; 
+stemParastichyOfS[stem,m,n][s] 
+];
+
+stemParastichyOfS[stem_,m_,n_][s_] := Module[{dL,pslope,h,baseCylinderLU,smax,u,v},
+dL = latticeParastichyCylinderIntersection[stem,m,Bottom]+n*latticeParastichyHorizontalSeparation[stem,m];pslope = latticeParastichySlope[stem,m];
+
+baseCylinderLU = latticeGetNodeCylinderLU[stem];
+smax = stem["arcLengthSRange"][[2]];
+h =  s/smax *  (baseCylinderLU [[2]]- baseCylinderLU [[1]]); 
+u =  dL +h /pslope;
+u  = u - Round[u]+1/2 ;
+v = stemVofS[stem][s];
+stemShapeFunctionUV[stem][ u,v]
+];
+
+stemDHToUV[stem_] := Function[{dh},Module[{d,h,u,s,v,cylinderLU},d=dh[[1]];h=dh[[2]];
+u = d - Round[d]+1/2;
+cylinderLU =latticeGetNodeCylinderLU[stem];
+smax =  stem["arcLengthSRange"][[2]];
+s = smax*tSFunctionCylinder[cylinderLU,h];
+v = stemVofS[stem][s];
+{u,v}
+]];
+
+stemPoints[stem_] := Module[{basePoints,uvPoints,uvToXYZ},
+basePoints = latticeNamedPoints[stem];
+uvPoints = Map[stemDHToUV[stem],basePoints];
+uvToXYZ [{u_,v_}] := stemShapeFunctionUV[stem][ u,v];
+Map[uvToXYZ,uvPoints]
+];
+
+
+(* ::Input::Initialization:: *)
+(*stemPointsUpToV[lattice_,v_] := Module[{pts},
 pts = stemPoints[lattice];
 Select[pts, Last[#] <   stemShapeFunctionUV[lattice][0,v][[3]]&]
-];
-stemArcPointsUpToV[lattice_,v_] := Module[{pts},
+];*)
+(*stemArcPointsUpToV[lattice_,v_] := Module[{pts},
 pts = stemArcPoints[lattice];Select[pts, Last[#] <   stemShapeFunctionUV[lattice][0,v][[3]]&]
 ];
 
-stemPoints[lattice_] := Module[{cylinderLU,shapeLU,subLattice},
-cylinderLU= latticeGetNodeCylinderLU[lattice];
-shapeLU = MinMax@{ stemShapeFunctionUV[lattice][0,0][[3]], stemShapeFunctionUV[lattice][0,1][[3]]};
-cylinderLU = MinMax@IntervalIntersection[Interval@cylinderLU,Interval@shapeLU];
-(* ensure cylinder is within shape, so its h will map to a v within [0,1]. Otherwise the spline is unevaluated and slows down the graphics *) 
-subLattice = latticeSetCylinderLU[lattice,cylinderLU];
-Map[stemPositionDH[lattice,#]&,latticePoints[subLattice]]
-];
+
 
 stemArcPoints[lattice_] := Module[{cylinderLU,shapeLU,subLattice},
 (* display points with 0<v< 1 
@@ -1065,48 +1121,17 @@ cylinderLU = MinMax@IntervalIntersection[Interval@cylinderLU,Interval@shapeLU];
 (* ensure cylinder is within shape, so its h will map to a v within [0,1]. Otherwise the spline is unevaluated and slows down the graphics *) 
 subLattice = latticeSetCylinderLU[lattice,cylinderLU];
 Map[stemArcPositionDH[lattice,#]&,latticePoints[subLattice]]
-];
+];*)
 
 
-stemPositionDH[lattice_,{d_,h_}] := stemShapeFunctionUV[lattice] @@stemDHToUV[lattice][{d,h}];
-stemArcPositionDH[lattice_,{d_,h_}] := stemShapeFunctionUS[lattice] @@stemDHToUS[lattice][{d,h}];
+(*stemPositionDH[lattice_,{d_,h_}] := stemShapeFunctionUS[lattice] @@stemDHToUS[lattice][{d,h}];*)
 
 
-stemDHToUV[lattice_][{d_,h_}] := Module[{shapeLU,vofh},
-	(* d maps to u as this is periodic in spline,  
-	v goes from 0 to 1 as h goes over shapeLU of spline z values *) 
-	shapeLU = stemShapeLU[lattice];
-	vofh[hp_] := (hp-shapeLU[[1]])/(shapeLU[[2]]-shapeLU[[1]]); (* v from 0 to 1 over shape height, not over arc length ! *)
-	{d,vofh[h]}
-];
 
-stemDHToUS[lattice_][{d_,h_}] := Module[{shapeLU,s,v},
-(* d maps to u as this is periodic in spline, 
-v from 0 to 1 ,  s from 0 to arclength  which is the top of the lattice cylinder *) 
-shapeLU = stemShapeLU[lattice];
-s =  (h-shapeLU[[1]])/(shapeLU[[2]]-shapeLU[[1]]);
-(* v from 0 to 1 over shape height, not over arc length ! *)
-{d,s}
-];
+
 
 
 (*stemParastichyOfS[stem_,m_,n_][v_] := 	stemParastichyOfV[stem,m,n][stemVInverseArcLengthFunctionS[stem][v] ];*)
-
-
-(* ::Input::Initialization:: *)
-(*stemParastichyOfV[stem_,m_,n_][v_] := Module[{dL,pslope,h,vscale,shapeLU},
-dL = latticeParastichyCylinderIntersection[stem,m,Bottom]+n*latticeParastichyHorizontalSeparation[stem,m];pslope = latticeParastichySlope[stem,m];shapeLU =stemShapeLU[stem];vscale = shapeLU[[2]]-shapeLU[[1]]; (* h ranges over this as v goes from 0 to 1 *) 
-h =  v * vscale ; 
-stemPositionDH[stem,{ dL +h /pslope,h}] 
-];
-*)
-stemArcLengthParastichyOfV[stem_,m_,n_][v_] := Module[{dL,pslope,h,vscale,shapeLU},
-dL = latticeParastichyCylinderIntersection[stem,m,Bottom]+n*latticeParastichyHorizontalSeparation[stem,m];pslope = latticeParastichySlope[stem,m];shapeLU =stemShapeLU[stem];vscale = shapeLU[[2]]-shapeLU[[1]]; 
-h =  v * vscale *stem["arcLengthSRange"][[2]]; 
-stemArcPositionDH[stem,{ dL +h /pslope,h}] 
-];
-
-
 
 
 (* ::Input::Initialization:: *)
