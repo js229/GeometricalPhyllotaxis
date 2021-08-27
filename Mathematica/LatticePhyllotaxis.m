@@ -977,12 +977,12 @@ funcs
 
 (* ::Input::Initialization:: *)
 
-stemAddShape[lattice_,circumferenceFunction_] := Module[{stem,surfaceFunctionUV,displayCylinder,vFunctionArcLength,xyScaling,radius,rmax},
+Clear[stemAddShape];stemAddShape[lattice_,circumferenceFunction_,unrolling_:1] := Module[{stem,surfaceFunctionUV,displayCylinder,vFunctionArcLength,xyScaling,radius,rmax},
 stem =  Append[lattice,{"circumferenceFunctionV"->circumferenceFunction}];
 vFunctionArcLength = tcalcStemVofS[stem]; (* hide gory details behinf local var name *)
 stem = Append[stem,{"vArcLengthInverseS"-> vFunctionArcLength}];stem = Append[stem,{"arcLengthSRange"-> N@{0,stemSOfV[stem][1]}}];
 
-surfaceFunctionUV = stemMakeSurfaceFunctionUV[stem];
+surfaceFunctionUV = stemMakeSurfaceFunctionUV[stem,unrolling];
 stem = Append[stem, {"surfaceXYZofUV"-> surfaceFunctionUV}];
 displayCylinder = latticeGetCylinder[stem];
 rmax =tFindMaxRadius[stem];
@@ -991,11 +991,12 @@ displayCylinder = {{-rmax,rmax}, MinMax@{surfaceFunctionUV[0,0][[3]],surfaceFunc
 
 stem
 ];
+
 stemShapeFunctionUV[stem_] := stem["surfaceXYZofUV"]; 
 stemRadiusFunctionV[stem_] :=Function[v,stem["circumferenceFunctionV"][v]/(2\[Pi])];
 stemVofS[stem_] := stem["vArcLengthInverseS"]; 
 
-stemSetDisplayRadius[stem_,radius_] := Module[{},
+stemSetDisplayRadius[stem_,radius_] := Module[{displayCylinder},
 displayCylinder = latticeGetCylinder[stem];
 displayCylinder[[1]] = 1.05* {-radius,radius};
 latticeSetDisplayCylinder[stem,displayCylinder]
@@ -1025,12 +1026,25 @@ tcalcStemVofS[stem_] := Module[{sofVTable},
 sofVTable = Table[{stemSOfV[stem][v],v},{v,0,1,0.01}];Interpolation[sofVTable] (* store instance stem<||> so we don't recalculate *) 
 ];
 
-stemMakeSurfaceFunctionUV[stem_] := Module[{cylinderLU,surfaceCylinderLU,r,smax},
+stemMakeSurfaceFunctionUV[stem_,unrolling_] := Module[{cylinderLU,surfaceCylinderLU,r,smax,func},
 smax = stem["arcLengthSRange"][[2]];
 cylinderLU =latticeGetNodeCylinderLU[stem];
 surfaceCylinderLU = {0, (cylinderLU[[2]]-cylinderLU[[1]])/smax};
 r = stemRadiusFunctionV[stem];
-(* a radius function of 1 will correspond to a cylinder with circumference  2 pi  .. *) Function[{u,v}, {r[v] * Cos[ 2 \[Pi] u], r[v] * Sin[ 2 \[Pi] u], tHeightFunctionCylinder[surfaceCylinderLU,v]} ]
+(* a radius function of 1 will correspond to a cylinder with circumference  2 pi  .. *) 
+(* we allow it to be a rolled cylinder *)
+unroll[s_] := Module[{offset},
+offset = \[Pi] s +\[Pi]/2;
+Function[{u,v},Append[r[v]*({0,1/s}+1/s * { Cos[ 2 \[Pi]  s u   -offset ],  Sin[ 2 \[Pi] s u -offset]}), tHeightFunctionCylinder[surfaceCylinderLU,v]]
+]
+];
+unroll[0] = Function[{u,v},2*\[Pi] * r[v]*{(u-1/2),0}];
+func  = If[unrolling==1,
+Function[{u,v}, {r[v] * Cos[ 2 \[Pi] u], r[v] * Sin[ 2 \[Pi] u], tHeightFunctionCylinder[surfaceCylinderLU,v]} ]
+,
+unroll[unrolling]
+];
+func
 ];
 tHeightFunctionCylinder[cylinderLU_,v_] := cylinderLU[[1]] + v (cylinderLU[[2]] -cylinderLU[[1]]);
 tSFunctionCylinder[cylinderLU_,h_] := (h-cylinderLU[[1]])/(cylinderLU[[2]] -cylinderLU[[1]])
