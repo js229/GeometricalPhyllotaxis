@@ -179,13 +179,10 @@ euclideanShortestPair[uv]
 
 vectorNorm2[x_] := Simplify[x . x]; 
 
-tgetThreeParastichyVectorsDH[{d_,h_}] := 
-Module[{pv,psum,pdiff,pthird,pvectors},
+tgetThreeParastichyVectorsDH[{d_,h_}] := Module[{pv,psum,pdiff,pthird,pvectors},
 pv=tgetPrincipalVectorsDH[{d,h}];
 psum = pv[[1]]+pv[[2]];
-pdiff = pv[[1]]-pv[[2]]; If[pdiff[[2]] <0, pdiff = -pdiff];
-pthird = If[vectorNorm2[psum]<= vectorNorm2[pdiff],psum,pdiff];
-pvectors = Append[pv,pthird]; (* sometimes the fourth can be the same length as the third but we don't need to mark this *)
+pdiff = pv[[1]]-pv[[2]]; If[pdiff[[2]] <0, pdiff = -pdiff];pthird = If[vectorNorm2[psum]<= vectorNorm2[pdiff],psum,pdiff];pvectors = Append[pv,pthird]; (* sometimes the fourth can be the same length as the third but we don't need to mark this *)
 numberate[pvectors, h]
 ];
 rawpnumber[v_,h_] :=  Module[{m,d},
@@ -364,7 +361,7 @@ latticeVector[lattice_,m_] :=If[zeroParastichyQ[m],{1,0},latticePoint[lattice,m]
 (* ::Input::Initialization:: *)
 latticePointH[lattice_,m_] := latticePoint[lattice,m][[2]];
 latticePointD[lattice_,m_] := latticePoint[lattice,m][[1]];
-latticeRise[lattice_] := latticePointH[lattice,1]; (* will be the same as lattice["h"] for h > 0 *) 
+latticeRise[lattice_] := lattice["h"] ;
 latticeDivergence[lattice_] := latticePointD[lattice,1]; (* will be the same as lattice["d"] for -1/2<d<1/2 *) 
 latticeVectorLength[lattice_,m_] :=  Norm[ latticeVector[lattice,m]];
 
@@ -503,8 +500,38 @@ lines
 ];
 
 (* this is the set of segments on the rectangle of the cylinder-cts m-parastichy though a point xz *)
-latticeParastichyLinesThroughXZ[lattice_,m_,throughxz_] := Module[{pvecslope,bottom,top,cylinder,cylinderLU,line,i,lastXZ,nextX,nextZ,v},
+(*latticeParastichyLinesThroughXZ[lattice_,m_,throughxz_] := Module[{pvecslope,bottom,top,cylinder,cylinderLU,line,i,lastXZ,nextX,nextZ,v},
 
+cylinder = latticeGetNodeCylinder[lattice];cylinderLU = cylinder\[LeftDoubleBracket]2\[RightDoubleBracket];If[zeroParastichyQ[m], (* parastichy is horizontal *)
+line = {{cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket],throughxz\[LeftDoubleBracket]2\[RightDoubleBracket]},{cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket],throughxz\[LeftDoubleBracket]2\[RightDoubleBracket]}},
+(* or *) 
+If[latticePoint[lattice,m][[1]]==0, (* parastichy is vertical *) 
+line ={ {throughxz\[LeftDoubleBracket]1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]2,1\[RightDoubleBracket]},{throughxz\[LeftDoubleBracket]1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket]}},
+(* or general case *) 
+pvecslope = latticeParastichySlope[lattice,m];bottom = { (cylinderLU\[LeftDoubleBracket]1\[RightDoubleBracket]-throughxz\[LeftDoubleBracket]2\[RightDoubleBracket])/pvecslope +throughxz\[LeftDoubleBracket]1\[RightDoubleBracket], cylinderLU\[LeftDoubleBracket]1\[RightDoubleBracket]};top        = { (cylinderLU\[LeftDoubleBracket]2\[RightDoubleBracket]-throughxz\[LeftDoubleBracket]2\[RightDoubleBracket])/pvecslope+throughxz\[LeftDoubleBracket]1\[RightDoubleBracket],cylinderLU\[LeftDoubleBracket]2\[RightDoubleBracket]};
+line = {};
+lastXZ = bottom;
+i=0;
+While[
+nextX = If[pvecslope>0, cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket],cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket] ];
+nextZ = lastXZ\[LeftDoubleBracket]2\[RightDoubleBracket]+(nextX-lastXZ\[LeftDoubleBracket]1\[RightDoubleBracket])* pvecslope; (* assumes cylinder width a multiple of 1 *)
+If[nextZ> cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket],
+nextZ =  cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket];
+nextX = lastXZ\[LeftDoubleBracket]1\[RightDoubleBracket]+(nextZ-lastXZ\[LeftDoubleBracket]2\[RightDoubleBracket])/pvecslope
+];
+line = Append[line,{lastXZ,{nextX,nextZ}}];
+i++;
+i< 50 && nextZ  < cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket],
+(* While body *)
+lastXZ = Last@Last[line];
+lastXZ\[LeftDoubleBracket]1\[RightDoubleBracket] = If[pvecslope>0, cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket] ]
+]
+]
+];
+
+Line[line]
+];*)
+latticeParastichyLinesThroughXZ[lattice_,m_,throughxz_] := Module[{pvecslope,bottom,top,cylinder,cylinderLU,line},
 cylinder = latticeGetNodeCylinder[lattice];cylinderLU = cylinder[[2]];If[zeroParastichyQ[m], (* parastichy is horizontal *)
 line = {{cylinder[[1,1]],throughxz[[2]]},{cylinder[[1,2]],throughxz[[2]]}},
 (* or *) 
@@ -512,6 +539,14 @@ If[latticePoint[lattice,m][[1]]==0, (* parastichy is vertical *)
 line ={ {throughxz[[1]],cylinder[[2,1]]},{throughxz[[1]],cylinder[[2,2]]}},
 (* or general case *) 
 pvecslope = latticeParastichySlope[lattice,m];bottom = { (cylinderLU[[1]]-throughxz[[2]])/pvecslope +throughxz[[1]], cylinderLU[[1]]};top        = { (cylinderLU[[2]]-throughxz[[2]])/pvecslope+throughxz[[1]],cylinderLU[[2]]};
+line = splitLineOverCylinder[cylinder,bottom,pvecslope];
+]
+];
+
+Line[line]
+];
+
+splitLineOverCylinder[cylinder_,bottom_,pvecslope_] := Module[{line,lastXZ,i,nextX,nextZ},
 line = {};
 lastXZ = bottom;
 i=0;
@@ -528,14 +563,9 @@ i< 50 && nextZ  < cylinder[[2,2]],
 (* While body *)
 lastXZ = Last@Last[line];
 lastXZ[[1]] = If[pvecslope>0, cylinder[[1,1]],cylinder[[1,2]] ]
-]
-]
 ];
-
-Line[line]
+line
 ];
-
-
 
 
 (* ::Input::Initialization:: *)
