@@ -286,14 +286,14 @@ res
 
 (* ::Input::Initialization:: *)
 latticeLabel[lattice_] := latticeParastichyNumbersGroupedByLength[lattice];
-latticeLabelText[lattice_] := Module[{ll,tos},
+latticeLabelText[lattice_,upto_:2] := Module[{ll,tos},
 ll =  latticeLabel[lattice] ;
 
 tos[hat[n_]] := "\!\(\*OverscriptBox[\(" <> ToString[n] <> "\), \(^\)]\)";
 tos[n_] := ToString[n];
 
 (*tos[x_] := If[x===hat[1],"\!\(\*OverscriptBox[\(1\), \(^\)]\)",ToString[x]];*)
-ll = Map[tos,ll,{2}];ll = Map[StringRiffle[#,"="]&,ll];ll = StringRiffle[Take[ll,UpTo[2]],","]
+ll = Map[tos,ll,{2}];ll = Map[StringRiffle[#,"="]&,ll];ll = StringRiffle[Take[ll,UpTo[upto]],","]
 ];
 
 
