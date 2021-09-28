@@ -215,11 +215,16 @@ lattice = Association [
 ,"scalings"-> <||>
 ];
 lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];
-lattice = Append[lattice,
-{"namedLatticePoints"-> lNamedLatticePoints[lattice]}];
+lattice = latticeNamePoints[lattice];
 lattice
 ];
 
+latticeNamePoints[lattice_] := Module[{res},
+res = lattice;
+res = Append[res,
+{"namedLatticePoints"-> lNamedLatticePoints[res]}];
+res
+];
 
 
 
@@ -705,7 +710,19 @@ latticeMoebiusTransform[{m,n}][{0.1,(Sqrt[3]/(2)-.25)}],cylinderLU];
 
 
 (* ::Input::Initialization:: *)
-latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];cylinderLU = cylinderLU + {-latticeRise[lattice],latticeRise[lattice]};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
+latticeCirclesOLD[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];cylinderLU = cylinderLU + {-latticeRise[lattice],latticeRise[lattice]};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
+];
+latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},r =latticeDiskRadius[lattice];cylinderLU = latticeGetNodeCylinder[lattice][[2]];cylinderLU = cylinderLU + {-r,r};
+
+latticeMargin =lattice;
+latticeMargin = latticeSetNodeCylinderLU[latticeMargin,cylinderLU];
+latticeMargin = latticeSetCylinderLU[latticeMargin,cylinderLU];
+latticeMargin = latticeNamePoints[latticeMargin];
+
+latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];
+lplus = Select[lplus,First[#]-r<1/2 &];
+lminus =  latticep + Table[{-1,0},Length[latticep]];
+lminus = Select[lminus,First[#]+r>-1/2 &];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
 ];
 
 latticeDiskRadius[lattice_] := Module[{pv1},
@@ -873,7 +890,7 @@ inner2 = viiMNSemiCircle[{2,3}]/. Circle->Disk;
 RegionDifference[outer,RegionUnion[inner1,inner2]]
 ];
 
-(* this is the bit that will probably work if i concentrate. but it doesn't *)
+
 viiRegion[mn_,"All"] := Module[{m,n,outer,inner,outer1,outer2,inner1,inner2},
 {m,n}= Sort[mn];
 outer1 = viiMNSemiCircle[{Abs[n-m],m}]/. Circle->Disk;outer2 = viiMNSemiCircle[{Abs[n-m],n}]/. Circle->Disk;
@@ -944,6 +961,20 @@ viiTouchingCircleLabelNonPrimary[mn_] :=  gMNInDHalf[mn][{-Sqrt[3]/2,1/2}];
 
 (* ::Input::Initialization:: *)
 viiTouchingCircleLabelNonPrimary[{1,2}] = gMNInDHalf[{1,2}][{Sqrt[3]/2,1/2}];
+
+
+
+(* ::Input::Initialization:: *)
+
+
+viiSquareLattice[{m_,n_}] := Module[{u,v,r2,dbar},
+{u,v} = windingNumberPair[{m,n}];
+dbar = ( 1 + 2 n  u)/ (2 m n);
+r2 = 1/ (4 m^2 n^2);
+Circle[ {dbar,0},Sqrt[r2],{0,\[Pi]}]
+]
+viiSquareLattice[{0,1}] := HalfLine[{{0,1},{0,2}}]
+viiSquareLattice[{1,0}] := Line[{{0,0},{0,1}}]
 
 
 
