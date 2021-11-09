@@ -386,31 +386,16 @@ innerOuter = Sort[innerOuter];
 If[First@innerOuter==0,Disk[{0,0},Last[innerOuter]],Annulus[{0,0},innerOuter]]
 ];
 
-(*glatticeArenaRegion[lattice_] := Module[{region,cylinder},
-cylinder= latticeGetCylinder[lattice];
-region =ParametricRegion[latticeScaling[lattice,"Arena"][{x,z}],{{x,cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket]},{z,cylinder\[LeftDoubleBracket]2,1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket]}}];
-region
-];*)
 glatticeScaledRegion[lattice_,scalingFunctionName_] := Module[{region,dregion,displayCylinder,cylinder,bfunc,x,z},
 cylinder= latticeGetNodeCylinder[lattice];
 bfunc = latticeScaling[lattice,scalingFunctionName];
-(*region = DiscretizeRegion@Region@ParametricRegion[bfunc[{x,z}],{{x,cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket]},{z,cylinder\[LeftDoubleBracket]2,1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket]}}];
-*)region = Region@ParametricRegion[{bfunc[{x,z}],cylinder[[1,1]]<= x <= cylinder[[1,2]] && cylinder[[2,1]] <= z <= cylinder[[2,2]]},{x,z}];
+region = Region@ParametricRegion[{bfunc[{x,z}],cylinder[[1,1]]<= x <= cylinder[[1,2]] && cylinder[[2,1]] <= z <= cylinder[[2,2]]},{x,z}];
 
 displayCylinder = latticeGetCylinder[lattice];
 dregion = DiscretizeRegion[region,displayCylinder]; (* mma bug sets region boundary wrongly *)
 regionToPolygon@RegionBoundary[dregion]
 ];
 
-(*
-glatticeBulgeRegion[lattice_] := Module[{region,cylinder,bfunc,x,z},
-
-cylinder= latticeGetCylinder[lattice];
-bfunc = latticeScaling[lattice,"StemBulge"];
-region = DiscretizeRegion@Region@ParametricRegion[bfunc[{x,z}],{{x,cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket]},{z,cylinder\[LeftDoubleBracket]2,1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket]}}];
-regionToPolygon@RegionBoundary[region]
-];*)
-(* for stem, same as euclidean lattice *)
 glatticeStemRegion[lattice_] :=  Rectangle@@Transpose@latticeGetCylinder[lattice]
 
 
