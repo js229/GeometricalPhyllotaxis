@@ -24,6 +24,7 @@
 
 Clear[coinD,coinZ];
 coinNumber[{n_,coin_Disk}] := n;
+bareCoinNumber[{n_,coin_Disk}] := bareNumber[n];
 isPrincipal[coin_] := IntegerQ[coinNumber[coin]];
 bareNumber[n_] := n;
 bareNumber[left[n_]] := n;

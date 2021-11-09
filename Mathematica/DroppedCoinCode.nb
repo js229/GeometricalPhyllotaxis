@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    410966,       6463]
-NotebookOptionsPosition[    408293,       6412]
-NotebookOutlinePosition[    408718,       6429]
-CellTagsIndexPosition[    408675,       6426]
+NotebookDataLength[    411251,       6470]
+NotebookOptionsPosition[    408578,       6419]
+NotebookOutlinePosition[    409003,       6436]
+CellTagsIndexPosition[    408960,       6433]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -45,6 +45,12 @@ Cell[BoxData[
       RowBox[{"{", 
        RowBox[{"n_", ",", "coin_Disk"}], "}"}], "]"}], " ", ":=", " ", "n"}], 
     ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"bareCoinNumber", "[", 
+      RowBox[{"{", 
+       RowBox[{"n_", ",", "coin_Disk"}], "}"}], "]"}], " ", ":=", " ", 
+     RowBox[{"bareNumber", "[", "n", "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
      RowBox[{"isPrincipal", "[", "coin_", "]"}], " ", ":=", " ", 
@@ -918,8 +924,9 @@ Cell[BoxData[
    3.7836928984891953`*^9, 3.7836929152679033`*^9}, {3.785595428978758*^9, 
    3.785595435705819*^9}, {3.845119276985376*^9, 3.8451193560680943`*^9}, {
    3.845119629203145*^9, 3.8451196308096247`*^9}, {3.8454294856035895`*^9, 
-   3.845429485837845*^9}},
- CellLabel->"In[52]:=",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb"],
+   3.845429485837845*^9}, {3.8454478167259693`*^9, 3.8454478607936897`*^9}},
+ CellLabel->
+  "In[196]:=",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb"],
 
 Cell[BoxData[
  RowBox[{
@@ -6410,7 +6417,7 @@ Cell[BoxData[""], "Input",
 7d344460b636"]
 }, Open  ]]
 },
-WindowSize->{949, 479},
+WindowSize->{949, 474},
 WindowMargins->{{0, Automatic}, {Automatic, 0}},
 Magnification:>0.9 Inherited,
 FrontEndVersion->"12.3 for Microsoft Windows (64-bit) (July 9, 2021)",
@@ -6431,39 +6438,39 @@ Notebook[{
 Cell[558, 20, 269, 4, 59, "Section",ExpressionUUID->"e55015fc-a79b-4df9-961d-01036e6cf397"],
 Cell[CellGroupData[{
 Cell[852, 28, 310, 5, 47, "Section",ExpressionUUID->"04e92201-6b92-4cbd-89dc-313550f4994d"],
-Cell[1165, 35, 44863, 886, 1860, "Input",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb",
+Cell[1165, 35, 45148, 893, 1877, "Input",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb",
  InitializationCell->True],
-Cell[46031, 923, 40832, 635, 710, "Input",ExpressionUUID->"63ea88af-53a7-423f-8bca-b3bc15d00d81",
+Cell[46316, 930, 40832, 635, 710, "Input",ExpressionUUID->"63ea88af-53a7-423f-8bca-b3bc15d00d81",
  InitializationCell->True],
-Cell[86866, 1560, 194, 2, 43, "Input",ExpressionUUID->"290c500d-e234-4dd6-bc8e-7d12becb99a3"],
-Cell[87063, 1564, 41945, 629, 504, "Input",ExpressionUUID->"8923fcf7-3a83-4578-b088-d91ab1b058c4",
+Cell[87151, 1567, 194, 2, 43, "Input",ExpressionUUID->"290c500d-e234-4dd6-bc8e-7d12becb99a3"],
+Cell[87348, 1571, 41945, 629, 504, "Input",ExpressionUUID->"8923fcf7-3a83-4578-b088-d91ab1b058c4",
  InitializationCell->True],
-Cell[129011, 2195, 40878, 584, 572, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
+Cell[129296, 2202, 40878, 584, 572, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
  InitializationCell->True],
-Cell[169892, 2781, 37795, 549, 246, "Input",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95",
+Cell[170177, 2788, 37795, 549, 246, "Input",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95",
  InitializationCell->True],
-Cell[207690, 3332, 43136, 636, 761, "Input",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1",
+Cell[207975, 3339, 43136, 636, 761, "Input",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1",
  InitializationCell->True],
-Cell[250829, 3970, 283, 5, 25, "Input",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
-Cell[251115, 3977, 39393, 549, 298, "Input",ExpressionUUID->"7f39a5cb-4b17-4b33-8622-d0cdb1ceaed3",
+Cell[251114, 3977, 283, 5, 25, "Input",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
+Cell[251400, 3984, 39393, 549, 298, "Input",ExpressionUUID->"7f39a5cb-4b17-4b33-8622-d0cdb1ceaed3",
  InitializationCell->True],
-Cell[290511, 4528, 179, 3, 25, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b"],
-Cell[290693, 4533, 42449, 613, 555, "Input",ExpressionUUID->"d1533af6-2b90-4196-94ea-1c3f29d2d144",
+Cell[290796, 4535, 179, 3, 25, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b"],
+Cell[290978, 4540, 42449, 613, 555, "Input",ExpressionUUID->"d1533af6-2b90-4196-94ea-1c3f29d2d144",
  InitializationCell->True],
-Cell[333145, 5148, 38120, 563, 487, "Input",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15",
+Cell[333430, 5155, 38120, 563, 487, "Input",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15",
  InitializationCell->True],
-Cell[371268, 5713, 1544, 39, 126, "Input",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1",
+Cell[371553, 5720, 1544, 39, 126, "Input",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1",
  InitializationCell->True],
-Cell[372815, 5754, 17564, 331, 1225, "Input",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752",
+Cell[373100, 5761, 17564, 331, 1225, "Input",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752",
  InitializationCell->True],
-Cell[390382, 6087, 10451, 163, 160, "Input",ExpressionUUID->"6366c512-27d1-4e4b-9b64-0df9f92a24da",
+Cell[390667, 6094, 10451, 163, 160, "Input",ExpressionUUID->"6366c512-27d1-4e4b-9b64-0df9f92a24da",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[400870, 6255, 161, 3, 59, "Section",ExpressionUUID->"21d0431b-8a3c-45e5-8884-89309f6eedbb"],
-Cell[401034, 6260, 7086, 144, 384, "Input",ExpressionUUID->"ac467226-4f7d-43fa-95a9-540e0abe84fc",
+Cell[401155, 6262, 161, 3, 59, "Section",ExpressionUUID->"21d0431b-8a3c-45e5-8884-89309f6eedbb"],
+Cell[401319, 6267, 7086, 144, 384, "Input",ExpressionUUID->"ac467226-4f7d-43fa-95a9-540e0abe84fc",
  InitializationCell->True],
-Cell[408123, 6406, 154, 3, 25, "Input",ExpressionUUID->"ae68f707-453f-4332-b430-7d344460b636"]
+Cell[408408, 6413, 154, 3, 25, "Input",ExpressionUUID->"ae68f707-453f-4332-b430-7d344460b636"]
 }, Open  ]]
 }
 ]
