@@ -235,37 +235,6 @@ Return[neighbourAssociationsres];
 
 
 (* ::Input::Initialization:: *)
-addNextCoinCone[rFunction_,phi_,{lastCoinZ_,coinChain_,nANew_},cylinderCircumferenceFunction_,cylinderLU_] := Module[{r,nextCoin,nextCoinSet,thisCylinderCircumference,nextCylinderCircumference,nearestCoins,resChain,lastChainNumbers,nA,nAres,i,chanA,para,conCollection,para2},
-
-conCollection = nANew[Coins];
-
-r = rFunction[lastCoinZ];
-nextCoin =  placeNextCoinCone[coinChain,r,lastCoinZ,phi,cylinderLU];
-thisCylinderCircumference = cylinderCircumferenceFunction[coinH[nextCoin]];
-nextCoinSet = coinWithConeTranslations[nextCoin,r,phi,thisCylinderCircumference];
-
-resChain = Join[coinChain,nextCoinSet];
-
-nAres = updateNeighbourFunction[nextCoinSet,conCollection,nANew,phi];
-nAres[Coins] =  Join[conCollection,nextCoinSet];
-
-lastChainNumbers =findChain[coinNumber[nextCoin],nAres];
-para2 = nAres[Parastichy];
-para2[coinNumber[nextCoin]] =chainParastichyCount[lastChainNumbers,nAres];
-nAres[Parastichy] = para2;
-
-
-{coinZ[nextCoin,phi],
-resChain ,
-nAres,
-lastChainNumbers
-}
-];
-
-
-
-
-(* ::Input::Initialization:: *)
 
 getPhi[cylinderCircumferenceFunction_,cylinderLU_] := ArcTan[
 cylinderLU[[2]] - cylinderLU[[1]],cylinderCircumferenceFunction[cylinderLU[[2]] ]- cylinderCircumferenceFunction[cylinderLU[[1]]]
@@ -280,45 +249,99 @@ Return[RegionDifference[d1,d0]]
 ];
 
 
-makeCoinSetCone[rFunction_,icCoins_,cylinderCircumferenceFunction_,cylinderLU_,kmax_:Infinity] := Module[
-{lastCoinZ,k,nextdh,nextCoin,coinChain,coinCollection,h0,h1,phi,lastChainNumbers,parastichyTop,nANew},
-phi = getPhi[cylinderCircumferenceFunction,cylinderLU];
-(* phi is the angle of the cone; if phi=0 we use rectangular cylindrical coordinates otherwise coordinates which don't have curvature on the cone  *) 
 
-coinChain= icCoins;
-coinCollection = coinChain;
-lastCoinZ = Max[Map[coinZ[#,phi]&,icCoins]];
+(* ::Input::Initialization:: *)
+addNextCoinCone[arenaAssociation_,nodeAssociation_] := Module[{r,nextCoin,nextCoinSet,thisCylinderCircumference,nextCylinderCircumference,nearestCoins,resChain,coinChain2,lastChainNumbers,nAres,chanA,para,conCollection,para2,phi},
+
+conCollection = nodeAssociation[Coins];
 
 
-nANew =  Association[ContactAngle->Association[],Parastichy->Association[],Chain->Association[],
-Coins->List];
-nANew[Coins] = icCoins;
+r = arenaAssociation["rFunction"][nodeAssociation[LastCoinZ]];
+phi = arenaAssociation["phi"];
 
-Monitor[
-For[k=0,k< kmax,k++,
-{tim,
-{lastCoinZ,coinChain,nANew,lastChainNumbers}} =
-Timing[
-addNextCoinCone[rFunction,phi,{lastCoinZ,coinChain,nANew},cylinderCircumferenceFunction,cylinderLU] 
-];
-coinCollection = nANew[Coins];
+coinChain2 = nodeAssociation[Chain];
+nextCoin =  placeNextCoinCone[coinChain2,r,nodeAssociation[LastCoinZ],phi, arenaAssociation["cylinderLU"]];
+
+thisCylinderCircumference = arenaAssociation["cylinderCircumferenceFunction"][coinH[nextCoin]];
+nextCoinSet = coinWithConeTranslations[nextCoin,r,phi,thisCylinderCircumference];
+
+
+nAres = updateNeighbourFunction[nextCoinSet,conCollection,nodeAssociation,phi];
+nAres[Coins] =  Join[conCollection,nextCoinSet];
+nAres[LastCoinZ] = coinZ[nextCoin,phi];
+
+lastChainNumbers =findChain[coinNumber[nextCoin],nAres];
 
 If[!MemberQ[lastChainNumbers,"KeyAbsent"],
 (* main way *)
-coinChain = Map[getCoinAndCopiesByNumber[#,coinCollection]&,lastChainNumbers];
-coinChain = Flatten[coinChain,1],
+coinChain2 = Map[getCoinAndCopiesByNumber[#,nAres[Coins]]&,lastChainNumbers];
+coinChain2 = DeleteDuplicates@Flatten[coinChain2,1]
+,
 (* initially or after a restart *)
-coinChain = coinsOverZ[coinChain,lastCoinZ- 2  rFunction[lastCoinZ],phi]
+resChain = Join[coinChain2,nextCoinSet];
+coinChain2 = coinsOverZ[resChain,nodeAssociation[LastCoinZ]- 2  r,phi];
 ];
-If[lastCoinZ+ 2 rFunction[lastCoinZ]> cylinderLU[[2]],Break[]];
+nAres[Chain] = SortBy[coinChain2,#[[2,1,1]]&];
 
-parastichyTop = Last@nANew[Parastichy];
+para2 = nAres[Parastichy];
+para2[coinNumber[nextCoin]] =chainParastichyCount[lastChainNumbers,nAres];
+nAres[Parastichy] = para2;
+
+nAres
+
+];
+
+
+
+
+(* ::Input::Initialization:: *)
+makeCoinSetCone[rFunction_,icCoins_,cylinderCircumferenceFunction_,cylinderLU_,kmax_:Infinity] := Module[
+{phi,arenaAssociation},
+
+phi = getPhi[cylinderCircumferenceFunction,cylinderLU];
+arenaAssociation = <| 
+"rFunction"->rFunction
+,"phi"->phi
+,"coinMax"-> kmax
+,"cylinderCircumferenceFunction"->cylinderCircumferenceFunction 
+,"cylinderLU"-> cylinderLU
+|>;
+stackFromIC[icCoins,arenaAssociation]["Run"]
+
+];
+
+
+
+
+(* ::Input::Initialization:: *)
+stackFromIC[icCoins_,arenaAssociation_] := Module[
+{lastCoinZ,k,phi,parastichyTop,nodeAssociation},
+
+lastCoinZ = Max[Map[coinZ[#,arenaAssociation["phi"]]&,icCoins]];
+
+
+nodeAssociation =  Association[
+ContactAngle->Association[]
+,Parastichy->Association[]
+,Chain->icCoins
+,Coins->icCoins
+,LastCoinZ-> lastCoinZ];
+
+
+
+Monitor[
+For[k=0,k< arenaAssociation["coinMax"],k++,
+{tim,nodeAssociation } = Timing[ 
+addNextCoinCone[arenaAssociation,nodeAssociation] 
+];
+
+parastichyTop = KeyTake[nodeAssociation[Parastichy],Last[Keys@nodeAssociation[Parastichy]]];
+lastCoinZ =  nodeAssociation[LastCoinZ];
+If[lastCoinZ+ 2 arenaAssociation["rFunction"][lastCoinZ]> (arenaAssociation["cylinderLU"])[[2]],Break[]];
 ],
- {ProgressIndicator[lastCoinZ,{0,cylinderLU[[2]]}],parastichyTop,k, Max[Map[bareNumber[coinNumber[#]]&,coinChain]],tim}
+ {ProgressIndicator[lastCoinZ,{0,(arenaAssociation["cylinderLU"])[[2]]}],parastichyTop,tim}
 ];
-
-
-nANew
+<|"Run"-> nodeAssociation,"Arena"->arenaAssociation|>
 ];
 
 
