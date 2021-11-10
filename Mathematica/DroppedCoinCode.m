@@ -201,34 +201,29 @@ res
 
 
 (* ::Input::Initialization:: *)
-updateNeighbourFunction[nextCoinSet_,coinCollection_,nANew_,phi_] := Module[
-{lowerN,neighbourAssociationsres,n,i,j,temp},
+updateNeighbourFunction[nextCoinSet_,arenaAssociation_,nodeAssociation_] := Module[
+{lowerN,neighbourAssociationsres,n,i,coinCollection,angles,angleResult,nextCoin},
+
+coinCollection= nodeAssociation[Coins];
 
 nextCoin=First@nextCoinSet;
 n = coinNumber[nextCoin];
 
-dbg = {43,44};dbg={};
-printDebug = MemberQ[dbg,n];
-
-
 lowerN = coinLowerNeighbours[nextCoin,coinCollection][[2]];
-If[printDebug,Print["lower neighbours of ",nextCoin," are ", lowerN]];
 angles= coinLowerNeighbours[nextCoin,coinCollection][[3]];
 
-
-angleResult = nANew[ContactAngle];
-
-
+angleResult = nodeAssociation[ContactAngle];
 For[i=1,i<= Length[lowerN],i++,
 angleResult = symmetricAdd[angleResult,n,lowerN[[i]],angles[[i]]]
 ];
 
 
 neighbourAssociationsres  = Association[
-Parastichy-> nANew[Parastichy],
+Parastichy-> nodeAssociation[Parastichy],
 ContactAngle ->angleResult,
-Chain->nANew[Chain],
-Coins->nANew[Coins]
+Chain->nodeAssociation[Chain],
+Coins->Join[nodeAssociation[Coins],nextCoinSet],
+LastCoinZ-> coinZ[nextCoin,arenaAssociation["phi"]]
 ];
 
 Return[neighbourAssociationsres];
@@ -252,9 +247,7 @@ Return[RegionDifference[d1,d0]]
 
 
 (* ::Input::Initialization:: *)
-addNextCoinCone[arenaAssociation_,nodeAssociation_] := Module[{r,nextCoin,nextCoinSet,thisCylinderCircumference,nextCylinderCircumference,nearestCoins,resChain,coinChain2,lastChainNumbers,nAres,chanA,para,conCollection,para2,phi},
-
-conCollection = nodeAssociation[Coins];
+addNextCoinCone[arenaAssociation_,nodeAssociation_] := Module[{r,nextCoin,nextCoinSet,thisCylinderCircumference,nextCylinderCircumference,nearestCoins,resChain,coinChain2,lastChainNumbers,nAres,chanA,para,para2,phi},
 
 
 r = arenaAssociation["rFunction"][nodeAssociation[LastCoinZ]];
@@ -262,13 +255,13 @@ phi = arenaAssociation["phi"];
 
 coinChain2 = nodeAssociation[Chain];
 nextCoin =  placeNextCoinCone[coinChain2,r,nodeAssociation[LastCoinZ],phi, arenaAssociation["cylinderLU"]];
-
+If[coinNumber[nextCoin]==10,Print["found coin 11"]];
 thisCylinderCircumference = arenaAssociation["cylinderCircumferenceFunction"][coinH[nextCoin]];
 nextCoinSet = coinWithConeTranslations[nextCoin,r,phi,thisCylinderCircumference];
 
 
-nAres = updateNeighbourFunction[nextCoinSet,conCollection,nodeAssociation,phi];
-nAres[Coins] =  Join[conCollection,nextCoinSet];
+nAres = updateNeighbourFunction[nextCoinSet,arenaAssociation,nodeAssociation];
+nAres[Coins] =  Join[nodeAssociation[Coins],nextCoinSet];
 nAres[LastCoinZ] = coinZ[nextCoin,phi];
 
 lastChainNumbers =findChain[coinNumber[nextCoin],nAres];

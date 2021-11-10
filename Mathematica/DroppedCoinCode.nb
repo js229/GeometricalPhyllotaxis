@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    411251,       6470]
-NotebookOptionsPosition[    408578,       6419]
-NotebookOutlinePosition[    409003,       6436]
-CellTagsIndexPosition[    408960,       6433]
+NotebookDataLength[    411823,       6479]
+NotebookOptionsPosition[    409150,       6428]
+NotebookOutlinePosition[    409575,       6445]
+CellTagsIndexPosition[    409532,       6442]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -2205,51 +2205,38 @@ Cell[BoxData[
   RowBox[{
    RowBox[{"updateNeighbourFunction", "[", 
     RowBox[{
-    "nextCoinSet_", ",", "coinCollection_", ",", "nANew_", ",", "phi_"}], 
+    "nextCoinSet_", ",", "arenaAssociation_", ",", "nodeAssociation_"}], 
     "]"}], " ", ":=", " ", 
    RowBox[{"Module", "[", "\[IndentingNewLine]", 
     RowBox[{
      RowBox[{"{", 
       RowBox[{
-      "lowerN", ",", "neighbourAssociationsres", ",", "n", ",", "i", ",", "j",
-        ",", "temp"}], "}"}], ",", "\[IndentingNewLine]", 
-     "\[IndentingNewLine]", 
+      "lowerN", ",", "neighbourAssociationsres", ",", "n", ",", "i", ",", 
+       "coinCollection", ",", "angles", ",", "angleResult", ",", "nextCoin"}],
+       "}"}], ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
      RowBox[{
+      RowBox[{"coinCollection", "=", " ", 
+       RowBox[{"nodeAssociation", "[", "Coins", "]"}]}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
       RowBox[{"nextCoin", "=", 
        RowBox[{"First", "@", "nextCoinSet"}]}], ";", "\[IndentingNewLine]", 
       RowBox[{"n", " ", "=", " ", 
        RowBox[{"coinNumber", "[", "nextCoin", "]"}]}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", 
-      RowBox[{"dbg", " ", "=", " ", 
-       RowBox[{"{", 
-        RowBox[{"43", ",", "44"}], "}"}]}], ";", 
-      RowBox[{"dbg", "=", 
-       RowBox[{"{", "}"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"printDebug", " ", "=", " ", 
-       RowBox[{"MemberQ", "[", 
-        RowBox[{"dbg", ",", "n"}], "]"}]}], ";", "\[IndentingNewLine]", 
       "\[IndentingNewLine]", "\[IndentingNewLine]", 
       RowBox[{"lowerN", " ", "=", " ", 
        RowBox[{
         RowBox[{"coinLowerNeighbours", "[", 
          RowBox[{"nextCoin", ",", "coinCollection"}], "]"}], "[", 
         RowBox[{"[", "2", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"If", "[", 
-       RowBox[{"printDebug", ",", 
-        RowBox[{"Print", "[", 
-         RowBox[{
-         "\"\<lower neighbours of \>\"", ",", "nextCoin", ",", 
-          "\"\< are \>\"", ",", " ", "lowerN"}], "]"}]}], "]"}], ";", 
-      "\[IndentingNewLine]", 
       RowBox[{"angles", "=", " ", 
        RowBox[{
         RowBox[{"coinLowerNeighbours", "[", 
          RowBox[{"nextCoin", ",", "coinCollection"}], "]"}], "[", 
         RowBox[{"[", "3", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
       RowBox[{"angleResult", " ", "=", " ", 
-       RowBox[{"nANew", "[", "ContactAngle", "]"}]}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"nodeAssociation", "[", "ContactAngle", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
       RowBox[{"For", "[", 
        RowBox[{
         RowBox[{"i", "=", "1"}], ",", 
@@ -2269,15 +2256,24 @@ Cell[BoxData[
        RowBox[{"Association", "[", "\[IndentingNewLine]", 
         RowBox[{
          RowBox[{"Parastichy", "\[Rule]", " ", 
-          RowBox[{"nANew", "[", "Parastichy", "]"}]}], ",", 
+          RowBox[{"nodeAssociation", "[", "Parastichy", "]"}]}], ",", 
          "\[IndentingNewLine]", 
          RowBox[{"ContactAngle", " ", "\[Rule]", "angleResult"}], ",", 
          "\[IndentingNewLine]", 
          RowBox[{"Chain", "\[Rule]", 
-          RowBox[{"nANew", "[", "Chain", "]"}]}], ",", "\[IndentingNewLine]", 
+          RowBox[{"nodeAssociation", "[", "Chain", "]"}]}], ",", 
+         "\[IndentingNewLine]", 
          RowBox[{"Coins", "\[Rule]", 
-          RowBox[{"nANew", "[", "Coins", "]"}]}]}], "\[IndentingNewLine]", 
-        "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"Join", "[", 
+           RowBox[{
+            RowBox[{"nodeAssociation", "[", "Coins", "]"}], ",", 
+            "nextCoinSet"}], "]"}]}], ",", "\[IndentingNewLine]", 
+         RowBox[{"LastCoinZ", "->", " ", 
+          RowBox[{"coinZ", "[", 
+           RowBox[{"nextCoin", ",", 
+            RowBox[{"arenaAssociation", "[", "\"\<phi\>\"", "]"}]}], 
+           "]"}]}]}], "\[IndentingNewLine]", "]"}]}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
       RowBox[{"Return", "[", "neighbourAssociationsres", "]"}], ";"}]}], 
     "\[IndentingNewLine]", "]"}]}], ";"}]], "Input",
  InitializationCell->True,
@@ -2782,9 +2778,14 @@ Cell[BoxData[
    3.7855812717600803`*^9, 3.785581309174069*^9}, 3.785596733241944*^9, 
    3.78559678205851*^9, {3.7855968563748183`*^9, 3.785596858944979*^9}, {
    3.7855973485951653`*^9, 3.7855973715128717`*^9}, {3.7856477292095423`*^9, 
-   3.7856478057810726`*^9}, {3.785649085400215*^9, 3.7856490887540393`*^9}},
- CellLabel->
-  "In[357]:=",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706"],
+   3.7856478057810726`*^9}, {3.785649085400215*^9, 3.7856490887540393`*^9}, {
+   3.8455315036226463`*^9, 3.84553150795461*^9}, {3.845531546429825*^9, 
+   3.845531566174138*^9}, {3.845531639384178*^9, 3.8455316588140697`*^9}, {
+   3.8455316968541603`*^9, 3.8455317575375433`*^9}, {3.845531847551673*^9, 
+   3.8455318558115273`*^9}, {3.845531895438013*^9, 3.845531969307885*^9}, {
+   3.8455328621531124`*^9, 
+   3.845532868401865*^9}},ExpressionUUID->"f6641d9c-01c5-4a74-8331-\
+fd6c0316d706"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -3352,12 +3353,9 @@ Cell[BoxData[
         "thisCylinderCircumference", ",", "nextCylinderCircumference", ",", 
         "nearestCoins", ",", "resChain", ",", "coinChain2", ",", 
         "lastChainNumbers", ",", "nAres", ",", "chanA", ",", "para", ",", 
-        "conCollection", ",", "para2", ",", "phi"}], "}"}], ",", 
+        "para2", ",", "phi"}], "}"}], ",", "\[IndentingNewLine]", 
       "\[IndentingNewLine]", "\[IndentingNewLine]", 
       RowBox[{
-       RowBox[{"conCollection", " ", "=", " ", 
-        RowBox[{"nodeAssociation", "[", "Coins", "]"}]}], ";", 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
        RowBox[{"r", " ", "=", " ", 
         RowBox[{
          RowBox[{"arenaAssociation", "[", "\"\<rFunction\>\"", "]"}], "[", 
@@ -3375,7 +3373,13 @@ Cell[BoxData[
           RowBox[{"nodeAssociation", "[", "LastCoinZ", "]"}], ",", "phi", ",",
            " ", 
           RowBox[{"arenaAssociation", "[", "\"\<cylinderLU\>\"", "]"}]}], 
-         "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"coinNumber", "[", "nextCoin", "]"}], "==", "10"}], ",", 
+         RowBox[{"Print", "[", "\"\<found coin 11\>\"", "]"}]}], "]"}], ";", 
+       "\[IndentingNewLine]", 
        RowBox[{"thisCylinderCircumference", " ", "=", " ", 
         RowBox[{
          RowBox[{
@@ -3392,13 +3396,14 @@ Cell[BoxData[
        RowBox[{"nAres", " ", "=", " ", 
         RowBox[{"updateNeighbourFunction", "[", 
          RowBox[{
-         "nextCoinSet", ",", "conCollection", ",", "nodeAssociation", ",", 
-          "phi"}], "]"}]}], ";", "\[IndentingNewLine]", 
+         "nextCoinSet", ",", "arenaAssociation", ",", "nodeAssociation"}], 
+         "]"}]}], ";", "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{"nAres", "[", "Coins", "]"}], " ", "=", "  ", 
         RowBox[{"Join", "[", 
-         RowBox[{"conCollection", ",", "nextCoinSet"}], "]"}]}], ";", 
-       "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"nodeAssociation", "[", "Coins", "]"}], ",", 
+          "nextCoinSet"}], "]"}]}], ";", "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{"nAres", "[", "LastCoinZ", "]"}], " ", "=", " ", 
         RowBox[{"coinZ", "[", 
@@ -3971,8 +3976,12 @@ Cell[BoxData[
    3.845434505009297*^9}, {3.8454345464270887`*^9, 3.845434633982874*^9}, {
    3.8454348717638893`*^9, 3.845434877606122*^9}, {3.845434948440729*^9, 
    3.845434973375201*^9}, {3.8454350065463624`*^9, 3.8454350412933025`*^9}, 
-   3.84543535124448*^9, 
-   3.845436404152768*^9},ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-\
+   3.84543535124448*^9, 3.845436404152768*^9, 3.8455309888015113`*^9, {
+   3.84553122958393*^9, 3.8455312449774404`*^9}, {3.8455312956150513`*^9, 
+   3.845531386272457*^9}, {3.8455315834973297`*^9, 3.845531591034585*^9}, 
+   3.845531768591111*^9, {3.8455318363769035`*^9, 3.845531839941986*^9}, 
+   3.845531978886924*^9, {3.845532834571268*^9, 
+   3.8455328365866575`*^9}},ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-\
 291b73f482f1"],
 
 Cell[BoxData[""], "Input",
@@ -6445,32 +6454,32 @@ Cell[46316, 930, 40832, 635, 710, "Input",ExpressionUUID->"63ea88af-53a7-423f-8b
 Cell[87151, 1567, 194, 2, 43, "Input",ExpressionUUID->"290c500d-e234-4dd6-bc8e-7d12becb99a3"],
 Cell[87348, 1571, 41945, 629, 504, "Input",ExpressionUUID->"8923fcf7-3a83-4578-b088-d91ab1b058c4",
  InitializationCell->True],
-Cell[129296, 2202, 40878, 584, 572, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
+Cell[129296, 2202, 41056, 585, 486, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
  InitializationCell->True],
-Cell[170177, 2788, 37795, 549, 246, "Input",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95",
+Cell[170355, 2789, 37795, 549, 246, "Input",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95",
  InitializationCell->True],
-Cell[207975, 3339, 43136, 636, 761, "Input",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1",
+Cell[208153, 3340, 43530, 644, 727, "Input",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1",
  InitializationCell->True],
-Cell[251114, 3977, 283, 5, 25, "Input",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
-Cell[251400, 3984, 39393, 549, 298, "Input",ExpressionUUID->"7f39a5cb-4b17-4b33-8622-d0cdb1ceaed3",
+Cell[251686, 3986, 283, 5, 25, "Input",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
+Cell[251972, 3993, 39393, 549, 298, "Input",ExpressionUUID->"7f39a5cb-4b17-4b33-8622-d0cdb1ceaed3",
  InitializationCell->True],
-Cell[290796, 4535, 179, 3, 25, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b"],
-Cell[290978, 4540, 42449, 613, 555, "Input",ExpressionUUID->"d1533af6-2b90-4196-94ea-1c3f29d2d144",
+Cell[291368, 4544, 179, 3, 25, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b"],
+Cell[291550, 4549, 42449, 613, 555, "Input",ExpressionUUID->"d1533af6-2b90-4196-94ea-1c3f29d2d144",
  InitializationCell->True],
-Cell[333430, 5155, 38120, 563, 487, "Input",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15",
+Cell[334002, 5164, 38120, 563, 487, "Input",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15",
  InitializationCell->True],
-Cell[371553, 5720, 1544, 39, 126, "Input",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1",
+Cell[372125, 5729, 1544, 39, 126, "Input",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1",
  InitializationCell->True],
-Cell[373100, 5761, 17564, 331, 1225, "Input",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752",
+Cell[373672, 5770, 17564, 331, 1225, "Input",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752",
  InitializationCell->True],
-Cell[390667, 6094, 10451, 163, 160, "Input",ExpressionUUID->"6366c512-27d1-4e4b-9b64-0df9f92a24da",
+Cell[391239, 6103, 10451, 163, 160, "Input",ExpressionUUID->"6366c512-27d1-4e4b-9b64-0df9f92a24da",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[401155, 6262, 161, 3, 59, "Section",ExpressionUUID->"21d0431b-8a3c-45e5-8884-89309f6eedbb"],
-Cell[401319, 6267, 7086, 144, 384, "Input",ExpressionUUID->"ac467226-4f7d-43fa-95a9-540e0abe84fc",
+Cell[401727, 6271, 161, 3, 59, "Section",ExpressionUUID->"21d0431b-8a3c-45e5-8884-89309f6eedbb"],
+Cell[401891, 6276, 7086, 144, 384, "Input",ExpressionUUID->"ac467226-4f7d-43fa-95a9-540e0abe84fc",
  InitializationCell->True],
-Cell[408408, 6413, 154, 3, 25, "Input",ExpressionUUID->"ae68f707-453f-4332-b430-7d344460b636"]
+Cell[408980, 6422, 154, 3, 25, "Input",ExpressionUUID->"ae68f707-453f-4332-b430-7d344460b636"]
 }, Open  ]]
 }
 ]
