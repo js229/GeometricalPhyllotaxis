@@ -386,7 +386,7 @@ neighbourAssociationsres[ContactAngle]=angleResult;
 
 (* OTOH use all up to 3 close neighbours to update contacts *) 
 lowerNumbers = coinLowerNeighbourNumbers[nextCoin,coinCollection,0.01];
-If[n==148,Print[{n,lowerN,lowerNumbers}]];
+
 coinCollection = Join[coinCollection,nextCoinSet];
 newEdges = edgesWithLR[n,lowerNumbers];
 
@@ -403,13 +403,14 @@ neighbourAssociationsres[LastCoinZ]=coinZ[nextCoin,arenaAssociation["phi"]];
 Return[neighbourAssociationsres];
 ];
 
-findChainFromNodes[nextCoinSet_,arenaAssociation_,nAres_]  := Module[{coinChain2,lastChainNumbers},
+findChainFromNodes[nextCoinSet_,arenaAssociation_,nAres_]  := Module[{coinChain2,lastChainNumbers,res},
 (*lastChainNumbers =findGraphChain[coinNumber[First[nextCoinSet]],nAres];
 If[MissingQ[lastChainNumbers],
 Print["Can't complete chain at ",coinNumber[First[nextCoinSet]]];
 lastChainNumbers =findChain[coinNumber[First[nextCoinSet]],nAres]
 ];
 *)
+dbg = (coinNumber[First[nextCoinSet]]==166);
 lastChainNumbers =findChain[coinNumber[First[nextCoinSet]],nAres];
 
 If[!MemberQ[lastChainNumbers,"KeyAbsent"],
@@ -420,7 +421,9 @@ coinChain2 = DeleteDuplicates@Flatten[coinChain2,1]
 (* initially or after a restart *)
 coinChain2 = Join[ nAres[Coins],nextCoinSet];
 ];
-SortBy[coinChain2,#[[2,1,1]]&]
+res = SortBy[coinChain2,#[[2,1,1]]&];
+If[dbg,Print[{nextCoinSet,lastChainNumbers,res}]];
+res
 ];
 
 
