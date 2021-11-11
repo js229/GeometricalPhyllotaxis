@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    157530,       3081]
-NotebookOptionsPosition[    155131,       3032]
-NotebookOutlinePosition[    155590,       3050]
-CellTagsIndexPosition[    155547,       3047]
+NotebookDataLength[    154713,       3017]
+NotebookOptionsPosition[    152315,       2968]
+NotebookOutlinePosition[    152774,       2986]
+CellTagsIndexPosition[    152731,       2983]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -36,8 +36,8 @@ Cell[BoxData[
   "\n"}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "11/11/21 18:04:49 (Local) \
-In[127]:=",ExpressionUUID->"ff2e94a6-5c48-4dce-90d5-bda2729443a1"]
+  "11/11/21 18:48:42 (Local) \
+In[310]:=",ExpressionUUID->"ff2e94a6-5c48-4dce-90d5-bda2729443a1"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -93,13 +93,14 @@ Cell[BoxData[
    "\[IndentingNewLine]", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
-     RowBox[{"lastCoinNumber", "[", "coinChain_", "]"}], " ", ":=", " ", 
+     RowBox[{"lastCoinNumber", "[", "coinCollection_", "]"}], " ", ":=", " ", 
      RowBox[{"Max", "[", 
       RowBox[{"Select", "[", 
        RowBox[{
         RowBox[{"Map", "[", 
-         RowBox[{"coinNumber", ",", "coinChain"}], "]"}], ",", "IntegerQ"}], 
-       "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"coinNumber", ",", "coinCollection"}], "]"}], ",", 
+        "IntegerQ"}], "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
      RowBox[{"subsetCoinCollection", "[", 
@@ -395,8 +396,8 @@ Cell[BoxData[
    RowBox[{
     RowBox[{
      RowBox[{"coinsOverZ", "[", 
-      RowBox[{"coinChain_", ",", "z_", ",", "phi_"}], "]"}], " ", ":=", "  ", 
-     RowBox[{"coinChain", "[", 
+      RowBox[{"coinFront_", ",", "z_", ",", "phi_"}], "]"}], " ", ":=", "  ", 
+     RowBox[{"coinFront", "[", 
       RowBox[{"[", " ", 
        RowBox[{"Flatten", "@", 
         RowBox[{"Position", "[", 
@@ -407,7 +408,7 @@ Cell[BoxData[
              RowBox[{
               RowBox[{"coinZ", "[", 
                RowBox[{"#", ",", "phi"}], "]"}], ">", "z"}], " ", "&"}], ",", 
-            "coinChain"}], "]"}], ",", "True"}], "]"}]}], " ", "]"}], "]"}]}],
+            "coinFront"}], "]"}], ",", "True"}], "]"}]}], " ", "]"}], "]"}]}],
      ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
@@ -437,18 +438,7 @@ Cell[BoxData[
      RowBox[{"coinDistance", "[", 
       RowBox[{"coin1", ",", "coin2"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-   "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{
-     RowBox[{"iBoundary", "[", 
-      RowBox[{"coinChain_", ",", "distance_"}], "]"}], " ", ":=", " ", 
-     RowBox[{"Map", "[", 
-      RowBox[{
-       RowBox[{
-        RowBox[{"extendRadius", "[", 
-         RowBox[{"#", ",", "distance"}], "]"}], "&"}], ",", "coinChain"}], 
-      "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
-   "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
      RowBox[{"whichMinConeRegionPoint", "[", 
@@ -488,7 +478,7 @@ Cell[BoxData[
    RowBox[{
     RowBox[{
      RowBox[{"nearestCoinPair", "[", 
-      RowBox[{"coin_", ",", "coinChain_"}], "]"}], " ", ":=", " ", 
+      RowBox[{"coin_", ",", "coinFront_"}], "]"}], " ", ":=", " ", 
      RowBox[{"Module", "[", 
       RowBox[{
        RowBox[{"{", 
@@ -500,12 +490,12 @@ Cell[BoxData[
           RowBox[{
            RowBox[{
             RowBox[{"coinDistance", "[", 
-             RowBox[{"coin", ",", "#"}], "]"}], "&"}], ",", "coinChain"}], 
+             RowBox[{"coin", ",", "#"}], "]"}], "&"}], ",", "coinFront"}], 
           "]"}]}], ";", "\[IndentingNewLine]", 
         RowBox[{"nearestCoins", " ", "=", " ", 
          RowBox[{"Take", "[", 
           RowBox[{
-           RowBox[{"coinChain", "[", 
+           RowBox[{"coinFront", "[", 
             RowBox[{"[", " ", 
              RowBox[{"Ordering", "[", "coinDistances", "]"}], " ", "]"}], 
             "]"}], ",", "2"}], "]"}]}], ";", "\[IndentingNewLine]", 
@@ -514,7 +504,7 @@ Cell[BoxData[
    RowBox[{
     RowBox[{
      RowBox[{"coinLowerPair", "[", 
-      RowBox[{"coin_", ",", "coinChain_"}], "]"}], " ", ":=", " ", 
+      RowBox[{"coin_", ",", "coinFront_"}], "]"}], " ", ":=", " ", 
      RowBox[{"Module", "[", 
       RowBox[{
        RowBox[{"{", 
@@ -523,7 +513,7 @@ Cell[BoxData[
        RowBox[{
         RowBox[{"nearestCoins", " ", "=", " ", 
          RowBox[{"nearestCoinPair", "[", 
-          RowBox[{"coin", ",", "coinChain"}], "]"}]}], ";", 
+          RowBox[{"coin", ",", "coinFront"}], "]"}]}], ";", 
         "\[IndentingNewLine]", 
         RowBox[{"If", "[", 
          RowBox[{
@@ -567,7 +557,7 @@ Cell[BoxData[
    RowBox[{
     RowBox[{
      RowBox[{"coinLowerNeighbourNumbers", "[", 
-      RowBox[{"coin_", ",", "coinChain_", ",", "tolerance_"}], "]"}], " ", ":=",
+      RowBox[{"coin_", ",", "coinFront_", ",", "tolerance_"}], "]"}], " ", ":=",
       " ", 
      RowBox[{"Module", "[", 
       RowBox[{
@@ -582,7 +572,7 @@ Cell[BoxData[
             RowBox[{
              RowBox[{"#", "->", 
               RowBox[{"coinDistance", "[", 
-               RowBox[{"coin", ",", "#"}], "]"}]}], "&"}], ",", "coinChain"}],
+               RowBox[{"coin", ",", "#"}], "]"}]}], "&"}], ",", "coinFront"}],
             "]"}]}]}], ";", "\[IndentingNewLine]", 
         RowBox[{"coinDistances", " ", "=", " ", 
          RowBox[{
@@ -682,8 +672,8 @@ Cell[BoxData[
     ";"}], "\[IndentingNewLine]"}]}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "11/11/21 18:04:49 (Local) \
-In[128]:=",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb"],
+  "11/11/21 18:48:42 (Local) \
+In[311]:=",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb"],
 
 Cell[BoxData[
  RowBox[{
@@ -768,9 +758,19 @@ Cell[BoxData[
     ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
    "\[IndentingNewLine]", 
    RowBox[{
+    RowBox[{
+     RowBox[{"iBoundary", "[", 
+      RowBox[{"coinFront_", ",", "distance_"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Map", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"extendRadius", "[", 
+         RowBox[{"#", ",", "distance"}], "]"}], "&"}], ",", "coinFront"}], 
+      "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
     RowBox[{"placeNextCoinCone", "[", 
      RowBox[{
-     "coinChain_", ",", "coinRadius_", ",", "lastCoinZ_", ",", "phi_", ",", 
+     "coinFront_", ",", "coinRadius_", ",", "lastCoinZ_", ",", "phi_", ",", 
       "cylinderLU_"}], "]"}], " ", ":=", " ", 
     RowBox[{"Module", "[", 
      RowBox[{
@@ -782,7 +782,7 @@ Cell[BoxData[
       RowBox[{
        RowBox[{"ib", " ", "=", " ", 
         RowBox[{"iBoundary", "[", 
-         RowBox[{"coinChain", ",", "coinRadius"}], "]"}]}], ";", 
+         RowBox[{"coinFront", ",", "coinRadius"}], "]"}]}], ";", 
        "\[IndentingNewLine]", 
        RowBox[{"iboundaryMesh", " ", "=", " ", 
         RowBox[{"DiscretizeRegion", "@", 
@@ -816,7 +816,7 @@ Cell[BoxData[
            RowBox[{"{", 
             RowBox[{
              RowBox[{
-              RowBox[{"lastCoinNumber", "[", "coinChain", "]"}], "+", "1"}], 
+              RowBox[{"lastCoinNumber", "[", "coinFront", "]"}], "+", "1"}], 
              ",", 
              RowBox[{"Disk", "[", 
               RowBox[{
@@ -830,22 +830,21 @@ Cell[BoxData[
          RowBox[{
           RowBox[{"Print", "[", 
            RowBox[{
-           "\"\<Can't place next coin with chain\\n\>\"", ",", "coinChain"}], 
+           "\"\<Can't place next coin with front\\n\>\"", ",", "coinFront"}], 
            "]"}], ";", 
           RowBox[{"Abort", "[", "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
        "nextCoin"}]}], " ", "\[IndentingNewLine]", "]"}]}], 
    "\[IndentingNewLine]", "\[IndentingNewLine]"}]}]], "Input",
  InitializationCell->True,
- CellChangeTimes->{{3.8456176226645765`*^9, 3.8456176352317467`*^9}},
  CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[169]:=",ExpressionUUID->"63ea88af-53a7-423f-8bca-b3bc15d00d81"],
+  "11/11/21 18:48:42 (Local) \
+In[351]:=",ExpressionUUID->"63ea88af-53a7-423f-8bca-b3bc15d00d81"],
 
 Cell[BoxData["\[IndentingNewLine]"], "Input",
  CellChangeTimes->{{3.7836691808053913`*^9, 3.7836691981150436`*^9}},
  CellLabel->
-  "11/11/21 16:17:33 (Local) \
-In[108]:=",ExpressionUUID->"290c500d-e234-4dd6-bc8e-7d12becb99a3"],
+  "11/11/21 18:48:42 (Local) \
+In[355]:=",ExpressionUUID->"290c500d-e234-4dd6-bc8e-7d12becb99a3"],
 
 Cell[BoxData[{
  RowBox[{
@@ -1476,8 +1475,8 @@ Cell[BoxData[{
    3.7836935139086475`*^9}, {3.7855811698794317`*^9, 3.785581193544176*^9}, {
    3.7855812717600803`*^9, 3.785581323626475*^9}, 3.785583911908019*^9},
  CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[172]:=",ExpressionUUID->"8923fcf7-3a83-4578-b088-d91ab1b058c4"],
+  "11/11/21 18:48:42 (Local) \
+In[356]:=",ExpressionUUID->"8923fcf7-3a83-4578-b088-d91ab1b058c4"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", "\[IndentingNewLine]", 
@@ -2009,8 +2008,8 @@ Cell[BoxData[
    3.785652049296565*^9}, 3.8454252741384163`*^9, {3.8456134758781996`*^9, 
    3.8456134816060486`*^9}, 3.8456176441327543`*^9},
  CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[176]:=",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95"],
+  "11/11/21 18:48:42 (Local) \
+In[360]:=",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95"],
 
 Cell[BoxData[
  RowBox[{
@@ -2063,126 +2062,79 @@ Cell[BoxData[
      "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]"}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[177]:=",ExpressionUUID->"be9277a0-95b7-4e02-a2e3-af046510c2ce"],
+  "11/11/21 18:48:42 (Local) \
+In[361]:=",ExpressionUUID->"be9277a0-95b7-4e02-a2e3-af046510c2ce"],
 
 Cell[BoxData[""], "Input",
  CellChangeTimes->{{3.845437226641659*^9, 3.8454372335621605`*^9}, {
    3.8454372776819153`*^9, 3.845437297750497*^9}, {3.845437337444112*^9, 
    3.8454373845506525`*^9}, 3.8454374978383374`*^9},
  CellLabel->
-  "11/11/21 16:17:33 (Local) \
-In[115]:=",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
+  "11/11/21 18:48:42 (Local) \
+In[362]:=",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
   RowBox[{
    RowBox[{
     RowBox[{
-     RowBox[{"chainTransitions", "[", 
-      RowBox[{"chain_", ",", "neighbourAssociations_"}], "]"}], " ", ":=", 
+     RowBox[{"chainParastichyCount", "[", 
+      RowBox[{"front_", ",", "neighbourAssociations_"}], "]"}], " ", ":=", 
      " ", 
      RowBox[{"Module", "[", 
       RowBox[{
        RowBox[{"{", "transitions", "}"}], ",", "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{"pairs", " ", "=", " ", 
-         RowBox[{"Partition", "[", 
-          RowBox[{"chain", ",", "2", ",", "1"}], "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{
-         RowBox[{"transitionType", "[", 
-          RowBox[{"{", 
-           RowBox[{"m_", ",", "n_"}], "}"}], "]"}], " ", ":=", " ", 
-         RowBox[{"Module", "[", 
-          RowBox[{
-           RowBox[{"{", 
-            RowBox[{
-             RowBox[{"mbare", "=", 
-              RowBox[{"bareNumber", "[", "m", "]"}]}], ",", 
-             RowBox[{"nbare", "=", 
-              RowBox[{"bareNumber", "[", "n", "]"}]}]}], "}"}], ",", 
-           "\[IndentingNewLine]", 
-           RowBox[{
-            RowBox[{"If", "[", 
-             RowBox[{
-              RowBox[{"n", "\[Equal]", "\"\<KeyAbsent\>\""}], ",", 
-              RowBox[{"Return", "[", " ", "Nothing", "]"}]}], "]"}], ";", 
-            "\[IndentingNewLine]", "\[IndentingNewLine]", 
-            RowBox[{"angles", " ", "=", " ", 
-             RowBox[{
-              RowBox[{"neighbourAssociations", "[", "ContactAngle", "]"}], 
-              "[", "m", "]"}]}], ";", "\[IndentingNewLine]", 
-            "\[IndentingNewLine]", 
-            RowBox[{"If", "[", 
-             RowBox[{
-              RowBox[{"MissingQ", "[", "angles", "]"}], ",", 
-              RowBox[{"Return", "[", "Nothing", "]"}]}], "]"}], ";", 
-            "\[IndentingNewLine]", "\[IndentingNewLine]", 
-            RowBox[{"angles", " ", "=", " ", 
-             RowBox[{"Select", "[", 
-              RowBox[{"angles", ",", 
-               RowBox[{
-                RowBox[{
-                 RowBox[{"First", "[", "#", "]"}], "\[Equal]", "n"}], " ", 
-                "&"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
-            RowBox[{"If", "[", 
-             RowBox[{
-              RowBox[{
-               RowBox[{"Length", "[", "angles", "]"}], "\[Equal]", "0"}], ",", 
-              RowBox[{"Return", "[", "Nothing", "]"}]}], "]"}], ";", 
-            "\[IndentingNewLine]", 
-            RowBox[{"{", 
-             RowBox[{"m", ",", "n", ",", 
-              RowBox[{"angles", "[", 
-               RowBox[{"[", 
-                RowBox[{"1", ",", "2"}], "]"}], "]"}]}], "}"}]}]}], 
-          "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
-        RowBox[{"Map", "[", 
-         RowBox[{"transitionType", ",", "pairs"}], "]"}]}]}], 
-      "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
-   "\[IndentingNewLine]", "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{
-     RowBox[{"chainParastichyCount", "[", 
-      RowBox[{"chain_", ",", "neighbourAssociations_"}], "]"}], " ", ":=", 
-     " ", 
-     RowBox[{"Module", "[", 
-      RowBox[{
-       RowBox[{"{", "transitions", "}"}], ",", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"transitions", " ", "=", " ", 
-         RowBox[{"chainTransitions", "[", 
-          RowBox[{"chain", ",", "neighbourAssociations"}], "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{
-         RowBox[{"lr", "[", 
-          RowBox[{"{", 
-           RowBox[{"m_", ",", "n_", ",", "angle_"}], "}"}], "]"}], " ", ":=", 
-         " ", 
-         RowBox[{"If", "[", " ", 
-          RowBox[{
-           RowBox[{
-            RowBox[{
-            "0", " ", "\[LessEqual]", " ", "angle", "<", " ", "0.25"}], " ", "||",
-             " ", 
-            RowBox[{
-            "0.75", " ", "\[LessEqual]", " ", "angle", " ", "\[LessEqual]", 
-             " ", "1"}]}], " ", ",", "Up", ",", "Down"}], "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"ud", " ", "=", " ", 
          RowBox[{"Map", "[", 
-          RowBox[{"lr", ",", "transitions"}], "]"}]}], ";", 
+          RowBox[{"bareNumber", ",", "front"}], "]"}]}], ";", 
         "\[IndentingNewLine]", 
-        RowBox[{"Apply", "[", 
-         RowBox[{"List", ",", 
-          RowBox[{"Counts", "[", "ud", "]"}]}], "]"}]}]}], 
-      "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
+        RowBox[{"pairs", " ", "=", " ", 
+         RowBox[{"(", " ", 
+          RowBox[{"Partition", "[", 
+           RowBox[{"pairs", ",", "2", ",", "1"}], "]"}], " ", ")"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"pairs", " ", "=", " ", 
+         RowBox[{"DirectedEdge", " ", "@@@", "pairs"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"lookup", " ", "=", " ", 
+         RowBox[{"KeyMap", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Map", "[", 
+             RowBox[{"bareNumber", ",", "#"}], "]"}], "&"}], ",", 
+           RowBox[{"neighbourAssociations", "[", "DEdgeAngle", "]"}]}], 
+          "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"pairs", " ", "=", 
+         RowBox[{"(", 
+          RowBox[{"Map", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"lookup", "[", "#", "]"}], "&"}], ",", "pairs"}], "]"}], 
+          ")"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"pairs", " ", "=", " ", 
+         RowBox[{"Map", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"If", " ", "[", 
+             RowBox[{
+              RowBox[{"#", "<", 
+               RowBox[{"1", "/", "4"}]}], ",", "Up", ",", "Down"}], "]"}], 
+            "&"}], ",", "pairs"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"MissingQ", "[", "pairs", "]"}], ",", 
+          RowBox[{"Return", "[", 
+           RowBox[{"Missing", "[", "]"}], "]"}]}], "]"}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Values", "@", 
+         RowBox[{"Counts", "[", "pairs", "]"}]}]}]}], "\[IndentingNewLine]", 
+      "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
    "\[IndentingNewLine]", "\[IndentingNewLine]"}]}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[178]:=",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15"],
+  "11/11/21 19:32:45 (Local) \
+In[505]:=",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15"],
 
 Cell[BoxData[
  RowBox[{
@@ -2223,8 +2175,8 @@ Cell[BoxData[
   3.7834167282237244`*^9, 3.7834168414462476`*^9}, {3.7834171035469646`*^9, 
   3.783417106402382*^9}},
  CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[180]:=",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1"],
+  "11/11/21 18:48:42 (Local) \
+In[365]:=",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1"],
 
 Cell[BoxData[
  RowBox[{
@@ -2240,7 +2192,7 @@ Cell[BoxData[
   RowBox[{
    RowBox[{
     RowBox[{
-     RowBox[{"findGraphChain", "[", 
+     RowBox[{"findGraphFront", "[", 
       RowBox[{"firstNumber_", ",", "neighbourAssociations_"}], "]"}], " ", ":=",
       " ", 
      RowBox[{"Module", "[", 
@@ -2248,10 +2200,10 @@ Cell[BoxData[
        RowBox[{"{", 
         RowBox[{
         "lastNumber", ",", "allOutwardEdges", ",", "rightEdgesByAngle", ",", 
-         "nextEdge", ",", "nextCoinNumber", ",", "thisChain"}], "}"}], ",", 
+         "nextEdge", ",", "nextCoinNumber", ",", "thisFront"}], "}"}], ",", 
        "\[IndentingNewLine]", "\[IndentingNewLine]", 
        RowBox[{
-        RowBox[{"thisChain", " ", "=", " ", 
+        RowBox[{"thisFront", " ", "=", " ", 
          RowBox[{"{", "firstNumber", "}"}]}], ";", "\[IndentingNewLine]", 
         RowBox[{"For", "[", 
          RowBox[{
@@ -2263,25 +2215,13 @@ Cell[BoxData[
             RowBox[{
              RowBox[{"k", "==", "50"}], ",", 
              RowBox[{
-              RowBox[{"Print", "[", "\"\<fGC at 50\>\"", "]"}], ";", 
+              RowBox[{"Print", "[", "\"\<fGF at 50\>\"", "]"}], ";", 
               RowBox[{"Return", "[", 
                RowBox[{"Missing", "[", "\"\<k50\>\"", "]"}], "]"}]}]}], "]"}],
             ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
            RowBox[{"lastNumber", "=", "  ", 
-            RowBox[{"Last", "[", " ", "thisChain", "]"}]}], ";", 
+            RowBox[{"Last", "[", " ", "thisFront", "]"}]}], ";", 
            "\[IndentingNewLine]", 
-           RowBox[{"(*", " ", 
-            RowBox[{
-            "we", " ", "have", " ", "come", " ", "in", " ", "on", " ", "a", 
-             " ", "neighbour", " ", "connection", " ", 
-             RowBox[{
-              RowBox[{"(", 
-               RowBox[{
-               "usually", " ", "but", " ", "not", " ", "always", " ", "from", 
-                " ", "the", " ", "left"}], ")"}], ".", " ", "We"}], " ", 
-             "want", " ", "the", " ", "next", " ", "outward", " ", 
-             "collection", " ", "clockwise", " ", "from", " ", "that"}], " ", 
-            "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
            RowBox[{"allOutwardEdges", "=", 
             RowBox[{"EdgeList", "[", " ", 
              RowBox[{
@@ -2331,36 +2271,37 @@ Cell[BoxData[
               "firstNumber"}], ",", "\[IndentingNewLine]", 
              RowBox[{"Break", "[", "]"}]}], "\[IndentingNewLine]", "]"}], ";",
             "\[IndentingNewLine]", 
-           RowBox[{"thisChain", " ", "=", " ", 
+           RowBox[{"thisFront", " ", "=", " ", 
             RowBox[{"Append", "[", 
-             RowBox[{"thisChain", ",", "nextCoinNumber"}], "]"}]}], ";"}]}], 
-         "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}], ";", 
-        "\[IndentingNewLine]", "\[IndentingNewLine]", "thisChain"}]}], 
+             RowBox[{"thisFront", ",", "nextCoinNumber"}], "]"}]}], ";"}]}], 
+         "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+        RowBox[{"thisFront", " ", "=", " ", 
+         RowBox[{"Append", "[", 
+          RowBox[{"thisFront", ",", "firstNumber"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", "thisFront"}]}], 
       "\[IndentingNewLine]", "]"}]}], ";"}], 
    "\[IndentingNewLine]"}]}]], "Input",
- InitializationCell->True,
- CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[181]:=",ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258"],
+ InitializationCell->
+  True,ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
   RowBox[{
    RowBox[{
     RowBox[{
-     RowBox[{"findChain", "[", 
+     RowBox[{"findFront", "[", 
       RowBox[{"firstNumber_", ",", "neighbourAssociations_"}], "]"}], " ", ":=",
       " ", 
      RowBox[{"Module", "[", 
       RowBox[{
        RowBox[{"{", 
         RowBox[{
-        "lastNumberCoinAdded", ",", "lastNumberBare", ",", "nextInChainList", 
-         ",", "nextCoinNumber", ",", "nextCoinBare", ",", "thisChain", ",", 
-         "oldchain"}], "}"}], ",", "\[IndentingNewLine]", 
+        "lastNumberCoinAdded", ",", "lastNumberBare", ",", "nextInFrontList", 
+         ",", "nextCoinNumber", ",", "nextCoinBare", ",", "thisFront", ",", 
+         "oldfront"}], "}"}], ",", "\[IndentingNewLine]", 
        "\[IndentingNewLine]", 
        RowBox[{
-        RowBox[{"thisChain", " ", "=", " ", 
+        RowBox[{"thisFront", " ", "=", " ", 
          RowBox[{"{", "firstNumber", "}"}]}], ";", "\[IndentingNewLine]", 
         RowBox[{"For", "[", 
          RowBox[{
@@ -2369,7 +2310,7 @@ Cell[BoxData[
           RowBox[{"k", "++"}], ",", "\[IndentingNewLine]", 
           RowBox[{
            RowBox[{"lastNumberCoinAdded", " ", "=", " ", 
-            RowBox[{"thisChain", "[", 
+            RowBox[{"thisFront", "[", 
              RowBox[{"[", " ", 
               RowBox[{"-", "1"}], " ", "]"}], "]"}]}], " ", ";", 
            "\[IndentingNewLine]", 
@@ -2399,7 +2340,7 @@ Cell[BoxData[
            RowBox[{"If", "[", 
             RowBox[{
              RowBox[{
-              RowBox[{"Length", "[", "thisChain", "]"}], "\[Equal]", "1"}], 
+              RowBox[{"Length", "[", "thisFront", "]"}], "\[Equal]", "1"}], 
              ",", "\[IndentingNewLine]", 
              RowBox[{
               RowBox[{"If", "[", 
@@ -2420,7 +2361,7 @@ Cell[BoxData[
               " ", "*)"}], "\[IndentingNewLine]", 
              RowBox[{
               RowBox[{"previousNumberCoinAdded", " ", "=", " ", 
-               RowBox[{"thisChain", "[", 
+               RowBox[{"thisFront", "[", 
                 RowBox[{"[", 
                  RowBox[{"-", "2"}], "]"}], "]"}]}], ";", 
               "\[IndentingNewLine]", 
@@ -2434,9 +2375,9 @@ Cell[BoxData[
                  RowBox[{"Head", "[", "lastNumberCoinAdded", "]"}], 
                  "\[Equal]", "right"}], " ", ",", "\[IndentingNewLine]", 
                 RowBox[{
-                 RowBox[{"thisChain", " ", "=", " ", 
+                 RowBox[{"thisFront", " ", "=", " ", 
                   RowBox[{"Append", "[", 
-                   RowBox[{"thisChain", ",", 
+                   RowBox[{"thisFront", ",", 
                     RowBox[{"bareNumber", "[", "lastNumberCoinAdded", "]"}]}],
                     "]"}]}], ";", "\[IndentingNewLine]", 
                  RowBox[{"previousNumberCoinAdded", "=", 
@@ -2484,11 +2425,11 @@ Cell[BoxData[
                 RowBox[{"(*", " ", 
                  RowBox[{
                   RowBox[{"can", "'"}], "t", " ", "finish", " ", 
-                  "thisChain"}], " ", "*)"}], "\[IndentingNewLine]", 
+                  "thisFront"}], " ", "*)"}], "\[IndentingNewLine]", 
                 RowBox[{
-                 RowBox[{"thisChain", " ", "=", " ", 
+                 RowBox[{"thisFront", " ", "=", " ", 
                   RowBox[{"Append", "[", 
-                   RowBox[{"thisChain", ",", "\"\<KeyAbsent\>\""}], "]"}]}], 
+                   RowBox[{"thisFront", ",", "\"\<KeyAbsent\>\""}], "]"}]}], 
                  ";", "\[IndentingNewLine]", 
                  RowBox[{"Break", "[", "]"}]}]}], "]"}], ";", 
               "\[IndentingNewLine]", "\[IndentingNewLine]", 
@@ -2504,43 +2445,43 @@ Cell[BoxData[
              RowBox[{"nextCoinBare", " ", "\[Equal]", " ", "firstNumber"}], 
              ",", "\[IndentingNewLine]", 
              RowBox[{
-              RowBox[{"thisChain", " ", "=", " ", 
+              RowBox[{"thisFront", " ", "=", " ", 
                RowBox[{"Append", "[", 
-                RowBox[{"thisChain", ",", "nextCoinNumber"}], "]"}]}], ";", 
+                RowBox[{"thisFront", ",", "nextCoinNumber"}], "]"}]}], ";", 
               "\[IndentingNewLine]", 
               RowBox[{"If", "[", 
                RowBox[{
                 RowBox[{
                  RowBox[{"Head", "[", "nextCoinNumber", "]"}], "===", " ", 
                  "right"}], ",", "\[IndentingNewLine]", 
-                RowBox[{"thisChain", " ", "=", " ", 
+                RowBox[{"thisFront", " ", "=", " ", 
                  RowBox[{"Append", "[", 
-                  RowBox[{"thisChain", ",", "nextCoinBare"}], "]"}]}]}], 
+                  RowBox[{"thisFront", ",", "nextCoinBare"}], "]"}]}]}], 
                "]"}], ";", "\[IndentingNewLine]", 
               RowBox[{"Break", "[", "]"}]}]}], "]"}], ";", 
            "\[IndentingNewLine]", 
            RowBox[{"If", "[", 
             RowBox[{
              RowBox[{"MemberQ", "[", 
-              RowBox[{"thisChain", ",", "nextCoinBare"}], "]"}], ",", 
+              RowBox[{"thisFront", ",", "nextCoinBare"}], "]"}], ",", 
              RowBox[{"Print", "[", 
               RowBox[{
-              "\"\<Chain loop from \>\"", ",", "firstNumber", ",", " ", 
+              "\"\<Front loop from \>\"", ",", "firstNumber", ",", " ", 
                "\"\< at \>\"", ",", "nextCoinNumber"}], "]"}]}], 
             RowBox[{"(*", 
              RowBox[{";", 
               RowBox[{"Abort", "[", "]"}]}], "*)"}], "]"}], ";", 
            "\[IndentingNewLine]", 
-           RowBox[{"thisChain", " ", "=", " ", 
+           RowBox[{"thisFront", " ", "=", " ", 
             RowBox[{"Append", "[", 
-             RowBox[{"thisChain", ",", "nextCoinNumber"}], "]"}]}], ";"}]}], 
+             RowBox[{"thisFront", ",", "nextCoinNumber"}], "]"}]}], ";"}]}], 
          "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
-        "\[IndentingNewLine]", "thisChain"}]}], "\[IndentingNewLine]", 
+        "\[IndentingNewLine]", "thisFront"}]}], "\[IndentingNewLine]", 
       "]"}]}], ";"}], "\[IndentingNewLine]"}]}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[182]:=",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752"],
+  "11/11/21 18:48:42 (Local) \
+In[367]:=",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752"],
 
 Cell[BoxData[{
  RowBox[{
@@ -2555,8 +2496,8 @@ Cell[BoxData[{
       RowBox[{"{", 
        RowBox[{
        "lowerN", ",", "neighbourAssociationsres", ",", "n", ",", "i", ",", 
-        "coinCollection", ",", "angles", ",", "angleResult", ",", 
-        "nextCoin"}], "}"}], ",", "\[IndentingNewLine]", 
+        "coinCollection", ",", "angles", ",", "angleResult", ",", "nextCoin", 
+        ",", "para2"}], "}"}], ",", "\[IndentingNewLine]", 
       "\[IndentingNewLine]", 
       RowBox[{
        RowBox[{"coinCollection", "=", " ", 
@@ -2573,7 +2514,7 @@ Cell[BoxData[{
        RowBox[{"(*", " ", 
         RowBox[{
         "use", " ", "pair", " ", "to", " ", "update", " ", "ContactAngle", 
-         " ", "as", " ", "chain", " ", "finding", " ", "is", " ", "bodged", 
+         " ", "as", " ", "front", " ", "finding", " ", "is", " ", "bodged", 
          " ", "but", " ", "works", " ", "for", " ", "that"}], " ", "*)"}], 
        "\[IndentingNewLine]", "\[IndentingNewLine]", 
        RowBox[{"lowerN", " ", "=", " ", 
@@ -2673,55 +2614,78 @@ Cell[BoxData[{
          RowBox[{"nextCoin", ",", 
           RowBox[{"arenaAssociation", "[", "\"\<phi\>\"", "]"}]}], "]"}]}], 
        ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"neighbourAssociationsres", "[", "FrontNumbers", "]"}], " ", 
+        "=", 
+        RowBox[{"findFrontNumbersFromNodes", "[", 
+         RowBox[{
+         "nextCoinSet", ",", "arenaAssociation", ",", 
+          "neighbourAssociationsres"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"neighbourAssociationsres", "[", "ChainNumbers", "]"}], " ", 
+        "=", " ", 
+        RowBox[{"findGraphFront", "[", 
+         RowBox[{
+          RowBox[{"coinNumber", "[", 
+           RowBox[{"First", "[", "nextCoinSet", "]"}], "]"}], ",", 
+          "neighbourAssociationsres"}], "]"}]}], ";", "\[IndentingNewLine]", 
        "\[IndentingNewLine]", 
+       RowBox[{"para2", " ", "=", " ", 
+        RowBox[{"neighbourAssociationsres", "[", "Parastichy", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"para2", "[", 
+         RowBox[{"coinNumber", "[", "nextCoin", "]"}], "]"}], " ", "=", 
+        RowBox[{"chainParastichyCount", "[", 
+         RowBox[{
+          RowBox[{"neighbourAssociationsres", "[", "ChainNumbers", "]"}], ",",
+           "neighbourAssociationsres"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"neighbourAssociationsres", "[", "Parastichy", "]"}], " ", 
+        "=", " ", "para2"}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
        RowBox[{"Return", "[", "neighbourAssociationsres", "]"}], ";"}]}], 
      "\[IndentingNewLine]", "]"}]}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{
-    RowBox[{"findChainFromNodes", "[", 
+    RowBox[{"findFrontFromNodes", "[", 
      RowBox[{"nextCoinSet_", ",", "arenaAssociation_", ",", "nAres_"}], "]"}],
      "  ", ":=", " ", 
     RowBox[{"Module", "[", 
      RowBox[{
       RowBox[{"{", 
-       RowBox[{"coinChain2", ",", "lastChainNumbers", ",", "res"}], "}"}], 
+       RowBox[{"coinFront2", ",", "lastFrontNumbers", ",", "res"}], "}"}], 
       ",", "\[IndentingNewLine]", 
       RowBox[{"(*", 
        RowBox[{
-        RowBox[{"lastChainNumbers", " ", "=", 
-         RowBox[{"findGraphChain", "[", 
+        RowBox[{"lastFrontNumbers", " ", "=", 
+         RowBox[{"findGraphFront", "[", 
           RowBox[{
            RowBox[{"coinNumber", "[", 
             RowBox[{"First", "[", "nextCoinSet", "]"}], "]"}], ",", "nAres"}],
            "]"}]}], ";", "\[IndentingNewLine]", 
         RowBox[{"If", "[", 
          RowBox[{
-          RowBox[{"MissingQ", "[", "lastChainNumbers", "]"}], ",", 
+          RowBox[{"MissingQ", "[", "lastFrontNumbers", "]"}], ",", 
           "\[IndentingNewLine]", 
           RowBox[{
            RowBox[{"Print", "[", 
-            RowBox[{"\"\<Can't complete chain at \>\"", ",", 
+            RowBox[{"\"\<Can't complete front at \>\"", ",", 
              RowBox[{"coinNumber", "[", 
               RowBox[{"First", "[", "nextCoinSet", "]"}], "]"}]}], "]"}], ";",
             "\[IndentingNewLine]", 
-           RowBox[{"lastChainNumbers", " ", "=", 
-            RowBox[{"findChain", "[", 
+           RowBox[{"lastFrontNumbers", " ", "=", 
+            RowBox[{"findFront", "[", 
              RowBox[{
               RowBox[{"coinNumber", "[", 
                RowBox[{"First", "[", "nextCoinSet", "]"}], "]"}], ",", 
               "nAres"}], "]"}]}]}]}], "\[IndentingNewLine]", "]"}], ";"}], 
        "\[IndentingNewLine]", "*)"}], "\[IndentingNewLine]", 
       RowBox[{
-       RowBox[{"dbg", " ", "=", " ", 
-        RowBox[{"(", 
-         RowBox[{
-          RowBox[{"coinNumber", "[", 
-           RowBox[{"First", "[", "nextCoinSet", "]"}], "]"}], "==", "166"}], 
-         ")"}]}], ";", "\[IndentingNewLine]", 
-       RowBox[{"lastChainNumbers", " ", "=", 
-        RowBox[{"findChain", "[", 
+       RowBox[{"lastFrontNumbers", " ", "=", 
+        RowBox[{"findFront", "[", 
          RowBox[{
           RowBox[{"coinNumber", "[", 
            RowBox[{"First", "[", "nextCoinSet", "]"}], "]"}], ",", "nAres"}], 
@@ -2730,30 +2694,30 @@ Cell[BoxData[{
         RowBox[{
          RowBox[{"!", 
           RowBox[{"MemberQ", "[", 
-           RowBox[{"lastChainNumbers", ",", "\"\<KeyAbsent\>\""}], "]"}]}], 
+           RowBox[{"lastFrontNumbers", ",", "\"\<KeyAbsent\>\""}], "]"}]}], 
          ",", "\[IndentingNewLine]", 
          RowBox[{"(*", " ", 
           RowBox[{"main", " ", "way"}], " ", "*)"}], "\[IndentingNewLine]", 
          RowBox[{
-          RowBox[{"coinChain2", " ", "=", " ", 
+          RowBox[{"coinFront2", " ", "=", " ", 
            RowBox[{"Map", "[", 
             RowBox[{
              RowBox[{
               RowBox[{"getCoinAndCopiesByNumber", "[", 
                RowBox[{"#", ",", 
                 RowBox[{"nAres", "[", "Coins", "]"}]}], "]"}], "&"}], ",", 
-             "lastChainNumbers"}], "]"}]}], ";", "\[IndentingNewLine]", 
-          RowBox[{"coinChain2", " ", "=", " ", 
+             "lastFrontNumbers"}], "]"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"coinFront2", " ", "=", " ", 
            RowBox[{"DeleteDuplicates", "@", 
             RowBox[{"Flatten", "[", 
-             RowBox[{"coinChain2", ",", "1"}], "]"}]}]}]}], 
+             RowBox[{"coinFront2", ",", "1"}], "]"}]}]}]}], 
          "\[IndentingNewLine]", ",", "\[IndentingNewLine]", 
          RowBox[{"(*", " ", 
           RowBox[{
           "initially", " ", "or", " ", "after", " ", "a", " ", "restart"}], 
           " ", "*)"}], "\[IndentingNewLine]", 
          RowBox[{
-          RowBox[{"coinChain2", " ", "=", " ", 
+          RowBox[{"coinFront2", " ", "=", " ", 
            RowBox[{"Join", "[", " ", 
             RowBox[{
              RowBox[{"nAres", "[", "Coins", "]"}], ",", "nextCoinSet"}], 
@@ -2761,40 +2725,34 @@ Cell[BoxData[{
        "\[IndentingNewLine]", 
        RowBox[{"res", " ", "=", " ", 
         RowBox[{"SortBy", "[", 
-         RowBox[{"coinChain2", ",", 
+         RowBox[{"coinFront2", ",", 
           RowBox[{
            RowBox[{"#", "[", 
             RowBox[{"[", 
              RowBox[{"2", ",", "1", ",", "1"}], "]"}], "]"}], "&"}]}], 
-         "]"}]}], ";", "\[IndentingNewLine]", 
-       RowBox[{"If", "[", 
-        RowBox[{"dbg", ",", 
-         RowBox[{"Print", "[", 
-          RowBox[{"{", 
-           RowBox[{"nextCoinSet", ",", "lastChainNumbers", ",", "res"}], 
-           "}"}], "]"}]}], "]"}], ";", "\[IndentingNewLine]", "res"}]}], 
-     "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+         "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       "res"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{
-    RowBox[{"findChainNumbersFromNodes", "[", 
+    RowBox[{"findFrontNumbersFromNodes", "[", 
      RowBox[{"nextCoinSet_", ",", "arenaAssociation_", ",", "nAres_"}], "]"}],
      "  ", ":=", " ", 
     RowBox[{"Module", "[", 
      RowBox[{
-      RowBox[{"{", "chain", "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"{", "front", "}"}], ",", "\[IndentingNewLine]", 
       RowBox[{
-       RowBox[{"chain", " ", "=", " ", 
-        RowBox[{"findChainFromNodes", "[", 
+       RowBox[{"front", " ", "=", " ", 
+        RowBox[{"findFrontFromNodes", "[", 
          RowBox[{"nextCoinSet", ",", "arenaAssociation", ",", "nAres"}], 
          "]"}]}], " ", ";", "\[IndentingNewLine]", 
-       RowBox[{"coinNumber", " ", "/@", " ", "chain"}]}]}], 
+       RowBox[{"coinNumber", " ", "/@", " ", "front"}]}]}], 
      "\[IndentingNewLine]", "]"}]}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"chainFromChainNumbers", "[", "nodeAssociation_", "]"}], " ", ":=",
+   RowBox[{"frontFromFrontNumbers", "[", "nodeAssociation_", "]"}], " ", ":=",
     " ", 
    RowBox[{"Module", "[", 
     RowBox[{
@@ -2808,7 +2766,7 @@ Cell[BoxData[{
            RowBox[{"#", ",", 
             RowBox[{"nodeAssociation", "[", "Coins", "]"}]}], "]"}], "&"}], 
          ",", 
-         RowBox[{"nodeAssociation", "[", "ChainNumbers", "]"}]}], "]"}]}], 
+         RowBox[{"nodeAssociation", "[", "FrontNumbers", "]"}]}], "]"}]}], 
       ";", "\[IndentingNewLine]", 
       RowBox[{"If", "[", 
        RowBox[{
@@ -2817,8 +2775,8 @@ Cell[BoxData[{
        "]"}]}]}], "\[IndentingNewLine]", "]"}]}], ";"}]}], "Input",
  InitializationCell->True,
  CellLabel->
-  "11/11/21 18:10:06 (Local) \
-In[197]:=",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706"],
+  "11/11/21 19:17:04 (Local) \
+In[456]:=",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706"],
 
 Cell[BoxData[
  RowBox[{
@@ -2846,7 +2804,7 @@ Cell[BoxData[
        RowBox[{"nextCoin", " ", "=", "  ", 
         RowBox[{"placeNextCoinCone", "[", "  ", "\[IndentingNewLine]", 
          RowBox[{
-          RowBox[{"chainFromChainNumbers", "[", "nodeAssociation", "]"}], 
+          RowBox[{"frontFromFrontNumbers", "[", "nodeAssociation", "]"}], 
           "\[IndentingNewLine]", ",", "r", "\[IndentingNewLine]", ",", 
           RowBox[{"nodeAssociation", "[", "LastCoinZ", "]"}], 
           "\[IndentingNewLine]", ",", "phi", "\[IndentingNewLine]", ",", " ", 
@@ -2867,36 +2825,17 @@ Cell[BoxData[
          RowBox[{
          "nextCoinSet", ",", "arenaAssociation", ",", "nodeAssociation"}], 
          "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"nAres", "[", "ChainNumbers", "]"}], " ", "=", 
-        RowBox[{"findChainNumbersFromNodes", "[", 
-         RowBox[{"nextCoinSet", ",", "arenaAssociation", ",", "nAres"}], 
-         "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"para2", " ", "=", " ", 
-        RowBox[{"nAres", "[", "Parastichy", "]"}]}], ";", 
-       "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"para2", "[", 
-         RowBox[{"coinNumber", "[", "nextCoin", "]"}], "]"}], " ", "=", 
-        RowBox[{"chainParastichyCount", "[", 
-         RowBox[{
-          RowBox[{"nAres", "[", "ChainNumbers", "]"}], ",", "nAres"}], 
-         "]"}]}], ";", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"nAres", "[", "Parastichy", "]"}], " ", "=", " ", "para2"}], 
-       ";", "\[IndentingNewLine]", "\[IndentingNewLine]", "nAres"}]}], 
-     "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}]}], ";"}], 
-  "\[IndentingNewLine]", "\[IndentingNewLine]"}]], "Input",
- InitializationCell->True,
- CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[184]:=",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1"],
+       "\[IndentingNewLine]", "nAres"}]}], "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}]], "Input",
+ InitializationCell->
+  True,ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1"],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{
    RowBox[{
-    RowBox[{"stackChainFromIC", "[", 
+    RowBox[{"stackFrontFromIC", "[", 
      RowBox[{"icCoins_", ",", "arenaAssociation_"}], "]"}], " ", ":=", " ", 
     RowBox[{"Module", "[", "\[IndentingNewLine]", 
      RowBox[{
@@ -2928,9 +2867,11 @@ Cell[BoxData[
            RowBox[{"Association", "[", "]"}]}], "\[IndentingNewLine]", ",", 
           RowBox[{"Parastichy", "\[Rule]", 
            RowBox[{"Association", "[", "]"}]}], "\[IndentingNewLine]", ",", 
-          RowBox[{"ChainNumbers", "\[Rule]", " ", 
+          RowBox[{"FrontNumbers", "\[Rule]", " ", 
            RowBox[{"coinNumber", " ", "/@", " ", "icCoins"}]}], 
           "\[IndentingNewLine]", ",", 
+          RowBox[{"ChainNumbers", "\[Rule]", " ", 
+           RowBox[{"Missing", "[", "]"}]}], "\[IndentingNewLine]", ",", 
           RowBox[{"Coins", "\[Rule]", "icCoins"}], "\[IndentingNewLine]", ",", 
           RowBox[{"LastCoinZ", "->", " ", "lastCoinZ"}]}], "]"}]}], ";", 
        "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
@@ -3020,14 +2961,9 @@ Cell[BoxData[
      "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
   "\[IndentingNewLine]"}]], "Input",
  InitializationCell->True,
- CellChangeTimes->{{3.8456135448439083`*^9, 3.845613557072198*^9}, {
-  3.845613831979247*^9, 3.8456138546965075`*^9}, {3.8456170567776628`*^9, 
-  3.845617154806052*^9}, {3.8456171866986427`*^9, 3.8456172201435947`*^9}, {
-  3.8456172743910217`*^9, 3.8456173531871986`*^9}, {3.8456180485138416`*^9, 
-  3.845618065599305*^9}, {3.8456193410421762`*^9, 3.8456193411974196`*^9}},
  CellLabel->
-  "11/11/21 18:04:50 (Local) \
-In[185]:=",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b"]
+  "11/11/21 18:48:42 (Local) \
+In[373]:=",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b"]
 }, Open  ]]
 },
 AutoGeneratedPackage->Automatic,
@@ -3056,31 +2992,31 @@ Cell[852, 28, 364, 11, 79, "Input",ExpressionUUID->"ff2e94a6-5c48-4dce-90d5-bda2
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1253, 44, 310, 5, 67, "Section",ExpressionUUID->"04e92201-6b92-4cbd-89dc-313550f4994d"],
-Cell[1566, 51, 23864, 634, 2619, "Input",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb",
+Cell[1566, 51, 23506, 624, 2579, "Input",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb",
  InitializationCell->True],
-Cell[25433, 687, 6194, 154, 719, "Input",ExpressionUUID->"63ea88af-53a7-423f-8bca-b3bc15d00d81",
+Cell[25075, 677, 6493, 163, 759, "Input",ExpressionUUID->"63ea88af-53a7-423f-8bca-b3bc15d00d81",
  InitializationCell->True],
-Cell[31630, 843, 226, 4, 63, "Input",ExpressionUUID->"290c500d-e234-4dd6-bc8e-7d12becb99a3"],
-Cell[31859, 849, 41973, 630, 599, "Input",ExpressionUUID->"8923fcf7-3a83-4578-b088-d91ab1b058c4",
+Cell[31571, 842, 226, 4, 63, "Input",ExpressionUUID->"290c500d-e234-4dd6-bc8e-7d12becb99a3"],
+Cell[31800, 848, 41973, 630, 599, "Input",ExpressionUUID->"8923fcf7-3a83-4578-b088-d91ab1b058c4",
  InitializationCell->True],
-Cell[73835, 1481, 37120, 531, 239, "Input",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95",
+Cell[73776, 1480, 37120, 531, 239, "Input",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95",
  InitializationCell->True],
-Cell[110958, 2014, 2122, 52, 239, "Input",ExpressionUUID->"be9277a0-95b7-4e02-a2e3-af046510c2ce",
+Cell[110899, 2013, 2122, 52, 239, "Input",ExpressionUUID->"be9277a0-95b7-4e02-a2e3-af046510c2ce",
  InitializationCell->True],
-Cell[113083, 2068, 333, 6, 42, "Input",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
-Cell[113419, 2076, 4418, 108, 579, "Input",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15",
+Cell[113024, 2067, 333, 6, 42, "Input",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
+Cell[113360, 2075, 2418, 61, 369, "Input",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15",
  InitializationCell->True],
-Cell[117840, 2186, 1572, 40, 159, "Input",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1",
+Cell[115781, 2138, 1572, 40, 159, "Input",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1",
  InitializationCell->True],
-Cell[119415, 2228, 5096, 115, 619, "Input",ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258",
+Cell[117356, 2180, 4563, 104, 546, "Input",ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258",
  InitializationCell->True],
-Cell[124514, 2345, 9219, 197, 1099, "Input",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752",
+Cell[121922, 2286, 9219, 197, 1099, "Input",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752",
  InitializationCell->True],
-Cell[133736, 2544, 11839, 276, 1519, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
+Cell[131144, 2485, 12748, 293, 1699, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
  InitializationCell->True],
-Cell[145578, 2822, 3271, 70, 619, "Input",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1",
+Cell[143895, 2780, 2388, 51, 506, "Input",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1",
  InitializationCell->True],
-Cell[148852, 2894, 6263, 135, 799, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b",
+Cell[146286, 2833, 6013, 132, 819, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b",
  InitializationCell->True]
 }, Open  ]]
 }
