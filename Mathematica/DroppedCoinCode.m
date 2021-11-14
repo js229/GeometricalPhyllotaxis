@@ -393,17 +393,12 @@ para2 = neighbourAssociationsres[Parastichy];
 para2[coinNumber[nextCoin]] =chainParastichyCount[neighbourAssociationsres[ChainNumbers],neighbourAssociationsres];
 neighbourAssociationsres[Parastichy] = para2;
 
-
 Return[neighbourAssociationsres];
 ];
 
 findFrontFromNodes[nextCoinSet_,arenaAssociation_,nAres_]  := Module[{coinFront2,lastFrontNumbers,res},
-(*lastFrontNumbers =findGraphFront[coinNumber[First[nextCoinSet]],nAres];
-If[MissingQ[lastFrontNumbers],
-Print["Can't complete front at ",coinNumber[First[nextCoinSet]]];
-lastFrontNumbers =findFront[coinNumber[First[nextCoinSet]],nAres]
-];
-*)
+
+
 lastFrontNumbers =findFront[coinNumber[First[nextCoinSet]],nAres];
 
 If[!MemberQ[lastFrontNumbers,"KeyAbsent"],
