@@ -84,11 +84,11 @@ coinDistance[{n1_,coin1_Disk},{n2_,coin2_Disk}] :=coinDistance[coin1,coin2];
 
 
 
-whichMinConeRegionPoint[region_,phi_] := Module[{pts,hpts,x,y,xy},
+whichMinConeRegionPoint[region_,phi_] := Module[{pts,hpts,x(*y,xy*)},
 pts = MeshPrimitives[region,0];
 If[phi==0,
-hpts = pts /. Point[{x_,y_}] -> y,
-hpts= pts /. Point[xy_] -> xy . xy
+hpts = Block[{y},pts /. Point[{x_,y_}] -> y],
+hpts=  Block[{xy},pts /.Point[xy_] -> xy . xy]
 ];
 pts[[Ordering[hpts][[1]]]]
 ];
@@ -181,6 +181,7 @@ nextCoin =  nextdh/. (Point[{x_,y_}] ->  {lastCoinNumber[coinFront]+1,Disk[{x,y}
 If[Length[nextCoin!=2],Print["Can't place next coin with front\n",coinFront];Abort[]];
 nextCoin 
 ]
+
 
 
 
@@ -493,7 +494,7 @@ graphNodes = nodeAssociation[ContactGraph];
 graphNodeXY = Map[coinXY[getCoinByNumber[#,nodeAssociation[Coins]]]&,VertexList[graphNodes]];
 nodeAssociation[ContactGraph] = Graph[nodeAssociation[ContactGraph],VertexCoordinates->graphNodeXY];
 
-<|"Run"-> nodeAssociation,"Arena"->arenaAssociation|>
+<|"State"-> nodeAssociation,"Arena"->arenaAssociation|>
 ];
 
 
