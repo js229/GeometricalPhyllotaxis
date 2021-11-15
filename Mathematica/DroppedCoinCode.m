@@ -437,8 +437,8 @@ RegionDistance[iboundaryMesh]
 nextCoinAndContacts[chainNumbers_,run_] := Module[{r,chainAndLR,touchingDisksXY
 ,chainRDF,diskChainDistance,disksNotOverlappingChain,lowerNeighbours},
 r = run["Arena"]["rFunction"][run["State"][LastCoinZ]];
-dbg= Max[bareNumber/@chainNumbers]==63;
-If[dbg,Print[chainNumbers]];
+dbg= (Max[bareNumber/@chainNumbers])==62;
+If[dbg,Print["ncc",chainNumbers]];
 
 chainAndLR= DeleteDuplicates[Flatten[Map[getCoinAndCopiesByNumber[#,run["State"][Coins]]&,chainNumbers],1]];
 
@@ -464,6 +464,7 @@ angleLR@coinPairAngle[cx[#1[[2]]],Disk[#2,1]]
 bothLLorRR = Keys@ Select[bothLLorRR,TrueQ];
 touchingDisksXY = KeyDrop[touchingDisksXY,bothLLorRR];
 
+If[dbg,Print[touchingDisksXY]];
 touchingDisksXY  = SortBy[touchingDisksXY,Last];
 If[Length[touchingDisksXY]==0,Return[Missing["No touching disks"]]];
 lowerNeighbours = First[Keys[touchingDisksXY]];
