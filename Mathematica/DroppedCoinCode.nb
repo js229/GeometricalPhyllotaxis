@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    188375,       3668]
-NotebookOptionsPosition[    185751,       3617]
-NotebookOutlinePosition[    186182,       3634]
-CellTagsIndexPosition[    186139,       3631]
+NotebookDataLength[    183837,       3560]
+NotebookOptionsPosition[    181340,       3511]
+NotebookOutlinePosition[    181771,       3528]
+CellTagsIndexPosition[    181728,       3525]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -2275,7 +2275,8 @@ Cell[BoxData[
          RowBox[{
           RowBox[{"k", "==", "50"}], ",", 
           RowBox[{
-           RowBox[{"Print", "[", "\"\<fGF at 50\>\"", "]"}], ";", 
+           RowBox[{"Print", "[", 
+            RowBox[{"\"\<fGF at 50 for\>\"", ",", "firstNumber"}], "]"}], ";", 
            RowBox[{"Return", "[", 
             RowBox[{"Missing", "[", "\"\<k50\>\"", "]"}], "]"}]}]}], "]"}], 
         ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
@@ -2342,8 +2343,9 @@ Cell[BoxData[
   3.8459604472225914`*^9, 3.845960475536664*^9}, {3.845960552381359*^9, 
   3.8459606012950425`*^9}, {3.845960670531965*^9, 3.845960726339073*^9}, {
   3.8459615308513613`*^9, 3.8459615352565746`*^9}, {3.845961855170014*^9, 
-  3.8459618551750755`*^9}},
- CellLabel->"In[55]:=",ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258"],
+  3.8459618551750755`*^9}, {3.8459829025944595`*^9, 3.8459829079633613`*^9}},
+ CellLabel->
+  "In[150]:=",ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -2550,7 +2552,7 @@ Cell[BoxData[
    3.845981758422165*^9},ExpressionUUID->"fb7456f7-c4de-4b55-9051-\
 b714a14d2752"],
 
-Cell[BoxData[{
+Cell[BoxData[
  RowBox[{
   RowBox[{
    RowBox[{
@@ -2577,13 +2579,7 @@ Cell[BoxData[{
         RowBox[{"coinNumber", "[", "nextCoin", "]"}]}], ";", 
        "\[IndentingNewLine]", "\[IndentingNewLine]", 
        RowBox[{"neighbourAssociationsres", "=", " ", "nodeAssociation"}], ";",
-        "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"(*", " ", 
-        RowBox[{
-        "use", " ", "pair", " ", "to", " ", "update", " ", "ContactAngle", 
-         " ", "as", " ", "front", " ", "finding", " ", "is", " ", "bodged", 
-         " ", "but", " ", "works", " ", "for", " ", "that"}], " ", "*)"}], 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
        RowBox[{"lowerN", " ", "=", " ", 
         RowBox[{
          RowBox[{"coinLowerPair", "[", 
@@ -2725,90 +2721,8 @@ Cell[BoxData[{
         "=", " ", "para2"}], ";", "\[IndentingNewLine]", 
        "\[IndentingNewLine]", 
        RowBox[{"Return", "[", "neighbourAssociationsres", "]"}], ";"}]}], 
-     "\[IndentingNewLine]", "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"findFrontNumbersFromNodes", "[", 
-     RowBox[{"n_", ",", "arenaAssociation_", ",", "nAres_"}], "]"}], "  ", ":=",
-     " ", 
-    RowBox[{"Module", "[", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{
-       "nextCoinS", ",", "coinFront2", ",", "lastFrontNumbers", ",", "res"}], 
-       "}"}], ",", "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{"Print", "[", "\"\<fFN\>\"", "]"}], ";", "\[IndentingNewLine]",
-        "\[IndentingNewLine]", 
-       RowBox[{"lastFrontNumbers", " ", "=", 
-        RowBox[{"findFront", "[", 
-         RowBox[{"n", ",", "nAres"}], "]"}]}], ";", "\[IndentingNewLine]", 
-       RowBox[{"Print", "[", "lastFrontNumbers", "]"}], ";", 
-       "\[IndentingNewLine]", 
-       RowBox[{"Print", "[", "\"\<fFN\>\"", "]"}], ";", "\[IndentingNewLine]", 
-       RowBox[{"If", "[", 
-        RowBox[{
-         RowBox[{"MissingQ", "[", "lastFrontNumbers", "]"}], ",", 
-         RowBox[{"Return", "[", "lastFrontNumbers", "]"}]}], "]"}], ";", 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"nextCoinS", " ", "=", " ", 
-        RowBox[{"getCoinAndCopiesByNumber", "[", 
-         RowBox[{"n", ",", 
-          RowBox[{"nAres", "[", "Coins", "]"}]}], "]"}]}], ";", 
-       "\[IndentingNewLine]", 
-       RowBox[{"If", "[", 
-        RowBox[{
-         RowBox[{"MissingQ", "[", "lastFrontNumbers", "]"}], ",", 
-         RowBox[{
-          RowBox[{"Print", "[", "nextCoinS", "]"}], ";", 
-          RowBox[{"Print", "[", "lastFrontNumbers", "]"}]}]}], "]"}], ";", 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"If", "[", 
-        RowBox[{
-         RowBox[{"!", 
-          RowBox[{"MemberQ", "[", 
-           RowBox[{"lastFrontNumbers", ",", "\"\<KeyAbsent\>\""}], "]"}]}], 
-         ",", "\[IndentingNewLine]", 
-         RowBox[{"(*", " ", 
-          RowBox[{"main", " ", "way"}], " ", "*)"}], "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{"coinFront2", " ", "=", " ", 
-           RowBox[{"Map", "[", 
-            RowBox[{
-             RowBox[{
-              RowBox[{"getCoinAndCopiesByNumber", "[", 
-               RowBox[{"#", ",", 
-                RowBox[{"nAres", "[", "Coins", "]"}]}], "]"}], "&"}], ",", 
-             "lastFrontNumbers"}], "]"}]}], ";", "\[IndentingNewLine]", 
-          RowBox[{"coinFront2", " ", "=", " ", 
-           RowBox[{"DeleteDuplicates", "@", 
-            RowBox[{"Flatten", "[", 
-             RowBox[{"coinFront2", ",", "1"}], "]"}]}]}]}], 
-         "\[IndentingNewLine]", ",", "\[IndentingNewLine]", 
-         RowBox[{"(*", " ", 
-          RowBox[{
-          "initially", " ", "or", " ", "after", " ", "a", " ", "restart"}], 
-          " ", "*)"}], "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{"coinFront2", " ", "=", " ", 
-           RowBox[{"Join", "[", " ", 
-            RowBox[{
-             RowBox[{"nAres", "[", "Coins", "]"}], ",", "nextCoinS"}], 
-            "]"}]}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
-       "\[IndentingNewLine]", 
-       RowBox[{"res", " ", "=", " ", 
-        RowBox[{"SortBy", "[", 
-         RowBox[{"coinFront2", ",", 
-          RowBox[{
-           RowBox[{"#", "[", 
-            RowBox[{"[", 
-             RowBox[{"2", ",", "1", ",", "1"}], "]"}], "]"}], "&"}]}], 
-         "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"coinNumber", " ", "/@", "res"}]}]}], "\[IndentingNewLine]", 
-     "]"}]}], ";"}], "\[IndentingNewLine]", 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
+     "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.8458481480158663`*^9, 3.845848161499687*^9}, {
    3.845848214838073*^9, 3.845848216224168*^9}, 3.845848279443944*^9, {
@@ -2837,9 +2751,10 @@ Cell[BoxData[{
    3.845980176164626*^9, 3.845980234246352*^9}, {3.8459808101733894`*^9, 
    3.8459808313404064`*^9}, 3.845981240424588*^9, 3.845981316502963*^9, {
    3.8459813655963078`*^9, 3.845981422008232*^9}, {3.8459814671226053`*^9, 
-   3.8459814705437384`*^9}, {3.8459815035359373`*^9, 3.8459815066914005`*^9}},
- CellLabel->
-  "In[109]:=",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706"],
+   3.8459814705437384`*^9}, {3.8459815035359373`*^9, 
+   3.8459815066914005`*^9}, {3.845982109922552*^9, 
+   3.845982128127015*^9}},ExpressionUUID->"f6641d9c-01c5-4a74-8331-\
+fd6c0316d706"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -2899,8 +2814,16 @@ Cell[BoxData[
            "\"\<rFunction\>\"", "]"}], "[", 
           RowBox[{
            RowBox[{"run", "[", "\"\<State\>\"", "]"}], "[", "LastCoinZ", 
-           "]"}], "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-        "\[IndentingNewLine]", 
+           "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"dbg", "=", " ", 
+         RowBox[{
+          RowBox[{"Max", "[", 
+           RowBox[{"bareNumber", "/@", "chainNumbers"}], "]"}], "==", 
+          "63"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{"dbg", ",", 
+          RowBox[{"Print", "[", "chainNumbers", "]"}]}], "]"}], ";", 
+        "\[IndentingNewLine]", "\[IndentingNewLine]", 
         RowBox[{"chainAndLR", "=", " ", 
          RowBox[{"DeleteDuplicates", "[", 
           RowBox[{"Flatten", "[", 
@@ -3249,37 +3172,9 @@ Cell[BoxData[
    3.8459723475147333`*^9}, {3.8459724064152336`*^9, 
    3.8459724605343857`*^9}, {3.845972515332735*^9, 3.845972645146504*^9}, {
    3.845972875380842*^9, 3.845972906556059*^9}, {3.8459733597801523`*^9, 
-   3.845973383185918*^9}},
- CellLabel->"In[60]:=",ExpressionUUID->"571ebe60-a33d-4390-9c37-d8e843a78d41"],
-
-Cell[BoxData[
- RowBox[{"(*", 
-  RowBox[{
-   RowBox[{
-    RowBox[{"frontFromFrontNumbers", "[", "nodeAssociation_", "]"}], " ", ":=",
-     " ", 
-    RowBox[{"Module", "[", 
-     RowBox[{
-      RowBox[{"{", "res", "}"}], ",", "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{"res", " ", "=", " ", 
-        RowBox[{"Map", "[", 
-         RowBox[{
-          RowBox[{
-           RowBox[{"getCoinByNumber", "[", 
-            RowBox[{"#", ",", 
-             RowBox[{"nodeAssociation", "[", "Coins", "]"}]}], "]"}], "&"}], 
-          ",", 
-          RowBox[{"nodeAssociation", "[", "FrontNumbers", "]"}]}], "]"}]}], 
-       ";", "\[IndentingNewLine]", 
-       RowBox[{"If", "[", 
-        RowBox[{
-         RowBox[{"MissingQ", "[", "res", "]"}], ",", 
-         RowBox[{"nodeAssociation", "[", "Coins", "]"}], ",", "res"}], 
-        "]"}]}]}], "\[IndentingNewLine]", "]"}]}], ";"}], "*)"}]], "Input",
- InitializationCell->True,
- CellChangeTimes->{3.84597904275723*^9},
- CellLabel->"In[63]:=",ExpressionUUID->"04d4e981-b903-48c5-a264-d2755229bca6"],
+   3.845973383185918*^9}, {3.845982799150401*^9, 3.845982862197934*^9}},
+ CellLabel->
+  "In[143]:=",ExpressionUUID->"571ebe60-a33d-4390-9c37-d8e843a78d41"],
 
 Cell[BoxData[
  RowBox[{
@@ -3421,9 +3316,6 @@ Cell[BoxData[
              RowBox[{"oldLowest", "[", "\"\<CoinNumber\>\"", "]"}], ",", 
              RowBox[{"oldLowest", "[", "\"\<CoinDisk\>\"", "]"}]}], "}"}]}], 
           ";", "\[IndentingNewLine]", 
-          RowBox[{"Print", "[", 
-           RowBox[{"\"\<Going oldstyle at \>\"", ",", " ", "oldLowest"}], 
-           "]"}], ";", "\[IndentingNewLine]", 
           RowBox[{"nextCoinLowerNeighbours", " ", "=", " ", 
            RowBox[{"coinLowerNeighbourNumbers", "[", 
             RowBox[{"nextCoin", ",", " ", 
@@ -3475,8 +3367,10 @@ Cell[BoxData[
    3.845971858261182*^9, 3.845971941320323*^9}, {3.845971992787753*^9, 
    3.845971997146101*^9}, 3.845972050162078*^9, {3.8459730255507317`*^9, 
    3.8459730346979294`*^9}, {3.8459793277911367`*^9, 3.84597939236614*^9}, {
-   3.845979666413355*^9, 3.8459797411424417`*^9}},
- CellLabel->"In[65]:=",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1"],
+   3.845979666413355*^9, 3.8459797411424417`*^9}, {3.8459821852197824`*^9, 
+   3.845982186688122*^9}, {3.845982268538735*^9, 3.845982269101103*^9}, 
+   3.8459829609782124`*^9},ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-\
+291b73f482f1"],
 
 Cell[BoxData[
  RowBox[{
@@ -3653,21 +3547,19 @@ Cell[115084, 2096, 2753, 67, 330, "Input",ExpressionUUID->"5615abe2-38df-4d14-a0
  InitializationCell->True],
 Cell[117840, 2165, 1540, 38, 140, "Input",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1",
  InitializationCell->True],
-Cell[119383, 2205, 6165, 140, 692, "Input",ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258",
+Cell[119383, 2205, 6266, 142, 692, "Input",ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258",
  InitializationCell->True],
-Cell[125551, 2347, 9628, 203, 1072, "Input",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752",
+Cell[125652, 2349, 9628, 203, 1072, "Input",ExpressionUUID->"fb7456f7-c4de-4b55-9051-b714a14d2752",
  InitializationCell->True],
-Cell[135182, 2552, 13749, 289, 1567, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
+Cell[135283, 2554, 9951, 202, 1072, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
  InitializationCell->True],
-Cell[148934, 2843, 19502, 409, 1224, "Input",ExpressionUUID->"571ebe60-a33d-4390-9c37-d8e843a78d41",
+Cell[145237, 2758, 19883, 418, 1243, "Input",ExpressionUUID->"571ebe60-a33d-4390-9c37-d8e843a78d41",
  InitializationCell->True],
-Cell[168439, 3254, 1041, 27, 102, "Input",ExpressionUUID->"04d4e981-b903-48c5-a264-d2755229bca6",
+Cell[165123, 3178, 3269, 65, 349, "Input",ExpressionUUID->"61917369-d68f-40c2-a75d-03cd8ed7d530",
  InitializationCell->True],
-Cell[169483, 3283, 3269, 65, 378, "Input",ExpressionUUID->"61917369-d68f-40c2-a75d-03cd8ed7d530",
+Cell[168395, 3245, 6685, 127, 635, "Input",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1",
  InitializationCell->True],
-Cell[172755, 3350, 6736, 128, 654, "Input",ExpressionUUID->"e24edc4d-4a7e-4a1b-8be1-291b73f482f1",
- InitializationCell->True],
-Cell[179494, 3480, 6241, 134, 768, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b",
+Cell[175083, 3374, 6241, 134, 768, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b",
  InitializationCell->True]
 }, Open  ]]
 }

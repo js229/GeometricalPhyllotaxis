@@ -297,7 +297,7 @@ thisFront = Append[thisFront,nextCoinNumber];
 If[nextCoinNumber==firstNumber,
 Break[]];
 ];
-If[k==50,Print["fGF at 50"];Return[Missing["k50"]]];
+If[k==50,Print["fGF at 50 for",firstNumber];Return[Missing["k50"]]];
 
 
 thisFront
@@ -380,7 +380,6 @@ n = coinNumber[nextCoin];
 
 neighbourAssociationsres= nodeAssociation;
 
-(* use pair to update ContactAngle as front finding is bodged but works for that *)
 
 lowerN = coinLowerPair[nextCoin,coinCollection][[2]];
 angles= coinLowerPair[nextCoin,coinCollection][[3]];
@@ -423,31 +422,6 @@ neighbourAssociationsres[Parastichy] = para2;
 Return[neighbourAssociationsres];
 ];
 
-findFrontNumbersFromNodes[n_,arenaAssociation_,nAres_]  := Module[{nextCoinS,coinFront2,lastFrontNumbers,res},
-Print["fFN"];
-
-lastFrontNumbers =findFront[n,nAres];
-Print[lastFrontNumbers];
-Print["fFN"];
-If[MissingQ[lastFrontNumbers],Return[lastFrontNumbers]];
-
-nextCoinS = getCoinAndCopiesByNumber[n,nAres[Coins]];
-If[MissingQ[lastFrontNumbers],Print[nextCoinS];Print[lastFrontNumbers]];
-
-If[!MemberQ[lastFrontNumbers,"KeyAbsent"],
-(* main way *)
-coinFront2 = Map[getCoinAndCopiesByNumber[#,nAres[Coins]]&,lastFrontNumbers];
-coinFront2 = DeleteDuplicates@Flatten[coinFront2,1]
-,
-(* initially or after a restart *)
-coinFront2 = Join[ nAres[Coins],nextCoinS];
-];
-res = SortBy[coinFront2,#[[2,1,1]]&];
-
-coinNumber /@res
-];
-
-
 
 
 
@@ -463,7 +437,8 @@ RegionDistance[iboundaryMesh]
 nextCoinAndContacts[chainNumbers_,run_] := Module[{r,chainAndLR,touchingDisksXY
 ,chainRDF,diskChainDistance,disksNotOverlappingChain,lowerNeighbours},
 r = run["Arena"]["rFunction"][run["State"][LastCoinZ]];
-
+dbg= Max[bareNumber/@chainNumbers]==63;
+If[dbg,Print[chainNumbers]];
 
 chainAndLR= DeleteDuplicates[Flatten[Map[getCoinAndCopiesByNumber[#,run["State"][Coins]]&,chainNumbers],1]];
 
@@ -516,13 +491,6 @@ lTrianglePT = (ReflectionTransform[RotationTransform[90 Degree][xy2-xy1],xy1])[r
 
 
 (* ::Input::Initialization:: *)
-(*frontFromFrontNumbers[nodeAssociation_] := Module[{res},
-res = Map[getCoinByNumber[#,nodeAssociation[Coins]]&,nodeAssociation[FrontNumbers]];
-If[MissingQ[res],nodeAssociation[Coins],res]
-];*)
-
-
-(* ::Input::Initialization:: *)
 oldstyleNextCoinAndContacts[run_] := Module[{r,nextCoinByFront,phi},
 
 r = run["Arena"]["rFunction"][run["State"][LastCoinZ]];
@@ -564,7 +532,6 @@ Print["Can't go oldstyle", chainNumbers];
 Abort[];
 ];
 nextCoin ={oldLowest["CoinNumber"],oldLowest["CoinDisk"]};
-Print["Going oldstyle at ", oldLowest];
 nextCoinLowerNeighbours = coinLowerNeighbourNumbers[nextCoin, nodeAssociation[Coins],0.01];
 
 ];
