@@ -430,15 +430,20 @@ Return[neighbourAssociationsres];
 chainRegionDistanceFunction[chainNumbers_,run_,dilation_:1] := Module[{chainAndLRcoins,disks,iboundaryMesh},
 chainAndLRcoins= DeleteDuplicates[Flatten[Map[getCoinAndCopiesByNumber[#,run["State"][Coins]]&,chainNumbers],1]];
 disks = Map[Last,chainAndLRcoins];
-iboundaryMesh = DiscretizeRegion@RegionUnion[disks];
+diskboxes =  Map[diskColumn,disks];
+iboundaryMesh = DiscretizeRegion@RegionUnion[diskboxes];
 RegionDistance[iboundaryMesh]
+];
+
+diskColumn[Disk[xy_,r_]] := Module[{xymin,xymax},
+xymin= xy - {r,3 r};
+xymax = xy+ {r,0};
+RegionUnion[Disk[xy,r],Rectangle[xymin,xymax]]
 ];
 
 nextCoinAndContacts[chainNumbers_,run_] := Module[{r,chainAndLR,touchingDisksXY
 ,chainRDF,diskChainDistance,disksNotOverlappingChain,lowerNeighbours},
 r = run["Arena"]["rFunction"][run["State"][LastCoinZ]];
-dbg= (Max[bareNumber/@chainNumbers])==62;
-If[dbg,Print["ncc",chainNumbers]];
 
 chainAndLR= DeleteDuplicates[Flatten[Map[getCoinAndCopiesByNumber[#,run["State"][Coins]]&,chainNumbers],1]];
 
