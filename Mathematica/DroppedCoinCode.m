@@ -329,7 +329,8 @@ newEdgeAngles =Association@@Map[#-> coinNumberPairAngle[ #[[1]],#[[2]]]&,newEdge
 
 nodeAssociation[DEdgeAngle]= Append[nodeAssociation[DEdgeAngle],newEdgeAngles];
 nodeAssociation[ContactGraph]= EdgeAdd[nodeAssociation[ContactGraph],newEdges];
-nodeAssociation[Coins]=Join[nodeAssociation[Coins],nextCoinSet];
+nodeAssociation[Coins]=coinCollection;
+
 nodeAssociation[LastCoinZ]=coinZ[nextCoin,arenaAssociation["phi"]];
 
 
@@ -394,12 +395,12 @@ angleLR@coinPairAngle[cx[#1[[2]]],Disk[#2,1]]
 bothLLorRR = Keys@ Select[bothLLorRR,TrueQ];
 touchingDisksXY = KeyDrop[touchingDisksXY,bothLLorRR];
 
-If[dbg,Print[touchingDisksXY]];
-touchingDisksXY  = SortBy[touchingDisksXY,Last];
 If[Length[touchingDisksXY]==0,Return[Missing["No touching disks"]]];
+
+touchingDisksXY  = SortBy[touchingDisksXY,Last];
 lowerNeighbours = First[Keys[touchingDisksXY]];
 touchingDisksXY = KeyTake[touchingDisksXY,{First[Keys[touchingDisksXY]]}];
-<| "CoinNumber"-> Max[Map[bareNumber,chainNumbers]]+1,
+<| "CoinNumber"-> Max[Map[bareNumber,chainNumbers]]+1, (* should be n *)
 "CoinDisk"-> Disk[touchingDisksXY[lowerNeighbours],r],
 "CoinNeighbours"-> lowerNeighbours |>
 ];
@@ -486,19 +487,13 @@ stackFrontFromIC[icCoins_,arenaAssociation_] := Module[
 
 lastCoinZ = Max[Map[coinZ[#,arenaAssociation["phi"]]&,icCoins]];
 
-
 nodeAssociation =  Association[
-(*,ContactAngle\[Rule]Association[]
-*)
 ContactGraph->Graph[{}]
 ,DEdgeAngle->Association[]
 ,Parastichy->Association[]
 ,ChainsByCoinNumber ->  Association[]
 ,Coins->icCoins
 ,LastCoinZ-> lastCoinZ];
-
-
-
 
 Monitor[
 For[k=0,k< arenaAssociation["coinMax"],k++,
