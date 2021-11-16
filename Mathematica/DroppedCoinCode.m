@@ -116,19 +116,14 @@ res
 
 
 
-coinLowerNeighbourNumbers[coin_,coinFront_,tolerance_] := Module[{nearestCoins ,res},
-
+coinLowerNeighbourNumbers[coin_,coinFront_,tolerance_] := Module[{coinDistances,nearestCoins ,nearestNumbers},
+(* only used when we don't have a chain *)
 coinDistances =  Association@@Map[#->coinDistance[coin,#]&,coinFront];
 coinDistances = Sort[coinDistances]-Min[coinDistances];
 coinDistances = Select[coinDistances,#<tolerance &];
 nearestCoins = Take[Keys[coinDistances],UpTo[3]];
-(*If[!isPrincipal[coin],
-	nearestCoins= Select[nearestCoins, coinDistance[#,coin]< 2.1 coinR[#] &]];
-*)
 nearestNumbers = Map[coinNumber,nearestCoins];
-
 nearestNumbers
-
 ];
 
 
@@ -177,13 +172,13 @@ res
 
 iBoundary[coinFront_,distance_] := Map[extendRadius[#,distance]&,coinFront];
 
-placeNextCoinCone[coinFront_,coinRadius_,lastCoinZ_,phi_,cylinderLU_] := Module[{ib,iboundaryMesh,cyl,availableRegion,nextdh,d,h,nextCoin,x,y},
+placeNextCoinCone[n_,coinFront_,coinRadius_,lastCoinZ_,phi_,cylinderLU_] := Module[{ib,iboundaryMesh,cyl,availableRegion,nextdh,d,h,nextCoin,x,y},
 ib = iBoundary[coinFront,coinRadius];
 iboundaryMesh = DiscretizeRegion@RegionUnion[ib];
 cyl = coneRegion[phi,{lastCoinZ,cylinderLU[[2]]}];
 availableRegion = RegionDifference[cyl,iboundaryMesh];
 nextdh  = whichMinConeRegionPoint[availableRegion,phi]; (* returns Point *) 
-nextCoin =  nextdh/. (Point[{x_,y_}] ->  {lastCoinNumber[coinFront]+1,Disk[{x,y},coinRadius]});
+nextCoin =  nextdh/. (Point[{x_,y_}] ->  {n,Disk[{x,y},coinRadius]});
 If[Length[nextCoin!=2],Print["Can't place next coin with front\n",coinFront];Abort[]];
 nextCoin 
 ]
@@ -252,7 +247,7 @@ DeleteDuplicates@newEdges
 
 (* ::Input::Initialization:: *)
 
-chainParastichyCount[front_,neighbourAssociations_] := Module[{transitions},
+chainParastichyCount[front_,neighbourAssociations_] := Module[{pairs,lookup},
 pairs = Map[bareNumber,front];
 pairs = ( Partition[pairs,2,1] );
 pairs = DirectedEdge @@@pairs;
@@ -270,7 +265,7 @@ Values@Counts[pairs]
 
 
 (* ::Input::Initialization:: *)
-rotateList[list_,element_] := Module[{},
+rotateList[list_,element_] := Module[{pos},
 If[!MemberQ[list,element],Return[list]];
 pos = First@First@Position[list,element];
 Join[Drop[list,pos-1],Take[list,pos-1]]
@@ -316,84 +311,14 @@ nextCoinNumber
 
 
 (* ::Input::Initialization:: *)
-
-findFront[firstNumber_,neighbourAssociations_] := Module[{lastNumberCoinAdded,lastNumberBare,nextInFrontList,nextCoinNumber,nextCoinBare,thisFront,oldfront},
-
-thisFront = {firstNumber};
-For[k=0,k<Infinity,k++,
-lastNumberCoinAdded = thisFront[[ -1 ]] ;
-lastNumberBare =  bareNumber[lastNumberCoinAdded ];
-(* we have come in on a neighbour connection (usually but not always from the left). We want the next outward collection clockwise from that *)
-allOutward = Map[First,neighbourAssociations[ContactAngle][lastNumberBare]];
-Print[allOutward];
-
-
-If[Length[thisFront]==1,
-If[Length[allOutward]==0,Print["No outwarda at ", firstNumber]];
-nextCoinNumber = First[allOutward],
-(* Length>1:  we came from somewhere *)
-previousNumberCoinAdded = thisFront[[-2]];
-(* reorder clockwise from there *)
-
-If[Head[lastNumberCoinAdded]==right ,
-thisFront = Append[thisFront,bareNumber[lastNumberCoinAdded]];
-previousNumberCoinAdded=left[bareNumber[previousNumberCoinAdded]];
-];
-If[Head[lastNumberCoinAdded]==left ,
-If[MemberQ[Keys[neighbourAssociations[ContactAngle]],lastNumberCoinAdded],allOutward = Map[First,neighbourAssociations[ContactAngle][lastNumberCoinAdded]]]; 
-];
-allOutward = rotateList[allOutward,previousNumberCoinAdded];
-allOutward = Cases[allOutward,Except[previousNumberCoinAdded]];
-If[Length[allOutward]== 0,
-(* can't finish thisFront *)
-thisFront = Append[thisFront,"KeyAbsent"];
-Break[]];
-
-nextCoinNumber = First[allOutward];
-];
-
-nextCoinBare = bareNumber[nextCoinNumber ];
-If[nextCoinBare == firstNumber,
-thisFront = Append[thisFront,nextCoinNumber];
-If[Head[nextCoinNumber]=== right,
-thisFront = Append[thisFront,nextCoinBare]];
-Break[]];
-If[MemberQ[thisFront,nextCoinBare],
-Print["Front loop from ",firstNumber, " at ",nextCoinNumber];Return[Missing["Front loop"]]
-];
-thisFront = Append[thisFront,nextCoinNumber];
-];
-
-thisFront
-];
-
-
-
-(* ::Input::Initialization:: *)
-updateNeighbourFunction[nextCoinSet_,nextCoinLowerNeighbours_,arenaAssociation_,nodeAssociation_] := Module[
-{lowerN,neighbourAssociationsres,n,i,coinCollection,angles,angleResult,nextCoin,para2},
-
-coinCollection= nodeAssociation[Coins];
-nextCoin=First@nextCoinSet;
+updateNeighbourFunction[nextCoin_,nextCoinLowerNeighbours_,run_] := Module[
+{n,coinCollection,newEdges,nextCoinSet,para2,nodeAssociation,thisChain,coinNumberPairAngle,newEdgeAngles},
 
 n = coinNumber[nextCoin];
+nextCoinSet = coinWithConeTranslations[nextCoin,run];
 
-neighbourAssociationsres= nodeAssociation;
-
-
-lowerN = coinLowerPair[nextCoin,coinCollection][[2]];
-angles= coinLowerPair[nextCoin,coinCollection][[3]];
-
-angleResult = nodeAssociation[ContactAngle];
-For[i=1,i<= Length[lowerN],i++,
-angleResult = symmetricAdd[angleResult,n,lowerN[[i]],angles[[i]]]; 
-];
-neighbourAssociationsres[ContactAngle]=angleResult;
-
-If[MissingQ[nextCoinLowerNeighbours],
-Print["Missing lN"];
-];
-
+nodeAssociation =run["State"];
+coinCollection= nodeAssociation[Coins];
 coinCollection = Join[coinCollection,nextCoinSet];
 newEdges = edgesWithLR[n,nextCoinLowerNeighbours];
 
@@ -401,25 +326,25 @@ coinNumberPairAngle[coinm_,coinn_] := coinPairAngle[ getCoinByNumber[coinm,coinC
 
 newEdgeAngles =Association@@Map[#-> coinNumberPairAngle[ #[[1]],#[[2]]]&,newEdges];
 
-neighbourAssociationsres[ContactAngle]=angleResult;
-neighbourAssociationsres[DEdgeAngle]= Append[neighbourAssociationsres[DEdgeAngle],newEdgeAngles];
-neighbourAssociationsres[ContactGraph]= EdgeAdd[neighbourAssociationsres[ContactGraph],newEdges];
-neighbourAssociationsres[Coins]=Join[nodeAssociation[Coins],nextCoinSet];
-neighbourAssociationsres[LastCoinZ]=coinZ[nextCoin,arenaAssociation["phi"]];
+
+nodeAssociation[DEdgeAngle]= Append[nodeAssociation[DEdgeAngle],newEdgeAngles];
+nodeAssociation[ContactGraph]= EdgeAdd[nodeAssociation[ContactGraph],newEdges];
+nodeAssociation[Coins]=Join[nodeAssociation[Coins],nextCoinSet];
+nodeAssociation[LastCoinZ]=coinZ[nextCoin,arenaAssociation["phi"]];
 
 
-thisChain = findGraphFront[coinNumber[First[nextCoinSet]],neighbourAssociationsres];
-neighbourAssociationsres[ChainNumbers] = thisChain;
+thisChain = findGraphFront[coinNumber[First[nextCoinSet]],nodeAssociation];
 
-para2 = neighbourAssociationsres[ChainsByCoinNumber];
+
+para2 = nodeAssociation[ChainsByCoinNumber];
 para2 = Append[para2,coinNumber[nextCoin]->thisChain];
-neighbourAssociationsres[ChainsByCoinNumber] = para2;
+nodeAssociation[ChainsByCoinNumber] = para2;
 
-para2 = neighbourAssociationsres[Parastichy];
-para2[coinNumber[nextCoin]] =chainParastichyCount[neighbourAssociationsres[ChainNumbers],neighbourAssociationsres];
-neighbourAssociationsres[Parastichy] = para2;
+para2 = nodeAssociation[Parastichy];
+para2[coinNumber[nextCoin]] =chainParastichyCount[thisChain,nodeAssociation];
+nodeAssociation[Parastichy] = para2;
 
-Return[neighbourAssociationsres];
+Return[nodeAssociation];
 ];
 
 
@@ -441,7 +366,7 @@ xymax = xy+ {r,0};
 RegionUnion[Disk[xy,r],Rectangle[xymin,xymax]]
 ];
 
-nextCoinAndContacts[chainNumbers_,run_] := Module[{r,chainAndLR,touchingDisksXY
+nextCoinAndContacts[n_,chainNumbers_,run_] := Module[{r,chainAndLR,touchingDisksXY
 ,chainRDF,diskChainDistance,disksNotOverlappingChain,lowerNeighbours},
 r = run["Arena"]["rFunction"][run["State"][LastCoinZ]];
 
@@ -460,7 +385,7 @@ disksNotOverlappingChain = Keys@Select[diskChainDistance,#>=r&];
 touchingDisksXY= KeyTake[touchingDisksXY,disksNotOverlappingChain];
 
 (* exclude any that have support on the wrong side *)
-cx[n_] := coinDisk@getCoinByNumber[n,run["State"][Coins]] ;
+cx[np_] := coinDisk@getCoinByNumber[np,run["State"][Coins]] ;
 angleLR[angle_] := If[angle<1/2,right,left];
 bothLLorRR  = Association@@KeyValueMap[ #1-> (
 angleLR@coinPairAngle[cx[#1[[1]]],Disk[#2,1]]===
@@ -497,7 +422,7 @@ lTrianglePT = (ReflectionTransform[RotationTransform[90 Degree][xy2-xy1],xy1])[r
 
 
 (* ::Input::Initialization:: *)
-oldstyleNextCoinAndContacts[run_] := Module[{r,nextCoinByFront,phi},
+oldstyleNextCoinAndContacts[n_,run_] := Module[{r,nextCoinByFront,phi},
 
 r = run["Arena"]["rFunction"][run["State"][LastCoinZ]];
 phi = run["Arena"]["phi"];
@@ -506,6 +431,7 @@ phi = run["Arena"]["phi"];
 frontDisks = run["State"][Coins];
 
 nextCoinByFront =  placeNextCoinCone[  
+n,
 frontDisks
 ,r
 ,run["State"][LastCoinZ]
@@ -517,22 +443,25 @@ frontDisks
 
 
 (* ::Input::Initialization:: *)
-addNextCoinCone[arenaAssociation_,nodeAssociation_] := Module[{r,nextCoin,nextCoinSet,nAres,para2,phi},
+addNextCoinCone[arenaAssociation_,nodeAssociation_] := Module[{n,nextCoin,nextCoinSet,nAres,para2,phi},
+
 run= <|"State"->nodeAssociation,"Arena"-> arenaAssociation|>;
 
 
+n =  Max[Map[bareNumber@*First,run["State"][Coins]]];
+chainNumbers=run["State"][ChainsByCoinNumber][n];
+n =n+ 1;
 
-chainNumbers= run["State"][ChainNumbers];
+
 lowest= Missing[];
 If[!MissingQ[chainNumbers],
-lowest  = nextCoinAndContacts[chainNumbers,run];
-
+lowest  = nextCoinAndContacts[n,chainNumbers,run];
 ];
 If[!MissingQ[lowest],
 nextCoin = {lowest["CoinNumber"],lowest["CoinDisk"]};
 nextCoinLowerNeighbours = lowest["CoinNeighbours"];
 ,
-oldLowest =oldstyleNextCoinAndContacts[run];
+oldLowest =oldstyleNextCoinAndContacts[n,run];
 If[MissingQ[oldLowest],
 Print["Can't go oldstyle", chainNumbers];
 Abort[];
@@ -559,11 +488,11 @@ lastCoinZ = Max[Map[coinZ[#,arenaAssociation["phi"]]&,icCoins]];
 
 
 nodeAssociation =  Association[
-ContactAngle->Association[]
-,ContactGraph->Graph[{}]
+(*,ContactAngle\[Rule]Association[]
+*)
+ContactGraph->Graph[{}]
 ,DEdgeAngle->Association[]
 ,Parastichy->Association[]
-,ChainNumbers-> Missing[]
 ,ChainsByCoinNumber ->  Association[]
 ,Coins->icCoins
 ,LastCoinZ-> lastCoinZ];
@@ -589,5 +518,37 @@ nodeAssociation[ContactGraph] = Graph[nodeAssociation[ContactGraph],VertexCoordi
 
 <|"State"-> nodeAssociation,"Arena"->arenaAssociation|>
 ];
+
+
+
+
+(* ::Input::Initialization:: *)
+exampleRisingRun[s_,r_,coinMax_] := Module[{arenaAssociation,cylinderLU,rFunction,phi,cylinderCircumferenceFunction,d1,d1T,d2,icCoins,nANew},
+cylinderLU = {0,20};
+rFunction[h_]  := r * (  (1-1/10)  *(1-h/20) + 1/10) ;
+phi = 0;
+cylinderCircumferenceFunction[h_] :=  1; 
+
+arenaAssociation = <| 
+"rFunction"->rFunction
+,"phi"->phi
+,"coinMax"-> coinMax
+,"cylinderCircumferenceFunction"->cylinderCircumferenceFunction 
+,"cylinderLU"-> cylinderLU
+|>;
+
+
+d1 = Disk[toCone[{-1/2,cylinderLU[[1]]},phi] ,r]; 
+d1T = Disk[toCone[{  1/2,cylinderLU[[1]]},phi] ,r]; 
+d2 = Disk[toCone[{s,cylinderLU[[1]]},phi],r];
+icCoins = {{-101,d1},{-102,d1T},{1,d2}};
+stackFrontFromIC[icCoins,arenaAssociation]
+
+];
+
+makeProfile := (
+kmax=50;r0=0.2;
+exampleRisingRun[0.0,r0,kmax];
+);
 
 
