@@ -331,7 +331,7 @@ nodeAssociation[DEdgeAngle]= Append[nodeAssociation[DEdgeAngle],newEdgeAngles];
 nodeAssociation[ContactGraph]= EdgeAdd[nodeAssociation[ContactGraph],newEdges];
 nodeAssociation[Coins]=coinCollection;
 
-nodeAssociation[LastCoinZ]=coinZ[nextCoin,arenaAssociation["phi"]];
+nodeAssociation[LastCoinZ]=coinZ[nextCoin,run["Arena"]["phi"]];
 
 
 thisChain = findGraphFront[coinNumber[First[nextCoinSet]],nodeAssociation];
@@ -429,11 +429,9 @@ r = run["Arena"]["rFunction"][run["State"][LastCoinZ]];
 phi = run["Arena"]["phi"];
 
 
-frontDisks = run["State"][Coins];
-
 nextCoinByFront =  placeNextCoinCone[  
 n,
-frontDisks
+run["State"][Coins]
 ,r
 ,run["State"][LastCoinZ]
 ,phi
@@ -444,7 +442,8 @@ frontDisks
 
 
 (* ::Input::Initialization:: *)
-addNextCoinCone[arenaAssociation_,nodeAssociation_] := Module[{n,nextCoin,nextCoinSet,nAres,para2,phi},
+addNextCoinCone[arenaAssociation_,nodeAssociation_] := Module[
+{n,nextCoin,nextCoinSet,nAres,para2,phi,run,chainNumbers,lowest,nextCoinLowerNeighbours},
 
 run= <|"State"->nodeAssociation,"Arena"-> arenaAssociation|>;
 
@@ -471,9 +470,8 @@ nextCoin ={oldLowest["CoinNumber"],oldLowest["CoinDisk"]};
 nextCoinLowerNeighbours = coinLowerNeighbourNumbers[nextCoin, nodeAssociation[Coins],0.01];
 
 ];
-nextCoinSet = coinWithConeTranslations[nextCoin,run];
 
-nAres = updateNeighbourFunction[nextCoinSet,nextCoinLowerNeighbours,arenaAssociation,nodeAssociation];
+nAres = updateNeighbourFunction[nextCoin,nextCoinLowerNeighbours,run];
 nAres
 
 ];
@@ -546,4 +544,148 @@ kmax=50;r0=0.2;
 exampleRisingRun[0.0,r0,kmax];
 );
 
+
+
+
+(* ::Input::Initialization:: *)
+
+edgesAboveNode[state_,node_] := Module[{aboveNodeAngles},
+edges = KeySelect[state[DEdgeAngle],First[#]==node&];
+edges = Select[edges,#<1/4 || #>3/4 &];
+If[Length[edges]<2,Return[{}]];
+edges = Map[If[#>1/2,#-1,#]&,edges];
+edges = Keys@Sort[edges];
+edges = Partition[edges,2,1];
+edges
+];
+
+
+
+(* ::Input::Initialization:: *)
+
+
+bareGraphContacts[state_] :=  Module[{conts},
+conts =GroupBy[EdgeList[state[ContactGraph]],First->Last];
+conts = Map[ DeleteDuplicates@Map[bareNumber,#]&,conts];
+conts =KeySelect[conts,IntegerQ];
+conts 
+];
+
+brokenGraphContacts[state_] :=  Module[{conts},
+conts = List@@@ EdgeList[state[ContactGraph]];
+conts = Select[conts,!IntegerQ[Last[#]]&];
+conts = Association@@ Map[ Map[bareNumber,#]-> # &,conts];
+conts 
+];
+
+
+
+
+
+(* ::Input::Initialization:: *)
+
+barePolygonsFrom2Edges[state_,node_,{edgeA_,edgeB_}] := Module[{bareA,bareB},
+
+runContacts =bareGraphContacts[state];
+
+
+a = Last[edgeA];b=Last[edgeB];
+bareA= bareNumber[a];bareB=bareNumber[b];
+If[MissingQ[runContacts[bareA]],Return[runContacts[bareA]]];
+If[MissingQ[runContacts[bareB]],Return[runContacts[bareB]]];
+aContacts = Complement[runContacts[bareA],{node}];
+bContacts = Complement[ runContacts[bareB],{node}];
+
+isTriangle = MemberQ[ aContacts,bareB];
+If[isTriangle,
+Return[{node,bareA,bareB}]];
+fourthPoint = Complement[Intersection[aContacts,bContacts],{node}];
+If[Length[fourthPoint]==1,
+Return[{node,bareA,First@fourthPoint,bareB}]
+];
+aContactContacts = Flatten[Map[runContacts,aContacts]];
+bContactContacts =Flatten[Map[runContacts,bContacts]];
+fifthPoint = Complement[Intersection[aContactContacts,bContacts],{node,bareA,bareB}];
+If[Length[fifthPoint]==1,
+fourthPoint = Complement[Intersection[bContactContacts,aContacts],{node,bareA,bareB}];
+Return[{node,bareA,First@fourthPoint,First@fifthPoint,bareB}]
+];
+Return[Missing["Hexagon or more"]]
+];
+
+
+
+(* ::Input::Initialization:: *)
+
+
+polygonsFrom2Edges[state_,node_,{edgeA_,edgeB_}] := Module[{res,brokenres},
+res= barePolygonsFrom2Edges[state,node,{edgeA,edgeB}];
+If[MissingQ[res],Return[<| "polygonBare"-> res,"edges"-> res|>]];
+bC = brokenGraphContacts[state];
+breakContacts[ab_] := If[MemberQ[Keys[bC],ab],bC[ab],ab];
+brokenres = Map[breakContacts,Partition[res,2,1,1]];
+<| "polygonBare"-> res,"edges"-> brokenres|>
+];
+
+
+
+
+(* ::Input::Initialization:: *)
+
+graphPolygonsAboveNode[state_,node_] := Module[{edgePairs},
+edgePairs =edgesAboveNode[state,node];
+If[Length[edgePairs]==0,Return[Missing[]]];
+MapIndexed[Append[<| "node"-> node,"nodecount"-> {node,First[#2]}|>, polygonsFrom2Edges[state,node,#1]]&,edgePairs]
+];
+
+graphPolygons [state_] :=  Module[{polys,nodes},
+xyN[n_]  := coinXY[getCoinByNumber[n, state[Coins]]];
+
+nodes = Select[VertexList[state[ContactGraph]],IntegerQ];
+polys= Map[graphPolygonsAboveNode[state,#]&,nodes];
+polys = Select[polys,Not[MissingQ[#]]&];
+polys = Flatten[polys];
+
+polys= Map[derivedPolys[#,state]&,polys];
+
+polys
+];
+
+derivedPolys[poly_,state_] := Module[{res,linePairs},
+res= poly;
+linePairs =If[MissingQ[res["edges"]],res["edges"],Map[xyN,res["edges"],{2}]];
+vector=  If[MissingQ[linePairs],linePairs,Map[ (Last[#]-First[#])&,linePairs]];
+polygon=  If[MissingQ[linePairs],linePairs, Accumulate@Prepend[Drop[vector,-1],{0,0}]];
+res=Append[res,"vector"->vector];
+res=Append[res,"nodeXY"->xyN[res["node"]]];
+
+res=Append[res,"line"-> Line[linePairs] /. Line[Missing[x___]]->Missing[x]];
+res =Append[res,"zeroPolygon"->Polygon[polygon]];
+res
+];
+
+
+
+(* ::Input::Initialization:: *)
+
+pruneNodeAssociation[nodeAssociation_,pruneNumbers_]  := Module[{res, bare},
+res = nodeAssociation;
+res[Parastichy]= KeyTake[res[Parastichy],pruneNumbers];
+res[Coins] = Select[res[Coins],MemberQ[pruneNumbers,bareCoinNumber[#]] &];
+res[ChainsByCoinNumber]=  KeyTake[res[ChainsByCoinNumber],pruneNumbers];
+withLRNumbers = Join[pruneNumbers,left/@pruneNumbers,right /@ pruneNumbers];
+res[ContactGraph] = Subgraph[res[ContactGraph],withLRNumbers,AnnotationRules->Inherited];
+res
+];
+
+pruneRun[run_,pruneNumbers_] := Module[{prunedRun},
+prunedRun = run;
+prunedRun["State"] = pruneNodeAssociation[prunedRun["State"],pruneNumbers];
+prunedRun
+];
+
+pruneRunByFunction[run_,pruneFunction_] := Module[{pruneNumbers},
+pruneNumbers =  Map[bareCoinNumber , run["State"][Coins]];
+pruneRun[run,Select[pruneNumbers,pruneFunction[#]&]]
+];
 
