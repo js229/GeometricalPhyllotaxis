@@ -583,6 +583,12 @@ conts
 
 
 (* ::Input::Initialization:: *)
+filterFourthPoint[state_,node_,bareA_,fourthPointList_,bareB_] := Module[{res},
+res= Map[#->{node,bareA,#,bareB}&,fourthPointList];
+(* multiple fourthpoints can happen when poly winds around cylinder *)
+res= First[fourthPointList];
+{res}
+];
 
 barePolygonsFrom2Edges[state_,node_,{edgeA_,edgeB_}] := Module[{bareA,bareB},
 
@@ -598,17 +604,20 @@ bContacts = Complement[ runContacts[bareB],{node}];
 
 isTriangle = MemberQ[ aContacts,bareB];
 If[isTriangle,
-Return[{node,bareA,bareB}]];
+Return[{{node,bareA,bareB}}]];
 fourthPoint = Complement[Intersection[aContacts,bContacts],{node}];
-If[Length[fourthPoint]==1,
-Return[{node,bareA,First@fourthPoint,bareB}]
+If[Length[fourthPoint] > 0,
+rhombuses = Map[{node,bareA,#,bareB}&,fourthPoint];
+Return[rhombuses]
 ];
+
+
 aContactContacts = Flatten[Map[runContacts,aContacts]];
 bContactContacts =Flatten[Map[runContacts,bContacts]];
 fifthPoint = Complement[Intersection[aContactContacts,bContacts],{node,bareA,bareB}];
 If[Length[fifthPoint]==1,
 fourthPoint = Complement[Intersection[bContactContacts,aContacts],{node,bareA,bareB}];
-Return[{node,bareA,First@fourthPoint,First@fifthPoint,bareB}]
+Return[{{node,bareA,First@fourthPoint,First@fifthPoint,bareB}}]
 ];
 Return[Missing["Hexagon or more"]]
 ];
@@ -616,15 +625,24 @@ Return[Missing["Hexagon or more"]]
 
 
 (* ::Input::Initialization:: *)
+computeCylinderEdges[state_,poly_,breakContacts_] := Module[{brokenres,res},
+brokenres = Map[breakContacts,Partition[poly,2,1,1]];
+res = <| "polygonBare"-> poly,"edges"-> brokenres|>;
+res = derivedPolys[res,state]
+];
+ 
 
-
-polygonsFrom2Edges[state_,node_,{edgeA_,edgeB_}] := Module[{res,brokenres},
-res= barePolygonsFrom2Edges[state,node,{edgeA,edgeB}];
-If[MissingQ[res],Return[<| "polygonBare"-> res,"edges"-> res|>]];
+polygonsFrom2Edges[state_,poly_] := Module[{polys,brokenres},
+polys= barePolygonsFrom2Edges[state,node=poly["node"],poly["edgePair"]];
+If[MissingQ[polys],Return[polys]];
 bC = brokenGraphContacts[state];
 breakContacts[ab_] := If[MemberQ[Keys[bC],ab],bC[ab],ab];
-brokenres = Map[breakContacts,Partition[res,2,1,1]];
-<| "polygonBare"-> res,"edges"-> brokenres|>
+
+polys  = Append[poly,computeCylinderEdges[state,#,breakContacts]]& /@ polys;
+polys = Select[polys,TrueQ[#closed]&];
+If[Length[polys]!=1,Return[Missing["No unique closed poly"]]];
+polys= First[polys];
+polys
 ];
 
 
@@ -632,35 +650,42 @@ brokenres = Map[breakContacts,Partition[res,2,1,1]];
 
 (* ::Input::Initialization:: *)
 
-graphPolygonsAboveNode[state_,node_] := Module[{edgePairs},
+graphPolygonsAboveNode[state_,node_] := Module[{edgePairs,xyN,res},
+xyN[n_]  := coinXY[getCoinByNumber[n, state[Coins]]];
 edgePairs =edgesAboveNode[state,node];
 If[Length[edgePairs]==0,Return[Missing[]]];
-MapIndexed[Append[<| "node"-> node,"nodecount"-> {node,First[#2]}|>, polygonsFrom2Edges[state,node,#1]]&,edgePairs]
+res = MapIndexed[<| "node"-> node,"nodeXY"->xyN[node],"h"->Last[xyN[node]],
+"nodeCount"-> {node,First[#2]},"edgePair"-> #1|>&,edgePairs];
+res = Association@Map[ #["nodeCount"]-> #&,res];
+res =  Map[ polygonsFrom2Edges[state,#]&,res];
+res = Normal@res;
+res
 ];
 
 graphPolygons [state_] :=  Module[{polys,nodes},
-xyN[n_]  := coinXY[getCoinByNumber[n, state[Coins]]];
-
 nodes = Select[VertexList[state[ContactGraph]],IntegerQ];
 polys= Map[graphPolygonsAboveNode[state,#]&,nodes];
 polys = Select[polys,Not[MissingQ[#]]&];
-polys = Flatten[polys];
-
-polys= Map[derivedPolys[#,state]&,polys];
+polys = Association@@polys;
 
 polys
 ];
 
 derivedPolys[poly_,state_] := Module[{res,linePairs},
+xyN[n_]  := coinXY[getCoinByNumber[n, state[Coins]]];
 res= poly;
 linePairs =If[MissingQ[res["edges"]],res["edges"],Map[xyN,res["edges"],{2}]];
 vector=  If[MissingQ[linePairs],linePairs,Map[ (Last[#]-First[#])&,linePairs]];
-polygon=  If[MissingQ[linePairs],linePairs, Accumulate@Prepend[Drop[vector,-1],{0,0}]];
-res=Append[res,"vector"->vector];
-res=Append[res,"nodeXY"->xyN[res["node"]]];
+polygon=  If[MissingQ[vector],vector, Polygon[Accumulate@Prepend[Drop[vector,-1],{0,0}]]];
+area= If[MissingQ[polygon],polygon,Area[polygon]];
+closed = If[MissingQ[vector],vector,Abs@First[Apply[Plus,vector]] <  0.5];
 
-res=Append[res,"line"-> Line[linePairs] /. Line[Missing[x___]]->Missing[x]];
-res =Append[res,"zeroPolygon"->Polygon[polygon]];
+res=Append[res,"line"-> If[MissingQ[linePairs],linePairs,Line[linePairs]]];
+res=Append[res,"vector"->vector];
+res =Append[res,"zeroPolygon"->polygon];
+res = Append[res,"area"->area];
+res= Append[res,"closed"->closed];
+
 res
 ];
 
