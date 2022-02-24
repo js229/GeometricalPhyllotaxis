@@ -269,6 +269,7 @@ latticeSetCylinderLU[lattice_,cylinderLU_] := Module[{res},
 res = lattice;
 res =latticeSetDisplayCylinderLU[res,cylinderLU] ;
 res =latticeSetNodeCylinderLU[res,cylinderLU] ;
+
 res
 ];
 latticeSetNodeCylinderLU[lattice_,cylinderLU_] := Module[{res,cyl},
@@ -276,6 +277,8 @@ res =lattice;
 cyl= lattice["nodeCylinder"];
 cyl[[2]] = cylinderLU;
 res["nodeCylinder"] = cyl;
+res = Append[res,
+{"namedLatticePoints"-> lNamedLatticePoints[res]}];
 res
 ];
 
@@ -616,7 +619,8 @@ x = x-Round[x];
 If[x<0,x=-x];
 {x,y}
 ]];
-gMNInDHalfExact[{m_,n_}] :=Function[{xy},
+(*gMNInDHalfExact*)
+gMNInDHalfSymbolic[{m_,n_}] :=Function[{xy},
 Module[{x,y},
 {x,y} = gMNRealPair[{m,n}][xy];
 x = x-Round[x];
@@ -917,12 +921,24 @@ c = First@ConnectedGraphComponents[g];
 Polygon[AnnotationValue[{c,FindHamiltonianPath[c]},VertexCoordinates]]
 ];
 
+vanItersonRegionPoints[mn_] := <|
+"triple"->  gMNInDHalf[mn][{1/2,Sqrt[3]/2}]
+,"label"->  gMNInDHalf[mn][{0,Sqrt[3]/(5/2)}]
+,"touchingCircle"  ->  gMNInDHalf[mn][{0,1}]
+,"touchingCircleNonPrimary"  ->   gMNInDHalf[mn][{-Sqrt[3]/2,1/2}]
+|>
+vanItersonRegionPointsSymbolic[mn_] := <|
+"triple"->  gMNInDHalfSymbolic[mn][{1/2,Sqrt[3]/2}]
+,"label"->  gMNInDHalfSymbolic[mn][{0,Sqrt[3]/(5/2)}]
+,"touchingCircle"  ->  gMNInDHalfSymbolic[mn][{0,1}]
+,"touchingCircleNonPrimary"  ->   gMNInDHalfSymbolic[mn][{-Sqrt[3]/2,1/2}]
+|>
 
 
 viiTriplePoint[mn_] := gMNInDHalf[mn][{1/2,Sqrt[3]/2}];
 viiTriplePoint[{0,1}] := {-1/2,Sqrt[3]/2}; (* algo gives (3/2,Sqrt[3]/2) *)
 
-viiLabelPoint[mn_] := gMNInDHalf[mn][{0,Sqrt[3]/(2.5)}];
+viiLabelPoint[mn_] := gMNInDHalf[mn][{0,Sqrt[3]/(5/2)}];
 viiTouchingCircleLabel[mn_] :=  gMNInDHalf[mn][{0,1}];
 viiTouchingCircleLabelNonPrimary[mn_] :=  gMNInDHalf[mn][{-Sqrt[3]/2,1/2}];
 
