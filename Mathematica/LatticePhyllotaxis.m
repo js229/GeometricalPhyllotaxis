@@ -20,28 +20,74 @@
 
 
 (* ::Input::Initialization:: *)
-(* actually this is implied by algo anyway, but being explicit 
-euclideanQCoefficients[{0,1}] := {}; 
-euclideanQCoefficients[{1,0}] := {0}; 
-*)
+
 
 euclideanQCoefficients[{m_,n_}] := Module[{r,q,i},
 	i=0;
-	r[-1]=n; (* in this order so that if m<n then get no initial zero *)
+	r[-1]=n; 
 	r[0] = m;
-	While[r[i] > 0  ,
+	While[r[i] > 0  , 
 		q[i] = Floor[r[i-1]/r[i]];
-		r[i+1] = r[i-1] - q[i] r[i];
+		r[i+1] = r[i-1] - q[i]*r[i];
 		i++;
 	];
  Table[q[j],{j,0,i-1}]
 ];
+(* 
+euclideanQCoefficients[{0,1}] := {}; 
+euclideanQCoefficients[{1,0}] := {0}; 
+*)
+
+euclideanDelta[mn_] := Module[{q},
+q = euclideanQCoefficients[mn];
+If[OddQ[Length[q]],1,-1]
+]; (* m v - u n *)
+
+euclideanMatrixProduct[mn_] := Module[{
+eMatrix = ({
+ {1, 1},
+ {0, 1}
+}),sMatrix=({
+ {0, 1},
+ {1, 0}
+}) ,q},
+q = euclideanQCoefficients[mn];
+sMatrix . Dot@@ (Map[  MatrixPower[eMatrix,#] . sMatrix &,q])
+]; (* need one of m and n > 0;  creates a matrix with (m	u
+n	v
+
+)  and | m v -  nu |=1*)
+
+(* requires m & n >= 0 *)
+euclideanHighestCommonFactor[mn_] := Module[{res},
+res =  Inverse[euclideanMatrixProduct[mn]]  .  mn ;  
+If[res[[2]] !=0 , Abort[]];
+First[res]
+];
+
+euclideanWindingNumberPair[mn_] := Module[{m,n,u,v},
+{{m,u},{n,v}}= euclideanMatrixProduct[mn];
+{u,v}
+];
+
+euclideanFareyInterval[{0,1}] = {0,1/2};
+euclideanFareyInterval[{1,0}] = {0,1/2};
+euclideanFareyInterval[{1,1}] = {0,1/2}; 
+
+euclideanFareyInterval[{m_,n_}] := Module[{u,v,delta,interval},
+{u,v} = euclideanWindingNumberPair[{m,n}];
+delta = euclideanDelta[{m,n}];
+interval =  {u/m,v/n};
+If[delta <0, interval=Reverse@interval];
+interval
+]
+
 
 
 
 (* ::Input::Initialization:: *)
 
-euclideanUVcoefficients[{}] := {{1,0}}; (* ie for m,n=0,1 ; m v - n u = -1 *)
+(*euclideanUVcoefficients[{}] := {{1,0}}; (* ie for m,n=0,1 ; m v - n u = -1 *)
 euclideanUVcoefficients[q_] := Module[{i,u,v,qfunc},
 i=0;
 u[-1]=1; v[-1]=0; 
@@ -52,9 +98,9 @@ u[i] = u[i-2] + qfunc[i-1] u[i-1];
 v[i] = v[i-2] + qfunc[i-1] v[i-1];
 ];(*u[1] = 1; v[1] = q[0];*)
 Table[{u[i],v[i]},{i,0,Length[q]}]
-];
+];*)
 
-makeEuclideanProductMatrix[q_] := Module[{A,P,qfunc,i},
+(*makeEuclideanProductMatrix[q_] := Module[{A,P,qfunc,i},
 qfunc[i_] := q[[i+1]]; (* qfunc indexes from 0 *)
 A[i_] := {{ 0,1},{1,-qfunc[i]}};
 P = IdentityMatrix[2];
@@ -62,8 +108,8 @@ For[i=0,i<Length[q],i++,
 P = A[i] . P;
 ];
 P
-];
-
+];*)
+(*
 euclideanProductMatrix[mn_] :=   makeEuclideanProductMatrix[euclideanQCoefficients[mn]];
 
 euclideanHCF[mn_] := Module[{res},
@@ -71,24 +117,21 @@ res =  euclideanProductMatrix[mn]  .  Reverse[mn ]; (* because of the r-order ab
 If[res[[2]] !=0 , Abort[]];
 First[res]
 ];
+*)
 
-euclideanDelta[mn_] := Module[{q,res},
-q = euclideanQCoefficients[mn];
-If[OddQ[Length[q]],1,-1]
-];
 
 
 (* ::Input::Initialization:: *)
-euclideanUVDirect[mn_] :=Module[{q,uvList},
+(*euclideanUVDirect[mn_] :=Module[{q,uvList},
 q = euclideanQCoefficients[mn];
 uvList = euclideanUVcoefficients[q]; (* length 1 + length[q], unless q={} when {0,1}} *)
 uv= uvList[[ Max[1,Length[q]] ]] ;
 uv
-];
+];*)
 
 (*  m v - n u = hcf(m,n); 0\[LessEqual]u<m, 0\[LessEqual]v<n apart from the m=0 case *) 
 (* in particular wnp has m v - n u = +1 regardless of euclideanDelta *)
-windingNumberPair[{0,0}] := {\[Infinity],\[Infinity]};
+(*windingNumberPair[{0,0}] := {\[Infinity],\[Infinity]};
 windingNumberPair[{0,n_}] := {-1,0};
 windingNumberPair[{m_,0}] := {0,1};
 windingNumberPair[{m_,n_}] := Module[{u,v,Delta},
@@ -97,11 +140,11 @@ Delta = m v - n u;
 If[Delta>0,Return[{u,v}]];
 {u,v} = {m - u, n - v};
 Return[{u,v}]
-];
+];*)
 (* avoid the symbolic Delta 
 windingNumberPair[{Fibonacci[k_],Fibonacci[j_]}] := {Fibonacci[k-2],Fibonacci[k-1]} /; j\[Equal]k+1
 *)
-
+(*
 euclideanUV[mn_] := euclideanUVDirect[mn]; 
 euclideanUV[mn_,ForDelta_] := Module[{mnDelta,uv},
 (* Euclid yields a pair with mv - nu= \[PlusMinus] 1 but we don't know the sign *)
@@ -110,15 +153,7 @@ uv= euclideanUVDirect[mn],
 uv = Reverse[ euclideanUVDirect[Reverse[mn]]]
 ];
 uv
-];
-
-
-(* ::Input::Initialization:: *)
-(*euclideanProof[mn_] := Module[{uv,str},
-uv = euclideanUV[mn];str = StringTemplate["``*``-``*``=``"][mn[[1]],uv[[2]],mn[[2]],uv[[1]],mn[[1]]*uv[[2]]-mn[[2]]*uv[[1]]];{str,euclideanDelta[mn]}
-];
-
-*)
+];*)
 
 
 (* ::Input::Initialization:: *)
@@ -128,9 +163,10 @@ dmaster = Interval[{0,1/2}];
 minterval =  (u+Interval[ {-1/2,1/2}])/m;
 ninterval =  (v+Interval[ {-1/2,1/2}])/n;
 IntervalIntersection[dmaster,minterval,ninterval]
-];generatingInterval[{m_,n_}] :=  Module[{u,v,up,vp,resplus,resminus,res,dmaster},
+];
+generatingInterval[{m_,n_}] :=  Module[{u,v,up,vp,resplus,resminus,res,dmaster},
 dmaster = Interval[{0,1/2}];
-{u,v }= windingNumberPair[{m,n}];
+{u,v }= euclideanWindingNumberPair[{m,n}];
 
 resplus=mnuvi[m,n,u,v];
 vp = n-v; up = m- u;
@@ -138,7 +174,7 @@ resminus =mnuvi[m,n,up,vp];
 res = IntervalUnion[resminus,resplus];
 res];
 generatingOpposedInterval[{m_,n_}] := Module[{res,u,v},
-{u,v}=windingNumberPair[{m,n}];
+{u,v}=euclideanWindingNumberPair[{m,n}];
 res  = If[m==1, Interval[{1/(2n),1/n}],
 Interval[{u/m,v/n}]
 ];
@@ -150,11 +186,11 @@ res
 (* ::Input::Initialization:: *)
 euclideanReduction[pq_]  := Module[{uv,it,firstShorter,dotPositive,reduceSecond,isPrincipal,positiveRise,positiveVec},
 firstShorter[{u_,v_}] := Module[{u2=Simplify[u . u],v2=Simplify[v . v]},If [ u2 < v2, {u,v},{v,u}]];
-dotPositive[{u_,v_}] := If [ u . v > 0, {u,v},{u,-v}];
-reduceSecond[{u_,v_}] := If[ Abs[u . (v-u)]  >  Abs[u . v ],{u,v},{u,u-v}];	
-isPrincipal[{u_,v_}] := Module[{u2=Simplify[u . u],v2=Simplify[v . v]},
-u2  <=  v2 && 0  <= u . v && u . v <= u2 /2
-] ;
+	dotPositive[{u_,v_}] := If [ u . v > 0, {u,v},{u,-v}];
+	reduceSecond[{u_,v_}] := If[ Abs[u . (v-u)]  >  Abs[u . v ],{u,v},{u,u-v}];	
+	isPrincipal[{u_,v_}] := Module[{u2=Simplify[u . u],v2=Simplify[v . v]},
+	u2  <=  v2 && 0  <= u . v && u . v <= u2 /2
+	] ;
 positiveRise[uvp_] := Map[positiveVec,uvp];
 positiveVec[{ud_,uh_}] := If[uh>0,{ud,uh},
 If[uh<0,{-ud,-uh}, (* h=0 *) {Abs[ud],0}]];
@@ -494,38 +530,7 @@ lines = latticeParastichyLinesThroughXZ[res,m,throughxz];
 lines
 ];
 
-(* this is the set of segments on the rectangle of the cylinder-cts m-parastichy though a point xz *)
-(*latticeParastichyLinesThroughXZ[lattice_,m_,throughxz_] := Module[{pvecslope,bottom,top,cylinder,cylinderLU,line,i,lastXZ,nextX,nextZ,v},
 
-cylinder = latticeGetNodeCylinder[lattice];cylinderLU = cylinder\[LeftDoubleBracket]2\[RightDoubleBracket];If[zeroParastichyQ[m], (* parastichy is horizontal *)
-line = {{cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket],throughxz\[LeftDoubleBracket]2\[RightDoubleBracket]},{cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket],throughxz\[LeftDoubleBracket]2\[RightDoubleBracket]}},
-(* or *) 
-If[latticePoint[lattice,m][[1]]==0, (* parastichy is vertical *) 
-line ={ {throughxz\[LeftDoubleBracket]1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]2,1\[RightDoubleBracket]},{throughxz\[LeftDoubleBracket]1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket]}},
-(* or general case *) 
-pvecslope = latticeParastichySlope[lattice,m];bottom = { (cylinderLU\[LeftDoubleBracket]1\[RightDoubleBracket]-throughxz\[LeftDoubleBracket]2\[RightDoubleBracket])/pvecslope +throughxz\[LeftDoubleBracket]1\[RightDoubleBracket], cylinderLU\[LeftDoubleBracket]1\[RightDoubleBracket]};top        = { (cylinderLU\[LeftDoubleBracket]2\[RightDoubleBracket]-throughxz\[LeftDoubleBracket]2\[RightDoubleBracket])/pvecslope+throughxz\[LeftDoubleBracket]1\[RightDoubleBracket],cylinderLU\[LeftDoubleBracket]2\[RightDoubleBracket]};
-line = {};
-lastXZ = bottom;
-i=0;
-While[
-nextX = If[pvecslope>0, cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket],cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket] ];
-nextZ = lastXZ\[LeftDoubleBracket]2\[RightDoubleBracket]+(nextX-lastXZ\[LeftDoubleBracket]1\[RightDoubleBracket])* pvecslope; (* assumes cylinder width a multiple of 1 *)
-If[nextZ> cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket],
-nextZ =  cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket];
-nextX = lastXZ\[LeftDoubleBracket]1\[RightDoubleBracket]+(nextZ-lastXZ\[LeftDoubleBracket]2\[RightDoubleBracket])/pvecslope
-];
-line = Append[line,{lastXZ,{nextX,nextZ}}];
-i++;
-i< 50 && nextZ  < cylinder\[LeftDoubleBracket]2,2\[RightDoubleBracket],
-(* While body *)
-lastXZ = Last@Last[line];
-lastXZ\[LeftDoubleBracket]1\[RightDoubleBracket] = If[pvecslope>0, cylinder\[LeftDoubleBracket]1,1\[RightDoubleBracket],cylinder\[LeftDoubleBracket]1,2\[RightDoubleBracket] ]
-]
-]
-];
-
-Line[line]
-];*)
 latticeParastichyLinesThroughXZ[lattice_,m_,throughxz_] := Module[{pvecslope,bottom,top,cylinder,cylinderLU,line},
 cylinder = latticeGetNodeCylinder[lattice];cylinderLU = cylinder[[2]];If[zeroParastichyQ[m], (* parastichy is horizontal *)
 line = {{cylinder[[1,1]],throughxz[[2]]},{cylinder[[1,2]],throughxz[[2]]}},
@@ -598,22 +603,22 @@ mEnd = latticePoint[lattice,mvec];mVectorLength = latticeVectorLength[lattice,mv
 (* ::Input::Initialization:: *)
 
 (* relative to (0,1 ) not used *) 
-hMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= windingNumberPair[{m,n}];hMNUV[m,n,u,v,w]];
+(*hMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= windingNumberPair[{m,n}];hMNUV[m,n,u,v,w]];
 hMNRealPair[{m_,n_}] := Function[{xy},Module[{x,y},{x,y}=xy; ReIm[hMN[{m,n}][x +  I y]]]];
 hMNRealPairReflection[{m_,n_}] := Function[{xy},Module[{x,y},
 {x,y} = hMNRealPair[{m,n}][xy];
 {1-x,y}
 ]];
-hMNInDHalf[{m_,n_}] := If[euclideanDelta[{m,n}]==1,hMNRealPair[{m,n}],hMNRealPairReflection[{m,n}]];
+hMNInDHalf[{m_,n_}] := If[euclideanDelta[{m,n}]\[Equal]1,hMNRealPair[{m,n}],hMNRealPairReflection[{m,n}]];
 
 hMNUV[m_,n_,u_,v_,w_]:=(-u w + v)/(-m w + n);
-hMNUV[m_,n_,u_,v_,DirectedInfinity[_]]:=u/m;
+hMNUV[m_,n_,u_,v_,DirectedInfinity[_]]:=u/m;*)
 
 
 (* ::Input::Initialization:: *)
 (* relative to (1,0)  *) 
 
-gMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= windingNumberPair[{m,n}];gMNUV[m,n,u,v,w]];
+gMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= euclideanWindingNumberPair[{m,n}];gMNUV[m,n,u,v,w]];
 gMNRealPair[{m_,n_}] := Function[{xy},Module[{x,y},{x,y}=xy; ReIm[gMN[{m,n}][x +  I y]]]];
 gMNRealPairReflection[{m_,n_}] := Function[{xy},Module[{x,y},
 {x,y} = gMNRealPair[{m,n}][xy];
@@ -624,7 +629,7 @@ Module[{x,y},
 {x,y} = N@gMNRealPair[{m,n}][xy];
 x = x-Round[x];
 If[x<0,x=-x];
-{x,y}
+{x,Abs[y]}
 ]];
 (*gMNInDHalfExact*)
 gMNInDHalfSymbolic[{m_,n_}] :=Function[{xy},
@@ -736,7 +741,7 @@ res = Circle[centre,r,Sort@{xyToArg[branch,lowerpt],angle}]
 Return[res];
 ];
 viiOrthostichyD[{m_,n_}] := Module[{u,v,res},
-{u,v} = euclideanUV[{m,n}];
+{u,v} = euclideanWindingNumberPair[{m,n}];
 res = v/n;
  If[res>1/2,res = 1-res];
 res
@@ -757,7 +762,7 @@ viiMNSemiCircle[mn_] := Module[{r,m,n,u,v,dbar},
 {m,n}= Sort[mn];
 If[m==1 && n==1,Return[InfiniteLine[{{1/2,0},{1/2,1}}]]];
 r = 1/(n^2-m^2);
-{u,v} = euclideanUV[{m,n}]; (* not winding number pair *) 
+{u,v} = euclideanWindingNumberPair[{m,n}]; 
 dbar = ( n v - m u )/(n^2-m^2);
 Circle[ { dbar, 0},r,{0,\[Pi]}]
 ];
@@ -806,7 +811,7 @@ subSegment[InfiniteLine[_],p1_,p2_] := Line[{p1,p2}];
 
 viiMNOrthoCircle[mn_] := Module[{m,n,u,v,um,vn},
 {m,n}= mn;
-{u,v} = euclideanUV[mn];
+{u,v} = euclideanWindingNumberPair[mn];
 {um,vn} = {u/m,v/n};
 Circle[ { (um+vn)/2, 0},Abs[vn-um]/2,{0,\[Pi]}]
 ];
