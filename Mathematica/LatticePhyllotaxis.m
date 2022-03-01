@@ -20,19 +20,26 @@
 
 
 (* ::Input::Initialization:: *)
-euclideanQCoefficients[{0,1}] := {}; (* actually this is implied by algo anyway, but being explicit *)
+(* actually this is implied by algo anyway, but being explicit 
+euclideanQCoefficients[{0,1}] := {}; 
+euclideanQCoefficients[{1,0}] := {0}; 
+*)
 
 euclideanQCoefficients[{m_,n_}] := Module[{r,q,i},
-i=0;
-r[-1]=n; (* in this order so that if m<n then get no initial zero *)
-r[0] = m;
-While[r[i] > 0  ,
-q[i] = Floor[r[i-1]/r[i]];
-r[i+1] = r[i-1] - q[i] r[i];
-i++;
-];
+	i=0;
+	r[-1]=n; (* in this order so that if m<n then get no initial zero *)
+	r[0] = m;
+	While[r[i] > 0  ,
+		q[i] = Floor[r[i-1]/r[i]];
+		r[i+1] = r[i-1] - q[i] r[i];
+		i++;
+	];
  Table[q[j],{j,0,i-1}]
 ];
+
+
+
+(* ::Input::Initialization:: *)
 
 euclideanUVcoefficients[{}] := {{1,0}}; (* ie for m,n=0,1 ; m v - n u = -1 *)
 euclideanUVcoefficients[q_] := Module[{i,u,v,qfunc},
