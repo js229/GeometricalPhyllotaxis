@@ -38,25 +38,67 @@ euclideanQCoefficients[{0,1}] := {};
 euclideanQCoefficients[{1,0}] := {0}; 
 *)
 
-euclideanDelta[mn_] := Module[{q},
-q = euclideanQCoefficients[mn];
-If[OddQ[Length[q]],1,-1]
-]; (* m v - u n *)
 
-euclideanMatrixProduct[mn_] := Module[{
+
+
+
+(* ::Input::Initialization:: *)
+
+
+
+
+ (* need one of m and n > 0;  creates a matrix with (m	u
+n	v
+
+)  and | m v -  nu |=1, no assumption that m<n*)
+
+
+
+
+
+(* ::Input::Initialization:: *)
+
 eMatrix = ({
  {1, 1},
  {0, 1}
-}),sMatrix=({
+});sMatrix=({
  {0, 1},
  {1, 0}
-}) ,q},
-q = euclideanQCoefficients[mn];
-sMatrix . Dot@@ (Map[  MatrixPower[eMatrix,#] . sMatrix &,q])
-]; (* need one of m and n > 0;  creates a matrix with (m	u
-n	v
+});
 
-)  and | m v -  nu |=1*)
+euclideanMatrixProduct[mn_] := Module[{q,res},
+q = euclideanQCoefficients[mn];
+res= (Map[  MatrixPower[eMatrix,#] . sMatrix &,q]);
+res= If[Length[res]>0,Dot@@res,IdentityMatrix[2]];
+res = sMatrix . res;
+
+res
+]/; NumericQ[First[mn]];
+euclideanMatrixProduct[{1,0}] = ({
+ {0, -1},
+ {1, 0}
+});
+euclideanMatrixProduct[{0,1}] = ({
+ {1, 0},
+ {0, -1}
+});
+euclideanDelta[mn_]  := Det@euclideanMatrixProduct[mn]
+
+euclideanMatrixProductNew[mn_] := sMatrix . euclideanMatrixProduct[mn]
+
+euclideanMatrixProductNew[{1,0}] = ({
+ {0, -1},
+ {1, 0}
+});
+euclideanMatrixProductNew[{0,1}] = ({
+ {1, 0},
+ {0, -1}
+});
+
+
+
+
+(* ::Input::Initialization:: *)
 
 (* requires m & n >= 0 *)
 euclideanHighestCommonFactor[mn_] := Module[{res},
@@ -67,6 +109,10 @@ First[res]
 
 euclideanWindingNumberPair[mn_] := Module[{m,n,u,v},
 {{m,u},{n,v}}= euclideanMatrixProduct[mn];
+{u,v}
+];
+euclideanWindingNumberPairNew[mn_] := Module[{m,n,u,v},
+{{m,u},{n,v}}= euclideanMatrixProductNew[mn];
 {u,v}
 ];
 
@@ -80,80 +126,232 @@ delta = euclideanDelta[{m,n}];
 interval =  {u/m,v/n};
 If[delta <0, interval=Reverse@interval];
 interval
+];
+
+
+
+(* ::Input::Initialization:: *)
+basisChangeMatrix[mn_] := Transpose[({
+ {1, 0},
+ {0, -1}
+}) . Transpose[ euclideanMatrixProductNew[mn]]];
+basisInverseChangeMatrix[mn_] := Inverse[basisChangeMatrix[mn]];
+Clear[n,m,v,u];
+basisChangeMatrix[{n,m}] := ({
+ {n, -v},
+ {m, -u}
+})
+
+matrixToMoebius[matrix_] := Function[z, Divide@@(matrix . {z,1})];
+Clear[gmn];
+reIm[x___] := ComplexExpand[ReIm[x]];
+conjugate[x___] := ComplexExpand[Conjugate[x]];
+
+Clear[gmn,m,n,z,u,v];
+gmn[mn_][z] := matrixToMoebius[basisInverseChangeMatrix[mn]][z]
+gmn[mn_][{d_,h_}] := reIm@matrixToMoebius[basisInverseChangeMatrix[mn]][d+ I h];
+gmn[mn_][{d_,DirectedInfinity[_]}] := 
+{Divide@@ basisInverseChangeMatrix[mn] . {1,0},0};gmn[{n,m}][{_,DirectedInfinity[_]}] :={u/m,0} 
+
+gmnInDHalfNew[{0,1}][dh_] := gmn[{0,1}][dh];
+gmnInDHalfNew[{1,0}][dh_] := {1,-1} * gmn[{1,0}][dh];
+gmnInDHalfNew[mn_][dh_] := Module[{res},
+res = gmn[mn][dh];
+If[euclideanDelta[mn]<0, res= {1,-1} * res];
+res
+];
+
+
+(* ::Input::Initialization:: *)
+euclideanMobiusTransformation[mn_][dh_] := gmnInDHalfNew[mn][dh] 
+
+euclidean01Points = <|
+"ZeroRise"-> {0,DirectedInfinity[1]},
+"RightTriplePoint"->{ 1/2 , Sqrt[3]/2}
+,"LeftTriplePoint"->{ -1/2 , Sqrt[3]/2}
+,"UpperTouchingCircle"->{ 1/2 , Sqrt[3]}
+,"LowerTouchingCircle"->{ -1/2 , Sqrt[3]}
+,"Orthogonal"  ->  {0,1}
+,"TouchingCircle"  ->  {0,1}
+,"Zero"  ->  {0,0}
+,"Interior"-> {0,1.5}(*{1/8,1.5}*)
+|>;
+
+vanItersonRegionPoints[mn_] :=Module[{res},
+Off[Infinity::indet];res=Map[euclideanMobiusTransformation[mn],euclidean01Points];
+On[Infinity::indet];res
+];
+
+vanItersonLabelPoint[mn_] := vanItersonRegionPoints[mn]["Interior"]
+vanItersonTriplePointLeft[mn_] := vanItersonRegionPoints[mn]["LeftTriplePoint"]
+vanItersonTriplePointRight[mn_] := vanItersonRegionPoints[mn]["RightTriplePoint"]
+
+
+(*viiLabelPoint[mn_] := gMNInDHalf[mn][{0,Sqrt[3]/(5/2)}];*)
+
+
+(* ::Input::Initialization:: *)
+
+(*viiPrimaryBoundingBox[mn_] :=  Module[{upperTP,lowerTP,m,n},
+{m,n}= mn;
+upperTP = viiTriplePoint[viiUpperPair[{m,n}]];
+lowerTP = viiTriplePoint[{m,n}];
+{lowerTP,upperTP}
+];*)
+vanItersonTouchingCirclePrimaryBoundingBox[mn_] :=  Module[{},
+ euclideanMobiusTransformation[mn]/@ KeyTake[euclidean01Points,{"LeftTriplePoint","RightTriplePoint"}]
+];
+
+vanItersonTouchingCirclePrimary[mn_]:= Module[{pointData,circleData,centre},
+pointData = vanItersonTouchingCirclePrimaryBoundingBox[mn];
+circleData= vanItersonTouchingCircle[mn];
+centre = circleData[[1]];
+pointData = Map[#-centre &,pointData];
+pointData = Map[Apply[ArcTan,#]&,pointData];
+pointData = Sort@N@Values@pointData;
+Circle[circleData[[1]],circleData[[2]],pointData]
+];
+
+vanItersonTouchingCirclePrimary[{1,1}]:= 
+Line[{{1/2,Sqrt[3]/2},{1/2,1/(2Sqrt[3])}}];
+vanItersonTouchingCirclePrimary[{1,0}]:= vanItersonTouchingCirclePrimary[{0,1}]
+vanItersonTouchingCirclePrimary[{0,1}] := {
+ Circle[{0,0},1,{\[Pi]/3,2\[Pi]/3}]
+};
+
+
+vanItersonTouchingCircle[mn_] := Module[{r,m,n,u,v,dbar},
+{m,n}= mn;(* Sort[mn];*)
+If[m==1 && n==1,Return[InfiniteLine[{{1/2,0},{1/2,1}}]]];
+r = Abs[1/(n^2-m^2)];
+{u,v} = euclideanWindingNumberPair[{m,n}]; 
+dbar = ( n v - m u )/(n^2-m^2);
+Circle[ { dbar, 0},r,{0,\[Pi]}]
+];
+
+vanItersonTouchingCircleNonPrimary[mn_] :=Module[{upperTP,lowerTP,m,n,circle},
+{lowerTP,upperTP} = Values@vanItersonTouchingCirclePrimaryBoundingBox[mn];
+remainderSegments[vanItersonTouchingCircle[mn],upperTP,lowerTP]
+];
+
+
+(*viiNonPrimarySegments[mn_] :=  Module[{upperTP,lowerTP,m,n,circle},
+{lowerTP,upperTP} = Values@vanItersonTouchingCirclePrimaryBoundingBox[mn];
+remainderSegments[vanItersonTouchingCircle[mn],upperTP,lowerTP]
+];
+*)
+(* split  half circle  at points p1 and p2 *)
+subSegment[Circle[xy_,r_,angles___],p1_,p2_] := Module[{angle1,angle2},
+{angle1,angle2} = Sort@N[ {ArcTan @@ (p1-xy),ArcTan @@ (p2-xy)}];
+Circle[xy,r,{angle1,angle2}]
+];
+remainderSegments[Circle[xy_,r_,angles___],p1_,p2_] := Module[{angle1,angle2},
+{angle1,angle2} = Sort@N[ {ArcTan @@ (p1-xy),ArcTan @@ (p2-xy)}];
+{Circle[xy,r,{0,angle1}],Circle[xy,r,{angle2,\[Pi]}]}
+];
+subSegment[InfiniteLine[_],p1_,p2_] := Line[{p1,p2}];
+(* by angles *)
+
+
+vanItersonTouchingCircleNonPrimary[{0,1}] = Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];
+vanItersonTouchingCircleNonPrimary[{1,1}] = {Line[{{1/2,0},{1/2,1/(2 \[Sqrt]3)}}],HalfLine[{{1/2,(\[Sqrt]3)/2},{1/2,2}}]}; (* 1.2 = \[Infinity] *) 
+vanItersonTouchingCircleNonPrimary[{1,2}] ={
+ Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}], Circle[{2/3,0},1/3,{5\[Pi]/6,\[Pi]}]};
+
+
+viiPrimaryIsEverNonOpposed[mn_] := Module[{m,n},
+{m,n} = Sort[mn];
+m < n - m 
+];
+
+vanItersonTouchingCirclePrimaryOpposed[mn_] := 
+vanItersonTouchingCirclePrimary[mn] /; viiPrimaryIsEverNonOpposed[mn] ;
+
+
+vanItersonTouchingCirclePrimaryOpposed[mn_]  := circleBranch[mn,"Opposed"];
+vanItersonTouchingCirclePrimaryNonOpposed[mn_]  := circleBranch[mn,"NonOpposed"];
+(*
+viiPrimaryOpposed[mn_]  := getCircleBranch[mn,"Opposed"];
+viiPrimaryNonOpposed[mn_]  := getCircleBranch[mn,"NonOpposed"];
+
+*)
+circleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
+mn = Sort[{m,n}];
+branch = vanItersonTouchingCirclePrimary[mn];
+If[!viiPrimaryIsEverNonOpposed[mn],
+	If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
+angle = circleAngleAtLine[branch,viiOrthostichyD[mn]];
+
+upperpt =  vanItersonTriplePointRight[mn];
+lowerpt = vanItersonTriplePointLeft[mn];
+
+{centre,r,theta12} = Apply[List,branch];
+If[scalingFunction=="NonOpposed",
+res = Circle[centre,r,Sort@{xyToArg[branch,upperpt],angle}]
+,
+res = Circle[centre,r,Sort@{xyToArg[branch,lowerpt],angle}]
+];
+Return[res];
+];
+viiOrthostichyD[{m_,n_}] := Module[{u,v,res},
+{u,v} = euclideanWindingNumberPair[{m,n}];
+res = v/n;
+ If[res>1/2,res = 1-res];
+res
 ]
 
 
+xyToArg[Circle[centre_,r_,theta_],xy_ ]:= ArcTan @@ ( xy - centre);
+
+
+
+circleAngleAtLine[circle_,d_] := xyToArg[circle, linecircleIntersectionDH[d,circle]];
+
+
+linecircleIntersectionDH[d_,circle_] := {d,linecircleIntersection[d,circle]};
+linecircleIntersection[lineD_,Circle[centre_,r_,theta_]] := Sqrt[r^2 - (lineD-centre[[1]])^2];
+
+
 
 
 (* ::Input::Initialization:: *)
+Clear[vanItersonPolygon];
+vanItersonPolygon[mn_] := RegionUnion[vanItersonPolygon[mn, "Plus"],vanItersonPolygon[mn, "Minus"]];
 
-(*euclideanUVcoefficients[{}] := {{1,0}}; (* ie for m,n=0,1 ; m v - n u = -1 *)
-euclideanUVcoefficients[q_] := Module[{i,u,v,qfunc},
-i=0;
-u[-1]=1; v[-1]=0; 
-u[0] = 0; v[0]=1;
-qfunc[i_] := q[[i+1]]; (* qfunc indexes from 0, just to match recurrence used in text  *)
-For[i=1,i<= Length[q], i++,
-u[i] = u[i-2] + qfunc[i-1] u[i-1];
-v[i] = v[i-2] + qfunc[i-1] v[i-1];
-];(*u[1] = 1; v[1] = q[0];*)
-Table[{u[i],v[i]},{i,0,Length[q]}]
-];*)
+vanItersonPolygon[mn_,sign_] := viiPolygon[mn,"Ordered",sign];
 
-(*makeEuclideanProductMatrix[q_] := Module[{A,P,qfunc,i},
-qfunc[i_] := q[[i+1]]; (* qfunc indexes from 0 *)
-A[i_] := {{ 0,1},{1,-qfunc[i]}};
-P = IdentityMatrix[2];
-For[i=0,i<Length[q],i++,
-P = A[i] . P;
-];
-P
-];*)
+vihmax=1.2;
+
+vanItersonPolygon[{0,1}, "Plus"]  :=regionToPolygon@DiscretizeRegion@RegionDifference[
+Rectangle[{0,0},{1/2,vihmax}],Disk[{0,0},1,{0,\[Pi]}]];
+vanItersonPolygon[{0,1},"Minus"] :=regionToPolygon@DiscretizeRegion@RegionDifference[
+Rectangle[{-1/2,0},{0,vihmax}],Disk[{0,0},1,{0,\[Pi]}]];
+vanItersonPolygon[{0,1}] :=RegionUnion[vanItersonPolygon[{0,1}, "Plus"],vanItersonPolygon[{0,1}, "Minus"]];
+
 (*
-euclideanProductMatrix[mn_] :=   makeEuclideanProductMatrix[euclideanQCoefficients[mn]];
+(* special case *) 
+viiPolygon[{0,1},args__] :=  regionToPolygon[DiscretizeRegion[viiRegion[{0,1},args]]];
 
-euclideanHCF[mn_] := Module[{res},
-res =  euclideanProductMatrix[mn]  .  Reverse[mn ]; (* because of the r-order above *) 
-If[res[[2]] !=0 , Abort[]];
-First[res]
-];
+(* base case *)
+viiPolygon[{1,0},args__] :=  tRegionBase[args]
+(* transform case *)
+viiPolygon[mn_,args__] :=  transformPolygon[tRegionBase[args],gMNInDHalf[mn]]
+viiPolygon[mn_] := viiPolygon[mn,"All"]
 *)
 
 
 
 (* ::Input::Initialization:: *)
-(*euclideanUVDirect[mn_] :=Module[{q,uvList},
-q = euclideanQCoefficients[mn];
-uvList = euclideanUVcoefficients[q]; (* length 1 + length[q], unless q={} when {0,1}} *)
-uv= uvList[[ Max[1,Length[q]] ]] ;
-uv
-];*)
-
-(*  m v - n u = hcf(m,n); 0\[LessEqual]u<m, 0\[LessEqual]v<n apart from the m=0 case *) 
-(* in particular wnp has m v - n u = +1 regardless of euclideanDelta *)
-(*windingNumberPair[{0,0}] := {\[Infinity],\[Infinity]};
-windingNumberPair[{0,n_}] := {-1,0};
-windingNumberPair[{m_,0}] := {0,1};
-windingNumberPair[{m_,n_}] := Module[{u,v,Delta},
-{u,v} = euclideanUVDirect[{m,n}];
-Delta = m v - n u;
-If[Delta>0,Return[{u,v}]];
-{u,v} = {m - u, n - v};
-Return[{u,v}]
-];*)
-(* avoid the symbolic Delta 
-windingNumberPair[{Fibonacci[k_],Fibonacci[j_]}] := {Fibonacci[k-2],Fibonacci[k-1]} /; j\[Equal]k+1
-*)
-(*
-euclideanUV[mn_] := euclideanUVDirect[mn]; 
-euclideanUV[mn_,ForDelta_] := Module[{mnDelta,uv},
-(* Euclid yields a pair with mv - nu= \[PlusMinus] 1 but we don't know the sign *)
-If[euclideanDelta[mn]==ForDelta,
-uv= euclideanUVDirect[mn],
-uv = Reverse[ euclideanUVDirect[Reverse[mn]]]
+regionToPolygon[r_] := Module[{rb,g,cblines,x,y,xy,c},
+rb=RegionBoundary[r];
+cblines = MeshCells[rb,1] /. Line[{x_,y_}] -> UndirectedEdge[x,y];
+g = Graph[MeshCells[rb,0]/. Point[xy_]->xy,cblines,
+VertexCoordinates->MeshPrimitives[rb,0]/. Point[xy_]->xy];
+c = First@ConnectedGraphComponents[g];
+Polygon[AnnotationValue[{c,FindHamiltonianPath[c]},VertexCoordinates]]
 ];
-uv
-];*)
+
+
 
 
 (* ::Input::Initialization:: *)
@@ -618,6 +816,7 @@ hMNUV[m_,n_,u_,v_,DirectedInfinity[_]]:=u/m;*)
 (* ::Input::Initialization:: *)
 (* relative to (1,0)  *) 
 
+
 gMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= euclideanWindingNumberPair[{m,n}];gMNUV[m,n,u,v,w]];
 gMNRealPair[{m_,n_}] := Function[{xy},Module[{x,y},{x,y}=xy; ReIm[gMN[{m,n}][x +  I y]]]];
 gMNRealPairReflection[{m_,n_}] := Function[{xy},Module[{x,y},
@@ -659,7 +858,7 @@ Module[{mvnu1,z1d,z1h},
 Block[{d,h,m,v,n,u},
 mvnu1 = Solve[ m v - n u ==1, v][[1]];
 {z1d,z1h} = 
- Simplify/@( ComplexExpand@ ReIm [gMNUV[{m,n},{u,v}][d+ I h]] );{z1d,z1h} - viiMoebiusTransform[{{m,n},{u,v}}][{d,h}] /. mvnu1]
+ Simplify/@( ComplexExpand@ ReIm [gMNUV[m,n,u,v,d+ I h]] );{z1d,z1h} - viiMoebiusTransform[{{m,n},{u,v}}][{d,h}] /. mvnu1]
 ]
 
 
@@ -684,7 +883,8 @@ latticeCreateDH[latticeDHHexagonal[{m,n}],cylinderLU,3];
 
 (* ::Input::Initialization:: *)
 latticeDHNonOpposedTC[{m_,n_}]  := Module[{xy,r,angles,circle},
-circle =  viiPrimaryNonOpposed[{m,n}];
+(*circle =  viiPrimaryNonOpposed[{m,n}];
+*)circle =  vanItersonTouchingCirclePrimaryNonOpposed[{m,n}];
 If[circle==Nothing,Return[Nothing]];
 {xy,r,angles} = List @@ circle;
 angles = Mean[angles];
@@ -716,16 +916,13 @@ latticeDiskRadius[lattice_] := Module[{pv1},
 
 
 (* ::Input::Initialization:: *)
-viiPrimaryIsEverNonOpposed[mn_] := Module[{m,n},
-{m,n} = Sort[mn];
-m < n - m 
-];
-viiPrimaryOpposed[mn_]  := getCircleBranch[mn,"Opposed"];
-viiPrimaryNonOpposed[mn_]  := getCircleBranch[mn,"NonOpposed"];
 
-getCircleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
+(*viiPrimaryOpposed[mn_]  := getCircleBranch[mn,"Opposed"];
+viiPrimaryNonOpposed[mn_]  := getCircleBranch[mn,"NonOpposed"];
+*)
+(*getCircleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
 mn = Sort[{m,n}];
-branch = viiPrimarySegment[mn];
+branch = vanItersonTouchingCirclePrimary[mn];
 If[!viiPrimaryIsEverNonOpposed[mn],
 	If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
 angle = circleAngleAtLine[branch,viiOrthostichyD[mn]];
@@ -739,72 +936,34 @@ res = Circle[centre,r,Sort@{xyToArg[branch,upperpt],angle}]
 res = Circle[centre,r,Sort@{xyToArg[branch,lowerpt],angle}]
 ];
 Return[res];
-];
-viiOrthostichyD[{m_,n_}] := Module[{u,v,res},
-{u,v} = euclideanWindingNumberPair[{m,n}];
-res = v/n;
- If[res>1/2,res = 1-res];
-res
-]
+];*)
 
-xyToArg[Circle[centre_,r_,theta_],xy_ ]:= ArcTan @@ ( xy - centre)
-
-
-circleAngleAtLine[circle_,d_] := xyToArg[circle, linecircleIntersectionDH[d,circle]]
-linecircleIntersectionDH[d_,circle_] := {d,linecircleIntersection[d,circle]}
-linecircleIntersection[lineD_,Circle[centre_,r_,theta_]] := Sqrt[r^2 - (lineD-centre[[1]])^2];
 
 
 
 
 (* ::Input::Initialization:: *)
-viiMNSemiCircle[mn_] := Module[{r,m,n,u,v,dbar},
+(*viiMNSemiCircle[mn_] := Module[{r,m,n,u,v,dbar},
 {m,n}= Sort[mn];
-If[m==1 && n==1,Return[InfiniteLine[{{1/2,0},{1/2,1}}]]];
+If[m\[Equal]1 && n\[Equal]1,Return[InfiniteLine[{{1/2,0},{1/2,1}}]]];
 r = 1/(n^2-m^2);
 {u,v} = euclideanWindingNumberPair[{m,n}]; 
 dbar = ( n v - m u )/(n^2-m^2);
 Circle[ { dbar, 0},r,{0,\[Pi]}]
-];
-
+];*)
+(*
 viiUpperPair[{m_,n_}] := {Abs[n-m],Min[m,n]}
-
-viiPrimaryBoundingBox[mn_] :=  Module[{upperTP,lowerTP,m,n},
-{m,n}= mn;
-upperTP = viiTriplePoint[viiUpperPair[{m,n}]];
-lowerTP = viiTriplePoint[{m,n}];
-{lowerTP,upperTP}
-];
-
+*)
+(*
 viiPrimarySegment[mn_] :=  Module[{upperTP,lowerTP,m,n},
-{lowerTP,upperTP} = viiPrimaryBoundingBox[mn];
+{lowerTP,upperTP} = vanItersonTouchingCirclePrimaryBoundingBox[mn];
 subSegment[viiMNSemiCircle[mn],upperTP,lowerTP]
 ];
 viiPrimarySegment[{1,1}] = Line[{{1/2,(\[Sqrt]3)/2},{1/2,1/(2 \[Sqrt]3)}}];
 viiPrimarySegment[{0,1}] = Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}];
+*)
 
 
-viiNonPrimarySegments[mn_] :=  Module[{upperTP,lowerTP,m,n,circle},
-{lowerTP,upperTP} = viiPrimaryBoundingBox[mn];
-remainderSegments[viiMNSemiCircle[mn],upperTP,lowerTP]
-];
-
-viiNonPrimarySegments[{0,1}] = Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];
-viiNonPrimarySegments[{1,1}] = {Line[{{1/2,0},{1/2,1/(2 \[Sqrt]3)}}],Line[{{1/2,(\[Sqrt]3)/2},{1/2,\[Infinity]}}]}; (* 1.2 = \[Infinity] *) 
-viiNonPrimarySegments[{1,2}] ={
- Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}], Circle[{2/3,0},1/3,{5\[Pi]/6,\[Pi]}]};
-
-(* split  half circle  at points p1 and p2 *)
-subSegment[Circle[xy_,r_,angles___],p1_,p2_] := Module[{angle1,angle2},
-{angle1,angle2} = Sort@N[ {ArcTan @@ (p1-xy),ArcTan @@ (p2-xy)}];
-Circle[xy,r,{angle1,angle2}]
-];
-remainderSegments[Circle[xy_,r_,angles___],p1_,p2_] := Module[{angle1,angle2},
-{angle1,angle2} = Sort@N[ {ArcTan @@ (p1-xy),ArcTan @@ (p2-xy)}];
-{Circle[xy,r,{0,angle1}],Circle[xy,r,{angle2,\[Pi]}]}
-];
-subSegment[InfiniteLine[_],p1_,p2_] := Line[{p1,p2}];
-(* by angles *)
 
 
 
@@ -818,6 +977,7 @@ Circle[ { (um+vn)/2, 0},Abs[vn-um]/2,{0,\[Pi]}]
 
 dr[r_] := DiscretizeRegion[r];
 Clear[viiRegion]
+
 viiRegion[{0,1},"Ordered","Plus",hmax_:20]  := RegionDifference[
 Rectangle[{0,0},{1/2,hmax}],Disk[{0,0},1,{0,\[Pi]}]];
 viiRegion[{0,1},"Ordered","Minus",hmax_:20] :=RegionDifference[
@@ -908,7 +1068,7 @@ RegionIntersection[outer,inner]
 ]
 ]
 )(* end of code unused cos of bug *)];
-
+Clear[tRegionBase];
 tRegionBase["Ordered", sign_] :=  tRegionBase["Ordered", sign] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered",sign]]];
 tRegionBase["Ordered"] :=  tRegionBase["Ordered"] = regionToPolygon[DiscretizeRegion[viiRegion[{1,0},"Ordered"]]];
 tRegionBase["All"] :=  tRegionBase["All"] = regionToPolygon[
@@ -924,27 +1084,7 @@ viiPolygon[{1,0},args__] :=  tRegionBase[args]
 viiPolygon[mn_,args__] :=  transformPolygon[tRegionBase[args],gMNInDHalf[mn]]
 viiPolygon[mn_] := viiPolygon[mn,"All"]
 
-regionToPolygon[r_] := Module[{rb,g,cblines,x,y,xy,c},
-rb=RegionBoundary[r];
-cblines = MeshCells[rb,1] /. Line[{x_,y_}] -> UndirectedEdge[x,y];
-g = Graph[MeshCells[rb,0]/. Point[xy_]->xy,cblines,
-VertexCoordinates->MeshPrimitives[rb,0]/. Point[xy_]->xy];
-c = First@ConnectedGraphComponents[g];
-Polygon[AnnotationValue[{c,FindHamiltonianPath[c]},VertexCoordinates]]
-];
 
-vanItersonRegionPoints[mn_] := <|
-"triple"->  gMNInDHalf[mn][{1/2,Sqrt[3]/2}]
-,"label"->  gMNInDHalf[mn][{0,Sqrt[3]/(5/2)}]
-,"touchingCircle"  ->  gMNInDHalf[mn][{0,1}]
-,"touchingCircleNonPrimary"  ->   gMNInDHalf[mn][{-Sqrt[3]/2,1/2}]
-|>
-vanItersonRegionPointsSymbolic[mn_] := <|
-"triple"->  gMNInDHalfSymbolic[mn][{1/2,Sqrt[3]/2}]
-,"label"->  gMNInDHalfSymbolic[mn][{0,Sqrt[3]/(5/2)}]
-,"touchingCircle"  ->  gMNInDHalfSymbolic[mn][{0,1}]
-,"touchingCircleNonPrimary"  ->   gMNInDHalfSymbolic[mn][{-Sqrt[3]/2,1/2}]
-|>
 
 
 viiTriplePoint[mn_] := gMNInDHalf[mn][{1/2,Sqrt[3]/2}];
@@ -1237,4 +1377,7 @@ lattice3DPointsUpToV[lattice_,v_] := Module[{pts},
 pts = lattice3DPoints[lattice];
 Select[pts, Last[#] <   lattice[spline3D][0,v][[3]]&]
 ];
+
+
+
 
