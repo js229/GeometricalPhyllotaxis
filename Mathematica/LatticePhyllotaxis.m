@@ -390,6 +390,13 @@ vanItersonTouchingCSG[{2,5},0.001],
 CSGRegion["Union",{vanItersonTouchingCSG[{3,5},0],vanItersonTouchingCSG[{5,8},0]}]
 }
 ];
+vanItersonRegion[{5,3}, "PlusMinus"] := CSGRegion["Difference",
+{
+CSGRegion["Intersection",{vanItersonTouchingCSG[{2,3},0.001],vanItersonTouchingCSG[{3,5},0.001]}]
+,
+vanItersonTouchingCSG[{3,8},0.00]
+}
+];
 
 
 vanItersonRegion[{3,5}, "Plus"] := CSGRegion["Difference",
@@ -399,13 +406,7 @@ vanItersonRegion[{3,5}, "Minus"] := CSGRegion["Intersection",
 {vanItersonRegion[{3,5}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
 ];
 
-vanItersonRegion[{5,3}, "PlusMinus"] := CSGRegion["Difference",
-{
-CSGRegion["Intersection",{vanItersonTouchingCSG[{2,3},0.001],vanItersonTouchingCSG[{3,5},0.001]}]
-,
-vanItersonTouchingCSG[{3,8},0.00]
-}
-];
+
 
 vanItersonRegion[{5,3}, "Plus"] := CSGRegion["Difference",
 {vanItersonRegion[{5,3}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
