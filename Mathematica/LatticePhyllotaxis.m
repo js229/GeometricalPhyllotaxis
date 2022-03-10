@@ -49,7 +49,10 @@ euclideanQCoefficients[{1,0}] := {0};
 (* ::Input::Initialization:: *)
 
 
-
+euclideanTreeDepth[mn_] := Module[{qValues,qCondition},
+qValues = euclideanQCoefficients[Sort[mn]];
+Total[qValues]
+];
 
  (* need one of m and n > 0;  creates a matrix with (m	u
 n	v
@@ -325,8 +328,25 @@ Clear[vanItersonPolygon,vanItersonRegion];
 vanItersonPolygon[mn_] := {vanItersonPolygon[mn, "Plus"],vanItersonPolygon[mn, "Minus"]};
 vanItersonPolygon[mn_,sign_] := viiPolygon[mn,"Ordered",sign];
 
+
 rpdr[region_] := regionToPolygon[DiscretizeRegion[region,MaxCellMeasure->100,PrecisionGoal->6]];
+vanItersonPolygon[{0,1}]  := rpdr@vanItersonRegion[{0,1}];
 vanItersonPolygon[{0,1}, sign_]  := rpdr@vanItersonRegion[{0,1},sign];
+
+knownPolygons = {{2,1},{2,3},{2,5},{3,2},{3,5},{3,8},{8,3},{5,3},{5,2}};
+vanItersonPolygon[mn_] := rpdr@vanItersonRegion[mn] /; MemberQ[knownPolygons,mn];
+
+(*vanItersonPolygon[{2,1}]  := rpdr@vanItersonRegion[{2,1}];
+vanItersonPolygon[{2,3}]  := rpdr@vanItersonRegion[{2,3}];
+vanItersonPolygon[{2,5}]  := rpdr@vanItersonRegion[{2,5}];
+vanItersonPolygon[{3,2}]  := rpdr@vanItersonRegion[{3,2}];
+vanItersonPolygon[{3,5}]  := rpdr@vanItersonRegion[{3,5}];
+vanItersonPolygon[{3,8}]  := rpdr@vanItersonRegion[{3,8}];
+vanItersonPolygon[{8,3}]  := rpdr@vanItersonRegion[{8,3}];
+vanItersonPolygon[{5,3}]  := rpdr@vanItersonRegion[{5,3}];
+*)
+vanItersonPolygon[{1,n_}]  := rpdr@vanItersonRegion[{1,n}];
+
 vanItersonPolygon[{1,0}, sign_]  := rpdr@vanItersonRegion[{1,0},sign];
 vanItersonPolygon[{1,1}, sign_]  := rpdr@vanItersonRegion[{1,1},sign];
 vanItersonPolygon[{1,2}, sign_]  := rpdr@vanItersonRegion[{1,2},sign];
@@ -338,17 +358,29 @@ vanItersonPolygon[{5,3}, sign_]  := rpdr@vanItersonRegion[{5,3},sign];
 
 
 vihmax=1.2;
-
+vanItersonRegion[{0,1}] :=RegionDifference[
+Rectangle[{-1/2,0},{1/2,vihmax}],
+RegionUnion[Disk[{0,0},1]]];
 vanItersonRegion[{0,1}, "Plus"]  :=RegionDifference[
-Rectangle[{0,0},{1/2,vihmax}],Disk[{0,0},1,{0,\[Pi]}]];
+Rectangle[{0,0},{1/2,vihmax}],Disk[{0,0},1]];
 vanItersonRegion[{0,1},"Minus"] :=RegionDifference[
-Rectangle[{-1/2,0},{0,vihmax}],Disk[{0,0},1,{0,\[Pi]}]];
+Rectangle[{-1/2,0},{0,vihmax}],Disk[{0,0},1]];
+
+baseRegionStrip = Rectangle[{0,10^-4},{1/2,1}];
+
+vanItersonRegion[{1,0}]  :=RegionIntersection[baseRegionStrip,
+RegionDifference[Disk[{0,0},1],Disk[{1,0},1]]
+];
 vanItersonRegion[{1,0}, "Plus"]  :=RegionDifference[
 RegionIntersection[Rectangle[{0,0},{1,1}],Disk[{0,0},1,{0,\[Pi]}]],
 Disk[{1,0},1,{0,\[Pi]}]];
 vanItersonRegion[{1,0},"Minus"] :=RegionDifference[
 RegionIntersection[Rectangle[{-1,0},{0,1}],Disk[{0,0},1,{0,\[Pi]}]],
 Disk[{-1,0},1,{0,\[Pi]}]];
+
+vanItersonRegion[{1,1}] := RegionIntersection[baseRegionStrip,
+RegionDifference[Disk[{1,0},1],Disk[{1/3,0},1/3]]
+];
 
 vanItersonRegion[{1,1}, "Minus"]  :=RegionDifference[
 RegionIntersection[Rectangle[{0,0},{1/2,1}],Disk[{1,0},1,{0,\[Pi]}]],
@@ -358,6 +390,43 @@ vanItersonRegion[{1,1}, "Plus"]  :=RegionDifference[
 RegionIntersection[Rectangle[{0,0},{1/2,1}],vanItersonSquareLatticeRegion[{1,1}]],
 Disk[{1/3,0},1/3]
 ];
+
+vanItersonRegion[{1,2}] :=  RegionIntersection[baseRegionStrip,
+RegionDifference[Disk[{1/3,0},1/3],
+RegionUnion[Disk[{2/3,0},1/3],vanItersonTouchingCircleDisk[{2,3}]]]];
+vanItersonRegion[{2,1}]  := RegionIntersection[baseRegionStrip,
+RegionDifference[Disk[{2/3,0},1/3],
+vanItersonTouchingCircleDisk[{1,3}]]];
+
+vanItersonRegion[{1,3}] :=  RegionIntersection[baseRegionStrip,
+RegionDifference[vanItersonTouchingCircleDisk[{2,3}],
+RegionUnion[vanItersonTouchingCircleDisk[{3,4}],vanItersonTouchingCircleDisk[{1,3}]]]];
+vanItersonRegion[{1,n_}] :=  RegionIntersection[baseRegionStrip,
+RegionDifference[vanItersonTouchingCircleDisk[{n-1,n}],
+RegionUnion[vanItersonTouchingCircleDisk[{n,n+1}],vanItersonTouchingCircleDisk[{1,n}]]]];
+
+regionAboveTCPrimary[{m_,n_}] := RegionIntersection[baseRegionStrip,
+RegionDifference[vanItersonTouchingCircleDisk[{n-m,n}],
+RegionUnion[vanItersonTouchingCircleDisk[{m,n}],vanItersonTouchingCircleDisk[{n,n+m}]]]];
+regionBelowTCPrimary[{m_,n_}] := RegionIntersection[baseRegionStrip,
+RegionDifference[
+RegionIntersection[vanItersonTouchingCircleDisk[{m-n,n}],vanItersonTouchingCircleDisk[{n,m}]],
+vanItersonTouchingCircleDisk[{n,n+m}]]];
+
+
+vanItersonRegion[{m_,n_}] := Module[{interior,ix,regions,reg},
+interior = vanItersonLabelPoint[{m,n}];
+regions = {vanItersonTouchingCircleDisk[{m,n}],vanItersonTouchingCircleDisk[{n,n+m}],
+vanItersonTouchingCircleDisk[{Abs[n-m],n}]};
+isOutside[ix_] :=  If[RegionMember[regions[[ix]],interior],Slot[ix],Not[Slot[ix]]]; 
+reg=BooleanRegion[(And@@ Array[isOutside,3])&,regions];
+reg = RegionIntersection[reg,baseRegionStrip ];
+reg
+
+];
+
+
+
 
 vanItersonRegion[{1,2}, "Plus"] := RegionDifference[
 Disk[{1/3,0},1/3,{0,\[Pi]}],
@@ -400,10 +469,10 @@ vanItersonTouchingCSG[{3,8},0.00]
 
 
 vanItersonRegion[{3,5}, "Plus"] := CSGRegion["Difference",
-{vanItersonRegion[{3,5}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
+{vanItersonRegion[{3,5}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},-0.001]}
 ];
 vanItersonRegion[{3,5}, "Minus"] := CSGRegion["Intersection",
-{vanItersonRegion[{3,5}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
+{vanItersonRegion[{3,5}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},-0.001]}
 ];
 
 
@@ -417,13 +486,16 @@ vanItersonRegion[{5,3}, "Minus"] := CSGRegion["Intersection",
 
 
 
+vanItersonSquareLatticeDisk[mn_] := Take[vanItersonSquareLattice[mn]/. Circle->Disk,2];
+vanItersonTouchingCircleDisk[mn_] := Take[vanItersonTouchingCircle[mn]/. Circle->Disk,2];
 
-vanItersonSquareLatticeCSG[mn_,margin_] := Module[{res},res = Take[vanItersonSquareLattice[mn]/. Circle->Disk,2];
+vanItersonSquareLatticeCSG[mn_,margin_] := Module[{res},
+res = vanItersonSquareLatticeDisk[mn];
 res = CSGRegion["Difference",
 {res,Rectangle[{0,-1},{1,margin}]}]
 ];
 vanItersonTouchingCSG[mn_,margin_] := Module[{res},
-res = Take[vanItersonTouchingCircle[mn]/. Circle->Disk,2];
+res = vanItersonTouchingCircleDisk[mn];
 res = CSGRegion["Difference",{res,Rectangle[{0,-1},{1,margin}]}]
 ];
 
@@ -444,6 +516,11 @@ vanItersonRegionBounds[mn_] := Module[{u,vn,vm,m,n},
  {u,vm}= euclideanWindingNumberPair[Reverse@{m,n}];
 {tcCentre,tcRadius}= Take[List@@vanItersonTouchingCircle[{ n-m,n}],2];
 {Sort[{vn/n,vm/m}],{0,tcRadius}}
+];
+vanItersonRegionBounds[{1,n_}] := Module[{tP,tcCentre,tcRadius},
+tP = vanItersonTriplePointRight[{1,n}];
+{tcCentre,tcRadius}= Take[List@@vanItersonTouchingCircle[{ n-1,n}],2];
+{{0,First[tP]},{0,tcRadius}}
 ]
 
 
