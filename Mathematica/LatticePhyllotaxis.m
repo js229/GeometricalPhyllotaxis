@@ -42,24 +42,10 @@ euclideanQCoefficients[{0,1}] := {};
 euclideanQCoefficients[{1,0}] := {0}; 
 *)
 
-
-
-
-
-(* ::Input::Initialization:: *)
-
-
 euclideanTreeDepth[mn_] := Module[{qValues,qCondition},
 qValues = euclideanQCoefficients[Sort[mn]];
 Total[qValues]
 ];
-
- (* need one of m and n > 0;  creates a matrix with (m	u
-n	v
-
-)  and | m v -  nu |=1, no assumption that m<n*)
-
-
 
 
 
@@ -171,8 +157,8 @@ res
 
 (* ::Input::Initialization:: *)
 euclideanMobiusTransformation[mn_][dh_] := gmnInDHalfNew[mn][dh] 
-(*euclideanMobiusTransformation[mn_][{0,DirectedInfinity[1]}] := Limit[gmnInDHalfNew[mn][{0,h}],h->\[Infinity]];
-*)
+
+
 euclidean01Points = <|
 "ZeroRise"-> {0,DirectedInfinity[1]},
 "RightTriplePoint"->{ 1/2 , Sqrt[3]/2}
@@ -195,17 +181,20 @@ vanItersonTriplePointLeft[mn_] := vanItersonRegionPoints[mn]["LeftTriplePoint"]
 vanItersonTriplePointRight[mn_] := vanItersonRegionPoints[mn]["RightTriplePoint"]
 
 
-(*viiLabelPoint[mn_] := gMNInDHalf[mn][{0,Sqrt[3]/(5/2)}];*)
 
 
 (* ::Input::Initialization:: *)
 
-(*viiPrimaryBoundingBox[mn_] :=  Module[{upperTP,lowerTP,m,n},
-{m,n}= mn;
-upperTP = viiTriplePoint[viiUpperPair[{m,n}]];
-lowerTP = viiTriplePoint[{m,n}];
-{lowerTP,upperTP}
-];*)
+vanItersonTouchingCircle[mn_] := Module[{r,m,n,u,v,dbar},
+{m,n}= mn; 
+If[m==1 && n==1,Return[InfiniteLine[{{1/2,0},{1/2,1}}]]];
+r = Abs[1/(n^2-m^2)];
+{u,v} = euclideanWindingNumberPair[{m,n}]; 
+dbar = ( n v - m u )/(n^2-m^2);
+Circle[ { dbar, 0},r,{0,\[Pi]}]
+];
+
+
 vanItersonTouchingCirclePrimaryBoundingBox[mn_] :=  Module[{},
  euclideanMobiusTransformation[mn]/@ KeyTake[euclidean01Points,{"LeftTriplePoint","RightTriplePoint"}]
 ];
@@ -228,14 +217,6 @@ vanItersonTouchingCirclePrimary[{0,1}] := {
 };
 
 
-vanItersonTouchingCircle[mn_] := Module[{r,m,n,u,v,dbar},
-{m,n}= mn;(* Sort[mn];*)
-If[m==1 && n==1,Return[InfiniteLine[{{1/2,0},{1/2,1}}]]];
-r = Abs[1/(n^2-m^2)];
-{u,v} = euclideanWindingNumberPair[{m,n}]; 
-dbar = ( n v - m u )/(n^2-m^2);
-Circle[ { dbar, 0},r,{0,\[Pi]}]
-];
 
 vanItersonTouchingCircleNonPrimary[mn_] :=Module[{upperTP,lowerTP,m,n,circle},
 {lowerTP,upperTP} = Values@vanItersonTouchingCirclePrimaryBoundingBox[mn];
@@ -325,8 +306,6 @@ vanItersonTouchingRegion[mn_] := vanItersonTouchingCircle[mn] /. Circle->Disk
 (* ::Input::Initialization:: *)
 Clear[vanItersonPolygon,vanItersonRegion];
 
-
-
 rpdr[region_] := regionToPolygon[DiscretizeRegion[region,MaxCellMeasure->100,PrecisionGoal->6]];
 
 
@@ -335,6 +314,26 @@ vanItersonPolygon[mn_,sign_] := rpdr@vanItersonRegion[mn,sign] ;
 
 
 
+vanItersonRegion[{m_,n_}] := Module[{interior,ix,regions,reg},
+interior = vanItersonLabelPoint[{m,n}];
+regions = {
+vanItersonTouchingCircleDisk[{m,n}]
+,vanItersonTouchingCircleDisk[{n,n+m}]
+,vanItersonTouchingCircleDisk[{Abs[n-m],n}]};
+isOutside[ix_] :=  If[RegionMember[regions[[ix]],interior],Slot[ix],Not[Slot[ix]]]; 
+reg=BooleanRegion[(And@@ Array[isOutside,3])&,regions];
+reg = RegionIntersection[reg,baseRegionStrip ];
+reg
+
+];
+
+vanItersonRegion[mn_,"Plus"] := 
+RegionDifference[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
+vanItersonRegion[mn_,"Minus"] := 
+RegionIntersection[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
+
+vanItersonSquareLatticeDisk[mn_] := Take[vanItersonSquareLattice[mn]/. Circle->Disk,2];
+vanItersonTouchingCircleDisk[mn_] := Take[vanItersonTouchingCircle[mn]/. Circle->Disk,2];
 
 
 vihmax=1.2;
@@ -361,8 +360,7 @@ Disk[{-1,0},1,{0,\[Pi]}]];
 vanItersonRegion[{1,1}] := RegionIntersection[baseRegionStrip,
 RegionDifference[Disk[{1,0},1],Disk[{1/3,0},1/3]]
 ];
-
-(*vanItersonRegion[{1,1}, "Minus"]  :=RegionDifference[
+vanItersonRegion[{1,1}, "Minus"]  :=RegionDifference[
 RegionIntersection[Rectangle[{0,0},{1/2,1}],Disk[{1,0},1,{0,\[Pi]}]],
 vanItersonSquareLatticeRegion[{1,1}]
 ];
@@ -370,7 +368,7 @@ vanItersonRegion[{1,1}, "Plus"]  :=RegionDifference[
 RegionIntersection[Rectangle[{0,0},{1/2,1}],vanItersonSquareLatticeRegion[{1,1}]],
 Disk[{1/3,0},1/3]
 ];
-*)
+
 vanItersonRegion[{1,2}] :=  RegionIntersection[baseRegionStrip,
 RegionDifference[Disk[{1/3,0},1/3],
 RegionUnion[Disk[{2/3,0},1/3],vanItersonTouchingCircleDisk[{2,3}]]]];
@@ -379,83 +377,6 @@ RegionDifference[Disk[{2/3,0},1/3],
 vanItersonTouchingCircleDisk[{1,3}]]];
 
 
-
-vanItersonRegion[{m_,n_}] := Module[{interior,ix,regions,reg},
-interior = vanItersonLabelPoint[{m,n}];
-regions = {
-vanItersonTouchingCircleDisk[{m,n}]
-,vanItersonTouchingCircleDisk[{n,n+m}]
-,vanItersonTouchingCircleDisk[{Abs[n-m],n}]};
-isOutside[ix_] :=  If[RegionMember[regions[[ix]],interior],Slot[ix],Not[Slot[ix]]]; 
-reg=BooleanRegion[(And@@ Array[isOutside,3])&,regions];
-reg = RegionIntersection[reg,baseRegionStrip ];
-reg
-
-];
-
-vanItersonRegion[mn_,"Plus"] := 
-RegionDifference[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
-vanItersonRegion[mn_,"Minus"] := 
-RegionIntersection[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
-
-(*
-vanItersonRegion[{1,2}, "Plus"] := RegionDifference[
-Disk[{1/3,0},1/3,{0,\[Pi]}],
-RegionUnion[
-vanItersonSquareLatticeRegion[{1,2}],vanItersonTouchingRegion[{2,1}]
-]
-];
-vanItersonRegion[{1,2}, "Minus"] := RegionDifference[
-vanItersonSquareLatticeRegion[{1,2}],
-RegionUnion[
-vanItersonTouchingRegion[{2,3}],
-(vanItersonTouchingCircle[{1,2}]/.Circle->Disk)
-]
-];
-vanItersonRegion[{2,1}, "Plus"] := RegionDifference[
-vanItersonTouchingRegion[{2,1}],
-RegionUnion[
-vanItersonSquareLatticeRegion[{2,1}],Rectangle[{1/2,0},{1,1}]
-]
-];
-vanItersonRegion[{2,1}, "Minus"] := RegionDifference[
-RegionIntersection[Disk[{2/3,0},1/3,{0,\[Pi]}],vanItersonSquareLatticeRegion[{1,2}]],
-
-vanItersonTouchingRegion[{1,3}]
-];
-*)
-
-(*
-vanItersonRegion[{3,5}, "Plus"] := CSGRegion["Difference",
-{vanItersonRegion[{3,5}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},-0.001]}
-];
-vanItersonRegion[{3,5}, "Minus"] := CSGRegion["Intersection",
-{vanItersonRegion[{3,5}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},-0.001]}
-];
-*)
-
-(*
-vanItersonRegion[{5,3}, "Plus"] := CSGRegion["Difference",
-{vanItersonRegion[{5,3}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
-];
-vanItersonRegion[{5,3}, "Minus"] := CSGRegion["Intersection",
-{vanItersonRegion[{5,3}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
-];
-*)
-
-
-vanItersonSquareLatticeDisk[mn_] := Take[vanItersonSquareLattice[mn]/. Circle->Disk,2];
-vanItersonTouchingCircleDisk[mn_] := Take[vanItersonTouchingCircle[mn]/. Circle->Disk,2];
-
-vanItersonSquareLatticeCSG[mn_,margin_] := Module[{res},
-res = vanItersonSquareLatticeDisk[mn];
-res = CSGRegion["Difference",
-{res,Rectangle[{0,-1},{1,margin}]}]
-];
-vanItersonTouchingCSG[mn_,margin_] := Module[{res},
-res = vanItersonTouchingCircleDisk[mn];
-res = CSGRegion["Difference",{res,Rectangle[{0,-1},{1,margin}]}]
-];
 
 
 
@@ -1061,56 +982,6 @@ latticeDiskRadius[lattice_] := Module[{pv1},
 
 (* ::Input::Initialization:: *)
 
-(*viiPrimaryOpposed[mn_]  := getCircleBranch[mn,"Opposed"];
-viiPrimaryNonOpposed[mn_]  := getCircleBranch[mn,"NonOpposed"];
-*)
-(*getCircleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
-mn = Sort[{m,n}];
-branch = vanItersonTouchingCirclePrimary[mn];
-If[!viiPrimaryIsEverNonOpposed[mn],
-	If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
-angle = circleAngleAtLine[branch,viiOrthostichyD[mn]];
-upperpt = viiTriplePoint[viiUpperPair[mn]];
-lowerpt = viiTriplePoint[mn];
-
-{centre,r,theta12} = Apply[List,branch];
-If[scalingFunction=="NonOpposed",
-res = Circle[centre,r,Sort@{xyToArg[branch,upperpt],angle}]
-,
-res = Circle[centre,r,Sort@{xyToArg[branch,lowerpt],angle}]
-];
-Return[res];
-];*)
-
-
-
-
-
-(* ::Input::Initialization:: *)
-(*viiMNSemiCircle[mn_] := Module[{r,m,n,u,v,dbar},
-{m,n}= Sort[mn];
-If[m\[Equal]1 && n\[Equal]1,Return[InfiniteLine[{{1/2,0},{1/2,1}}]]];
-r = 1/(n^2-m^2);
-{u,v} = euclideanWindingNumberPair[{m,n}]; 
-dbar = ( n v - m u )/(n^2-m^2);
-Circle[ { dbar, 0},r,{0,\[Pi]}]
-];*)
-(*
-viiUpperPair[{m_,n_}] := {Abs[n-m],Min[m,n]}
-*)
-(*
-viiPrimarySegment[mn_] :=  Module[{upperTP,lowerTP,m,n},
-{lowerTP,upperTP} = vanItersonTouchingCirclePrimaryBoundingBox[mn];
-subSegment[viiMNSemiCircle[mn],upperTP,lowerTP]
-];
-viiPrimarySegment[{1,1}] = Line[{{1/2,(\[Sqrt]3)/2},{1/2,1/(2 \[Sqrt]3)}}];
-viiPrimarySegment[{0,1}] = Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}];
-*)
-
-
-
-
-
 
 viiMNOrthoCircle[mn_] := Module[{m,n,u,v,um,vn},
 {m,n}= mn;
@@ -1119,7 +990,7 @@ viiMNOrthoCircle[mn_] := Module[{m,n,u,v,um,vn},
 Circle[ { (um+vn)/2, 0},Abs[vn-um]/2,{0,\[Pi]}]
 ];
 
-dr[r_] := DiscretizeRegion[r];
+(*dr[r_] := DiscretizeRegion[r];
 Clear[viiRegion]
 
 viiRegion[{0,1},"Ordered","Plus",hmax_:20]  := RegionDifference[
@@ -1151,14 +1022,14 @@ If["Fix bug with region order",
 viiRegion[{1,1},"Ordered","Minus"]  :=   
 RegionIntersection[ Rectangle[{0,0},{1/2,1}]
 ,RegionDifference[Disk[{1,0},1,{0,\[Pi]}],
-viiMNOrthoCircle[{1,1}] /. Circle-> Disk
+viiMNOrthoCircle[{1,1}] /. Circle\[Rule] Disk
 ]
 ];
 
 viiRegion[{1,1},"Ordered","Plus"]  :=   
 RegionIntersection[ Rectangle[{0,0},{1/2,1}]
 ,RegionDifference[
-viiMNOrthoCircle[{1,1}] /. Circle-> Disk
+viiMNOrthoCircle[{1,1}] /. Circle\[Rule] Disk
 ,Disk[{1/3,0},1/3,{0,\[Pi]}]
 ]
 ];
@@ -1168,26 +1039,26 @@ viiRegion[{1,1},"Ordered"] :=RegionUnion[viiRegion[{1,1},"Ordered","Plus"],viiRe
 viiRegion[{2,1},"Ordered"] := Module[{m,n,outer,inner1,inner2},
 outer = Rectangle[{0,0},{1/2,1}];
 inner1 = Disk[{2/3,0},1/3,{0,\[Pi]}];
-inner2 = viiMNSemiCircle[{1,3}]/. Circle->Disk;
+inner2 = viiMNSemiCircle[{1,3}]/. Circle\[Rule]Disk;
 RegionDifference[ RegionIntersection[outer,inner1],inner2]
 ];
 viiRegion[{1,2},"Ordered"] := Module[{m,n,outer,inner1,inner2},
 outer = Disk[{1/3,0},1/3,{0,\[Pi]}];
 inner1 =Disk[{2/3,0},1/3,{0,\[Pi]}];
-inner2 = viiMNSemiCircle[{2,3}]/. Circle->Disk;
+inner2 = viiMNSemiCircle[{2,3}]/. Circle\[Rule]Disk;
 RegionDifference[outer,RegionUnion[inner1,inner2]]
 ];
 
 (* this is the bit that will probably work if i concentrate. but it doesn't *)
 viiRegion[mn_,"All"] := Module[{m,n,outer,inner,outer1,outer2,inner1,inner2},
 {m,n}= Sort[mn];
-outer1 = viiMNSemiCircle[{Abs[n-m],m}]/. Circle->Disk;outer2 = viiMNSemiCircle[{Abs[n-m],n}]/. Circle->Disk;
-If[euclideanDelta[{m,n}]==1,
+outer1 = viiMNSemiCircle[{Abs[n-m],m}]/. Circle\[Rule]Disk;outer2 = viiMNSemiCircle[{Abs[n-m],n}]/. Circle\[Rule]Disk;
+If[euclideanDelta[{m,n}]\[Equal]1,
 outer = RegionDifference[outer2,outer1],
 outer = RegionIntersection[outer1,outer2]
 ];
-inner1 = viiMNSemiCircle[{m,n+m}]/. Circle->Disk;
-inner2 = viiMNSemiCircle[{n,n+m}]/. Circle->Disk;
+inner1 = viiMNSemiCircle[{m,n+m}]/. Circle\[Rule]Disk;
+inner2 = viiMNSemiCircle[{n,n+m}]/. Circle\[Rule]Disk;
 inner = RegionUnion[inner1,inner2];
 RegionDifference[outer,inner]
 ];
@@ -1195,7 +1066,7 @@ RegionDifference[outer,inner]
 viiRegion[mn_,"Ordered"] := Module[{m,n,outer,inner},
 {m,n}=mn;
 outer = viiRegion[mn,"All"];
-inner = viiMNSemiCircle[{m,n}]/. Circle->Disk;
+inner = viiMNSemiCircle[{m,n}]/. Circle\[Rule]Disk;
 If[m<n,
 RegionDifference[outer,inner]
 ,
@@ -1204,8 +1075,8 @@ RegionIntersection[outer,inner]
 ];
 
 viiRegion[mn_,"Ordered",sign_] := Module[{m,n,outer,inner},
-outer =  viiRegion[mn,"Ordered"];inner = viiMNOrthoCircle[mn]/. Circle->Disk;
-If[sign=="Minus",
+outer =  viiRegion[mn,"Ordered"];inner = viiMNOrthoCircle[mn]/. Circle\[Rule]Disk;
+If[sign\[Equal]"Minus",
 RegionDifference[outer,inner]
 ,
 RegionIntersection[outer,inner]
@@ -1236,7 +1107,7 @@ viiTriplePoint[{0,1}] := {-1/2,Sqrt[3]/2}; (* algo gives (3/2,Sqrt[3]/2) *)
 
 viiLabelPoint[mn_] := gMNInDHalf[mn][{0,Sqrt[3]/(5/2)}];
 viiTouchingCircleLabel[mn_] :=  gMNInDHalf[mn][{0,1}];
-viiTouchingCircleLabelNonPrimary[mn_] :=  gMNInDHalf[mn][{-Sqrt[3]/2,1/2}];
+viiTouchingCircleLabelNonPrimary[mn_] :=  gMNInDHalf[mn][{-Sqrt[3]/2,1/2}];*)
 
 
 (* ::Input::Initialization:: *)
