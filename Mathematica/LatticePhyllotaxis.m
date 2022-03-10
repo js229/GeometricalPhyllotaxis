@@ -86,19 +86,19 @@ euclideanMatrixProduct[{0,1}] = ({
  {1, 0},
  {0, -1}
 });
-euclideanDelta[mn_]  := Det@euclideanMatrixProduct[mn]
+euclideanDelta[mn_]  := Det@euclideanMatrixProduct[mn];
 
-(*euclideanMatrixProductNew[mn_] := sMatrix. euclideanMatrixProduct[mn]
+euclideanMatrixProductNew[mn_] := sMatrix . euclideanMatrixProduct[mn]
 
-euclideanMatrixProductNew[{1,0}] = (0	-1
-1	0
+euclideanMatrixProductNew[{1,0}] = ({
+ {0, -1},
+ {1, 0}
+});
+euclideanMatrixProductNew[{0,1}] = ({
+ {1, 0},
+ {0, -1}
+});
 
-);
-euclideanMatrixProductNew[{0,1}] = (1	0
-0	-1
-
-);
-*)
 
 
 
@@ -325,11 +325,15 @@ Clear[vanItersonPolygon,vanItersonRegion];
 vanItersonPolygon[mn_] := {vanItersonPolygon[mn, "Plus"],vanItersonPolygon[mn, "Minus"]};
 vanItersonPolygon[mn_,sign_] := viiPolygon[mn,"Ordered",sign];
 
-vanItersonPolygon[{0,1}, sign_]  := regionToPolygon@DiscretizeRegion@vanItersonRegion[{0,1},sign];
-vanItersonPolygon[{1,0}, sign_]  := regionToPolygon@DiscretizeRegion@vanItersonRegion[{1,0},sign];
-vanItersonPolygon[{1,1}, sign_]  := regionToPolygon@DiscretizeRegion@vanItersonRegion[{1,1},sign];
-vanItersonPolygon[{1,2}, sign_]  := regionToPolygon@DiscretizeRegion@vanItersonRegion[{1,2},sign];
-vanItersonPolygon[{2,1}, sign_]  := regionToPolygon@DiscretizeRegion@vanItersonRegion[{2,1},sign];
+rpdr[region_] := regionToPolygon[DiscretizeRegion[region,MaxCellMeasure->100,PrecisionGoal->6]];
+vanItersonPolygon[{0,1}, sign_]  := rpdr@vanItersonRegion[{0,1},sign];
+vanItersonPolygon[{1,0}, sign_]  := rpdr@vanItersonRegion[{1,0},sign];
+vanItersonPolygon[{1,1}, sign_]  := rpdr@vanItersonRegion[{1,1},sign];
+vanItersonPolygon[{1,2}, sign_]  := rpdr@vanItersonRegion[{1,2},sign];
+vanItersonPolygon[{2,1}, sign_]  := rpdr@vanItersonRegion[{2,1},sign];
+
+vanItersonPolygon[{3,5}, sign_]  := rpdr@vanItersonRegion[{3,5},sign];
+vanItersonPolygon[{5,3}, sign_]  := rpdr@vanItersonRegion[{5,3},sign];
 
 
 
@@ -379,6 +383,54 @@ RegionIntersection[Disk[{2/3,0},1/3,{0,\[Pi]}],vanItersonSquareLatticeRegion[{1,
 
 vanItersonTouchingRegion[{1,3}]
 ];
+
+vanItersonRegion[{3,5}, "PlusMinus"] := CSGRegion["Difference",
+{
+vanItersonTouchingCSG[{2,5},0.001],
+CSGRegion["Union",{vanItersonTouchingCSG[{3,5},0],vanItersonTouchingCSG[{5,8},0]}]
+}
+];
+
+
+vanItersonRegion[{3,5}, "Plus"] := CSGRegion["Difference",
+{vanItersonRegion[{3,5}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
+];
+vanItersonRegion[{3,5}, "Minus"] := CSGRegion["Intersection",
+{vanItersonRegion[{3,5}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
+];
+
+vanItersonRegion[{5,3}, "PlusMinus"] := CSGRegion["Difference",
+{
+CSGRegion["Intersection",{vanItersonTouchingCSG[{2,3},0.001],vanItersonTouchingCSG[{3,5},0.001]}]
+,
+vanItersonTouchingCSG[{3,8},0.00]
+}
+];
+
+vanItersonRegion[{5,3}, "Plus"] := CSGRegion["Difference",
+{vanItersonRegion[{5,3}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
+];
+vanItersonRegion[{5,3}, "Minus"] := CSGRegion["Intersection",
+{vanItersonRegion[{5,3}, "PlusMinus"],vanItersonSquareLatticeCSG[{3,5},0]}
+];
+
+
+
+
+vanItersonSquareLatticeCSG[mn_,margin_] := Module[{res},res = Take[vanItersonSquareLattice[mn]/. Circle->Disk,2];
+res = CSGRegion["Difference",
+{res,Rectangle[{0,-1},{1,margin}]}]
+];
+vanItersonTouchingCSG[mn_,margin_] := Module[{res},
+res = Take[vanItersonTouchingCircle[mn]/. Circle->Disk,2];
+res = CSGRegion["Difference",{res,Rectangle[{0,-1},{1,margin}]}]
+];
+
+
+
+(* ::Input::Initialization:: *)
+
+
 
 Clear[vanItersonRegionBounds]
 vanItersonRegionBounds[{0,1}] := {{-1/2,1/2},{0,1.2}};
