@@ -313,19 +313,63 @@ vanItersonPolygon[mn_] := rpdr@vanItersonRegion[mn] ;
 vanItersonPolygon[mn_,sign_] := rpdr@vanItersonRegion[mn,sign] ;
 
 
+vihmax=2;
+baseRegionStrip = Rectangle[{0,10^-4},{1/2,vihmax}];
+
+vanItersonRegion[{0,1}] :=RegionDifference[
+Rectangle[{-1/2,0},{1/2,vihmax}],
+Disk[{0,0},1]];
 
 vanItersonRegion[{m_,n_}] := Module[{interior,ix,regions,reg},
 interior = vanItersonLabelPoint[{m,n}];
-regions = {
-vanItersonTouchingCircleDisk[{m,n}]
-,vanItersonTouchingCircleDisk[{n,n+m}]
-,vanItersonTouchingCircleDisk[{Abs[n-m],n}]};
+regions = vanItersonTriangle[{m,n}];
 isOutside[ix_] :=  If[RegionMember[regions[[ix]],interior],Slot[ix],Not[Slot[ix]]]; 
 reg=BooleanRegion[(And@@ Array[isOutside,3])&,regions];
-reg = RegionIntersection[reg,baseRegionStrip ];
+Switch[{m,n},
+{1,0}, reg = RegionIntersection[reg,Rectangle[{-1/2,10^-4},{1/2,vihmax}] ],
+_, reg = RegionIntersection[reg,baseRegionStrip]
+];
 reg
 
 ];
+
+vanItersonTriangle[{m_,n_}] := Module[{},
+ {
+vanItersonTouchingCircleDisk[{m,n}]
+,vanItersonTouchingCircleDisk[{n,n+m}]
+,vanItersonTouchingCircleDisk[{Abs[n-m],n}]}
+];
+
+vanItersonTriangle[{2,1}] := Module[{m=2,n=1},
+ {
+Disk[{1/3,0},1/3] (* one branch of the (1,2) disk *)
+,vanItersonTouchingCircleDisk[{n,n+m}]
+,Disk[{2/3,0},1/3] (* the other branch of the (1,2) disk *)
+}
+];
+vanItersonTriangle[{1,2}] := Module[{m=1,n=2},
+ {
+Disk[{1/3,0},1/3] (* one branch of the (1,2) disk *)
+,vanItersonTouchingCircleDisk[{n,n+m}]
+,Disk[{2/3,0},1/3] (* the other branch of the (1,2) disk *)
+}
+];
+vanItersonTriangle[{1,0}] := Module[{m=1,n=0},
+ {
+Disk[{0,0},1] 
+,Disk[{1,0},1]
+,Disk[{-1,0},1] 
+}
+];
+vanItersonTriangle[{1,1}] := Module[{m=1,n=1},
+ {
+Disk[{1,0},1] 
+,Disk[{1/3,0},1/3]
+,Disk[{2/3,0},1/3] 
+}
+];
+
+
 
 vanItersonRegion[mn_,"Plus"] := 
 RegionDifference[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
@@ -333,42 +377,42 @@ vanItersonRegion[mn_,"Minus"] :=
 RegionIntersection[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
 
 vanItersonSquareLatticeDisk[mn_] := Take[vanItersonSquareLattice[mn]/. Circle->Disk,2];
+vanItersonSquareLatticeDisk[{0,1}] := baseRegionStrip;
+vanItersonSquareLatticeDisk[{1,0}] := baseRegionStrip;
+
+
 vanItersonTouchingCircleDisk[mn_] := Take[vanItersonTouchingCircle[mn]/. Circle->Disk,2];
 
+(*
 
-vihmax=1.2;
-vanItersonRegion[{0,1}] :=RegionDifference[
-Rectangle[{-1/2,0},{1/2,vihmax}],
-RegionUnion[Disk[{0,0},1]]];
 vanItersonRegion[{0,1}, "Plus"]  :=RegionDifference[
 Rectangle[{0,0},{1/2,vihmax}],Disk[{0,0},1]];
 vanItersonRegion[{0,1},"Minus"] :=RegionDifference[
 Rectangle[{-1/2,0},{0,vihmax}],Disk[{0,0},1]];
+*)
 
-baseRegionStrip = Rectangle[{0,10^-4},{1/2,1}];
-
-vanItersonRegion[{1,0}]  :=RegionIntersection[baseRegionStrip,
+(*vanItersonRegion[{1,0}]  :=RegionIntersection[baseRegionStrip,
 RegionDifference[Disk[{0,0},1],Disk[{1,0},1]]
-];
-vanItersonRegion[{1,0}, "Plus"]  :=RegionDifference[
+];*)
+(*vanItersonRegion[{1,0}, "Plus"]  :=RegionDifference[
 RegionIntersection[Rectangle[{0,0},{1,1}],Disk[{0,0},1,{0,\[Pi]}]],
 Disk[{1,0},1,{0,\[Pi]}]];
 vanItersonRegion[{1,0},"Minus"] :=RegionDifference[
 RegionIntersection[Rectangle[{-1,0},{0,1}],Disk[{0,0},1,{0,\[Pi]}]],
 Disk[{-1,0},1,{0,\[Pi]}]];
-
-vanItersonRegion[{1,1}] := RegionIntersection[baseRegionStrip,
+*)
+(*vanItersonRegion[{1,1}] := RegionIntersection[baseRegionStrip,
 RegionDifference[Disk[{1,0},1],Disk[{1/3,0},1/3]]
-];
-vanItersonRegion[{1,1}, "Minus"]  :=RegionDifference[
+];*)
+(*vanItersonRegion[{1,1}, "Minus"]  :=RegionDifference[
 RegionIntersection[Rectangle[{0,0},{1/2,1}],Disk[{1,0},1,{0,\[Pi]}]],
 vanItersonSquareLatticeRegion[{1,1}]
 ];
 vanItersonRegion[{1,1}, "Plus"]  :=RegionDifference[
 RegionIntersection[Rectangle[{0,0},{1/2,1}],vanItersonSquareLatticeRegion[{1,1}]],
 Disk[{1/3,0},1/3]
-];
-
+];*)
+(*
 vanItersonRegion[{1,2}] :=  RegionIntersection[baseRegionStrip,
 RegionDifference[Disk[{1/3,0},1/3],
 RegionUnion[Disk[{2/3,0},1/3],vanItersonTouchingCircleDisk[{2,3}]]]];
@@ -376,7 +420,7 @@ vanItersonRegion[{2,1}]  := RegionIntersection[baseRegionStrip,
 RegionDifference[Disk[{2/3,0},1/3],
 vanItersonTouchingCircleDisk[{1,3}]]];
 
-
+*)
 
 
 
