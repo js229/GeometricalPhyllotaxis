@@ -260,32 +260,26 @@ viiPrimaryIsEverNonOpposed[mn_] := Module[{m,n},
 m < n - m 
 ];
 
-vanItersonTouchingCirclePrimaryOpposed[mn_] := 
-vanItersonTouchingCirclePrimary[mn] /; viiPrimaryIsEverNonOpposed[mn] ;
-
 
 vanItersonTouchingCirclePrimaryOpposed[mn_]  := circleBranch[mn,"Opposed"];
 vanItersonTouchingCirclePrimaryNonOpposed[mn_]  := circleBranch[mn,"NonOpposed"];
-(*
-viiPrimaryOpposed[mn_]  := getCircleBranch[mn,"Opposed"];
-viiPrimaryNonOpposed[mn_]  := getCircleBranch[mn,"NonOpposed"];
 
-*)
 circleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
 mn = Sort[{m,n}];
 branch = vanItersonTouchingCirclePrimary[mn];
 If[!viiPrimaryIsEverNonOpposed[mn],
 	If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
-angle = circleAngleAtLine[branch,viiOrthostichyD[mn]];
+
+angle =circleAngleAtLine[branch,viiOrthostichyD[mn]];
 
 upperpt =  vanItersonTriplePointRight[mn];
 lowerpt = vanItersonTriplePointLeft[mn];
 
 {centre,r,theta12} = Apply[List,branch];
 If[scalingFunction=="NonOpposed",
-res = Circle[centre,r,Sort@{xyToArg[branch,upperpt],angle}]
+res = Circle[centre,r,SortBy[{xyToArg[branch,upperpt],angle},N]]
 ,
-res = Circle[centre,r,Sort@{xyToArg[branch,lowerpt],angle}]
+res = Circle[centre,r,SortBy[{xyToArg[branch,lowerpt],angle},N]]
 ];
 Return[res];
 ];
@@ -371,7 +365,7 @@ arcs = Map[Append[#,"Points"->If[#Orientation,#Points,Reverse@#Points]]&,arcs];
 arcs
 ];
 
-createArc[mn_,type_] := Module[{arc,centre,radius,zeroRisePoint,arcEndPoint,arcEndPointAngle},
+createArc[mn_,type_] := Module[{arc,centre,radius,zeroRisePoint,arcEndPoint,arcEndPointAngle,pairCircle,zeroCircle},
 {centre,radius} = List@@(vanItersonTriangleCircles[mn][type]);
 zeroRisePoint = vanItersonRegionPoints[mn]["ZeroRise"];
 zeroCircle[pt_] := Module[{angle =  ArcTan @@ (  pt- centre)},
@@ -380,9 +374,6 @@ Circle[centre,radius,If[First[zeroRisePoint]< First[pt],
 pairCircle[pt1_,pt2_] := Module[{angle1 =  ArcTan @@ (  pt1- centre),angle2 =  ArcTan @@ (  pt2- centre)},
 Circle[centre,radius,SortBy[{angle1,angle2},N]]
 ];
-
-
-
 arc = 
 Switch[type,
 "RightToZero",
@@ -403,12 +394,13 @@ arc
 ];
 
 createArc[{2,1},"RightToZero"] = Line[{vanItersonRegionPoints[{2,1}]["RightTriplePoint"],vanItersonRegionPoints[{2,1}]["ZeroRise"]}];
+
 createArc[{1,1},"LeftToRight"] = 
 Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];
 createArc[{1,1},"LeftToSquare"] = 
 Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["Orthogonal"]}];
 createArc[{1,1},"SquareToRight"] = 
-Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["Orthogonal"]}];
+Line[{vanItersonRegionPoints[{1,1}]["Orthogonal"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];
 
 createArc[{1,1},"RightToZero"]= Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];
 createArc[{1,1},"ZeroToLeft"]= Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}];
