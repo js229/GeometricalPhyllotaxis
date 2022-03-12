@@ -260,8 +260,6 @@ viiPrimaryIsEverNonOpposed[mn_] := Module[{m,n},
 m < n - m 
 ];
 
-vanItersonTouchingCirclePrimary[mn] /; viiPrimaryIsEverNonOpposed[mn] ;
-
 
 vanItersonTouchingCirclePrimaryOpposed[mn_]  := circleBranch[mn,"Opposed"];
 vanItersonTouchingCirclePrimaryNonOpposed[mn_]  := circleBranch[mn,"NonOpposed"];
