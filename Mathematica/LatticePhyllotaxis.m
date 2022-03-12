@@ -323,15 +323,15 @@ vanItersonPolygon[mn_,type_] := viTriangleDiscretized[mn,type] ;
 vanItersonTriangleArcs[mn_]  := Association@Map[#Type->#Arc &,makeArcs[mn]]
 
 viTriangleDiscretized[{0,1},"PlusMinus"] = 
-Polygon@Flatten[#,1]&@{{{-1/2,Sqrt[3]/2},{-1/2,2},{1/2,2},{1/2,Sqrt[3]/2}},
-jDiscretize[Circle[{0,0},1,{\[Pi]/3,2\[Pi]/3}]]
-};
+Polygon@ Join[{{-1/2,Sqrt[3]/2},{-1/2,2},{1/2,2},{1/2,Sqrt[3]/2}},
+jDiscretize[Circle[{0,0},1,{\[Pi]/3,2\[Pi]/3}]]];
+
 viTriangleDiscretized[{0,1},"Plus"] = 
-Polygon@Flatten[#,1]&@{{{0,1},{0,2},{1/2,2},{1/2,Sqrt[3]/2}},
+Polygon@Join@{{{0,1},{0,2},{1/2,2},{1/2,Sqrt[3]/2}},
 jDiscretize[Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}]]
 };
 viTriangleDiscretized[{0,1},"Minus"] = 
-Polygon@Flatten[#,1]&@{{{-1/2,Sqrt[3]/2},{-1/2,2},{0,2},{0,1}},
+Polygon@Join@{{{-1/2,Sqrt[3]/2},{-1/2,2},{0,2},{0,1}},
 jDiscretize[Circle[{0,0},1,{\[Pi]/2,2 \[Pi]/3}]]
 };
 
