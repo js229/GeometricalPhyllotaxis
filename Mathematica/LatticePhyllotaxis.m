@@ -260,8 +260,6 @@ viiPrimaryIsEverNonOpposed[mn_] := Module[{m,n},
 m < n - m 
 ];
 
-vanItersonTouchingCirclePrimary[mn] /; viiPrimaryIsEverNonOpposed[mn] ;
-
 
 vanItersonTouchingCirclePrimaryOpposed[mn_]  := circleBranch[mn,"Opposed"];
 vanItersonTouchingCirclePrimaryNonOpposed[mn_]  := circleBranch[mn,"NonOpposed"];
@@ -415,7 +413,7 @@ createArc[{1,0},"LeftToSquare"]= Circle[{0,0},1,{\[Pi]/2,2\[Pi]/3}];
 createArc[{1,0},"SquareToRight"]= Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}];
 
 
-
+(* thinking about it, l to r, l to sq and sq to right are always the same ...  *) 
 vanItersonTriangleCircles[{m_,n_}] := Module[{vitc,res},
 vitc[mn_] := vanItersonTouchingCircle[mn]; (* whole circle *)
 vitc[{1,1}] := vanItersonTouchingCircle[{1,1}];
@@ -433,6 +431,9 @@ vanItersonTriangleCircles[{1,2}] =
 <|"LeftToRight"-> Circle[{2/3,0},1/3]
 ,"RightToZero"-> Circle[{1/3,0},1/3]
 ,"ZeroToLeft" ->  vanItersonTouchingCircle[{2,3}]
+,"ZeroToSquare" -> Take[vanItersonSquareLattice[{1,2}],2]
+,"SquareToRight"->  Circle[{2/3,0},1/3],
+"LeftToSquare"->Circle[{2/3,0},1/3]
 |>;
 
 
