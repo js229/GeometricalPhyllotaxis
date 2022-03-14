@@ -217,8 +217,9 @@ circleData= vanItersonTouchingCircleXX[mn];
 centre = circleData[[1]];
 pointData = Map[#-centre &,pointData];
 pointData = Map[Apply[ArcTan,#]&,pointData];
-pointData = Sort@N@Values@pointData;
-Circle[circleData[[1]],circleData[[2]],pointData]
+pointData = SortBy[Values@pointData,N];
+(*pointData = Sort@N@Values@pointData;
+*)Circle[circleData[[1]],circleData[[2]],pointData]
 ];
 
 vanItersonTouchingCirclePrimary[{1,1}]:= 
@@ -462,7 +463,7 @@ vanItersonRegionBounds[{0,1}] := {{-1/2,1/2},{0,1.2}};
 vanItersonRegionBounds[{1,0}] := vanItersonRegionBounds[{0,1}] ;
 vanItersonRegionBounds[{1,1}] := {{0,1/2},{0,1.2}} ;
 vanItersonRegionBounds[{1,2}] := {{0,1/2},{0,1/3}};
-vanItersonRegionBounds[mn_] := Module[{u,vn,vm,m,n},
+vanItersonRegionBounds[mn_] := Module[{u,vn,vm,m,n,tcCentre,tcRadius},
 {m,n}=Sort[mn];
  {u,vn}= euclideanWindingNumberPair[{m,n}];
  {u,vm}= euclideanWindingNumberPair[Reverse@{m,n}];
@@ -654,7 +655,7 @@ vanItersonRegionBounds[{0,1}] := {{-1/2,1/2},{0,1.2}};
 vanItersonRegionBounds[{1,0}] := vanItersonRegionBounds[{0,1}] ;
 vanItersonRegionBounds[{1,1}] := {{0,1/2},{0,1.2}} ;
 vanItersonRegionBounds[{1,2}] := {{0,1/2},{0,1/3}};
-vanItersonRegionBounds[mn_] := Module[{u,vn,vm,m,n},
+vanItersonRegionBounds[mn_] := Module[{u,vn,vm,m,n,tcCentre,tcRadius},
 {m,n}=Sort[mn];
  {u,vn}= euclideanWindingNumberPair[{m,n}];
  {u,vm}= euclideanWindingNumberPair[Reverse@{m,n}];
@@ -1143,11 +1144,18 @@ gMNRealPairReflection[{m_,n_}] := Function[{xy},Module[{x,y},
 ]];
 latticeGMNinDHalf[{m_,n_}] :=Function[{xy},
 Module[{x,y},
+{x,y} = gMNRealPair[{m,n}][xy];
+x = x-Round[N[x]];
+If[x<0,x=-x];
+{x,Abs[y]}
+]];
+(*latticeGMNinDHalf[{m_,n_}] :=Function[{xy},
+Module[{x,y},
 {x,y} = N@gMNRealPair[{m,n}][xy];
 x = x-Round[x];
 If[x<0,x=-x];
 {x,Abs[y]}
-]];
+]];*)
 
 
 
