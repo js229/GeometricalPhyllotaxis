@@ -239,11 +239,11 @@ remainderSegments[vanItersonTouchingCircleXX[mn],upperTP,lowerTP]
 
 (* split  half circle  at points p1 and p2 *)
 subSegment[Circle[xy_,r_,angles___],p1_,p2_] := Module[{angle1,angle2},
-{angle1,angle2} = Sort@N[ {ArcTan @@ (p1-xy),ArcTan @@ (p2-xy)}];
+{angle1,angle2} = SortBy[ {ArcTan @@ (p1-xy),ArcTan @@ (p2-xy)},N];
 Circle[xy,r,{angle1,angle2}]
 ];
 remainderSegments[Circle[xy_,r_,angles___],p1_,p2_] := Module[{angle1,angle2},
-{angle1,angle2} = Sort@N[ {ArcTan @@ (p1-xy),ArcTan @@ (p2-xy)}];
+{angle1,angle2} = SortBy[{ArcTan @@ (p1-xy),ArcTan @@ (p2-xy)},N];
 {Circle[xy,r,{0,angle1}],Circle[xy,r,{angle2,\[Pi]}]}
 ];
 subSegment[InfiniteLine[_],p1_,p2_] := Line[{p1,p2}];
