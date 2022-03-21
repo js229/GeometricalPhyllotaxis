@@ -511,8 +511,17 @@ chainNumbers
 
 currentChainLR[run_] := Module[{chain},
 chain = currentChain[run];
-leftmostCoinNumber  = First@SortBy[chain,getCoinFromRun[#,run][[2,1,1]]&];
-rotateList[chain,leftmostCoinNumber]
+If[Last[chain]!=First[chain],
+Print["chain unlooped"];Abort[]
+];
+chain=Drop[chain,1];
+rightCoin=Select[chain,!isBare[#]&];
+If[Length[rightCoin]!=1,
+Print["multiple rights"];Abort[]];
+rightCoin=bareNumber@First[rightCoin];
+rightCoin=FirstPosition[chain,rightCoin,Missing[],1];
+chain=RotateLeft[chain,rightCoin-1];
+chain
 ];
 
 
@@ -533,8 +542,10 @@ res
 chainedNextState[run_] := Module[{r,chainNumbers,lowest,nextCoin,nextCoinLowerNeighbours,nAres},
 chainNumbers=currentChain[run];
 r= nextCoinRadius[run,chainNumbers];
-lowest  = nextCoinAndContacts[highestCoinNumber[run]+ 1,chainNumbers,r,run];
-lowestNew = newLowest[run];
+lowest  = nextCoinAndContacts[chainNumbers,r,run];
+lowestNew = newnextCoinAndContacts[run];
+If[!SameQ[Sort[lowest["CoinNeighbours"]],Sort[lowestNew["CoinNeighbours"]]],
+Print[lowest,lowestNew];];
 If[MissingQ[lowest],
 Print["chain cannot be added to after coin ", highestCoinNumber[run] ];
 Abort[]
@@ -547,20 +558,6 @@ nAres
 
 
 (* ::Input::Initialization:: *)
-
-
-newLowest[run_] := Module[{diskPairs},
-chainNumbers=Echo@currentChain[run];
-r= nextCoinRadius[run,chainNumbers];
-disks = Association@Map[#->getCoinFromRun[#,run]&,chainNumbers];
-diskPairs = Transpose/@Partition[Values@disks,2,1];
-diskTriples= Transpose/@Partition[Values@disks,3,1];
-diskPairs  = Select[diskPairs, bareNumber[First[#][[1]]]=!= bareNumber[First[#][[2]]]&];
-diskPairs = Association@Map[First[#]->Last[#]&,diskPairs];
-diskPairs = Map[diskdiskUpperTouchingPoint[#,r]&,diskPairs];
-diskPairs = KeyValueMap[<|"Pair"->#1,"Point"->#2|>&,diskPairs];
-diskPairs = Map[Append[#,<|
-"RestOfChain"->Complement[chainNumbers,#Pair]|>]&,diskPairs];
 
 calcShift[diskPair_] := Module[{res=diskPair},
 res = Append[res,"Shift"->"None"];
@@ -576,20 +573,45 @@ res
 ];
 
 
-diskPairs = Map[calcShift,diskPairs];
+newnextCoinAndContacts[run_] := Module[
+{chainNumbers,r,localDisks,diskPairNumbers,yMax,extendedDisk,pointInDisks,lowestPair,lowerNeighbours
+},
+chainNumbers=currentChainLR[run];
+r= nextCoinRadius[run,chainNumbers];
+localDisks = Association@Map[#->Last@getCoinFromRun[#,run]&,chainNumbers];
 
-extendedDisk[number_] := extendRadius[Last@disks[number],r];
+yMax= Max@Map[#[[1,2]]&,localDisks];
 
+diskPairNumbers= Select[Tuples[Keys[localDisks],2],!SameQ@@#&];
+diskPairNumbers = DeleteDuplicates@Map[Sort,diskPairNumbers];
+diskPairNumbers = Association@Map[#->Map[localDisks,#]&,diskPairNumbers];
+diskPairNumbers = Map[diskdiskUpperTouchingPoint[#,r]&,diskPairNumbers];
+diskPairNumbers = DeleteMissing[diskPairNumbers];
+diskPairNumbers = Select[diskPairNumbers,Last[#]>=yMax&];
+diskPairNumbers = KeyValueMap[<|"Pair"->#1,"Point"->#2|>&,diskPairNumbers];
+diskPairNumbers = Map[Append[#,<|
+"RestOfChain"->Complement[chainNumbers,#Pair]|>]&,diskPairNumbers];
+diskPairNumbers = Map[calcShift,diskPairNumbers];
+
+extendedDisk[number_] := extendRadius[localDisks[number],r];
 pointInDisks[point_,diskNumbers_] := Module[{},
 Or@@Map[RegionMember[extendedDisk[#],point]&,diskNumbers]
 ];
-diskPairs = Map[Append[#,"Excluded"->pointInDisks[#Point,#RestOfChain]]&,
-diskPairs
-];
-(*diskPairs = Select[diskPairs,!TrueQ[#Excluded]&];
-*)
-Return[{diskPairs,diskTriples}];
 
+diskPairNumbers = Map[Append[#,"Excluded"->pointInDisks[#Point,#RestOfChain]]&,
+diskPairNumbers
+];
+diskPairNumbers = Select[diskPairNumbers,!TrueQ[#Excluded]&];
+lowestPair = First@SortBy[diskPairNumbers,Last[#Point]&];
+
+If[lowestPair["Shift"]=="None",
+lowerNeighbours= lowestPair["Pair"],
+Print["Shift:",lowestPair];
+];
+<| 
+"CoinNumber"-> highestCoinNumber[run]+ 1
+,"CoinDisk"-> Disk[lowestPair["Point"],r]
+,"CoinNeighbours"-> lowerNeighbours |>
 ];
 
 
@@ -602,6 +624,7 @@ but should be provided pattern is a dropped coin one *)
 diskdiskUpperTouchingPoint[pairDisks_,r_] := Module[
 {lrPoints},
 lrPoints= diskdisktouchingPoint[pairDisks,r];
+If[MissingQ[lrPoints],Return[lrPoints]];
 Last[SortBy[lrPoints,N@Last[#]&]]
 ];
 
@@ -622,9 +645,9 @@ lTrianglePT = (ReflectionTransform[RotationTransform[90 Degree][xy2-xy1],xy1])[r
 
 
 (* ::Input::Initialization:: *)
-nextCoinAndContacts[n_,chainNumbers_,r_,run_] := Module[{chainAndLR,touchingDisksXY
+nextCoinAndContacts[chainNumbers_,r_,run_] := Module[{n,chainAndLR,touchingDisksXY
 ,chainRDF,diskChainDistance,disksNotOverlappingChain,lowerNeighbours},
-
+n=highestCoinNumber[run]+ 1;
 chainAndLR= DeleteDuplicates[Flatten[Map[
 getCoinAndCopiesFromRun[#,run]
 &,chainNumbers],1]];
