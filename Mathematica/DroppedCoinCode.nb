@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    230865,       4856]
-NotebookOptionsPosition[    226666,       4776]
-NotebookOutlinePosition[    227132,       4794]
-CellTagsIndexPosition[    227089,       4791]
+NotebookDataLength[    242086,       5086]
+NotebookOptionsPosition[    237891,       5006]
+NotebookOutlinePosition[    238356,       5024]
+CellTagsIndexPosition[    238313,       5021]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -100,8 +100,8 @@ Cell[BoxData[
        RowBox[{"{", 
         RowBox[{
         "coinSet", ",", "coinCollection", ",", "\[IndentingNewLine]", 
-         "coinAssociation", ",", "baren", ",", "coin", ",", 
-         "cylinderCircumference"}], "}"}], ",", "\[IndentingNewLine]", 
+         "coinAssociation", ",", "coin", ",", "cylinderCircumference"}], 
+        "}"}], ",", "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{"coinAssociation", " ", "=", " ", 
          RowBox[{
@@ -119,7 +119,9 @@ Cell[BoxData[
             RowBox[{"\"\<gCFR Can't find coin \>\"", ",", " ", "n", ",", 
              RowBox[{"bareNumber", "[", "n", "]"}], ",", "coin", ",", 
              "coinAssociation"}], "]"}], ";", 
-           RowBox[{"Abort", "[", "]"}], ";", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{"Abort", "[", "]"}], ";"}], "*)"}], 
            RowBox[{"Return", "[", 
             RowBox[{"{", "}"}], "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
         RowBox[{"cylinderCircumference", " ", "=", 
@@ -672,7 +674,11 @@ Cell[BoxData[
            RowBox[{"res", "+", "1"}]}]}], "]"}], ";", "res"}]}], "]"}]}], 
     ";"}], "\[IndentingNewLine]"}]}]], "Input",
  InitializationCell->True,
- CellLabel->"In[46]:=",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb"],
+ CellChangeTimes->{
+  3.8570242779213753`*^9, {3.8570244373894253`*^9, 3.8570244378185997`*^9}, {
+   3.857024546147752*^9, 3.8570245649107885`*^9}},
+ CellLabel->
+  "In[476]:=",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb"],
 
 Cell[BoxData[
  RowBox[{
@@ -2200,13 +2206,12 @@ Cell[BoxData[
           RowBox[{"Take", "[", 
            RowBox[{"list", ",", 
             RowBox[{"pos", "-", "1"}]}], "]"}]}], "]"}]}], ";", 
-       "\[IndentingNewLine]", 
-       RowBox[{"Print", "[", 
-        RowBox[{"list", ",", "res"}], "]"}], ";", "\[IndentingNewLine]", 
-       "res"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}]], "Input",
+       "\[IndentingNewLine]", "res"}]}], "\[IndentingNewLine]", "]"}]}], 
+   ";"}], "\[IndentingNewLine]"}]], "Input",
  InitializationCell->True,
- CellLabel->"In[96]:=",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1"],
+ CellChangeTimes->{
+  3.856977664657302*^9},ExpressionUUID->"b01a5813-31ae-44b2-8bca-\
+c9f463e8c4c1"],
 
 Cell[BoxData[
  RowBox[{
@@ -2375,10 +2380,17 @@ Cell[BoxData[
               RowBox[{
                RowBox[{"First", "[", "#", "]"}], "->", "#"}], "&"}], ",", 
              "nextCoinSet"}], "]"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", 
-       "res"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}]], "Input",
+       RowBox[{
+        RowBox[{"res", "[", "MostRecentCoin", "]"}], " ", "=", "  ", 
+        RowBox[{"Max", "@", 
+         RowBox[{"Map", "[", 
+          RowBox[{"bareCoinNumber", ",", "nextCoinSet"}], "]"}]}]}], ";", 
+       "\[IndentingNewLine]", "res"}]}], "\[IndentingNewLine]", "]"}]}], 
+   ";"}], "\[IndentingNewLine]"}]], "Input",
  InitializationCell->True,
- CellLabel->"In[99]:=",ExpressionUUID->"c76eea4f-2d81-4606-a338-962eed944458"],
+ CellChangeTimes->{{3.856947755382576*^9, 3.856947821001051*^9}, 
+   3.856947861074744*^9},ExpressionUUID->"c76eea4f-2d81-4606-a338-\
+962eed944458"],
 
 Cell[BoxData[
  RowBox[{
@@ -2413,14 +2425,7 @@ Cell[BoxData[
        RowBox[{"newRun", " ", "=", "run"}], ";", "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{"newRun", "[", "\"\<State\>\"", "]"}], "=", " ", 
-        "nodeAssociation"}], ";", " ", 
-       RowBox[{"(*", " ", 
-        RowBox[{
-         RowBox[{
-         "extra", " ", "copy", " ", "made", " ", "so", " ", "getCoinFromRun", 
-          " ", "can", " ", "lookup", " ", "coin"}], ",", " ", 
-         RowBox[{"sigh", " ", "..."}]}], " ", "*)"}], "\[IndentingNewLine]", 
-       "\[IndentingNewLine]", 
+        "nodeAssociation"}], ";", " ", "\[IndentingNewLine]", 
        RowBox[{"newEdges", " ", "=", " ", 
         RowBox[{"edgesWithLR", "[", 
          RowBox[{"n", ",", "nextCoinLowerNeighbours"}], "]"}]}], ";", 
@@ -2485,7 +2490,7 @@ Cell[BoxData[
           RowBox[{"coinNumber", "[", 
            RowBox[{"First", "[", "nextCoinSet", "]"}], "]"}], ",", 
           "nodeAssociation"}], "]"}]}], ";", "\[IndentingNewLine]", 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
        RowBox[{"para2", " ", "=", " ", 
         RowBox[{"nodeAssociation", "[", "ChainsByCoinNumber", "]"}]}], ";", 
        "\[IndentingNewLine]", 
@@ -2514,8 +2519,10 @@ Cell[BoxData[
      "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
   "\[IndentingNewLine]"}]], "Input",
  InitializationCell->True,
- CellLabel->
-  "In[100]:=",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706"],
+ CellChangeTimes->{
+  3.8569476946458654`*^9, {3.8569783963344917`*^9, 
+   3.856978428421009*^9}},ExpressionUUID->"f6641d9c-01c5-4a74-8331-\
+fd6c0316d706"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -2592,8 +2599,7 @@ Cell[BoxData[
    "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
-     RowBox[{"nextCoinRadius", "[", 
-      RowBox[{"run_", ",", "chainNumbers_"}], "]"}], " ", ":=", " ", 
+     RowBox[{"nextCoinRadius", "[", "run_", "]"}], " ", ":=", " ", 
      RowBox[{"Module", "[", 
       RowBox[{
        RowBox[{"{", 
@@ -2612,8 +2618,9 @@ Cell[BoxData[
         "\[IndentingNewLine]", "r"}]}], "\[IndentingNewLine]", "]"}]}], 
     ";"}]}]}]], "Input",
  InitializationCell->True,
- CellLabel->
-  "In[101]:=",ExpressionUUID->"571ebe60-a33d-4390-9c37-d8e843a78d41"],
+ CellChangeTimes->{{3.857023211647301*^9, 
+  3.8570232145781937`*^9}},ExpressionUUID->"571ebe60-a33d-4390-9c37-\
+d8e843a78d41"],
 
 Cell[BoxData[
  RowBox[{
@@ -2743,8 +2750,9 @@ Cell[BoxData[
             RowBox[{"Association", "[", "]"}]}], "\[IndentingNewLine]", ",", 
            RowBox[{"ChainsByCoinNumber", " ", "->", "  ", 
             RowBox[{"Association", "[", "]"}]}], "\[IndentingNewLine]", ",", 
-           RowBox[{"InitialCoins", "\[Rule]", "icCoins"}], 
-           "\[IndentingNewLine]", ",", 
+           RowBox[{"InitialCoins", "\[Rule]", 
+            RowBox[{"(*", "icCoins", "*)"}], " ", 
+            RowBox[{"Association", "[", "]"}]}], "\[IndentingNewLine]", ",", 
            RowBox[{"CoinAssociation", "\[Rule]", 
             RowBox[{"Association", "@", 
              RowBox[{"Map", "[", 
@@ -2753,6 +2761,10 @@ Cell[BoxData[
                 RowBox[{
                  RowBox[{"First", "[", "#", "]"}], "->", "#"}], "&"}], ",", 
                "icCoins"}], "]"}]}]}], "\[IndentingNewLine]", ",", 
+           RowBox[{"MostRecentCoin", " ", "->", " ", 
+            RowBox[{"First", "[", 
+             RowBox[{"Last", "[", "icCoins", "]"}], "]"}]}], 
+           "\[IndentingNewLine]", ",", 
            RowBox[{"HighestCoinZ", "->", " ", "highestCoinZ"}]}], "]"}]}], 
         ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
         RowBox[{"run", " ", "=", 
@@ -2796,8 +2808,11 @@ Cell[BoxData[
       "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}]}], ";"}], 
    "\[IndentingNewLine]"}]}]], "Input",
  InitializationCell->True,
- CellLabel->
-  "In[105]:=",ExpressionUUID->"a2972f55-e319-40a1-877f-dd1884a8fe19"],
+ CellChangeTimes->{{3.8569474108981676`*^9, 3.8569474450311346`*^9}, 
+   3.85694791651422*^9, {3.856948280429024*^9, 3.856948280514798*^9}, {
+   3.8569767039944243`*^9, 
+   3.8569767086391644`*^9}},ExpressionUUID->"a2972f55-e319-40a1-877f-\
+dd1884a8fe19"],
 
 Cell[BoxData[{
  RowBox[{
@@ -2819,10 +2834,7 @@ Cell[BoxData[{
          RowBox[{"For", "[", 
           RowBox[{
            RowBox[{"k", "=", "0"}], ",", 
-           RowBox[{"k", "<", " ", 
-            RowBox[{
-             RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "[", 
-             "\"\<coinMax\>\"", "]"}]}], ",", 
+           RowBox[{"k", "<", "500"}], ",", 
            RowBox[{"k", "++"}], ",", "\[IndentingNewLine]", 
            RowBox[{
             RowBox[{
@@ -2851,8 +2863,8 @@ Cell[BoxData[{
      RowBox[{
       RowBox[{"{", 
        RowBox[{
-       "highestCoinZ", ",", "arenaAssociation", ",", "nodeAssociation"}], 
-       "}"}], ",", "\[IndentingNewLine]", 
+       "highestCoinZ", ",", "arenaAssociation", ",", "nodeAssociation", ",", 
+        "res"}], "}"}], ",", "\[IndentingNewLine]", 
       RowBox[{
        RowBox[{"nodeAssociation", "=", 
         RowBox[{"run", "[", "\"\<State\>\"", "]"}]}], ";", 
@@ -2862,20 +2874,29 @@ Cell[BoxData[{
        RowBox[{"highestCoinZ", " ", "=", "  ", 
         RowBox[{"nodeAssociation", "[", "HighestCoinZ", "]"}]}], ";", 
        "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"If", "[", 
-        RowBox[{
+       RowBox[{"res", " ", "=", " ", 
+        RowBox[{"If", "[", 
          RowBox[{
-          RowBox[{"highestCoinZ", "+", " ", 
-           RowBox[{"2", " ", 
-            RowBox[{
-             RowBox[{"arenaAssociation", "[", "\"\<rFunction\>\"", "]"}], "[",
-              "highestCoinZ", "]"}]}]}], ">", " ", 
           RowBox[{
-           RowBox[{"(", 
-            RowBox[{"arenaAssociation", "[", "\"\<cylinderLU\>\"", "]"}], 
-            ")"}], "[", 
-           RowBox[{"[", "2", "]"}], "]"}]}], ",", "True", ",", "False"}], 
-        "]"}]}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
+           RowBox[{"highestCoinZ", "+", " ", 
+            RowBox[{"2", " ", 
+             RowBox[{
+              RowBox[{"arenaAssociation", "[", "\"\<rFunction\>\"", "]"}], 
+              "[", "highestCoinZ", "]"}]}]}], ">", " ", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"arenaAssociation", "[", "\"\<cylinderLU\>\"", "]"}], 
+             ")"}], "[", 
+            RowBox[{"[", "2", "]"}], "]"}]}], ",", "True", ",", "False"}], 
+         "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"res", " ", "=", " ", 
+        RowBox[{"res", " ", "||", " ", 
+         RowBox[{
+          RowBox[{"nodeAssociation", "[", "MostRecentCoin", "]"}], ">=", 
+          RowBox[{
+           RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "[", "\"\<coinMax\>\"",
+            "]"}]}]}]}], ";", "\[IndentingNewLine]", "res"}]}], 
+     "\[IndentingNewLine]", "]"}]}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
@@ -3042,39 +3063,29 @@ Cell[BoxData[{
     RowBox[{
      RowBox[{"{", 
       RowBox[{
-      "r", ",", "chainNumbers", ",", "lowest", ",", "nextCoin", ",", 
-       "nextCoinLowerNeighbours", ",", "nAres"}], "}"}], ",", 
-     "\[IndentingNewLine]", 
+      "r", ",", "chainNumbers", ",", "lowest", ",", "lowestOld", ",", 
+       "lowestNew", ",", "nextCoin", ",", "nextCoinLowerNeighbours", ",", 
+       "nAres"}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{
       RowBox[{"chainNumbers", "=", 
        RowBox[{"currentChain", "[", "run", "]"}]}], ";", 
-      "\[IndentingNewLine]", 
-      RowBox[{"r", "=", " ", 
-       RowBox[{"nextCoinRadius", "[", 
-        RowBox[{"run", ",", "chainNumbers"}], "]"}]}], ";", 
-      "\[IndentingNewLine]", 
-      RowBox[{"lowest", "  ", "=", " ", 
-       RowBox[{"nextCoinAndContacts", "[", 
-        RowBox[{"chainNumbers", ",", "r", ",", "run"}], "]"}]}], ";", 
-      "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"r", "=", " ", 
+         RowBox[{"nextCoinRadius", "[", "run", "]"}]}], ";", 
+        RowBox[{"lowestOld", "  ", "=", " ", 
+         RowBox[{"nextCoinAndContacts", "[", 
+          RowBox[{"chainNumbers", ",", "r", ",", "run"}], "]"}]}], ";"}], 
+       "\[IndentingNewLine]", "*)"}], "\[IndentingNewLine]", 
       RowBox[{"lowestNew", " ", "=", " ", 
        RowBox[{"newnextCoinAndContacts", "[", "run", "]"}]}], ";", 
       "\[IndentingNewLine]", 
-      RowBox[{"If", "[", 
+      RowBox[{"(*", 
        RowBox[{
-        RowBox[{"!", 
-         RowBox[{"SameQ", "[", 
-          RowBox[{
-           RowBox[{"Sort", "[", 
-            RowBox[{"lowest", "[", "\"\<CoinNeighbours\>\"", "]"}], "]"}], 
-           ",", 
-           RowBox[{"Sort", "[", 
-            RowBox[{"lowestNew", "[", "\"\<CoinNeighbours\>\"", "]"}], 
-            "]"}]}], "]"}]}], ",", "\[IndentingNewLine]", 
-        RowBox[{
-         RowBox[{"Print", "[", 
-          RowBox[{"lowest", ",", "lowestNew"}], "]"}], ";"}]}], "]"}], ";", 
-      "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", "lowestNew", "]"}], ";"}], 
+       "\[IndentingNewLine]", "*)"}], 
+      RowBox[{"lowest", " ", "=", "lowestNew"}], ";", "\[IndentingNewLine]", 
       RowBox[{"If", "[", 
        RowBox[{
         RowBox[{"MissingQ", "[", "lowest", "]"}], ",", "\[IndentingNewLine]", 
@@ -3084,7 +3095,7 @@ Cell[BoxData[{
            RowBox[{"highestCoinNumber", "[", "run", "]"}]}], " ", "]"}], ";", 
          "\[IndentingNewLine]", 
          RowBox[{"Abort", "[", "]"}]}]}], "\[IndentingNewLine]", "]"}], ";", 
-      "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
       RowBox[{"nextCoin", " ", "=", " ", 
        RowBox[{"{", 
         RowBox[{
@@ -3110,243 +3121,421 @@ Cell[BoxData[{
    3.8568891935063195`*^9, 3.8568891976771398`*^9}, {3.8568892415666924`*^9, 
    3.856889249596019*^9}, {3.856889287014114*^9, 3.8568893062712393`*^9}, 
    3.85689394550881*^9, 3.856894654504861*^9, {3.856894709095279*^9, 
-   3.856894787465933*^9}, 
-   3.8568951890394945`*^9},ExpressionUUID->"f701992d-1388-4d72-b20d-\
+   3.856894787465933*^9}, 3.8568951890394945`*^9, {3.856947995146341*^9, 
+   3.856947997463334*^9}, {3.856948028846595*^9, 3.8569480386391983`*^9}, {
+   3.8569481078353224`*^9, 3.8569481729260697`*^9}, 3.8569482872361927`*^9, {
+   3.8569483242829742`*^9, 3.8569483251614285`*^9}, {3.8569540120107813`*^9, 
+   3.8569540398591995`*^9}, {3.8569556349384813`*^9, 
+   3.8569556810001965`*^9}, {3.856956752772873*^9, 3.856956779051503*^9}, {
+   3.8569775087302523`*^9, 3.856977552073371*^9}, 3.8569775823294034`*^9, {
+   3.856977954007395*^9, 3.856977959111758*^9}, {3.857023223112054*^9, 
+   3.8570232234931746`*^9}, {3.8570238528558865`*^9, 3.8570238747449346`*^9}, 
+   3.8570265056020393`*^9},ExpressionUUID->"f701992d-1388-4d72-b20d-\
 5b59e9c0026b"],
 
-Cell[BoxData[
- RowBox[{"\[IndentingNewLine]", 
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"shiftRight", "[", 
+    RowBox[{"left", "[", "n_", "]"}], "]"}], " ", ":=", " ", "n"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"shiftRight", "[", "n_", "]"}], " ", ":=", " ", 
+   RowBox[{"right", "[", "n", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"shiftLeft", "[", 
+    RowBox[{"right", "[", "n_", "]"}], "]"}], " ", ":=", " ", "n"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
   RowBox[{
    RowBox[{
-    RowBox[{
-     RowBox[{"calcShift", "[", "diskPair_", "]"}], " ", ":=", " ", 
-     RowBox[{"Module", "[", 
-      RowBox[{
-       RowBox[{"{", 
-        RowBox[{"res", "=", "diskPair"}], "}"}], ",", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"res", " ", "=", " ", 
-         RowBox[{"Append", "[", 
-          RowBox[{"res", ",", 
-           RowBox[{"\"\<Shift\>\"", "->", "\"\<None\>\""}]}], "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"If", "[", 
-         RowBox[{
-          RowBox[{
-           RowBox[{"First", "[", 
-            RowBox[{"diskPair", "[", "\"\<Point\>\"", "]"}], "]"}], "<", 
-           RowBox[{
-            RowBox[{"-", "1"}], "/", "2"}]}], ",", "\[IndentingNewLine]", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"res", "[", "\"\<Point\>\"", "]"}], "=", 
-            RowBox[{
-             RowBox[{"diskPair", "[", "\"\<Point\>\"", "]"}], "+", 
-             RowBox[{"{", 
-              RowBox[{"1", ",", "0"}], "}"}]}]}], ";", "\[IndentingNewLine]", 
-           RowBox[{
-            RowBox[{"res", "[", "\"\<Shift\>\"", "]"}], " ", "=", " ", 
-            "\"\<Right\>\""}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"If", "[", 
-         RowBox[{
-          RowBox[{
-           RowBox[{"First", "[", 
-            RowBox[{"diskPair", "[", "\"\<Point\>\"", "]"}], "]"}], ">", " ", 
-           RowBox[{"1", "/", "2"}]}], ",", "\[IndentingNewLine]", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"res", "[", "\"\<Point\>\"", "]"}], "=", 
-            RowBox[{
-             RowBox[{"diskPair", "[", "\"\<Point\>\"", "]"}], "-", 
-             RowBox[{"{", 
-              RowBox[{"1", ",", "0"}], "}"}]}]}], ";", "\[IndentingNewLine]", 
-           RowBox[{
-            RowBox[{"res", "[", "\"\<Shift\>\"", "]"}], " ", "=", " ", 
-            "\"\<Left\>\""}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
-        "\[IndentingNewLine]", "res"}]}], "\[IndentingNewLine]", "]"}]}], 
-    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
-   "\[IndentingNewLine]", 
+    RowBox[{"shiftLeft", "[", "n_", "]"}], " ", ":=", " ", 
+    RowBox[{"left", "[", "n", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
    RowBox[{
-    RowBox[{
-     RowBox[{"newnextCoinAndContacts", "[", "run_", "]"}], " ", ":=", " ", 
-     RowBox[{"Module", "[", "\[IndentingNewLine]", 
+    RowBox[{"calcShift", "[", "diskPair_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"res", "=", "diskPair"}], "}"}], ",", "\[IndentingNewLine]", 
       RowBox[{
-       RowBox[{"{", 
+       RowBox[{"res", " ", "=", " ", 
+        RowBox[{"Append", "[", 
+         RowBox[{"res", ",", 
+          RowBox[{"\"\<Shift\>\"", "->", "\"\<None\>\""}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
         RowBox[{
-        "chainNumbers", ",", "r", ",", "localDisks", ",", "diskPairNumbers", 
-         ",", "yMax", ",", "extendedDisk", ",", "pointInDisks", ",", 
-         "lowestPair", ",", "lowerNeighbours"}], "\[IndentingNewLine]", "}"}],
-        ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"First", "[", 
+           RowBox[{"diskPair", "[", "\"\<Point\>\"", "]"}], "]"}], "<", 
+          RowBox[{
+           RowBox[{"-", "1"}], "/", "2"}]}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"res", "[", "\"\<Point\>\"", "]"}], "=", 
+           RowBox[{
+            RowBox[{"diskPair", "[", "\"\<Point\>\"", "]"}], "+", 
+            RowBox[{"{", 
+             RowBox[{"1", ",", "0"}], "}"}]}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"res", "[", "\"\<Shift\>\"", "]"}], " ", "=", " ", 
+           "\"\<Right\>\""}], ";", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"res", "[", "\"\<Pair\>\"", "]"}], "=", " ", 
+           RowBox[{"Map", "[", 
+            RowBox[{"shiftRight", ",", 
+             RowBox[{"res", "[", "\"\<Pair\>\"", "]"}]}], "]"}]}]}]}], 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"Print", "[", 
+          RowBox[{"\"\<shifting diskpair right:\>\"", ",", "diskPair"}], 
+          "]"}], "\[IndentingNewLine]", "*)"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"First", "[", 
+           RowBox[{"diskPair", "[", "\"\<Point\>\"", "]"}], "]"}], ">", " ", 
+          RowBox[{"1", "/", "2"}]}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"res", "[", "\"\<Point\>\"", "]"}], "=", 
+           RowBox[{
+            RowBox[{"diskPair", "[", "\"\<Point\>\"", "]"}], "-", 
+            RowBox[{"{", 
+             RowBox[{"1", ",", "0"}], "}"}]}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"res", "[", "\"\<Shift\>\"", "]"}], " ", "=", " ", 
+           "\"\<Left\>\""}], ";", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"res", "[", "\"\<Pair\>\"", "]"}], " ", "=", " ", 
+           RowBox[{"Map", "[", 
+            RowBox[{"shiftLeft", ",", 
+             RowBox[{"res", "[", "\"\<Pair\>\"", "]"}]}], "]"}]}]}]}], 
+        "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", "res"}]}], 
+     "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"allDistinctSortedPairs", "[", "list_", "]"}], " ", ":=", " ", 
+    RowBox[{"DeleteDuplicates", "@", 
+     RowBox[{"(", 
+      RowBox[{"Sort", "/@", 
+       RowBox[{"Select", "[", 
+        RowBox[{
+         RowBox[{"Tuples", "[", 
+          RowBox[{"list", ",", "2"}], "]"}], ",", 
+         RowBox[{
+          RowBox[{"!", 
+           RowBox[{"SameQ", "@@", "#"}]}], "&"}]}], "]"}]}], ")"}]}]}], ";"}],
+   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"nextCoinOptions", "[", 
+     RowBox[{"run_", ",", "r_"}], "]"}], " ", ":=", "  ", 
+    RowBox[{"Module", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"{", 
        RowBox[{
-        RowBox[{"chainNumbers", "=", 
-         RowBox[{"currentChainLR", "[", "run", "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"r", "=", " ", 
-         RowBox[{"nextCoinRadius", "[", 
-          RowBox[{"run", ",", "chainNumbers"}], "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"localDisks", " ", "=", " ", 
-         RowBox[{"Association", "@", 
-          RowBox[{"Map", "[", 
+       "chainNumbers", ",", "localDisks", ",", "diskPairNumbers", ",", "yMax",
+         ",", "extendedDisk", ",", "pointInDisks", ",", "\[IndentingNewLine]",
+         "chainAndLeftNumbers", ",", "localAndLeftDisks"}], 
+       "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"chainNumbers", "=", 
+        RowBox[{"currentChain", "[", "run", "]"}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"Print", "[", 
+          RowBox[{"\"\<Options for coin \>\"", ",", 
            RowBox[{
-            RowBox[{
-             RowBox[{"#", "->", 
-              RowBox[{"Last", "@", 
-               RowBox[{"getCoinFromRun", "[", 
-                RowBox[{"#", ",", "run"}], "]"}]}]}], "&"}], ",", 
-            "chainNumbers"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
-        "\[IndentingNewLine]", 
-        RowBox[{"yMax", "=", " ", 
-         RowBox[{"Max", "@", 
-          RowBox[{"Map", "[", 
-           RowBox[{
-            RowBox[{
-             RowBox[{"#", "[", 
-              RowBox[{"[", 
-               RowBox[{"1", ",", "2"}], "]"}], "]"}], "&"}], ",", 
-            "localDisks"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
-        "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", "=", " ", 
-         RowBox[{"Select", "[", 
-          RowBox[{
-           RowBox[{"Tuples", "[", 
-            RowBox[{
-             RowBox[{"Keys", "[", "localDisks", "]"}], ",", "2"}], "]"}], ",", 
-           RowBox[{
-            RowBox[{"!", 
-             RowBox[{"SameQ", "@@", "#"}]}], "&"}]}], "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
-         RowBox[{"DeleteDuplicates", "@", 
-          RowBox[{"Map", "[", 
-           RowBox[{"Sort", ",", "diskPairNumbers"}], "]"}]}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
-         RowBox[{"Association", "@", 
-          RowBox[{"Map", "[", 
-           RowBox[{
-            RowBox[{
-             RowBox[{"#", "->", 
-              RowBox[{"Map", "[", 
-               RowBox[{"localDisks", ",", "#"}], "]"}]}], "&"}], ",", 
-            "diskPairNumbers"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
+            RowBox[{"highestCoinNumber", "[", "run", "]"}], "+", " ", "1"}], 
+           ",", "\"\< r = \>\"", ",", "r"}], "]"}], ";"}], 
+        "\[IndentingNewLine]", "*)"}], 
+       RowBox[{"localDisks", " ", "=", " ", 
+        RowBox[{"Association", "@", 
          RowBox[{"Map", "[", 
           RowBox[{
            RowBox[{
-            RowBox[{"diskdiskUpperTouchingPoint", "[", 
-             RowBox[{"#", ",", "r"}], "]"}], "&"}], ",", "diskPairNumbers"}], 
-          "]"}]}], ";", "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
-         RowBox[{"DeleteMissing", "[", "diskPairNumbers", "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
-         RowBox[{"Select", "[", 
-          RowBox[{"diskPairNumbers", ",", 
-           RowBox[{
+            RowBox[{"#", "->", 
+             RowBox[{"Last", "@", 
+              RowBox[{"getCoinFromRun", "[", 
+               RowBox[{"#", ",", "run"}], "]"}]}]}], "&"}], ",", 
+           "chainNumbers"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"chainAndLeftNumbers", " ", "=", "chainNumbers"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"chainAndLeftNumbers", " ", "=", " ", 
+        RowBox[{"DeleteDuplicates", "[", 
+         RowBox[{"Join", "[", 
+          RowBox[{"chainNumbers", ",", "\[IndentingNewLine]", 
+           RowBox[{"Map", "[", 
             RowBox[{
-             RowBox[{"Last", "[", "#", "]"}], ">=", "yMax"}], "&"}]}], 
-          "]"}]}], ";", "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
-         RowBox[{"KeyValueMap", "[", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"<|", 
              RowBox[{
-              RowBox[{"\"\<Pair\>\"", "->", "#1"}], ",", 
-              RowBox[{"\"\<Point\>\"", "->", "#2"}]}], "|>"}], "&"}], ",", 
-           "diskPairNumbers"}], "]"}]}], ";", "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
+              RowBox[{"left", "[", 
+               RowBox[{"bareNumber", "[", "#", "]"}], "]"}], "&"}], ",", 
+             "chainNumbers"}], "]"}]}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"chainAndLeftRightNumbers", " ", "=", " ", 
+        RowBox[{"DeleteDuplicates", "[", 
+         RowBox[{"Join", "[", 
+          RowBox[{"chainNumbers", ",", "\[IndentingNewLine]", 
+           RowBox[{"Map", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"left", "[", 
+               RowBox[{"bareNumber", "[", "#", "]"}], "]"}], "&"}], ",", 
+             "chainNumbers"}], "]"}], ",", 
+           RowBox[{"Map", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"right", "[", 
+               RowBox[{"bareNumber", "[", "#", "]"}], "]"}], "&"}], ",", 
+             "chainNumbers"}], "]"}]}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"Print", "[", 
+          RowBox[{"\"\<chain:\>\"", " ", ",", "chainNumbers"}], "]"}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Print", "[", 
+          RowBox[{"\"\<chainAndLeft:\>\"", ",", " ", "chainAndLeftNumbers"}], 
+          "]"}], ";"}], "\[IndentingNewLine]", "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"localAndLeftDisks", " ", "=", " ", 
+        RowBox[{"Association", "@", 
          RowBox[{"Map", "[", 
           RowBox[{
            RowBox[{
-            RowBox[{"Append", "[", 
-             RowBox[{"#", ",", 
-              RowBox[{"<|", "\[IndentingNewLine]", 
-               RowBox[{"\"\<RestOfChain\>\"", "->", 
-                RowBox[{"Complement", "[", 
-                 RowBox[{"chainNumbers", ",", "#Pair"}], "]"}]}], "|>"}]}], 
-             "]"}], "&"}], ",", "diskPairNumbers"}], "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
+            RowBox[{"#", "->", 
+             RowBox[{"Last", "@", 
+              RowBox[{"getCoinFromRun", "[", 
+               RowBox[{"#", ",", "run"}], "]"}]}]}], "&"}], ",", 
+           "chainAndLeftNumbers"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"yMax", "=", " ", 
+        RowBox[{"Max", "@", 
          RowBox[{"Map", "[", 
-          RowBox[{"calcShift", ",", "diskPairNumbers"}], "]"}]}], ";", 
-        "\[IndentingNewLine]", "\[IndentingNewLine]", 
-        RowBox[{
-         RowBox[{"extendedDisk", "[", "number_", "]"}], " ", ":=", " ", 
-         RowBox[{"extendRadius", "[", 
           RowBox[{
-           RowBox[{"localDisks", "[", "number", "]"}], ",", "r"}], "]"}]}], 
+           RowBox[{
+            RowBox[{"#", "[", 
+             RowBox[{"[", 
+              RowBox[{"1", ",", "2"}], "]"}], "]"}], "&"}], ",", 
+           "localDisks"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"yMax", " ", "=", " ", 
+        RowBox[{"yMax", " ", "-", " ", "r"}]}], ";", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{"heuristic", " ", "-", " ", 
+          RowBox[{
+          "to", " ", "exclude", " ", "intersections", " ", "below", " ", 
+           "the", " ", "chain"}]}], ",", " ", 
+         RowBox[{
+         "but", " ", "misses", " ", "holes", " ", "when", " ", "r", " ", 
+          "varying", " ", "fast", " ", "if", " ", "too", " ", "strict"}]}], 
+        " ", "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"yMax", " ", "=", " ", 
+        RowBox[{"-", "\[Infinity]"}]}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"diskPairNumbers", " ", "=", " ", 
+        RowBox[{"allDistinctSortedPairs", "[", "chainAndLeftNumbers", "]"}]}],
+        ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"diskPairNumbers", " ", "=", " ", 
+        RowBox[{"Association", "@", 
+         RowBox[{"Map", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"#", "->", 
+             RowBox[{"Map", "[", 
+              RowBox[{"localAndLeftDisks", ",", "#"}], "]"}]}], "&"}], ",", 
+           "diskPairNumbers"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"diskPairNumbers", " ", "=", " ", 
+        RowBox[{"Map", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"diskdiskUpperTouchingPoint", "[", 
+            RowBox[{"#", ",", "r"}], "]"}], "&"}], ",", "diskPairNumbers"}], 
+         "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"diskPairNumbers", " ", "=", " ", 
+        RowBox[{"DeleteMissing", "[", "diskPairNumbers", "]"}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"diskPairNumbers", " ", "=", " ", 
+        RowBox[{"Select", "[", 
+         RowBox[{"diskPairNumbers", ",", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Last", "[", "#", "]"}], ">=", "yMax"}], "&"}]}], "]"}]}],
         ";", "\[IndentingNewLine]", 
-        RowBox[{
-         RowBox[{"pointInDisks", "[", 
-          RowBox[{"point_", ",", "diskNumbers_"}], "]"}], " ", ":=", " ", 
-         RowBox[{"Module", "[", 
+       RowBox[{"diskPairNumbers", " ", "=", " ", 
+        RowBox[{"KeyValueMap", "[", 
+         RowBox[{
           RowBox[{
-           RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
-           RowBox[{"Or", "@@", 
+           RowBox[{"<|", 
+            RowBox[{
+             RowBox[{"\"\<Pair\>\"", "->", "#1"}], ",", 
+             RowBox[{"\"\<Point\>\"", "->", "#2"}]}], "|>"}], "&"}], ",", 
+          "diskPairNumbers"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"diskPairNumbers", " ", "=", " ", 
+        RowBox[{"Map", "[", 
+         RowBox[{"calcShift", ",", "diskPairNumbers"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"diskPairNumbers", "=", 
+        RowBox[{"computeExclusions", "[", 
+         RowBox[{
+         "diskPairNumbers", ",", "chainAndLeftNumbers", ",", "run", ",", 
+          "r"}], "]"}]}], " ", ";", " ", "\[IndentingNewLine]", 
+       RowBox[{"dp", "=", "diskPairNumbers"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"diskPairNumbers", " ", "=", " ", 
+        RowBox[{"Select", "[", 
+         RowBox[{"diskPairNumbers", ",", 
+          RowBox[{
+           RowBox[{"!", 
+            RowBox[{"TrueQ", "[", "#Excluded", "]"}]}], "&"}]}], "]"}]}], ";",
+        "\[IndentingNewLine]", "diskPairNumbers"}]}], "\[IndentingNewLine]", 
+     "]"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"computeExclusions", "[", 
+    RowBox[{
+    "diskPairNumbersA_", ",", "chainAndLeftNumbers_", ",", "run_", ",", 
+     "r_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"diskPairNumbers", "=", "diskPairNumbersA"}], ",", 
+       "extendedDisk", ",", "pointInDisks"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"diskPairNumbers", " ", "=", " ", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Append", "[", 
+           RowBox[{"#", ",", 
+            RowBox[{"<|", "\[IndentingNewLine]", 
+             RowBox[{"\"\<RestOfChain\>\"", "->", 
+              RowBox[{"Complement", "[", 
+               RowBox[{"chainAndLeftNumbers", ",", "#Pair"}], "]"}]}], 
+             "|>"}]}], "]"}], "&"}], ",", "diskPairNumbers"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"extendedDisk", "[", "number_", "]"}], " ", ":=", " ", 
+       RowBox[{"extendRadius", "[", 
+        RowBox[{
+         RowBox[{"getCoinFromRun", "[", 
+          RowBox[{"number", ",", "run"}], "]"}], ",", "r"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"pointInDisks", "[", 
+        RowBox[{"point_", ",", "diskNumbers_"}], "]"}], " ", ":=", " ", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", "res", "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"res", "=", 
+           RowBox[{"Association", "@", 
             RowBox[{"Map", "[", 
              RowBox[{
               RowBox[{
-               RowBox[{"RegionMember", "[", 
-                RowBox[{
-                 RowBox[{"extendedDisk", "[", "#", "]"}], ",", "point"}], 
-                "]"}], "&"}], ",", "diskNumbers"}], "]"}]}]}], 
-          "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
-        "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
-         RowBox[{"Map", "[", 
-          RowBox[{
-           RowBox[{
-            RowBox[{"Append", "[", 
-             RowBox[{"#", ",", 
-              RowBox[{"\"\<Excluded\>\"", "->", 
-               RowBox[{"pointInDisks", "[", 
-                RowBox[{"#Point", ",", "#RestOfChain"}], "]"}]}]}], "]"}], 
-            "&"}], ",", "\[IndentingNewLine]", "diskPairNumbers"}], 
-          "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
-        RowBox[{"diskPairNumbers", " ", "=", " ", 
-         RowBox[{"Select", "[", 
+               RowBox[{"#", "->", 
+                RowBox[{"RegionMember", "[", 
+                 RowBox[{
+                  RowBox[{"extendedDisk", "[", "#", "]"}], ",", "point"}], 
+                 "]"}]}], "&"}], ",", "diskNumbers"}], "]"}]}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"res", "=", " ", 
+           RowBox[{"Select", "[", 
+            RowBox[{"res", ",", "TrueQ"}], "]"}]}]}]}], "\[IndentingNewLine]",
+         "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"diskPairNumbers", " ", "=", " ", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Append", "[", 
+           RowBox[{"#", ",", 
+            RowBox[{"\"\<ExcludedBy\>\"", "->", 
+             RowBox[{"pointInDisks", "[", 
+              RowBox[{"#Point", ",", "#RestOfChain"}], "]"}]}]}], "]"}], 
+          "&"}], ",", "\[IndentingNewLine]", "diskPairNumbers"}], 
+        "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"diskPairNumbers", " ", "=", " ", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Append", "[", 
+           RowBox[{"#", ",", "\[IndentingNewLine]", 
+            RowBox[{"\"\<Excluded\>\"", "->", 
+             RowBox[{"Or", "@@", 
+              RowBox[{"Values", "[", "#ExcludedBy", "]"}]}]}]}], "]"}], "&"}],
+          ",", "diskPairNumbers"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      "diskPairNumbers"}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"newnextCoinAndContacts", "[", "run_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "r", ",", "diskPairNumbers", ",", "lowestPair", ",", 
+        "lowerNeighbours"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"r", "=", " ", 
+        RowBox[{"nextCoinRadius", "[", "run", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"diskPairNumbers", " ", "=", 
+        RowBox[{"nextCoinOptions", "[", 
+         RowBox[{"run", ",", "r"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"lowestPair", " ", "=", " ", 
+        RowBox[{"First", "@", 
+         RowBox[{"SortBy", "[", 
           RowBox[{"diskPairNumbers", ",", 
            RowBox[{
-            RowBox[{"!", 
-             RowBox[{"TrueQ", "[", "#Excluded", "]"}]}], "&"}]}], "]"}]}], 
-        ";", "\[IndentingNewLine]", 
-        RowBox[{"lowestPair", " ", "=", " ", 
-         RowBox[{"First", "@", 
-          RowBox[{"SortBy", "[", 
-           RowBox[{"diskPairNumbers", ",", 
-            RowBox[{
-             RowBox[{"Last", "[", "#Point", "]"}], "&"}]}], "]"}]}]}], ";", 
-        "\[IndentingNewLine]", "\[IndentingNewLine]", 
-        RowBox[{"If", "[", 
+            RowBox[{"Last", "[", "#Point", "]"}], "&"}]}], "]"}]}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
          RowBox[{
-          RowBox[{
-           RowBox[{"lowestPair", "[", "\"\<Shift\>\"", "]"}], "==", 
-           "\"\<None\>\""}], ",", "\[IndentingNewLine]", 
-          RowBox[{"lowerNeighbours", "=", " ", 
-           RowBox[{"lowestPair", "[", "\"\<Pair\>\"", "]"}]}], ",", 
-          "\[IndentingNewLine]", 
+          RowBox[{"lowestPair", "[", "\"\<Shift\>\"", "]"}], "==", 
+          "\"\<None\>\""}], ",", "\[IndentingNewLine]", 
+         RowBox[{"lowerNeighbours", "=", " ", 
+          RowBox[{"lowestPair", "[", "\"\<Pair\>\"", "]"}]}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
           RowBox[{
            RowBox[{"Print", "[", 
-            RowBox[{"\"\<Shift:\>\"", ",", "lowestPair"}], "]"}], ";"}]}], 
-         "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
-        RowBox[{"<|", " ", "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{"\"\<CoinNumber\>\"", "->", " ", 
+            RowBox[{"\"\<Shift at \>\"", ",", 
+             RowBox[{
+              RowBox[{"highestCoinNumber", "[", "run", "]"}], "+", " ", "1"}],
+              ",", "\"\<:\>\"", ",", "lowestPair"}], "]"}], ";"}], 
+          "\[IndentingNewLine]", "*)"}], 
+         RowBox[{"lowerNeighbours", "=", " ", 
+          RowBox[{"lowestPair", "[", "\"\<Pair\>\"", "]"}]}]}], 
+        "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<|", " ", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"\"\<CoinNumber\>\"", "->", " ", 
+          RowBox[{
+           RowBox[{"highestCoinNumber", "[", "run", "]"}], "+", " ", "1"}]}], 
+         "\[IndentingNewLine]", ",", 
+         RowBox[{"\"\<CoinDisk\>\"", "->", " ", 
+          RowBox[{"Disk", "[", 
            RowBox[{
-            RowBox[{"highestCoinNumber", "[", "run", "]"}], "+", " ", "1"}]}],
-           "\[IndentingNewLine]", ",", 
-          RowBox[{"\"\<CoinDisk\>\"", "->", " ", 
-           RowBox[{"Disk", "[", 
-            RowBox[{
-             RowBox[{"lowestPair", "[", "\"\<Point\>\"", "]"}], ",", "r"}], 
-            "]"}]}], "\[IndentingNewLine]", ",", 
-          RowBox[{"\"\<CoinNeighbours\>\"", "->", " ", "lowerNeighbours"}]}], 
-         " ", "|>"}]}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
-   "\[IndentingNewLine]", "\[IndentingNewLine]", 
-   "\[IndentingNewLine]"}]}]], "Input",
+            RowBox[{"lowestPair", "[", "\"\<Point\>\"", "]"}], ",", "r"}], 
+           "]"}]}], "\[IndentingNewLine]", ",", 
+         RowBox[{"\"\<CoinNeighbours\>\"", "->", " ", "lowerNeighbours"}]}], 
+        " ", "|>"}]}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.856887900214071*^9, 3.856887900462079*^9}, {
    3.856890216099166*^9, 3.8568903847837963`*^9}, {3.856890467948381*^9, 
@@ -3373,8 +3562,49 @@ Cell[BoxData[
    3.8568936698765383`*^9}, 3.8568937029912443`*^9, {3.856893782739919*^9, 
    3.856893813425339*^9}, {3.8568940330302444`*^9, 3.856894170623567*^9}, {
    3.8568942013231792`*^9, 3.856894342129407*^9}, {3.856894538801078*^9, 
-   3.856894542551335*^9}, 
-   3.8568951026211014`*^9},ExpressionUUID->"1eddaded-9ec0-4f93-84b2-\
+   3.856894542551335*^9}, 3.8568951026211014`*^9, {3.8569495240122833`*^9, 
+   3.8569495346550617`*^9}, {3.856953965759916*^9, 3.8569539866553535`*^9}, {
+   3.856976138819652*^9, 3.856976271844668*^9}, {3.856976327892764*^9, 
+   3.8569763496616244`*^9}, {3.8569765580341077`*^9, 3.856976571069826*^9}, {
+   3.8569766229716873`*^9, 3.856976650319167*^9}, 3.8569768286966395`*^9, {
+   3.8569769114115314`*^9, 3.856976922596374*^9}, {3.8569771042881165`*^9, 
+   3.856977137888245*^9}, 3.856977326095533*^9, {3.856977851891387*^9, 
+   3.8569778597437735`*^9}, {3.8570102371865835`*^9, 
+   3.8570103272247105`*^9}, {3.85701036730394*^9, 3.857010386586419*^9}, {
+   3.857010479454553*^9, 3.857010488877842*^9}, {3.85701057777584*^9, 
+   3.8570106038819313`*^9}, {3.8570125224054956`*^9, 3.8570125342715836`*^9}, 
+   3.857012579317604*^9, {3.8570126390261383`*^9, 3.8570126782148705`*^9}, {
+   3.857012818433789*^9, 3.8570128267908897`*^9}, {3.857012875117757*^9, 
+   3.857012901989237*^9}, {3.8570130700994606`*^9, 3.8570130726108913`*^9}, 
+   3.8570137009241333`*^9, {3.857013786849537*^9, 3.8570137870576878`*^9}, 
+   3.857013858328081*^9, {3.857013974170878*^9, 3.857013995988784*^9}, {
+   3.8570196175430436`*^9, 3.8570196243561726`*^9}, {3.857020329973744*^9, 
+   3.8570203949926786`*^9}, {3.8570205003836246`*^9, 3.857020502104081*^9}, {
+   3.857020592719337*^9, 3.85702061386926*^9}, {3.857020791831822*^9, 
+   3.857020813844076*^9}, {3.8570211748401737`*^9, 3.857021181262464*^9}, {
+   3.857021590076315*^9, 3.8570216003178005`*^9}, {3.857021694720386*^9, 
+   3.8570217867515125`*^9}, {3.857022980993922*^9, 3.8570230046059775`*^9}, {
+   3.8570230468029647`*^9, 3.857023050512473*^9}, {3.857023230016488*^9, 
+   3.857023230250808*^9}, 3.8570232888331985`*^9, {3.8570237772923837`*^9, 
+   3.857023813376418*^9}, {3.8570240700427656`*^9, 3.857024096418992*^9}, {
+   3.8570241460502067`*^9, 3.857024146934859*^9}, {3.8570257703884525`*^9, 
+   3.8570257779509106`*^9}, 3.857026492062175*^9, {3.8570365948055754`*^9, 
+   3.8570366642378488`*^9}, {3.8570367491274385`*^9, 3.857036757675004*^9}, {
+   3.8570368488383636`*^9, 3.8570368556486864`*^9}, {3.8570369870539703`*^9, 
+   3.8570369939303837`*^9}, {3.857037474719449*^9, 3.8570375537120275`*^9}, 
+   3.8570376548894143`*^9, {3.8570376938420525`*^9, 3.8570376977788754`*^9}, {
+   3.8570377750515394`*^9, 3.857037809018758*^9}, {3.8570379409118643`*^9, 
+   3.85703796611367*^9}, {3.857038897370883*^9, 3.8570389234587526`*^9}, 
+   3.857062921923441*^9, {3.857063597862331*^9, 3.8570638272066746`*^9}, 
+   3.8570639409368877`*^9, {3.857063980378826*^9, 3.857064183790632*^9}, {
+   3.8570643334967985`*^9, 3.8570643750750113`*^9}, {3.857064443551404*^9, 
+   3.8570644663257895`*^9}, {3.857064527053348*^9, 3.8570645607185946`*^9}, {
+   3.8570648001993427`*^9, 3.8570648053036985`*^9}, 3.8570649785370283`*^9, {
+   3.857065060735474*^9, 3.85706506925828*^9}, {3.8570652524718285`*^9, 
+   3.857065327896551*^9}, {3.857065398312546*^9, 3.8570653991673803`*^9}, {
+   3.8570654485359664`*^9, 3.857065449582594*^9}, {3.85706553005721*^9, 
+   3.8570655504020796`*^9}, {3.857065585049105*^9, 
+   3.8570656324855824`*^9}},ExpressionUUID->"1eddaded-9ec0-4f93-84b2-\
 3e6e5fa75bf1"],
 
 Cell[BoxData[
@@ -4629,7 +4859,7 @@ Cell[BoxData[
  InitializationCell->True,
  CellLabel->
   "In[132]:=",ExpressionUUID->"1e918b21-361c-47de-ab16-bd2d7ad3abc8"]
-}, Closed]],
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -4775,8 +5005,8 @@ Cell[BoxData[
 }, Open  ]]
 },
 AutoGeneratedPackage->Automatic,
-WindowSize->{677.5, 474.},
-WindowMargins->{{Automatic, 15}, {Automatic, 0}},
+WindowSize->{949., 479.5},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
 Magnification:>1.1 Inherited,
 FrontEndVersion->"13.0 for Microsoft Windows (64-bit) (February 4, 2022)",
 StyleDefinitions->"Default.nb",
@@ -4797,65 +5027,65 @@ Cell[CellGroupData[{
 Cell[580, 22, 292, 5, 74, "Section",ExpressionUUID->"e55015fc-a79b-4df9-961d-01036e6cf397"],
 Cell[875, 29, 332, 9, 70, "Input",ExpressionUUID->"ff2e94a6-5c48-4dce-90d5-bda2729443a1",
  InitializationCell->True],
-Cell[1210, 40, 24297, 634, 3356, "Input",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb",
+Cell[1210, 40, 24494, 640, 2916, "Input",ExpressionUUID->"5a0690a5-d5d9-44f5-8771-8e2b05800dcb",
  InitializationCell->True],
-Cell[25510, 676, 4601, 113, 783, "Input",ExpressionUUID->"63ea88af-53a7-423f-8bca-b3bc15d00d81",
+Cell[25707, 682, 4601, 113, 595, "Input",ExpressionUUID->"63ea88af-53a7-423f-8bca-b3bc15d00d81",
  InitializationCell->True],
 Cell[CellGroupData[{
-Cell[30136, 793, 93, 0, 59, "Subsection",ExpressionUUID->"a4f08e8c-f847-404b-ad6f-f3f3b12919f2"],
-Cell[30232, 795, 2772, 69, 448, "Input",ExpressionUUID->"430a849a-06d4-4447-b77f-8452d15a272c",
+Cell[30333, 799, 93, 0, 59, "Subsection",ExpressionUUID->"a4f08e8c-f847-404b-ad6f-f3f3b12919f2"],
+Cell[30429, 801, 2772, 69, 322, "Input",ExpressionUUID->"430a849a-06d4-4447-b77f-8452d15a272c",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[33041, 869, 84, 0, 59, "Subsection",ExpressionUUID->"40d374d9-ea14-49ac-bbf8-505bd03fda55"],
-Cell[33128, 871, 198, 3, 52, "Input",ExpressionUUID->"290c500d-e234-4dd6-bc8e-7d12becb99a3"],
-Cell[33329, 876, 41941, 628, 700, "Input",ExpressionUUID->"8923fcf7-3a83-4578-b088-d91ab1b058c4",
+Cell[33238, 875, 84, 0, 59, "Subsection",ExpressionUUID->"40d374d9-ea14-49ac-bbf8-505bd03fda55"],
+Cell[33325, 877, 198, 3, 52, "Input",ExpressionUUID->"290c500d-e234-4dd6-bc8e-7d12becb99a3"],
+Cell[33526, 882, 41941, 628, 616, "Input",ExpressionUUID->"8923fcf7-3a83-4578-b088-d91ab1b058c4",
  InitializationCell->True],
-Cell[75273, 1506, 37088, 529, 384, "Input",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95",
+Cell[75470, 1512, 37088, 529, 238, "Input",ExpressionUUID->"5b3167ee-900b-4027-a077-40cdfc03cb95",
  InitializationCell->True],
-Cell[112364, 2037, 2259, 52, 511, "Input",ExpressionUUID->"be9277a0-95b7-4e02-a2e3-af046510c2ce",
+Cell[112561, 2043, 2259, 52, 260, "Input",ExpressionUUID->"be9277a0-95b7-4e02-a2e3-af046510c2ce",
  InitializationCell->True],
-Cell[114626, 2091, 305, 5, 31, "Input",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
-Cell[114934, 2098, 2834, 69, 552, "Input",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15",
+Cell[114823, 2097, 305, 5, 31, "Input",ExpressionUUID->"84810bf2-a64d-4f8c-8fdd-1cf91e9d36a5"],
+Cell[115131, 2104, 2834, 69, 364, "Input",ExpressionUUID->"5615abe2-38df-4d14-a0d1-80e04fc21d15",
  InitializationCell->True],
-Cell[117771, 2169, 1450, 39, 300, "Input",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1",
+Cell[117968, 2175, 1362, 38, 175, "Input",ExpressionUUID->"b01a5813-31ae-44b2-8bca-c9f463e8c4c1",
  InitializationCell->True],
-Cell[119224, 2210, 6262, 141, 1391, "Input",ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258",
+Cell[119333, 2215, 6262, 141, 804, "Input",ExpressionUUID->"ab42ed20-266b-4450-8257-d24d04102258",
  InitializationCell->True],
-Cell[125489, 2353, 1072, 27, 279, "Input",ExpressionUUID->"c76eea4f-2d81-4606-a338-962eed944458",
+Cell[125598, 2358, 1386, 34, 217, "Input",ExpressionUUID->"c76eea4f-2d81-4606-a338-962eed944458",
  InitializationCell->True],
-Cell[126564, 2382, 6114, 135, 1810, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
+Cell[126987, 2394, 5920, 130, 929, "Input",ExpressionUUID->"f6641d9c-01c5-4a74-8331-fd6c0316d706",
  InitializationCell->True],
-Cell[132681, 2519, 3836, 96, 532, "Input",ExpressionUUID->"571ebe60-a33d-4390-9c37-d8e843a78d41",
+Cell[132910, 2526, 3842, 96, 532, "Input",ExpressionUUID->"571ebe60-a33d-4390-9c37-d8e843a78d41",
  InitializationCell->True],
-Cell[136520, 2617, 2188, 51, 426, "Input",ExpressionUUID->"61917369-d68f-40c2-a75d-03cd8ed7d530",
+Cell[136755, 2624, 2188, 51, 384, "Input",ExpressionUUID->"61917369-d68f-40c2-a75d-03cd8ed7d530",
  InitializationCell->True],
-Cell[138711, 2670, 5658, 129, 909, "Input",ExpressionUUID->"a2972f55-e319-40a1-877f-dd1884a8fe19",
+Cell[138946, 2677, 6098, 137, 846, "Input",ExpressionUUID->"a2972f55-e319-40a1-877f-dd1884a8fe19",
  InitializationCell->True],
-Cell[144372, 2801, 13115, 313, 2104, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b",
+Cell[145047, 2816, 13808, 317, 1957, "Input",ExpressionUUID->"f701992d-1388-4d72-b20d-5b59e9c0026b",
  InitializationCell->True],
-Cell[157490, 3116, 11773, 261, 1453, "Input",ExpressionUUID->"1eddaded-9ec0-4f93-84b2-3e6e5fa75bf1",
+Cell[158858, 3135, 21630, 472, 2085, "Input",ExpressionUUID->"1eddaded-9ec0-4f93-84b2-3e6e5fa75bf1",
  InitializationCell->True],
-Cell[169266, 3379, 5401, 134, 615, "Input",ExpressionUUID->"7072b596-be8b-42d1-8c96-5c9ad092c91a",
+Cell[180491, 3609, 5401, 134, 552, "Input",ExpressionUUID->"7072b596-be8b-42d1-8c96-5c9ad092c91a",
  InitializationCell->True],
-Cell[174670, 3515, 8496, 200, 1097, "Input",ExpressionUUID->"929163ba-162b-46cf-870d-7e2be128ffca",
+Cell[185895, 3745, 8496, 200, 909, "Input",ExpressionUUID->"929163ba-162b-46cf-870d-7e2be128ffca",
  InitializationCell->True],
-Cell[183169, 3717, 3281, 80, 594, "Input",ExpressionUUID->"342e2a4f-5ef0-4a8a-ae42-07f5d18b1888",
+Cell[194394, 3947, 3281, 80, 490, "Input",ExpressionUUID->"342e2a4f-5ef0-4a8a-ae42-07f5d18b1888",
  InitializationCell->True],
-Cell[186453, 3799, 4778, 115, 699, "Input",ExpressionUUID->"68c375d9-9111-4839-8ff5-7bcf8c7b73ea",
+Cell[197678, 4029, 4778, 115, 679, "Input",ExpressionUUID->"68c375d9-9111-4839-8ff5-7bcf8c7b73ea",
  InitializationCell->True]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[191280, 3920, 216, 4, 74, "Section",ExpressionUUID->"f23e60c9-e599-4f91-b638-47ff7a6eb044"],
-Cell[191499, 3926, 22532, 538, 3006, "Input",ExpressionUUID->"3e5576af-6ab6-43f4-be67-95b66123e558",
+Cell[202505, 4150, 216, 4, 74, "Section",ExpressionUUID->"f23e60c9-e599-4f91-b638-47ff7a6eb044"],
+Cell[202724, 4156, 22532, 538, 2588, "Input",ExpressionUUID->"3e5576af-6ab6-43f4-be67-95b66123e558",
  InitializationCell->True],
-Cell[214034, 4466, 6976, 164, 928, "Input",ExpressionUUID->"1e918b21-361c-47de-ab16-bd2d7ad3abc8",
+Cell[225259, 4696, 6976, 164, 844, "Input",ExpressionUUID->"1e918b21-361c-47de-ab16-bd2d7ad3abc8",
  InitializationCell->True]
-}, Closed]],
+}, Open  ]],
 Cell[CellGroupData[{
-Cell[221047, 4635, 163, 6, 100, "Section",ExpressionUUID->"d0565a12-5574-4552-b037-4effbe774747"],
-Cell[221213, 4643, 5437, 130, 902, "Input",ExpressionUUID->"a9ab3c21-00a3-46ec-8866-89bcc4d3930a",
+Cell[232272, 4865, 163, 6, 100, "Section",ExpressionUUID->"d0565a12-5574-4552-b037-4effbe774747"],
+Cell[232438, 4873, 5437, 130, 679, "Input",ExpressionUUID->"a9ab3c21-00a3-46ec-8866-89bcc4d3930a",
  InitializationCell->True]
 }, Open  ]]
 }

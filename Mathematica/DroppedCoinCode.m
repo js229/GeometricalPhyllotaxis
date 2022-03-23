@@ -40,10 +40,10 @@ highestCoinNumber[run_] :=  Max[Map[
 bareNumber,Keys@run["State"][CoinAssociation]]];
 
 getCoinFromRun[n_,run_] :=  Module[{coinSet,coinCollection,
-coinAssociation,baren,coin,cylinderCircumference},
+coinAssociation,coin,cylinderCircumference},
 coinAssociation = run["State"][CoinAssociation];
 coin= coinAssociation[bareNumber[n]];
-If[MissingQ[coin],Print["gCFR Can't find coin ", n,bareNumber[n],coin,coinAssociation];Abort[];Return[{}]];
+If[MissingQ[coin],Print["gCFR Can't find coin ", n,bareNumber[n],coin,coinAssociation];(*Abort[];*)Return[{}]];
 cylinderCircumference =run["Arena"]["cylinderCircumferenceFunction"][coinH[coin]];
 
 If[Head[n]== left,
@@ -285,7 +285,6 @@ rotateList[list_,element_] := Module[{res,pos},
 If[!MemberQ[list,element],Return[list]];
 pos = First@First@Position[list,element];
 res = Join[Drop[list,pos-1],Take[list,pos-1]];
-Print[list,res];
 res
 ];
 
@@ -333,6 +332,7 @@ addCoinsToState[state_,nextCoinSet_] := Module[{res},
 res = state;
 
 res[CoinAssociation] = Append[state[CoinAssociation],Association@Map[First[#]->#&,nextCoinSet]];
+res[MostRecentCoin] =  Max@Map[bareCoinNumber,nextCoinSet];
 res
 ];
 
@@ -349,8 +349,7 @@ nodeAssociation =run["State"];
 nodeAssociation = addCoinsToState[nodeAssociation,nextCoinSet];
 
 newRun =run;
-newRun["State"]= nodeAssociation; (* extra copy made so getCoinFromRun can lookup coin, sigh ... *)
-
+newRun["State"]= nodeAssociation; 
 newEdges = edgesWithLR[n,nextCoinLowerNeighbours];
 
 coinNumberPairAngle[coinm_,coinn_] := coinPairAngle[ getCoinFromRun[coinm,newRun],getCoinFromRun[coinn,newRun]];
@@ -366,6 +365,7 @@ nodeAssociation[HighestCoinZ]= coinZ[nextCoin,run["Arena"]["phi"]]
 
 
 thisChain = findGraphFront[coinNumber[First[nextCoinSet]],nodeAssociation];
+
 
 
 para2 = nodeAssociation[ChainsByCoinNumber];
@@ -401,7 +401,7 @@ xymax = xy+ {r,0};
 RegionUnion[Disk[xy,r],Rectangle[xymin,xymax]]
 ];
 
-nextCoinRadius[run_,chainNumbers_] := Module[{r,h1,h2},
+nextCoinRadius[run_] := Module[{r,h1,h2},
 h1= run["State"][HighestCoinZ];
 r = run["Arena"]["rFunction"][h1];
 r
@@ -447,8 +447,9 @@ ContactGraph->Graph[{}]
 ,DEdgeAngle->Association[]
 ,Parastichy->Association[]
 ,ChainsByCoinNumber ->  Association[]
-,InitialCoins->icCoins
+,InitialCoins->(*icCoins*) Association[]
 ,CoinAssociation->Association@Map[First[#]->#&,icCoins]
+,MostRecentCoin -> First[Last[icCoins]]
 ,HighestCoinZ-> highestCoinZ];
 
 run =<|"State"-> nodeAssociation,"Arena"->arenaAssociation|>;
@@ -475,7 +476,7 @@ executeStacking[icRun_] := Module[
 run =icRun;
 
 Monitor[
-For[k=0,k< run["Arena"]["coinMax"],k++,
+For[k=0,k<500,k++,
 {tim,run } = Timing[ addNextCoinCone[run] ];
 If[stoppingIndicator[run],Break[]]
 ],
@@ -486,11 +487,13 @@ run = makeRunContactGraphXY[run];
 run
 ];
 
-stoppingIndicator[run_] := Module[{highestCoinZ,arenaAssociation,nodeAssociation},
+stoppingIndicator[run_] := Module[{highestCoinZ,arenaAssociation,nodeAssociation,res},
 nodeAssociation=run["State"];
 arenaAssociation=run["Arena"];highestCoinZ =  nodeAssociation[HighestCoinZ];
 
-If[highestCoinZ+ 2 arenaAssociation["rFunction"][highestCoinZ]> (arenaAssociation["cylinderLU"])[[2]],True,False]
+res = If[highestCoinZ+ 2 arenaAssociation["rFunction"][highestCoinZ]> (arenaAssociation["cylinderLU"])[[2]],True,False];
+res = res || nodeAssociation[MostRecentCoin]>=run["Arena"]["coinMax"];
+res
 ];
 
 monitorIndicator[run_,tim_] := Module[{parastichyTop,highestCoinZ,
@@ -539,17 +542,19 @@ res =<|"State"-> state,"Arena"->run["Arena"]|>;
 res
 ];
 
-chainedNextState[run_] := Module[{r,chainNumbers,lowest,nextCoin,nextCoinLowerNeighbours,nAres},
+chainedNextState[run_] := Module[{r,chainNumbers,lowest,lowestOld,lowestNew,nextCoin,nextCoinLowerNeighbours,nAres},
 chainNumbers=currentChain[run];
-r= nextCoinRadius[run,chainNumbers];
-lowest  = nextCoinAndContacts[chainNumbers,r,run];
+
+(*r= nextCoinRadius[run];lowestOld  = nextCoinAndContacts[chainNumbers,r,run];
+*)
 lowestNew = newnextCoinAndContacts[run];
-If[!SameQ[Sort[lowest["CoinNeighbours"]],Sort[lowestNew["CoinNeighbours"]]],
-Print[lowest,lowestNew];];
+(*Print[lowestNew];
+*)lowest =lowestNew;
 If[MissingQ[lowest],
 Print["chain cannot be added to after coin ", highestCoinNumber[run] ];
 Abort[]
 ];
+
 nextCoin = {lowest["CoinNumber"],lowest["CoinDisk"]};
 nextCoinLowerNeighbours = lowest["CoinNeighbours"];
 nAres = updateNeighbourFunction[nextCoin,nextCoinLowerNeighbours,run];
@@ -558,55 +563,93 @@ nAres
 
 
 (* ::Input::Initialization:: *)
+shiftRight[left[n_]] := n;
+shiftRight[n_] := right[n];
+shiftLeft[right[n_]] := n;
+shiftLeft[n_] := left[n];
 
 calcShift[diskPair_] := Module[{res=diskPair},
 res = Append[res,"Shift"->"None"];
 If[First[diskPair["Point"]]<-1/2,
 res["Point"]=diskPair["Point"]+{1,0};
 res["Shift"] = "Right";
-];
+res["Pair"]= Map[shiftRight,res["Pair"]]
+(*Print["shifting diskpair right:",diskPair]
+*)];
 If[First[diskPair["Point"]]> 1/2,
 res["Point"]=diskPair["Point"]-{1,0};
 res["Shift"] = "Left";
+res["Pair"] = Map[shiftLeft,res["Pair"]]
 ];
 res
 ];
 
+allDistinctSortedPairs[list_] := DeleteDuplicates@(Sort/@Select[Tuples[list,2],!SameQ@@#&]);
 
-newnextCoinAndContacts[run_] := Module[
-{chainNumbers,r,localDisks,diskPairNumbers,yMax,extendedDisk,pointInDisks,lowestPair,lowerNeighbours
+nextCoinOptions[run_,r_] :=  Module[
+{chainNumbers,localDisks,diskPairNumbers,yMax,extendedDisk,pointInDisks,
+chainAndLeftNumbers,localAndLeftDisks
 },
-chainNumbers=currentChainLR[run];
-r= nextCoinRadius[run,chainNumbers];
-localDisks = Association@Map[#->Last@getCoinFromRun[#,run]&,chainNumbers];
+chainNumbers=currentChain[run];
+
+(*Print["Options for coin ",highestCoinNumber[run]+ 1," r = ",r];
+*)localDisks = Association@Map[#->Last@getCoinFromRun[#,run]&,chainNumbers];
+
+chainAndLeftNumbers =chainNumbers;
+chainAndLeftNumbers = DeleteDuplicates[Join[chainNumbers,
+Map[left[bareNumber[#]]&,chainNumbers]]];
+chainAndLeftRightNumbers = DeleteDuplicates[Join[chainNumbers,
+Map[left[bareNumber[#]]&,chainNumbers],Map[right[bareNumber[#]]&,chainNumbers]]];
+(*Print["chain:" ,chainNumbers];
+Print["chainAndLeft:", chainAndLeftNumbers];
+*)
+localAndLeftDisks = Association@Map[#->Last@getCoinFromRun[#,run]&,chainAndLeftNumbers];
 
 yMax= Max@Map[#[[1,2]]&,localDisks];
+yMax = yMax - r; (* heuristic - to exclude intersections below the chain, but misses holes when r varying fast if too strict *)
+yMax = -\[Infinity];
 
-diskPairNumbers= Select[Tuples[Keys[localDisks],2],!SameQ@@#&];
-diskPairNumbers = DeleteDuplicates@Map[Sort,diskPairNumbers];
-diskPairNumbers = Association@Map[#->Map[localDisks,#]&,diskPairNumbers];
+diskPairNumbers = allDistinctSortedPairs[chainAndLeftNumbers];
+
+diskPairNumbers = Association@Map[#->Map[localAndLeftDisks,#]&,diskPairNumbers];
 diskPairNumbers = Map[diskdiskUpperTouchingPoint[#,r]&,diskPairNumbers];
 diskPairNumbers = DeleteMissing[diskPairNumbers];
+
+
 diskPairNumbers = Select[diskPairNumbers,Last[#]>=yMax&];
 diskPairNumbers = KeyValueMap[<|"Pair"->#1,"Point"->#2|>&,diskPairNumbers];
-diskPairNumbers = Map[Append[#,<|
-"RestOfChain"->Complement[chainNumbers,#Pair]|>]&,diskPairNumbers];
 diskPairNumbers = Map[calcShift,diskPairNumbers];
 
-extendedDisk[number_] := extendRadius[localDisks[number],r];
-pointInDisks[point_,diskNumbers_] := Module[{},
-Or@@Map[RegionMember[extendedDisk[#],point]&,diskNumbers]
-];
-
-diskPairNumbers = Map[Append[#,"Excluded"->pointInDisks[#Point,#RestOfChain]]&,
+diskPairNumbers=computeExclusions[diskPairNumbers,chainAndLeftNumbers,run,r] ; 
+dp=diskPairNumbers;
+diskPairNumbers = Select[diskPairNumbers,!TrueQ[#Excluded]&];
 diskPairNumbers
 ];
-diskPairNumbers = Select[diskPairNumbers,!TrueQ[#Excluded]&];
+
+computeExclusions[diskPairNumbersA_,chainAndLeftNumbers_,run_,r_] := Module[{diskPairNumbers=diskPairNumbersA,extendedDisk,pointInDisks},
+diskPairNumbers = Map[Append[#,<|
+"RestOfChain"->Complement[chainAndLeftNumbers,#Pair]|>]&,diskPairNumbers];
+extendedDisk[number_] := extendRadius[getCoinFromRun[number,run],r];
+pointInDisks[point_,diskNumbers_] := Module[{res},
+res=Association@Map[#->RegionMember[extendedDisk[#],point]&,diskNumbers];
+res= Select[res,TrueQ]
+];
+diskPairNumbers = Map[Append[#,"ExcludedBy"->pointInDisks[#Point,#RestOfChain]]&,
+diskPairNumbers
+];
+diskPairNumbers = Map[Append[#,
+"Excluded"->Or@@Values[#ExcludedBy]]&,diskPairNumbers];
+diskPairNumbers
+];
+newnextCoinAndContacts[run_] := Module[{r,diskPairNumbers,lowestPair,lowerNeighbours},
+r= nextCoinRadius[run];
+diskPairNumbers =nextCoinOptions[run,r];
 lowestPair = First@SortBy[diskPairNumbers,Last[#Point]&];
 
 If[lowestPair["Shift"]=="None",
 lowerNeighbours= lowestPair["Pair"],
-Print["Shift:",lowestPair];
+(*Print["Shift at ",highestCoinNumber[run]+ 1,":",lowestPair];
+*)lowerNeighbours= lowestPair["Pair"]
 ];
 <| 
 "CoinNumber"-> highestCoinNumber[run]+ 1
