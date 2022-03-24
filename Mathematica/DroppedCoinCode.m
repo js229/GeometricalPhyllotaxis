@@ -620,7 +620,7 @@ diskPairNumbers = Select[diskPairNumbers,Last[#]>=yMax&];
 diskPairNumbers = KeyValueMap[<|"Pair"->#1,"Point"->#2|>&,diskPairNumbers];
 diskPairNumbers = Map[calcShift,diskPairNumbers];
 
-diskPairNumbers=computeExclusions[diskPairNumbers,chainAndLeftNumbers,run,r] ; 
+diskPairNumbers=computeExclusions[diskPairNumbers,chainAndLeftRightNumbers,run,r] ; 
 dp=diskPairNumbers;
 diskPairNumbers = Select[diskPairNumbers,!TrueQ[#Excluded]&];
 diskPairNumbers
