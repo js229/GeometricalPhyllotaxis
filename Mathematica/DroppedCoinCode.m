@@ -462,7 +462,7 @@ arena = res["Arena"];
 arena["coinMax"]=extraCoinCount;
 arena["cylinderLU"]= {arena["cylinderLU"][[1]],100};
 res["Arena"]=arena;
-Print[res];
+
 executeStacking[res]
 
 ];
@@ -502,7 +502,9 @@ nodeAssociation=run["State"];
 arenaAssociation=run["Arena"];
 parastichyTop = KeyTake[nodeAssociation[Parastichy],Last[Keys@nodeAssociation[Parastichy]]];
 highestCoinZ =  nodeAssociation[HighestCoinZ];
-{ProgressIndicator[highestCoinZ,{0,(arenaAssociation["cylinderLU"])[[2]]}],
+{ProgressIndicator[
+highestCoinZ,{0,(arenaAssociation["cylinderLU"])[[2]]}],
+"coin"-> nodeAssociation[MostRecentCoin],
 "h"->highestCoinZ,"r"->arenaAssociation["rFunction"][highestCoinZ], parastichyTop,tim}
 ];
 
@@ -646,6 +648,7 @@ r= nextCoinRadius[run];
 diskPairNumbers =nextCoinOptions[run,r];
 lowestPair = First@SortBy[diskPairNumbers,Last[#Point]&];
 
+
 If[lowestPair["Shift"]=="None",
 lowerNeighbours= lowestPair["Pair"],
 (*Print["Shift at ",highestCoinNumber[run]+ 1,":",lowestPair];
@@ -674,8 +677,14 @@ Last[SortBy[lrPoints,N@Last[#]&]]
 diskdisktouchingPoint[pairDisks_,r_] := Module[{xy1,xy2,r1,r2,interdisk},
 {{xy1,r1},{xy2,r2}}= List@@@ pairDisks;
 interdisk = Norm[xy1-xy2];
-If[interdisk > r1 + r2 + 2r,Return[Missing[]]];
+If[interdisk > (r1+r) +( r2 + r),Return[Missing[]]];
+Off[SSSTriangle::tri];
 sTriangle =SSSTriangle[r+r2,r+r1,interdisk];
+On[SSSTriangle::tri];
+If[Head[sTriangle]===SSSTriangle,
+Return[Missing[]]
+(*Abort[];*)
+];
 triangle = (List@sTriangle)[[1,1]];
 transform =Composition[TranslationTransform[xy1],RotationTransform[{triangle[[2]]-triangle[[1]],xy2-xy1}]
 ];
