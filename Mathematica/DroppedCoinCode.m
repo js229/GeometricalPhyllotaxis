@@ -522,20 +522,6 @@ chainNumbers
 ];
 
 
-currentChainLR[run_] := Module[{chain},
-chain = currentChain[run];
-If[Last[chain]!=First[chain],
-Print["chain unlooped"];Abort[]
-];
-chain=Drop[chain,1];
-rightCoin=Select[chain,!isBare[#]&];
-If[Length[rightCoin]!=1,
-Print["multiple rights"];Abort[]];
-rightCoin=bareNumber@First[rightCoin];
-rightCoin=FirstPosition[chain,rightCoin,Missing[],1];
-chain=RotateLeft[chain,rightCoin-1];
-chain
-];
 
 
 addNextCoinCone[run_] := Module[
@@ -572,17 +558,16 @@ nextCoinAndContacts[run_] := Module[{r,diskPairNumbers,lowestPair},
 
 r= nextCoinRadius[run];
 diskPairNumbers =nextCoinOptions[run,r];
-lowestPair = First@SortBy[diskPairNumbers,Last[#Point]&];
-
+(*lowestPair = First@SortBy[diskPairNumbers,Last[#Point]&];
+*)
 newdiskPairNumbers =newnextCoinOptions[run,r];
 newlowestPair =  First@SortBy[newdiskPairNumbers,Last[#Point]&];
-If[newlowestPair["Point"]!= lowestPair["Point"],
-Print[newlowestPair]];
+
 
 <| 
 "CoinNumber"-> highestCoinNumber[run]+ 1
-,"CoinDisk"-> Disk[lowestPair["Point"],r]
-,"CoinNeighbours"->lowestPair["Pair"] |>
+,"CoinDisk"-> Disk[newlowestPair["Point"],r]
+,"CoinNeighbours"->newlowestPair["Pair"] |>
 ];
 
 
@@ -632,37 +617,74 @@ diskPairNumbers
 
 
 (* ::Input::Initialization:: *)
+currentChainLR[run_] := Module[{chainNumbers,rightCoin,rightmostPair,res},
+chainNumbers=currentChain[run];
+If[Last[chainNumbers]!=First[chainNumbers],
+Print["chain unlooped"];Abort[]
+];
+chainNumbers=Drop[chainNumbers,1];
+rightCoin=Select[chainNumbers,!isBare[#]&];
+If[Length[rightCoin]!=1,
+Print["multiple rights"];Abort[]
+,rightCoin=First[rightCoin]
+];
+rightCoin=bareNumber@rightCoin;
+rightCoin=FirstPosition[chainNumbers,rightCoin,Missing[],1];
+chainNumbers=RotateLeft[chainNumbers,rightCoin-1];
+rightmostPair = Take[ Drop[chainNumbers,-1],-2];
+rightmostPair = left/@ rightmostPair;
+Join[rightmostPair,chainNumbers]
+];
+
+chainPairsWithinRadius[disks_,chainNumbers_,r_] := Module[{i},
+Flatten[#,1]&@Table[nearPairsAfterI[disks,
+chainNumbers,r,i],{i,1,Length[chainNumbers]-1}]
+]
+
+nearPairsAfterI[disks_,chainNumbers_,r_,i_] := Module[{j,xValue,xOfN,res},
+xValue[{n_,Disk[{x_,y_},_]}]:= x;
+xRightValue[Disk[{x_,y_},rad_]]:= x+rad;
+xLeftValue[Disk[{x_,y_},rad_]]:= x-rad;
+xRightN[n_] := xRightValue[disks[n]];
+xLeftN[n_] := xLeftValue[disks[n]];
+thisX = xRightN[chainNumbers[[i]]]+2 r;
+res = {};
+For[j=i+1,j<= Length[chainNumbers],j++,
+If[
+xLeftN@chainNumbers[[j]]  <=  thisX , res=Append[res,{chainNumbers[[i]],chainNumbers[[j]]}],
+Break[];
+]
+];
+res
+];
+
+
+
+(* ::Input::Initialization:: *)
 newnextCoinOptions[run_,r_] :=  Module[
 {chainNumbers,localDisks,diskPairNumbers,yMax,extendedDisk,pointInDisks,
 chainAndLeftNumbers,chainAndLeftRightNumbers,localAndLeftDisks
 },
-chainDebug = 22;
+chainDebug = 22;debug =run["State"][MostRecentCoin]==chainDebug;
 
-chainNumbers= run["State"][CurrentChainDisks] ; (*currentChain[run];*)
 chainNumbers= currentChain[run];
-If[run["State"][MostRecentCoin]==chainDebug,
-Print["Current chain at",run["State"][MostRecentCoin],":", run["State"][CurrentChainDisks]]];
+chainNumbersLR = currentChainLR[run];
+currentDisks = Association@Map[#->Last@getCoinFromChain[#,run,"nnco1"]&,
+chainNumbersLR];
+chainPairsToTry = chainPairsWithinRadius[currentDisks,chainNumbersLR,r];
+diskPairsToTry = Association@Map[#-> Map[currentDisks,#]&,chainPairsToTry];
+
 
 localDisks = Association@Map[#->Last@getCoinFromChain[#,run,"nnco"]&,chainNumbers];
 
-chainAndLeftNumbers =chainNumbers;
-chainAndLeftNumbers = DeleteMissing@DeleteDuplicates[Join[chainNumbers,
-Map[moveNumberLeft,chainNumbers]]];
-
 chainAndLeftRightNumbers = DeleteMissing@DeleteDuplicates[Join[chainNumbers,
 Map[moveNumberLeft,chainNumbers],Map[moveNumberRight,chainNumbers]]];
-If[run["State"][MostRecentCoin]==chainDebug,
+If[debug,
 Print["chainlr:", chainAndLeftRightNumbers]];
 
 
-localAndLeftDisks = Association@Map[#->Last@getCoinFromChain[#,run,"lald"]&,chainAndLeftNumbers];
+diskPairNumbers = diskPairsToTry;
 
-If[run["State"][MostRecentCoin]==chainDebug,
-Print[chainAndLeftNumbers]];
-
-diskPairNumbers = allDistinctSortedPairs[chainAndLeftNumbers];
-
-diskPairNumbers = Association@Map[#->Map[localAndLeftDisks,#]&,diskPairNumbers];
 diskPairNumbers = Map[diskdiskUpperTouchingPoint[#,r]&,diskPairNumbers];
 diskPairNumbers = DeleteMissing[diskPairNumbers];
 diskPairNumbers = KeyValueMap[<|"Pair"->#1,"Point"->#2|>&,diskPairNumbers];
