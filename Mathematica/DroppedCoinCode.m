@@ -93,9 +93,9 @@ getCoinFromLookup[run_,lookup_,n_,tag_] :=
 coin= lookup[bareNumber[n]];
 
 If[MissingQ[coin],
-If[run["State"][MostRecentCoin]> 19 && !MemberQ[{"xy"},tag],Print[tag, " searching in run for ",n ," at ",run["State"][MostRecentCoin]];
+(*If[run["State"][MostRecentCoin]> 19 && !MemberQ[{"xy"},tag],Print[tag, " searching in run for ",n ," at ",run["State"][MostRecentCoin]];
 ];
-Return[getCoinFromRun[n,run]];
+*)Return[getCoinFromRun[n,run]];
 ];
 
 If[Head[n]== left,
@@ -338,10 +338,10 @@ Values@Counts[pairs]
 (* ::Input::Initialization:: *)
 (* assumes each node sits on one to its left and one to its right, 
 and we only allow going right *)
-findGraphFront[firstNumber_,neighbourAssociations_] := Module[{lastNumber,nextCoinNumber,thisFront},
+findGraphFront[firstNumber_,neighbourAssociations_] := Module[{lastNumber,nextCoinNumber,thisFront,kMax=100},
 
 thisFront = {firstNumber};
-For[k=0,k<50,k++,
+For[k=0,k<kMax,k++,
 
 lastNumber=  Last[ thisFront];
 nextCoinNumber= nextInChainGraph[lastNumber,neighbourAssociations];
@@ -354,7 +354,7 @@ thisFront = Append[thisFront,nextCoinNumber];
 If[nextCoinNumber==firstNumber,
 Break[]];
 ];
-If[k==50,Print["fGF at 50 for",firstNumber];Return[Missing["k50"]]];
+If[k==kMax,Print["fGF at ",kMax," for ",firstNumber];Return[Missing["k50"]]];
 
 
 thisFront
@@ -584,6 +584,7 @@ r= nextCoinRadius[run];
 *)(*lowestPair = First@SortBy[diskPairNumbers,Last[#Point]&];
 *)
 newdiskPairNumbers =newnextCoinOptions[run,r];
+If[MissingQ[newdiskPairNumbers],Return[newdiskPairNumbers]];
 newlowestPair =  First@SortBy[newdiskPairNumbers,Last[#Point]&];
 
 
@@ -642,13 +643,14 @@ diskPairNumbers
 (* ::Input::Initialization:: *)
 currentChainLR[run_] := Module[{chainNumbers,rightCoin,rightmostPair,res},
 chainNumbers=currentChain[run];
+If[MissingQ[chainNumbers],Return[chainNumbers]];
 If[Last[chainNumbers]!=First[chainNumbers],
 Print["chain unlooped"];Abort[]
 ];
 chainNumbers=Drop[chainNumbers,1];
 rightCoin=Select[chainNumbers,!isBare[#]&];
 If[Length[rightCoin]!=1,
-Print["multiple rights"];Abort[]
+Print["multiple rights:",currentChain[run]];
 ,rightCoin=First[rightCoin]
 ];
 rightCoin=bareNumber@rightCoin;
@@ -687,10 +689,11 @@ newnextCoinOptions[run_,r_] :=  Module[
 {chainNumbers,localDisks,diskPairNumbers,yMax,extendedDisk,pointInDisks,
 chainAndLeftNumbers,chainAndLeftRightNumbers,localAndLeftDisks
 },
-chainDebug = 22;debug =run["State"][MostRecentCoin]==chainDebug;
+chainDebug = Null;debug =run["State"][MostRecentCoin]==chainDebug;
 
 chainNumbers= currentChain[run];
 chainNumbersLR = currentChainLR[run];
+If[MissingQ[chainNumbersLR],Return[chainNumbersLR]];
 currentDisks = Association@Map[#->Last@getCoinFromChain[#,run,"nnco1"]&,
 chainNumbersLR];
 extendedDisks = Map[extendRadius[#,r]&,currentDisks];
@@ -1040,5 +1043,6 @@ pruneRun[run,Select[pruneNumbers,pruneFunction[#]&]]
 
 pruneRunToLastChain[run_] := Module[{chainNumbers},
 chainNumbers=currentChain[run];
+If[MissingQ[chainNumbers],Print["Can't prune without chain"];Return[run]];
 pruneRun[run,chainNumbers]
 ]
