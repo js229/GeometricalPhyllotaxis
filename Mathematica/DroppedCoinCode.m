@@ -55,7 +55,8 @@ Return[coin];
 ];
 
 getCoinFromChain[n_,run_] :=getCoinFromChain[n,run,"tag"] ;
-getCoinFromChain[n_,run_,tag_] :=  Module[{coin},
+getCoinFromChain[n_,run_,tag_] :=  getCoinFromLookup[run,run["State"][CurrentChainDisks],n,tag];
+(*getCoinFromChain[n_,run_,tag_] :=  Module[{coin},
 
 coin= run["State"][CurrentChainDisks][bareNumber[n]];
 
@@ -70,7 +71,7 @@ coin = coinTranslateLeft[run,coin]];
 If[Head[n]==right,
 coin = coinTranslateRight[run,coin]];
 coin];
-
+*)
 coinTranslateLeft[run_,coin_] := 
 coinTranslateL[coin,run["Arena"]["phi"],run["Arena"]["cylinderCircumferenceFunction"][coinH[coin]]];
 coinTranslateRight[run_,coin_] := 
@@ -84,6 +85,28 @@ coinTranslateL[{n_,coin_Disk},phi_,cylinderCircumference_] := {left[n],coinTrans
 coinTranslateR[{n_,coin_Disk},phi_,cylinderCircumference_] := {right[n],coinTranslateR[coin,phi,cylinderCircumference]};
 
 
+
+(* ::Input::Initialization:: *)
+getCoinFromLookup[run_,lookup_,n_,tag_] := 
+ Module[{coin},
+
+coin= lookup[bareNumber[n]];
+
+If[MissingQ[coin],
+If[run["State"][MostRecentCoin]> 19 && !MemberQ[{"xy"},tag],Print[tag, " searching in run for ",n ," at ",run["State"][MostRecentCoin]];
+];
+Return[getCoinFromRun[n,run]];
+];
+
+If[Head[n]== left,
+coin = coinTranslateLeft[run,coin]];
+If[Head[n]==right,
+coin = coinTranslateRight[run,coin]];
+coin
+];
+
+
+(* ::Input::Initialization:: *)
 
 coinH[Disk[xy_,r_]] := xy[[2]];
 coinH[{n_,coin_Disk}] := coinH[coin];
@@ -636,18 +659,17 @@ rightmostPair = left/@ rightmostPair;
 Join[rightmostPair,chainNumbers]
 ];
 
-chainPairsWithinRadius[disks_,chainNumbers_,r_] := Module[{i},
-Flatten[#,1]&@Table[nearPairsAfterI[disks,
+chainPairNumbersWithinRadius[run_,disks_,chainNumbers_,r_] := Module[{i},
+Flatten[#,1]&@Table[nearPairsAfterI[run,disks,
 chainNumbers,r,i],{i,1,Length[chainNumbers]-1}]
 ]
 
-nearPairsAfterI[disks_,chainNumbers_,r_,i_] := Module[{j,xValue,xOfN,res},
-xValue[{n_,Disk[{x_,y_},_]}]:= x;
+nearPairsAfterI[run_,disks_,chainNumbers_,r_,i_] := Module[{j,xRightValue,xLeftValue,xRightN,xLeftN,thisX,res},
 xRightValue[Disk[{x_,y_},rad_]]:= x+rad;
 xLeftValue[Disk[{x_,y_},rad_]]:= x-rad;
 xRightN[n_] := xRightValue[disks[n]];
 xLeftN[n_] := xLeftValue[disks[n]];
-thisX = xRightN[chainNumbers[[i]]]+2 r;
+thisX = xRightN[chainNumbers[[i]]];
 res = {};
 For[j=i+1,j<= Length[chainNumbers],j++,
 If[
@@ -671,7 +693,8 @@ chainNumbers= currentChain[run];
 chainNumbersLR = currentChainLR[run];
 currentDisks = Association@Map[#->Last@getCoinFromChain[#,run,"nnco1"]&,
 chainNumbersLR];
-chainPairsToTry = chainPairsWithinRadius[currentDisks,chainNumbersLR,r];
+extendedDisks = Map[extendRadius[#,r]&,currentDisks];
+chainPairsToTry = chainPairNumbersWithinRadius[run,extendedDisks,chainNumbersLR,r];
 diskPairsToTry = Association@Map[#-> Map[currentDisks,#]&,chainPairsToTry];
 
 
@@ -690,20 +713,69 @@ diskPairNumbers = DeleteMissing[diskPairNumbers];
 diskPairNumbers = KeyValueMap[<|"Pair"->#1,"Point"->#2|>&,diskPairNumbers];
 diskPairNumbers = Map[calcShift,diskPairNumbers];
 
-diskPairNumbers=computeExclusions[diskPairNumbers,chainAndLeftRightNumbers,run,r] ; 
-dp=diskPairNumbers;
+diskPairNumbers=computeExclusions[diskPairNumbers,chainAndLeftRightNumbers,run,r] ;
+ 
+diskPairNumbers = Map[Append[#,<|
+"InOtherDisk"-> checkPointInChain[#,extendedDisks]|>]&,diskPairNumbers];
+If[Length[dp=Select[diskPairNumbers,#Excluded=!= !MissingQ[#InOtherDisk]&]]!=0,
+Print["exclusion mismarch",dp](*;Abort[]*)];
+
 diskPairNumbers = Select[diskPairNumbers,!TrueQ[#Excluded]&];
 diskPairNumbers
 ];
-
+chainlr
 
 
 (* ::Input::Initialization:: *)
-computeExclusions[diskPairNumbersA_,exclusionDisks_,run_,r_] := Module[{diskPairNumbers=diskPairNumbersA,extendedDisk,pointInDisks},
+checkPointInChain[diskPair_,extendedDisks_] := Module[{insideDisk,tooFarRight},
+(* requires disks to be in x-order  *)
+(* also requires fixed circumference and will break otherwise *)
+insideDisk[Disk[xy_,r_],point_] := (point-xy) . (point-xy) <= r^2;
+insideRightDisk[Disk[xy_,r_],point_] := insideDisk[Disk[xy+{1,0},r],point];
+tooFarRight[Disk[xy_,r_],point_] := xy[[1]]-point[[1]] > r;
+tooFarRightRight[Disk[xy_,r_],point_] :=tooFarRight[Disk[xy+{1,0},r],point];
+
+inDisk=Missing[];
+(*If[
+diskPair["Pair"]=={84,right[87]},
+Print[diskPair["Pair"],":"];
+Print["",Map[<|"indisk"-> insideDisk[#, diskPair["Point"]],
+"inrightdisk"->insideRightDisk[#, diskPair["Point"]],
+"toofarright"-> tooFarRight[#, diskPair["Point"]]
+,"toofarrightright"-> tooFarRightRight[#, diskPair["Point"]]|>&,extendedDisks]];
+];*)
+
+For[i=1,i<= Length[Keys[extendedDisks]],i++,
+n=Keys[extendedDisks][[i]];
+If[MemberQ[ diskPair["Pair"],n],Continue[]];
+If[ insideDisk[extendedDisks[n], diskPair["Point"]],Return[n]];
+If[tooFarRight[extendedDisks[n],diskPair["Point"]],Return[Missing[]]];
+];
+For[i=1,i<= Length[Keys[extendedDisks]],i++,
+n=Keys[extendedDisks][[i]];
+If[MemberQ[ diskPair["Pair"],moveNumberRight[n]],Continue[]];
+If[ insideRightDisk[extendedDisks[n], diskPair["Point"]],Return[moveNumberRight[n]]];
+If[tooFarRightRight[extendedDisks[n],diskPair["Point"]],Return[Missing[]]];
+];
+Print["cPIC Got to end of right chain"];
+
+Print@Map[ tooFarRight[#, diskPair["Point"]]&,extendedDisks];
+Print@Map[tooFarRightRight[#, diskPair["Point"]]&,extendedDisks];
+Abort[];
+Return[inChain];
+
+
+];
+
+
+(* ::Input::Initialization:: *)
+computeExclusions[diskPairNumbersA_,exclusionDiskNumbers_,run_,r_] := Module[{diskPairNumbers=diskPairNumbersA,extendedDisk,pointInDisks},
 
 diskPairNumbers = Map[Append[#,<|
-"RestOfChain"->Complement[exclusionDisks,#Pair]|>]&,diskPairNumbers];
+"RestOfChain"->Complement[exclusionDiskNumbers,#Pair]|>]&,diskPairNumbers];
+
 extendedDisk[number_] := extendRadius[getCoinFromChain[number,run,"er"],r];
+
 pointInDisks[point_,diskNumbers_] := Module[{res},
 res=Association@Map[#->RegionMember[extendedDisk[#],point]&,diskNumbers];
 res= Select[res,TrueQ]
