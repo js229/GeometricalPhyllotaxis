@@ -580,8 +580,8 @@ nAres
 nextCoinAndContacts[run_] := Module[{r,diskPairNumbers,lowestPair},
 
 r= nextCoinRadius[run];
-diskPairNumbers =nextCoinOptions[run,r];
-(*lowestPair = First@SortBy[diskPairNumbers,Last[#Point]&];
+(*diskPairNumbers =nextCoinOptions[run,r];
+*)(*lowestPair = First@SortBy[diskPairNumbers,Last[#Point]&];
 *)
 newdiskPairNumbers =newnextCoinOptions[run,r];
 newlowestPair =  First@SortBy[newdiskPairNumbers,Last[#Point]&];
@@ -713,17 +713,17 @@ diskPairNumbers = DeleteMissing[diskPairNumbers];
 diskPairNumbers = KeyValueMap[<|"Pair"->#1,"Point"->#2|>&,diskPairNumbers];
 diskPairNumbers = Map[calcShift,diskPairNumbers];
 
-diskPairNumbers=computeExclusions[diskPairNumbers,chainAndLeftRightNumbers,run,r] ;
- 
+(*diskPairNumbers=computeExclusions[diskPairNumbers,chainAndLeftRightNumbers,run,r] ;
+*) 
 diskPairNumbers = Map[Append[#,<|
 "InOtherDisk"-> checkPointInChain[#,extendedDisks]|>]&,diskPairNumbers];
-If[Length[dp=Select[diskPairNumbers,#Excluded=!= !MissingQ[#InOtherDisk]&]]!=0,
+(*If[Length[dp=Select[diskPairNumbers,#Excluded=!= !MissingQ[#InOtherDisk]&]]!=0,
 Print["exclusion mismarch",dp](*;Abort[]*)];
-
-diskPairNumbers = Select[diskPairNumbers,!TrueQ[#Excluded]&];
+*)
+diskPairNumbers = Select[diskPairNumbers,MissingQ[#InOtherDisk]&];
 diskPairNumbers
 ];
-chainlr
+
 
 
 (* ::Input::Initialization:: *)
