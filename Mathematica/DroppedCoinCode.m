@@ -329,7 +329,7 @@ Values@Counts[pairs]
 (* ::Input::Initialization:: *)
 (* assumes each node sits on one to its left and one to its right, 
 and we only allow going right *)
-findGraphFront[firstNumber_,neighbourAssociations_] := Module[{lastNumber,nextCoinNumber,thisFront,kMax=100},
+findGraphFront[firstNumber_,neighbourAssociations_] := Module[{lastNumber,nextCoinNumber,thisFront,kMax=250},
 
 thisFront = {firstNumber};
 For[k=0,k<kMax,k++,
@@ -492,7 +492,7 @@ executeStacking[icRun_] := Module[
 run =icRun;
 
 Monitor[
-For[k=0,k<500,k++,
+For[k=0,k<5000,k++,
 {tim,run } = Timing[ addNextCoinCone[run] ];
 If[stoppingIndicator[run],Break[]]
 ],
