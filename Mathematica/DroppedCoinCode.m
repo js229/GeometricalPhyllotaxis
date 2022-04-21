@@ -443,6 +443,45 @@ r
 
 
 (* ::Input::Initialization:: *)
+
+createChainState[run_] := Module[{state,coins,graph,chainNumbers,withLRNumbers},
+state= run["State"];
+chainNumbers = currentChainNumbersFromLeft[run];
+coins = Last@@@ KeyTake[state[CoinAssociation],chainNumbers];
+withLRNumbers = Join[chainNumbers,left/@chainNumbers,right /@ chainNumbers];
+
+graph= Subgraph[state[ContactGraph],withLRNumbers,AnnotationRules->Inherited];
+
+<| "ChainState"-> <|"ChainDisks"-> coins,"ChainContacts"->graph|>
+,"Arena"-> run["Arena"]
+|>
+];
+
+stackUntilChainCreation[icCoins_,arenaAssociation_] :=  Module[{arena,icRun},
+arena = arenaAssociation;
+If[MissingQ[arena["ArenaType"]],arena = Append[arena,"ArenaType"->
+If[MissingQ[arena["phi"]] || arena["phi"]==0,"Cylinder","Cone"]]];
+icRun = initializeRunFromIC[icCoins,arena];
+executeStackingUntilChainCreation[icRun]
+];
+executeStackingUntilChainCreation[icRun_] := Module[
+{run,highestCoinZ,k,phi,parastichyTop},
+
+run =icRun;
+
+Monitor[
+For[k=0,k<100,k++,
+{tim,run } = Timing[ addNextCoinCone[run] ];
+If[!MissingQ[currentChain[run]],
+Break[]]
+],
+monitorIndicator[run,tim]
+];
+
+run = makeRunContactGraphXY[run];
+run
+];
+
 (* function called by Chapter 8 code *)
 stackFrontFromIC[icCoins_,arenaAssociation_] :=  Module[{arena,icRun},
 arena = arenaAssociation;
@@ -472,6 +511,8 @@ run =<|"State"-> nodeAssociation,"Arena"->arenaAssociation|>;
 run
 ];
 
+
+(* ::Input::Initialization:: *)
 restartRun[run_,extraCoinCount_] := Module[{res,arena},
 res = pruneRunToLastChain[run];
 arena = res["Arena"];
@@ -483,6 +524,61 @@ executeStacking[res]
 
 ];
 
+
+
+(* ::Input::Initialization:: *)
+executeChainStacking[chainRun_] := Module[
+{run,highestCoinZ,k,phi,parastichyTop},
+
+run =chainRun;
+
+Monitor[
+For[k=0,k<2,k++,
+{tim,run } = Timing[ addNextChain[run] ];
+If[stoppingChainIndicator[run],Break[]]
+],
+monitorChainIndicator[run,tim]
+];
+
+(*run = makeRunContactGraphXY[run];
+*)
+run
+];
+
+addNextChain[run_] := Module[
+{chainNumbers,state,res},
+
+state = run["ChainState"];
+res =<|"ChainState"-> state,"Arena"->run["Arena"]|>;
+res
+];
+
+
+
+(* ::Input::Initialization:: *)
+stoppingChainIndicator[run_] := Module[{highestCoinZ,arenaAssociation,nodeAssociation,res},
+Return[False];
+nodeAssociation=run["State"];
+arenaAssociation=run["Arena"];highestCoinZ =  nodeAssociation[HighestCoinZ];
+
+res = If[highestCoinZ+ 2 arenaAssociation["rFunction"][highestCoinZ]> (arenaAssociation["cylinderLU"])[[2]],True,False];
+res = res || nodeAssociation[MostRecentCoin]>=run["Arena"]["coinMax"];
+res
+];
+
+monitorChainIndicator[run_,tim_] := Module[{parastichyTop,highestCoinZ,
+arenaAssociation,nodeAssociation},
+Print[run["ChainState"]["ChainContacts"]];
+Return[];
+nodeAssociation=run["State"];
+arenaAssociation=run["Arena"];
+parastichyTop = KeyTake[nodeAssociation[Parastichy],Last[Keys@nodeAssociation[Parastichy]]];
+highestCoinZ =  nodeAssociation[HighestCoinZ];
+{ProgressIndicator[
+highestCoinZ,{0,(arenaAssociation["cylinderLU"])[[2]]}],
+"coin"-> nodeAssociation[MostRecentCoin],
+"h"->highestCoinZ,"r"->arenaAssociation["rFunction"][highestCoinZ], parastichyTop,tim}
+];
 
 
 (* ::Input::Initialization:: *)
@@ -503,6 +599,8 @@ run = makeRunContactGraphXY[run];
 run
 ];
 
+
+(* ::Input::Initialization:: *)
 stoppingIndicator[run_] := Module[{highestCoinZ,arenaAssociation,nodeAssociation,res},
 nodeAssociation=run["State"];
 arenaAssociation=run["Arena"];highestCoinZ =  nodeAssociation[HighestCoinZ];
@@ -535,20 +633,7 @@ chainNumbers
 
 
 
-addNextCoinCone[run_] := Module[
-{chainNumbers,state,res},
-
-chainNumbers=currentChain[run];
-If[MissingQ[chainNumbers],
-Print["Doing unchained at ",highestCoinNumber[run]];
-state = unchainedNextState[run]
-,
-state = chainedNextState[run]
-];
-res =<|"State"-> state,"Arena"->run["Arena"]|>;
-res
-];
-
+(* ::Input::Initialization:: *)
 chainedNextState[run_] := Module[{lowest,nextCoin,nextCoinLowerNeighbours,nAres},
 
 lowest = nextCoinAndContacts[run];
@@ -585,6 +670,26 @@ newlowestPair =  First@SortBy[newdiskPairNumbers,Last[#Point]&];
 
 
 (* ::Input::Initialization:: *)
+currentChainNumbersFromLeft[run_] := Module[{chainNumbers,rightCoin,rightmostPair,res},
+chainNumbers=currentChain[run];
+If[MissingQ[chainNumbers],Return[chainNumbers]];
+If[Last[chainNumbers]!=First[chainNumbers],
+Print["chain unlooped"];Abort[]
+];
+chainNumbers=Drop[chainNumbers,1];
+rightCoin=Select[chainNumbers,!isBare[#]&];
+If[Length[rightCoin]!=1,
+Print["multiple rights:",currentChain[run]];
+,rightCoin=First[rightCoin]
+];
+rightCoin=bareNumber@rightCoin;
+rightCoin=FirstPosition[chainNumbers,rightCoin,Missing[],1];
+chainNumbers=RotateLeft[chainNumbers,rightCoin-1];
+chainNumbers = Drop[chainNumbers,-1];
+chainNumbers
+];
+
+
 currentChainLR[run_] := Module[{chainNumbers,rightCoin,rightmostPair,res},
 chainNumbers=currentChain[run];
 If[MissingQ[chainNumbers],Return[chainNumbers]];
