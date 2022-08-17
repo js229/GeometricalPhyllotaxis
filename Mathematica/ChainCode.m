@@ -51,8 +51,11 @@ moveNumberedDiskRight[n_->d_] := moveNumberRight[n]->moveDiskRight[d];
 moveNumberedDiskLeft[n_->d_] := moveNumberLeft[n]->moveDiskLeft[d];
 
 
-getDisk[n_,run_] := If[KeyExistsQ[run["CurrentDisks"],n],run["CurrentDisks"][n]
-,Missing[StringTemplate["No disk ``"][{n}]]];
+getDisk[n_,run_] := If[
+KeyExistsQ[run["CurrentDisks"],n],run["CurrentDisks"][n]
+,If[KeyExistsQ[run["PastDisks"],n],run["PastDisks"][n],
+Missing[StringTemplate["No disk ``"][{n}]]]
+];
 getDisk[right[n_],run_] := moveDiskRight[getDisk[n,run]];
 getDisk[left[n_],run_] := moveDiskLeft[getDisk[n,run]];
 
@@ -151,16 +154,16 @@ res=run;
 res["CurrentOverlaps"]= possibleOverlaps;
 res
 ];
-
+(*
 setGraphCoordinates[run_] := Module[{res,g,nxy},
 res = run;
 g= res["ContactGraph"];
 nxy[n_] := diskXZ@getDisk[n,res];
 g = Graph[g,VertexCoordinates->Map[#->nxy[#]&,VertexList[g]]];
-g = Graph[g,PlotTheme->"Labeled"];
+g = Graph[g,PlotTheme\[Rule]"Labeled"];
 res["ContactGraph"]=g;
 res
-];
+];*)
 
 
 (* ::Input::Initialization:: *)
@@ -177,7 +180,8 @@ res= addNextDisk[res];
 (*dPrint[" radius was: ",nextRadius[run]];
 *)
 res = initializeCurrentOverlaps[res];
-complete = currentChainIsComplete[res];
+res = tryToCompleteCurrentChain[res];
+complete = res["CurrentChainIsComplete"];
 If[complete,Print["Completed chain",res["CurrentChainGraph"]]];
 If[complete,Break[]];
 ];
@@ -214,27 +218,38 @@ res
 
 
 (* ::Input::Initialization:: *)
-currentChainIsComplete[run_] := Module[{nodeList,lrNodes,lrNodesAndCentral},
-If[!ConnectedGraphQ[res["CurrentChainGraph"]],Return[False]];
+tryToCompleteCurrentChain[run_] := Module[{res,nodeList,lrNodes,lrCases,lrNodesAndCentral},
+res = run;
+res["CurrentChainIsComplete"]=False;
+If[!ConnectedGraphQ[res["CurrentChainGraph"]],
+Return[res]];
+
 
 nodeList = VertexList@res["CurrentChainGraph"];
 lrNodes = Cases[nodeList,left[_] | right[_]];
-lrNodesAndCentral = Or@@Map[MemberQ[nodeList,bareNumber[#]]&,lrNodes];
+lrCases = Association@Map[#->MemberQ[nodeList,bareNumber[#]]&,lrNodes];
+lrCases = Select[lrCases,TrueQ];
 
-Return[lrNodesAndCentral];
+If[Length[lrCases]==0,Return[res]];
+res["CurrentChainIsComplete"]=True;
+lrNode=First[Keys[lrCases]];
+path=First@FindPath[res["CurrentChainGraph"],lrNode,bareNumber[lrNode]];
+res["CurrentChainGraph"]=subgraphPreservingCoordinates[res["CurrentChainGraph"],path];
+unchainedDisks = Complement[nodeList,
+path];
+
+res["UnchainedDisks"] = Join[res["UnchainedDisks"] ,unchainedDisks];
+
+Return[res];
+
+
 ];
-(*
-Print["chain: ",res["CurrentChainGraph"]];
-lhs = First[run["CurrentChain"]];
-rhs = Last[run["CurrentChain"]];
-MemberQ[edgeList,(rhs \[UndirectedEdge] right[lhs])] || MemberQ[edgeList,
-( right[lhs] \[UndirectedEdge] rhs)]*)
 
 
 
 (* ::Input::Initialization:: *)
 
-addNextDisk[run_] := Module[{next,path,n,g},
+addNextDisk[run_] := Module[{res,next,path,n,g},
 
 next=findNextNormalizedDisk[run];
 n= nextDiskNumber[run];
@@ -252,15 +267,19 @@ res["UsedOverlaps"] = Join[res["UsedOverlaps"],removeList];
 
 g = res["ContactGraph"];
 
-g = VertexAdd[g,n,VertexCoordinates->{n->diskXZ[n]}];
+g = vertexAddWithCoordinates[g,n,diskXZ[getDisk[n,res]]];
+g = vertexAddWithCoordinates[g,next["RestsOn"][[1]],diskXZ[getDisk[next["RestsOn"][[1]],res]]];
+g = vertexAddWithCoordinates[g,next["RestsOn"][[2]],diskXZ[getDisk[next["RestsOn"][[2]],res]]];
+
 
 g= EdgeAdd[g,
 {next["RestsOn"][[1]] \[UndirectedEdge] n,
 n \[UndirectedEdge] next["RestsOn"][[2]] }];
 
 res["ContactGraph"]=g;
-res = setGraphCoordinates[res];
-res["CurrentChainGraph"] = Subgraph[g,leftAndRightNumbers@res["CurrentChain"]];
+(*res = setGraphCoordinates[res];
+*)
+res["CurrentChainGraph"] = subgraphPreservingCoordinates[g,leftAndRightNumbers@res["CurrentChain"]];
 
 res =initializeCurrentOverlaps[res];
 
@@ -268,6 +287,23 @@ res =initializeCurrentOverlaps[res];
 res
 ];
 
+
+(* ::Input::Initialization:: *)
+vertexAddWithCoordinates[g_,v_,vxy_] := Module[{vc,res},
+If[MemberQ[VertexList[g],v],Return[g]];
+res = VertexAdd[g,v];
+vc = AnnotationValue[g,VertexCoordinates];
+vc = Append[vc,vxy];
+res = Annotate[res,VertexCoordinates->vc];
+res
+]
+
+subgraphPreservingCoordinates[g_,vList_] := Module[{res},
+res = Subgraph[g,vList]
+];
+
+
+(* ::Input::Initialization:: *)
 findNextNormalizedDisk[run_] := Module[{res},
 res= findNextDisk[run];
 If[diskIsLeft[res["Disk"]],
@@ -305,10 +341,6 @@ dPrint[x__] := If[debug, Print[x]];
 deleteIntersectingDisks[run_,locations_,nextR_] := Module[{extendedDisks,res},
 
 
-(*Print["Locations",locations];
-*)
-(*dPrint["eDL: ",extendDisksLeft[run,nextR]];
-*)
 extendedDisks = extendDisksLeftRight[run, nextR];
 
 locationIntersectsQ[d_] := 
@@ -317,16 +349,7 @@ vals = Map[diskdiskIntersectionQ[d,#]&,extendedDisks];
  vals
 ];
 
-(*If[debug,Print["debug"];
-dx = KeyTake[locations,{{left[4],3}}];
-Print[dx];
-dy = extendedDisks;
-Print["Extended disks: ",dy];
-Print["DDI",diskdiskIntersectionQ[First@dx,First@dy]];
-];*)
-
-(*dPrint[Map[locationIntersectsQ[#]&,locations]];
-*)res = Select[locations,Not[Apply[Or,Values@locationIntersectsQ[#]]]&];
+res = Select[locations,Not[Apply[Or,Values@locationIntersectsQ[#]]]&];
 
 res
 ];
