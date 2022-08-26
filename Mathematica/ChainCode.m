@@ -31,6 +31,7 @@ diskX[Disk[{x_,_},_]] := x;
 diskXZ[Disk[{x_,z_},_]] := {x,z};
 diskRightX[Disk[{x_,_},r_]] := x+r;
 diskLeftX[Disk[{x_,_},r_]] := x-r;
+diskTopZ[Disk[{_,z_},r_]] := z+r;
 
 
 moveNumberRight[n_] := right[n];
@@ -69,7 +70,7 @@ nextRadius[run_] := Module[{highestZ},
 highestZ=Max@Map[diskZ,Values@run["CurrentDisks"]];
 run["Arena"]["rFunction"][highestZ]
 ];
-nextDiskNumber[run_] := Max@Keys[run["CurrentDisks"]]+1;
+nextDiskNumber[run_] := Max@Keys[run["CurrentDisks"]]+1;nextChainNumber[run_]:= Max[Keys[run["CompletedChainGraphs"]]]+1;
 
 
 (* ::Input::Initialization:: *)
@@ -84,34 +85,28 @@ rights =First /@ Select[rights,diskLeftX[Last[#]]-nextR<= 1/2 &];
 DeleteDuplicates@Join[lefts,chain,rights]
 ]
 
-diskPairCanSupport[run_,nextR_,n1_,n2_] := 
-diskRightX[getDisk[n1,run]] + 2 * nextR <= diskRightX[getDisk[n2,run]] 
+diskPairCanSupport[run_,nextR_,n1_,n2_] := (*
+diskRightX[getDisk[n1,run]] + 2 * nextR <= diskRightX[getDisk[n2,run]] *)
+diskLeftX[getDisk[n2,run]]-diskRightX[getDisk[n1,run]]<= 2*nextR
 
 
 
 (* ::Input::Initialization:: *)
 potentialHorizontalOverlaps[run_,nextR_] := Module[{supportDisks,supportPairs,can},
 supportDisks = currentSupportDisks[run,nextR];
-(*Print["support disks: ",supportDisks];
-*)supportPairs = {};
+
+supportPairs = {};
 For[i=1,i< Length[supportDisks],i++,
 For[j=i+1,j<= Length[supportDisks],j++,
 can = diskPairCanSupport[run,nextR,supportDisks[[i]],supportDisks[[j]]];
-(*Print["i,j",{i,j}, " ",can]*);
+
 If[can,
 supportPairs = Append[supportPairs,{supportDisks[[i]],supportDisks[[j]]}]
 ]
 ]
 ];
-(*dPrint["Horizontal Support pairs: ",supportPairs];*)
+
 supportPairs
-
-];
-
-disksWithinHorizontalRight[run_,extendedDisks_,n_,nextR_] := Module[{rhs,rightPossible},
-rhs = diskRightX[run["CurrentDisks"][n]];
-
-Keys@Association@Select[Normal[extendedDisks], diskRightX[Last[#]]> rhs && diskLeftX[Last[#]]<rhs + 2 * nextR&]
 
 ];
 
@@ -119,20 +114,19 @@ extendDisksRight[run_,nextR_] := Module[
 {extendedDisks,extendedDisksRight},
 extendedDisks= run["CurrentDisks"];
 extendedDisksRight = 
-Select[extendedDisks,diskLeftX[#]+1 - nextR >=1/2 &];
+Select[extendedDisks,diskLeftX[#]+1     <= 1/2 +nextR&];
 extendedDisksRight = Association[Map[moveNumberedDiskRight,Normal[extendedDisksRight]]];
-extendedDisks
+extendedDisksRight
 
 ];
 extendDisksLeft[run_,nextR_] := Module[
 {extendedDisks,extendedDisksLeft},
 extendedDisks= run["CurrentDisks"];
-(*dPrint["eDL candidates: ",extendedDisks];
-dPrint["nextR: ",nextR];
-*)
+
 extendedDisksLeft = Select[extendedDisks,diskRightX[#]-1 + nextR >=- 1/2 &];
 extendedDisksLeft = Association[Map[moveNumberedDiskLeft,Normal[extendedDisksLeft]]];
-(*dPrint["eDL left: ",extendedDisks];*)extendedDisksLeft
+
+extendedDisksLeft
 
 ];
 extendDisksLeftRight[run_,nextR_]:= Module[{extendedDisks},
@@ -154,36 +148,55 @@ res=run;
 res["CurrentOverlaps"]= possibleOverlaps;
 res
 ];
-(*
-setGraphCoordinates[run_] := Module[{res,g,nxy},
-res = run;
-g= res["ContactGraph"];
-nxy[n_] := diskXZ@getDisk[n,res];
-g = Graph[g,VertexCoordinates->Map[#->nxy[#]&,VertexList[g]]];
-g = Graph[g,PlotTheme\[Rule]"Labeled"];
-res["ContactGraph"]=g;
-res
-];*)
+
 
 
 (* ::Input::Initialization:: *)
+disksMaximum[run_] := 
+Max@Map[diskTopZ,run["CurrentDisks"]];
+
+runCompletesArena[run_] := Module[{res},
+
+If[run["Arena"]["ChainMax"]=="Fill",
+res =disksMaximum[run]>run["Arena"]["CylinderLU"][[2]],
+res = nextChainNumber[run] > run["Arena"]["ChainMax"];
+];
+res
+];
+
+
+
+
+executeRun[run_,chainMax_:Missing[]] := Module[{i,res},
+res = run;
+If[!MissingQ[chainMax],
+res["Arena"]["ChainMax"]=chainMax];
+Monitor[
+For[i=1,i<= 500,i++,
+res = completeChain[res];
+If[runCompletesArena[res],Break[]];
+];
+,i
+];
+res
+];
+
 completeChain[run_] := Module[{res,i,complete=False},
 res = run;
 
 res = initializeCurrentOverlaps[res];
-debug:= (nextDiskNumber[res]==7);
 
-For[i=1,i<= 10,i++,
-(*dPrint["Next disk: ",nextDiskNumber[res]];
-*)
+For[i=1,i<= 500,i++,
+
 res= addNextDisk[res];
-(*dPrint[" radius was: ",nextRadius[run]];
-*)
+
 res = initializeCurrentOverlaps[res];
 res = tryToCompleteCurrentChain[res];
 complete = res["CurrentChainIsComplete"];
-If[complete,Print["Completed chain",res["CurrentChainGraph"]]];
-If[complete,Break[]];
+(*If[complete,Print["Completed chain ",
+nextChainNumber[run],res["CurrentChainGraph"]]];
+*)If[complete,Break[]];
+temp = res;
 ];
 If[!complete,
 Print[StringTemplate["chain incomplete after `` iterations"][i]];
@@ -196,21 +209,30 @@ res = setUpNewChain[res];
 res
 ];
 
-setUpNewChain[run_] := Module[{res,chainNumber,completedChain},
+setUpNewChain[run_] := Module[{res,chainNumber,completedChainGraph},
+
 res = run;
+completedChainGraph = res["CurrentChainGraph"];
+chainNumber = nextChainNumber[res];
+
+overlapStillPossible[{n1_,n2_}] :=
+MemberQ[VertexList[completedChainGraph],n1] || 
+MemberQ[VertexList[completedChainGraph],n2] ;
+res["UsedOverlaps"]= Select[res["UsedOverlaps"],overlapStillPossible];
+
+
 res["PastDisks"]= Append[res["PastDisks"],res["CurrentDisks"]];
 
-
-chainNumber = Max[Keys[res["CompletedChainGraphs"]]]+1;
 res["CompletedChainGraphs"]= Append[res["CompletedChainGraphs"],
-chainNumber->res["CurrentChainGraph"]];
+chainNumber->completedChainGraph];
 
 res["CurrentDisks"]= KeyTake[
 res["CurrentDisks"],res["CurrentChain"]];
 res["CurrentChain"] = {};
-res["CurrentChainGraph"] = Graph[{}];
 res["CurrentOverlaps"] = {};
 
+
+res["CurrentChainGraph"] = Graph[{}];
 
 res
 
@@ -315,9 +337,9 @@ If[diskIsRight[res["Disk"]],
 res["Disk"]=moveDiskLeft[res["Disk"]];
 res["RestsOn"]= Map[moveNumberLeft,res["RestsOn"]]
 ];
-
+(*
 Print["Adding ",nextDiskNumber[run], ": ",res];
-
+*)
 res
 
 ];
@@ -325,12 +347,20 @@ res
 findNextDisk[run_] := Module[{nextR,locations,nextPair,nextDisk},
 nextR= N@nextRadius[run];
 
-locations = DeleteMissing@Association@Map[#->overlapLocations[#,nextR,run]&,run["CurrentOverlaps"]];
+
+locations = Association@Map[#->overlapLocations[#,nextR,run]&,run["CurrentOverlaps"]];
 locations = DeleteMissing[locations];
+
 locations = Select[locations,diskX[#]>=-1/2 && diskX[#]<=1/2 &];
+
 locations = SortBy[locations,diskZ];
+
 locations = deleteIntersectingDisks[run,locations,nextR];
 
+If[Length[locations]==0,
+Print["Can't find a location"];
+Abort[];
+];
 locations= List@@First@Normal@locations;
 {nextPair,nextDisk}=locations;
 Return[<|"Disk"->nextDisk,"RestsOn"->nextPair|>]
@@ -342,6 +372,13 @@ deleteIntersectingDisks[run_,locations_,nextR_] := Module[{extendedDisks,res},
 
 
 extendedDisks = extendDisksLeftRight[run, nextR];
+(*
+tests = Map[ {#,extendedDisks}&,locations];
+locationIntersectsDiskList[d_,diskList_] := Map[diskdiskIntersectionQ[d,#]&,diskList];
+tests = Map[locationIntersectsDiskList[#[[1]],#[[2]]]&,tests];
+tests = Map[Select[#,TrueQ]&,tests];
+
+*)
 
 locationIntersectsQ[d_] := 
 Module[{vals},
