@@ -32,6 +32,7 @@ diskXZ[Disk[{x_,z_},_]] := {x,z};
 diskRightX[Disk[{x_,_},r_]] := x+r;
 diskLeftX[Disk[{x_,_},r_]] := x-r;
 diskTopZ[Disk[{_,z_},r_]] := z+r;
+diskR[Disk[{_,_},r_]] := r;
 
 
 moveNumberRight[n_] := right[n];
@@ -118,6 +119,44 @@ res
 
 
 
+(* ::Input::Initialization:: *)
+makeInitialRunFromGraph[seedRun_,chainNumber_:1] := Module[{run,currentDisks,g},
+g = seedRun["ContactGraph"];
+g = Graph[g,VertexCoordinates->Map[diskXZ[getDisk[#,seedRun]]&,VertexList[g]]];
+g = Graph[g,PlotTheme->"Labeled",
+VertexStyle->Directive[EdgeForm[None],FaceForm[None]],
+VertexLabels->Placed[Automatic,Center]];
+g = Graph[g,AnnotationRules->Map[#->{EdgeStyle->Gray}&,EdgeList[g]]];
+
+run = Append[seedRun,
+<|
+"CurrentDisks"->Association@Map[#->getDisk[#,seedRun]&, Select[VertexList[g],#==bareNumber[#]&]]
+,"PastDisks"-> Association[]
+,"Parastichy"-> Association[]
+,"ContactGraph"->  g
+,"CompletedChainGraphs"-> <|chainNumber->g|>
+,"CompletedChainNodePaths" -> <|chainNumber->{}|>
+,"UsedOverlaps"->{}
+,"CurrentChain"->{}
+,"CurrentChainGraph"->Missing[]
+|>
+];
+run
+];
+
+
+
+
+(* ::Input::Initialization:: *)
+restartRunFromChain[run_,chain_] := Module[{res,chainGraph},
+res =run;
+chainGraph = run["CompletedChainGraphs"][chain];
+res["ContactGraph"] = chainGraph;
+res = makeInitialRunFromGraph[res,chain];
+res
+];
+
+
 executeRun[run_,chainMax_:Missing[]] := Module[{i,imax,res,timing},
 res = run;
 If[!MissingQ[chainMax],
@@ -172,6 +211,9 @@ completedChainGraph = res["CurrentChainGraph"];
 chainNumber = nextChainNumber[res];
 res["CompletedChainGraphs"]= Append[res["CompletedChainGraphs"],
 chainNumber->completedChainGraph];
+res["CompletedChainNodePaths"]= Append[res["CompletedChainNodePaths"],
+chainNumber->res["CurrentChainNodePath"]];
+
 res["Parastichy"] = Append[res["Parastichy"],computeChainParastichy[res]];
 
 res["PastDisks"]= Append[res["PastDisks"],res["CurrentDisks"]];
