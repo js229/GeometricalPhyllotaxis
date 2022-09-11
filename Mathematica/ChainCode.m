@@ -416,16 +416,15 @@ findNextDisk[run_] := Module[{res,nextR,locations,nonIntersectingLocations,nextP
 res = run;
 nextR= N@nextRadius[res];
 
-debug = nextDiskNumber[res]==376;
+debug = nextDiskNumber[res]==71;
 
 locations = Association@Map[#->overlapLocations[#,nextR,res]&,run["CurrentOverlaps"]];
 
 
-
 If[True, (* assumes nonincreasing r *)
 tooWidePairs = Select[locations,MissingQ];
-res["UsedOverlaps"]=Join[
-res["UsedOverlaps"],Keys@tooWidePairs];
+res = addUsedOverlaps[res,Keys@tooWidePairs,"too wide"];
+
 ];
 
 locations = DeleteMissing[locations];
@@ -447,19 +446,31 @@ nonIntersectingLocations= List@@First@Normal@nonIntersectingLocations;
 nextDiskZ = diskZ[nextDisk];
 pairsLowerThanDisk = Keys@Select[locations,diskZ[#]< nextDiskZ&];
 
+
 res = Append[res,"NextDiskRestsOn"->nextPair];
 res = Append[res,"NextDisk"->nextDisk];
 
-res["UsedOverlaps"]=Join[
-res["UsedOverlaps"],pairsLowerThanDisk];
+If[res["Arena"]["ExcludePreviousIntersectors"],
+res = addUsedOverlaps[res,pairsLowerThanDisk,"lower"]];
+
 
 (* don't try this pair again *)
- res["UsedOverlaps"]=Join[res["UsedOverlaps"],{nextPair,
+res = addUsedOverlaps[res,{nextPair,
 moveNumberLeft/@nextPair,
-moveNumberRight/@ nextPair}];
+moveNumberRight/@ nextPair},"pair copies"];
 
 Return[res]
 ];
+
+addUsedOverlaps[run_,pairs_,reason_:Missing[]] := Module[{res},
+res=run;
+
+
+res["UsedOverlaps"]=Join[
+res["UsedOverlaps"],pairs];
+res
+]
+
 
 dPrint[x__] := If[debug, Print[x]];
 
