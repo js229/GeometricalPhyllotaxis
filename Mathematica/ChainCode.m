@@ -174,14 +174,18 @@ If[runCompletesArena[res],Break[]];
 {timing,res} = Timing[completeChain[res]];
 
 ];
-,StringTemplate["parastichy `parastichy`; chain `chain`; disk `disk`; per-chain time `timing`; per-disk time `disktime`"][<|"chain"->nextChainNumber[res]-1
+,StringTemplate["parastichy `parastichy`; chain `chain`; disk `disk`; Z `Z`; per-chain time `timing`; per-disk time `disktime`"][<|"chain"->nextChainNumber[res]-1
 ,"disk"-> nextDiskNumber[res]-1
+,"Z"-> highestDiskZ[res]
 ,"parastichy"->  Last[res["Parastichy"]]
 ,"timing"->timing
 ,"disktime"-> res["CurrentTimePerDisk"]|>]
 ];
 res
 ];
+
+highestDiskZ[run_] := Max@Map[diskZ[getDisk[#,run]]&,Keys@run["CurrentDisks"]];
+smallestRadius[run_] := Min@Map[diskR[getDisk[#,run]]&,Keys@run["CurrentDisks"]];
 
 completeChain[run_] := Module[{res,i,complete=False},
 res = run;
@@ -248,7 +252,7 @@ completedChainNumber = Last[Keys[run["CompletedChainGraphs"]]];
 g = run["CompletedChainGraphs"][completedChainNumber];
 edges = Map[Apply[UndirectedEdge,#]&, Partition[run["CurrentChainNodePath"],2,1]];
 leftOrRight[ a_ \[UndirectedEdge] b_] := Module[{x1,z1,x2,z2},{{x1,z1},{x2,z2}}={diskXZ[getDisk[a,run]],diskXZ[getDisk[b,run]]};
-If[(z2-z1)/(x2-x1) >0 , Right,Left]];
+If[(z2-z1)/(x2-x1) >0 , "Right","Left"]];
 edges = Map[leftOrRight,edges];
 edges= Counts[edges];
 completedChainNumber-> edges
@@ -441,7 +445,8 @@ checkDiskPair[run_,n_] := Module[{d,n1,n2,d1,d2},
 {n1,n2}= run["NextDiskRestsOn"];
 {d,d1,d2} = {getDisk[n,run],getDisk[n1,run],getDisk[n2,run]};
 If[diskX[d2]< diskX[d],Print["Both disks on left"];Abort[]];
-If[diskX[d1]> diskX[d],Print["Both disks ",n1," ", n2," on right in chain adding: ",n, "  in chain ", nextChainNumber[run]-1,run];Abort[]];
+If[diskX[d1]> diskX[d],Print["Both disks ",n1," ", n2," on right in chain adding: ",n, "  in chain ", nextChainNumber[run]-1,run];
+bugReportRun= run;Abort[]];
 (* assumes n1 n2 provided in x-order *)
 ]
 
@@ -487,11 +492,13 @@ findNextDisk[run_] := Module[{res,nextR,locations,nonIntersectingLocations,nextP
 res = run;
 nextR= N@nextRadius[res];
 
-debug = nextDiskNumber[res]==71;
+debug = nextDiskNumber[res]==33;
 
 timeStart["L1"];
 locations = timeCheck@
 Association@Map[#->overlapLocations[#,nextR,res]&,run["CurrentOverlaps"]];
+
+
 timeStop[];
 
 If[True, (* assumes nonincreasing r *)
@@ -504,7 +511,9 @@ locations = DeleteMissing[locations];
 locations = Select[locations,diskX[#]>=-1/2 && diskX[#]<=1/2 &];
 locations = SortBy[locations,diskZ];
 
+
 nonIntersectingLocations =   deleteIntersectingDisks[res,locations,nextR];
+
 
 If[Length[nonIntersectingLocations]==0,
 Print["Can't find a location"];
@@ -570,9 +579,14 @@ r2
 
 diskdiskIntersectionQ[Disk[xy1_,r1_],Disk[xy2_,r2_]]:= Norm[xy1-xy2,2] < (r1+ r2);
 
-overlapLocations[{n1_,n2_},r_,run_] := Module[{res},
-res = diskdiskUpperTouchingPoint[{getDisk[n1,run],getDisk[n2,run]},r];
-If[MissingQ[res],Return[res]];
+overlapLocations[{n1_,n2_},r_,run_] := Module[{res,d1,d2,xl,xr,xres},
+d1 = getDisk[n1,run];
+d2 = getDisk[n2,run];
+res = diskdiskUpperTouchingPoint[{d1,d2},r];
+If[MissingQ[res],Return[res]]; (* no overlap *) 
+{xl,xr}= Sort[{diskX[d1],diskX[d2]}];
+xres = First[res];
+If[ xres < xl || xres > xr, Return[Missing["Both disks left or right"]]];
 Disk[res,r]
 ];
 
