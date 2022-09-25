@@ -941,6 +941,7 @@ latticeDivergence[lattice_] := latticePointD[lattice,1]; (* will be the same as 
 latticeVectorLength[lattice_,m_] :=  Norm[ latticeVector[lattice,m]];
 
 
+
 (* ::Input::Initialization:: *)
 latticeGraphicRegion[lattice_,scalingFunction_] := Module[{},
 Switch[scalingFunction,
@@ -1211,6 +1212,10 @@ latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latt
 latticeDiskRadius[lattice_] := Module[{pv1},
 	pv1 = latticeParastichyVectors[lattice][First[latticePrincipalParastichyPair[lattice]]];
 	Norm[pv1 ]/2
+];
+latticeRhombusArea[lattice_]:= Module[{pv},
+	pv= Map[latticeParastichyVectors[lattice][#]&,latticePrincipalParastichyPair[lattice]];
+	Abs@Det[pv]
 ];
 
 

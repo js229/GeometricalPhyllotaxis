@@ -72,6 +72,9 @@ diskIsNormalised[d_] := (! diskIsLeft[d]) && (! diskIsRight[d]);
 
 diskAndVisibleCopies[Disk[{x_,z_},r_]] := {Disk[{x,z},r],If[x+r>1/2,moveDiskLeft[Disk[{x,z},r]],Nothing[]],If[x-r<-1/2,moveDiskRight[Disk[{x,z},r]],Nothing[]]};
 
+disksMaximum[run_] := 
+Max@Map[diskTopZ,run["CurrentDisks"]];
+
 highestDiskZ[run_] := Max@Map[diskZ,Values@run["CurrentDisks"]];
 smallestRadius[run_] := Min@Map[diskR,Values@run["CurrentDisks"]];
 
@@ -111,14 +114,13 @@ extendedDisks
 ];
 
 
+
 (* ::Input::Initialization:: *)
-disksMaximum[run_] := 
-Max@Map[diskTopZ,run["CurrentDisks"]];
 
 runCompletesArena[run_] := Module[{res},
 
 If[run["Arena"]["ChainMax"]=="Fill",
-res =disksMaximum[run]>run["Arena"]["CylinderLU"][[2]],
+res =disksMaximum[run]>run["Arena"]["CylinderLU"][[2]]+ 2 * run["Arena"]["rFunction"][run["Arena"]["CylinderLU"][[2]]],
 res = nextChainNumber[run] > run["Arena"]["ChainMax"];
 ];
 res
@@ -165,7 +167,10 @@ res
 ];
 
 
+(* ::Input::Initialization:: *)
+
 executeRun[run_,chainMax_:Missing[]] := Module[{i,imax,res,timing},
+Off[SSSTriangle::tri];
 res = run;
 If[!MissingQ[chainMax],
 res["Arena"]["ChainMax"]=chainMax];
@@ -188,6 +193,101 @@ res
 ];
 
 
+
+(* ::Input::Initialization:: *)
+chainCodeExecute[experiment_] := Module[{res,run},
+res=experiment;
+run = executeRun[experiment];
+res = Append[experiment,"Results"->run];
+res = Append[res,"ChainStatistics"->chainStatistics[run]];
+res = Append[res,"NodeStatistics"->nodeStatistics[run]];
+res
+];
+(*
+doParameterRun[experimentParameter_] := Module[{run},
+run = makeRunFromParameter[experimentParameter];
+
+run= CheckAbort[executeRun[run],Missing["Aborted run"]];
+debugLastRun= run;
+(*resultFunction[r_] :=  Last@r["Parastichy"];
+resultFunction[Missing[r_]] := Missing[r];
+resultFunction[run]*)
+run
+]*)
+(*
+makeCh8RunFromParameter[experimentParameter_] := Module[{lattice,run,arena},
+lattice = latticeOrthogonal[experimentParameter["latticeIC"]];
+run = runFromLattice[lattice];
+arena = makeArena[run,experimentParameter["rSlope"],experimentParameter["rScale"],experimentParameter["zMax"]
+];
+run = addDisksFromGraph[Append[run,"Arena"->arena]];
+run
+]*)
+
+disksNumbersInChain[run_,chain_] := Module[{diskNumbers},
+diskNumbers = VertexList[ run["CompletedChainGraphs"][chain]];
+diskNumbers = Select[diskNumbers,#==bareNumber[#]&];
+diskNumbers
+]
+disksInChain[run_,chain_] := Map[getDisk[#,run]&,disksNumbersInChain[run,chain]];
+
+chainMeanRise[run_,chain_] := Module[{zValues},
+zValues = diskZ /@ disksInChain[run,chain];
+zValues = Sort[zValues];
+zValues  = Differences[zValues];
+Mean[zValues]
+];
+
+chainMeanZ[run_,chain_] := Mean[diskZ /@ disksInChain[run,chain]];
+chainMeanR[run_,chain_] := Mean[diskR /@ disksInChain[run,chain]];
+chainMeanAngle[run_,chain_] := Module[{diskNumbers,diskDifferences},
+diskNumbers= Select[disksNumbersInChain[run,chain],#==bareNumber[#]&];
+diskDifferences = Association@Map[#-> {diskX@getDisk[#-1,run],diskX@getDisk[#,run]}&,diskNumbers];
+diskDifferences = Map[#[[2]]-#[[1]]&,diskDifferences];
+diskDifferences = Map[If[#<0,1+#,#]&,diskDifferences];
+Mean@diskDifferences
+];
+
+chainStatistics[run_] := Module[{paras,chainNumbers},
+paras = run["Parastichy"];
+paras = KeyValueMap[<|"Chain"->#1,"Parastichy"->KeySort[#2]|>&,paras];
+paras = Map[Append[#,"MeanZ"->chainMeanZ[run,#Chain]]&,paras]; 
+paras = Map[Append[#,"MeanR"->chainMeanR[run,#Chain]]&,paras]; 
+paras = Map[Append[#,"MeanRise"->chainMeanRise[run,#Chain]]&,paras]; 
+paras = Map[Append[#,"MeanTheta"->chainMeanAngle[run,#Chain]]&,paras]; 
+paras
+]
+
+
+nodeStatistics[run_] :=  Module[{doNode,nodes},
+doNode[n_] := Module[{disk,lastDisk,res},
+disk = getDisk[n,run];
+lastDisk = getDisk[n-1,run];
+res= <|"DiskNumber"->n
+,"Area"->areaPerNode[run,n]
+,"Z"->diskZ[disk]
+,"R"->diskR[disk]
+,"Rise"-> If[MissingQ[ lastDisk],lastDisk,diskZ[disk]-diskZ[lastDisk]]
+,"DeltaX"-> If[MissingQ[ lastDisk],lastDisk,diskX[disk]-diskX[lastDisk]]
+|>;
+res= Append[res,"Theta"-> If[res["DeltaX"]<-1/2,res["DeltaX"]+1,If[res["DeltaX"]>1/2,res["DeltaX"]-1,res["DeltaX"]]]];
+res
+];
+nodes= Map[doNode,
+Keys[run["PastDisks"]]];
+
+vList = VertexList/@run["CompletedChainGraphs"];
+nodeChainLookup = Association@Map[First[#]->Last[#]&,Flatten[KeyValueMap[Outer[List,#1,#2]&,GroupBy[Normal[vList],Last->First]],2]];
+
+nodes= Map[Append[#,"Chain"-> nodeChainLookup[#DiskNumber]]&,nodes];
+nodes= Map[Append[#,"Parastichy"-> run["Parastichy"][#Chain]]&,nodes];
+
+nodes
+];
+
+
+
+(* ::Input::Initialization:: *)
 completeChain[run_] := Module[{res,i,complete=False},
 res = run;
 
@@ -565,15 +665,44 @@ Disk[res,r]
 
 
 (* ::Input::Initialization:: *)
+sssTriangleInteriorAngle[a_,b_,c_] := Module[{tri,angle},
+tri =SSSTriangle[a,b,c];
+If[Head[tri]==SSSTriangle,
+Return[Missing["Not a triangle"]]];
+angle = TriangleMeasurement[tri,{"InteriorAngle",1}];
+angle
+];
+
+
+newdiskdiskTouchingPoint[diskPair_,r_] := Module[{c1,c2,r1,r2,interdisk,interdiskVectorNorm,interdiskNormal,
+angle,vector,normal,interdiskVector},
+{c1,c2}= Map[diskXZ,diskPair];
+{r1,r2}= Map[diskR,diskPair];
+interdiskVector = c2-c1;
+interdisk = Norm[interdiskVector];
+interdiskVectorNorm = interdiskVector/Norm[interdiskVector];
+interdiskNormal =  {-interdiskVectorNorm[[2]],interdiskVectorNorm[[1]]};
+
+
+angle = sssTriangleInteriorAngle[r2+r,r+r1,interdisk];
+vector=(r1+r)*Cos[angle]*interdiskVectorNorm;
+normal = (r1+r)*Sin[angle]* interdiskNormal;
+{c1+vector+normal,c1+vector-normal}
+
+]
+
+
+(* ::Input::Initialization:: *)
 (* for some ics, couldn't guarantee the lower one is discardable,
 but should be provided pattern is a dropped coin one *)
 diskdiskUpperTouchingPoint[pairDisks_,r_] := Module[
 {lrPoints},
-lrPoints= diskdiskTouchingPoint[pairDisks,r];
+lrPoints= newdiskdiskTouchingPoint[pairDisks,r];
+
 If[MissingQ[lrPoints],Return[lrPoints]];
 Last[SortBy[lrPoints,N@Last[#]&]]
 ];
-
+(*
 diskdiskTouchingPoint[pairDisks_,r_] := Module[{xy1,xy2,r1,r2,interdisk,sTriangle,triangle
 ,rTrianglePT,lTrianglePT,transform},
 {{xy1,r1},{xy2,r2}}= List@@@ pairDisks;
@@ -596,4 +725,85 @@ rTrianglePT = (transform[triangle])[[3]];
 lTrianglePT = (ReflectionTransform[RotationTransform[90 Degree][xy2-xy1],xy1])[rTrianglePT];
 {rTrianglePT,lTrianglePT}
 ];
+*)
+
+
+
+(* ::Input::Initialization:: *)
+ddTouchingCompilable[parameterList_,useCompiled_:True] := Module[{res,rTrianglePT,lTrianglePT},
+res = 
+If[useCompiled,
+ddTouchingCompiled[parameterList]
+,
+ddTouchingCompilableRealVectorFunction[parameterList]
+];
+{rTrianglePT,lTrianglePT} = Partition[res,2]
+];
+
+(*
+parameterList={0.`,0.`,1.`,0.`,0.5`,0.8660254037844386`,0.`,0.`,1.`,0.`};
+
+ddTouchingCompilable[parameterList,True]//RepeatedTiming (* 0.001020937890625`,{{0.5`,0.8660254037844386`},{0.5`,-0.8660254037844386`}}} *)
+ddTouchingCompilable[parameterList,False]//RepeatedTiming
+(* {0.0009218720703125`,{{0.5`,0.8660254037844386`},{0.5`,-0.8660254037844386`}}} *)
+*)
+
+ddTouchingCompilableRealVectorFunction[parameterList_] := Module[{xy1,xy2,triangleList,triangle,transform,rTrianglePT,lTrianglePT,a,b,xy21Rotated},
+triangleList = Take[parameterList,6];
+xy1 = Take[parameterList,{7,8}];
+xy2 = Take[parameterList,{9,10}];
+triangle= Partition[triangleList,2];(* 3 sets of xy points *)
+transform =Composition[TranslationTransform[xy1],RotationTransform[{triangle[[2]]-triangle[[1]],xy2-xy1}]
+];
+rTrianglePT = (transform[triangle])[[3]];
+{a,b} = xy2-xy1;
+xy21Rotated = {-b,a};
+lTrianglePT = (ReflectionTransform[xy21Rotated,xy1])[rTrianglePT];
+Flatten@{rTrianglePT,lTrianglePT}
+];
+ddTouchingCompiled = compileRealVectorFunction[ddTouchingCompilableRealVectorFunction];
+
+
+
+
+(* ::Input::Initialization:: *)
+
+
+diskdiskTouchingPoint[pairDisks_,r_] := Module[{xy1,xy2,r1,r2,interdisk,sTriangle,triangle
+,res},
+{{xy1,r1},{xy2,r2}}= List@@@ pairDisks;
+interdisk = Norm[xy1-xy2];
+If[interdisk > (r1+r) +( r2 + r),
+Return[Missing["interdisk too large"]]];
+(* if we knew r was decreasing could filter out this disk at this point *)
+
+Off[SSSTriangle::tri];
+sTriangle =SSSTriangle[r+r2,r+r1,interdisk];
+On[SSSTriangle::tri];
+If[Head[sTriangle]===SSSTriangle,
+Return[Missing["not a triangle"]]
+(*Abort[];*)
+];
+triangle = (List@sTriangle)[[1,1]];
+(* {xy1,xy2,xy3} *)
+triangleList= Flatten[triangle];
+parameterList= N/@ Flatten[{triangleList,xy1,xy2}];
+
+res= ddTouchingCompilable[parameterList,True];
+
+res
+];
+
+
+
+(* ::Input::Initialization:: *)
+compileRealVectorFunction[kf_] := Module[{res,f,arg},
+f = Function[
+ Typed[arg,"PackedArray"::["Real64", 1]],
+Typed[KernelFunction[kf],{ "PackedArray"::["Real64", 1]}-> "PackedArray"::["Real64", 1]][arg]
+
+];
+res=FunctionCompile[f]
+];
+
 
