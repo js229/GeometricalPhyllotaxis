@@ -92,6 +92,9 @@ euclideanMatrixProductNew[{0,1}] = ({
 
 
 (* ::Input::Initialization:: *)
+(* redef after having thought about Ch4 *)
+
+
 
 (* requires m & n >= 0 *)
 euclideanHighestCommonFactor[mn_] := Module[{res},
@@ -144,8 +147,8 @@ Clear[gmn,m,n,z,u,v];
 gmn[mn_][z] := matrixToMoebius[basisInverseChangeMatrix[mn]][z]
 gmn[mn_][{d_,h_}] := reIm@matrixToMoebius[basisInverseChangeMatrix[mn]][d+ I h];
 gmn[mn_][{d_,DirectedInfinity[_]}] := 
-{Divide@@ basisInverseChangeMatrix[mn] . {1,0},0};gmn[{n,m}][{_,DirectedInfinity[_]}] :={u/m,0} 
-
+{Divide@@ basisInverseChangeMatrix[mn] . {1,0},0};(*gmn[{n_,m_}][{_,DirectedInfinity[_]}] :={u/m,0} 
+*)
 latticeGMNinDHalfNew[{0,1}][dh_] := gmn[{0,1}][dh];
 latticeGMNinDHalfNew[{1,0}][dh_] := {1,-1} * gmn[{1,0}][dh];
 latticeGMNinDHalfNew[mn_][dh_] := Module[{res},
@@ -958,7 +961,7 @@ cylinderLU = latticeGetCylinderLU[lattice];
 func[z_] := latticeScaling[lattice,"Disk"][{0,z}][[1]];
 innerOuter = Map[func,Reverse[cylinderLU]];
 innerOuter= Map[Ramp ,innerOuter];
-innerOuter = Sort[innerOuter];
+innerOuter = SortBy[innerOuter,N];
 If[First@innerOuter==0,Disk[{0,0},Last[innerOuter]],Annulus[{0,0},innerOuter]]
 ];
 
@@ -1132,7 +1135,7 @@ mEnd = latticePoint[lattice,mvec];mVectorLength = latticeVectorLength[lattice,mv
 
 (* ::Input::Initialization:: *)
 (* relative to (1,0)  *) 
-
+(* needs a rebuild for Ch 4 *)
 
 gMN[{m_,n_}][w_]:= Module[{u,v},{u,v}= euclideanWindingNumberPair[{m,n}];gMNUV[m,n,u,v,w]];
 gMNUV[m_,n_,u_,v_,w_]:=(v w + u)/(n w + m);
