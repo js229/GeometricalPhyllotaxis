@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    225736,       4464]
-NotebookOptionsPosition[    221500,       4383]
-NotebookOutlinePosition[    221963,       4401]
-CellTagsIndexPosition[    221920,       4398]
+NotebookDataLength[    225520,       4466]
+NotebookOptionsPosition[    221284,       4385]
+NotebookOutlinePosition[    221747,       4403]
+CellTagsIndexPosition[    221704,       4400]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -1108,70 +1108,7 @@ Cell[BoxData[{
           RowBox[{"\"\<NodeStatistics\>\"", "->", 
            RowBox[{"nodeStatistics", "[", "run", "]"}]}]}], "]"}]}], ";", 
        "\[IndentingNewLine]", "res"}]}], "\[IndentingNewLine]", "]"}]}], 
-   ";"}], "\[IndentingNewLine]", 
-  RowBox[{"(*", "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"doParameterRun", "[", "experimentParameter_", "]"}], " ", ":=", 
-    " ", 
-    RowBox[{"Module", "[", 
-     RowBox[{
-      RowBox[{"{", "run", "}"}], ",", "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{"run", " ", "=", " ", 
-        RowBox[{"makeRunFromParameter", "[", "experimentParameter", "]"}]}], 
-       ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-       RowBox[{"run", "=", " ", 
-        RowBox[{"CheckAbort", "[", 
-         RowBox[{
-          RowBox[{"executeRun", "[", "run", "]"}], ",", 
-          RowBox[{"Missing", "[", "\"\<Aborted run\>\"", "]"}]}], "]"}]}], 
-       ";", "\[IndentingNewLine]", 
-       RowBox[{"debugLastRun", "=", " ", "run"}], ";", "\[IndentingNewLine]", 
-       RowBox[{"(*", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"resultFunction", "[", "r_", "]"}], " ", ":=", "  ", 
-          RowBox[{"Last", "@", 
-           RowBox[{"r", "[", "\"\<Parastichy\>\"", "]"}]}]}], ";", 
-         "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{"resultFunction", "[", 
-           RowBox[{"Missing", "[", "r_", "]"}], "]"}], " ", ":=", " ", 
-          RowBox[{"Missing", "[", "r", "]"}]}], ";", "\[IndentingNewLine]", 
-         RowBox[{"resultFunction", "[", "run", "]"}]}], "*)"}], 
-       "\[IndentingNewLine]", "run"}]}], "\[IndentingNewLine]", "]"}]}], 
-   "*)"}], "\[IndentingNewLine]", 
-  RowBox[{"(*", "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"makeCh8RunFromParameter", "[", "experimentParameter_", "]"}], 
-    " ", ":=", " ", 
-    RowBox[{"Module", "[", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{"lattice", ",", "run", ",", "arena"}], "}"}], ",", 
-      "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{"lattice", " ", "=", " ", 
-        RowBox[{"latticeOrthogonal", "[", 
-         RowBox[{"experimentParameter", "[", "\"\<latticeIC\>\"", "]"}], 
-         "]"}]}], ";", "\[IndentingNewLine]", 
-       RowBox[{"run", " ", "=", " ", 
-        RowBox[{"runFromLattice", "[", "lattice", "]"}]}], ";", 
-       "\[IndentingNewLine]", 
-       RowBox[{"arena", " ", "=", " ", 
-        RowBox[{"makeArena", "[", 
-         RowBox[{"run", ",", 
-          RowBox[{"experimentParameter", "[", "\"\<rSlope\>\"", "]"}], ",", 
-          RowBox[{"experimentParameter", "[", "\"\<rScale\>\"", "]"}], ",", 
-          RowBox[{"experimentParameter", "[", "\"\<zMax\>\"", "]"}]}], 
-         "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
-       RowBox[{"run", " ", "=", " ", 
-        RowBox[{"addDisksFromGraph", "[", 
-         RowBox[{"Append", "[", 
-          RowBox[{"run", ",", 
-           RowBox[{"\"\<Arena\>\"", "->", "arena"}]}], "]"}], "]"}]}], ";", 
-       "\[IndentingNewLine]", "run"}]}], "\[IndentingNewLine]", "]"}]}], 
-   "*)"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+   ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"disksNumbersInChain", "[", 
    RowBox[{"run_", ",", "chain_"}], "]"}], " ", ":=", " ", 
@@ -1367,134 +1304,198 @@ Cell[BoxData[{
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"nodeStatistics", "[", "run_", "]"}], " ", ":=", "  ", 
+   RowBox[{
+    RowBox[{"nodeStatistics", "[", "run_", "]"}], " ", ":=", "  ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"doNode", ",", "nodes"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"doNode", "[", "n_", "]"}], " ", ":=", " ", 
+        RowBox[{"Module", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"disk", ",", "lastDisk", ",", "res"}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"disk", " ", "=", " ", 
+            RowBox[{"getDisk", "[", 
+             RowBox[{"n", ",", "run"}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"lastDisk", " ", "=", " ", 
+            RowBox[{"getDisk", "[", 
+             RowBox[{
+              RowBox[{"n", "-", "1"}], ",", "run"}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"res", "=", " ", 
+            RowBox[{"<|", 
+             RowBox[{
+              RowBox[{"\"\<DiskNumber\>\"", "->", "n"}], 
+              "\[IndentingNewLine]", ",", 
+              RowBox[{"\"\<Area\>\"", "->", 
+               RowBox[{"areaPerNode", "[", 
+                RowBox[{"run", ",", "n"}], "]"}]}], "\[IndentingNewLine]", 
+              ",", 
+              RowBox[{"\"\<Z\>\"", "->", 
+               RowBox[{"diskZ", "[", "disk", "]"}]}], "\[IndentingNewLine]", 
+              ",", 
+              RowBox[{"\"\<R\>\"", "->", 
+               RowBox[{"diskR", "[", "disk", "]"}]}], "\[IndentingNewLine]", 
+              ",", 
+              RowBox[{"\"\<Rise\>\"", "->", " ", 
+               RowBox[{"If", "[", 
+                RowBox[{
+                 RowBox[{"MissingQ", "[", " ", "lastDisk", "]"}], ",", 
+                 "lastDisk", ",", 
+                 RowBox[{
+                  RowBox[{"diskZ", "[", "disk", "]"}], "-", 
+                  RowBox[{"diskZ", "[", "lastDisk", "]"}]}]}], "]"}]}], 
+              "\[IndentingNewLine]", ",", 
+              RowBox[{"\"\<DeltaX\>\"", "->", " ", 
+               RowBox[{"If", "[", 
+                RowBox[{
+                 RowBox[{"MissingQ", "[", " ", "lastDisk", "]"}], ",", 
+                 "lastDisk", ",", 
+                 RowBox[{
+                  RowBox[{"diskX", "[", "disk", "]"}], "-", 
+                  RowBox[{"diskX", "[", "lastDisk", "]"}]}]}], "]"}]}]}], 
+             "\[IndentingNewLine]", "|>"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"res", "=", " ", 
+            RowBox[{"Append", "[", 
+             RowBox[{"res", ",", 
+              RowBox[{"\"\<Theta\>\"", "->", " ", 
+               RowBox[{"If", "[", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}], "<", 
+                  RowBox[{
+                   RowBox[{"-", "1"}], "/", "2"}]}], ",", 
+                 RowBox[{
+                  RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}], "+", "1"}], 
+                 ",", 
+                 RowBox[{"If", "[", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}], ">", 
+                    RowBox[{"1", "/", "2"}]}], ",", 
+                   RowBox[{
+                    RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}], "-", "1"}], 
+                   ",", 
+                   RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}]}], "]"}]}], 
+                "]"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", "res"}]}], 
+         "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"nodes", "=", " ", 
+        RowBox[{"Map", "[", 
+         RowBox[{"doNode", ",", "\[IndentingNewLine]", 
+          RowBox[{"Keys", "[", 
+           RowBox[{"run", "[", "\"\<PastDisks\>\"", "]"}], "]"}]}], "]"}]}], 
+       ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"vList", " ", "=", " ", 
+        RowBox[{"VertexList", "/@", 
+         RowBox[{"run", "[", "\"\<CompletedChainGraphs\>\"", "]"}]}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"nodeChainLookup", " ", "=", " ", 
+        RowBox[{"Association", "@", 
+         RowBox[{"Map", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"First", "[", "#", "]"}], "->", 
+             RowBox[{"Last", "[", "#", "]"}]}], "&"}], ",", 
+           RowBox[{"Flatten", "[", 
+            RowBox[{
+             RowBox[{"KeyValueMap", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"Outer", "[", 
+                 RowBox[{"List", ",", "#1", ",", "#2"}], "]"}], "&"}], ",", 
+               RowBox[{"GroupBy", "[", 
+                RowBox[{
+                 RowBox[{"Normal", "[", "vList", "]"}], ",", 
+                 RowBox[{"Last", "->", "First"}]}], "]"}]}], "]"}], ",", 
+             "2"}], "]"}]}], "]"}]}]}], ";", "\n", "\[IndentingNewLine]", 
+       RowBox[{"nodes", "=", " ", 
+        RowBox[{"Map", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Append", "[", 
+            RowBox[{"#", ",", 
+             RowBox[{"\"\<Chain\>\"", "->", " ", 
+              RowBox[{"nodeChainLookup", "[", "#DiskNumber", "]"}]}]}], "]"}],
+            "&"}], ",", "nodes"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"nodes", "=", " ", 
+        RowBox[{"Map", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Append", "[", 
+            RowBox[{"#", ",", 
+             RowBox[{"\"\<Parastichy\>\"", "->", " ", 
+              RowBox[{
+               RowBox[{"run", "[", "\"\<Parastichy\>\"", "]"}], "[", "#Chain",
+                "]"}]}]}], "]"}], "&"}], ",", "nodes"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "nodes"}]}], 
+     "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"areaPerNode", "[", 
+    RowBox[{"run_", ",", "node_"}], "]"}], " ", ":=", " ", 
    RowBox[{"Module", "[", 
     RowBox[{
      RowBox[{"{", 
-      RowBox[{"doNode", ",", "nodes"}], "}"}], ",", "\[IndentingNewLine]", 
-     RowBox[{
       RowBox[{
-       RowBox[{"doNode", "[", "n_", "]"}], " ", ":=", " ", 
-       RowBox[{"Module", "[", 
-        RowBox[{
-         RowBox[{"{", 
-          RowBox[{"disk", ",", "lastDisk", ",", "res"}], "}"}], ",", 
-         "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{"disk", " ", "=", " ", 
-           RowBox[{"getDisk", "[", 
-            RowBox[{"n", ",", "run"}], "]"}]}], ";", "\[IndentingNewLine]", 
-          RowBox[{"lastDisk", " ", "=", " ", 
-           RowBox[{"getDisk", "[", 
-            RowBox[{
-             RowBox[{"n", "-", "1"}], ",", "run"}], "]"}]}], ";", 
-          "\[IndentingNewLine]", 
-          RowBox[{"res", "=", " ", 
-           RowBox[{"<|", 
-            RowBox[{
-             RowBox[{"\"\<DiskNumber\>\"", "->", "n"}], "\[IndentingNewLine]",
-              ",", 
-             RowBox[{"\"\<Area\>\"", "->", 
-              RowBox[{"areaPerNode", "[", 
-               RowBox[{"run", ",", "n"}], "]"}]}], "\[IndentingNewLine]", ",", 
-             RowBox[{"\"\<Z\>\"", "->", 
-              RowBox[{"diskZ", "[", "disk", "]"}]}], "\[IndentingNewLine]", 
-             ",", 
-             RowBox[{"\"\<R\>\"", "->", 
-              RowBox[{"diskR", "[", "disk", "]"}]}], "\[IndentingNewLine]", 
-             ",", 
-             RowBox[{"\"\<Rise\>\"", "->", " ", 
-              RowBox[{"If", "[", 
-               RowBox[{
-                RowBox[{"MissingQ", "[", " ", "lastDisk", "]"}], ",", 
-                "lastDisk", ",", 
-                RowBox[{
-                 RowBox[{"diskZ", "[", "disk", "]"}], "-", 
-                 RowBox[{"diskZ", "[", "lastDisk", "]"}]}]}], "]"}]}], 
-             "\[IndentingNewLine]", ",", 
-             RowBox[{"\"\<DeltaX\>\"", "->", " ", 
-              RowBox[{"If", "[", 
-               RowBox[{
-                RowBox[{"MissingQ", "[", " ", "lastDisk", "]"}], ",", 
-                "lastDisk", ",", 
-                RowBox[{
-                 RowBox[{"diskX", "[", "disk", "]"}], "-", 
-                 RowBox[{"diskX", "[", "lastDisk", "]"}]}]}], "]"}]}]}], 
-            "\[IndentingNewLine]", "|>"}]}], ";", "\[IndentingNewLine]", 
-          RowBox[{"res", "=", " ", 
-           RowBox[{"Append", "[", 
-            RowBox[{"res", ",", 
-             RowBox[{"\"\<Theta\>\"", "->", " ", 
-              RowBox[{"If", "[", 
-               RowBox[{
-                RowBox[{
-                 RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}], "<", 
-                 RowBox[{
-                  RowBox[{"-", "1"}], "/", "2"}]}], ",", 
-                RowBox[{
-                 RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}], "+", "1"}], ",", 
-                RowBox[{"If", "[", 
-                 RowBox[{
-                  RowBox[{
-                   RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}], ">", 
-                   RowBox[{"1", "/", "2"}]}], ",", 
-                  RowBox[{
-                   RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}], "-", "1"}], 
-                  ",", 
-                  RowBox[{"res", "[", "\"\<DeltaX\>\"", "]"}]}], "]"}]}], 
-               "]"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", "res"}]}], 
-        "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"nodes", "=", " ", 
-       RowBox[{"Map", "[", 
-        RowBox[{"doNode", ",", "\[IndentingNewLine]", 
-         RowBox[{"Keys", "[", 
-          RowBox[{"run", "[", "\"\<PastDisks\>\"", "]"}], "]"}]}], "]"}]}], 
-      ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-      RowBox[{"vList", " ", "=", " ", 
-       RowBox[{"VertexList", "/@", 
-        RowBox[{"run", "[", "\"\<CompletedChainGraphs\>\"", "]"}]}]}], ";", 
+      "g", ",", "nodes", ",", "nodeNeighbours", ",", "nodeAreas", ",", 
+       "disks", ",", "vDisk", ",", "vectors", ",", "areas"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"g", "  ", "=", " ", 
+       RowBox[{"run", "[", "\"\<ContactGraph\>\"", "]"}]}], ";", 
       "\[IndentingNewLine]", 
-      RowBox[{"nodeChainLookup", " ", "=", " ", 
+      RowBox[{"nodeNeighbours", " ", "=", "  ", 
+       RowBox[{"VertexList", "@", 
+        RowBox[{"NeighborhoodGraph", "[", 
+         RowBox[{"g", ",", "node"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"disks", " ", "=", " ", 
        RowBox[{"Association", "@", 
         RowBox[{"Map", "[", 
          RowBox[{
           RowBox[{
-           RowBox[{
-            RowBox[{"First", "[", "#", "]"}], "->", 
-            RowBox[{"Last", "[", "#", "]"}]}], "&"}], ",", 
-          RowBox[{"Flatten", "[", 
-           RowBox[{
-            RowBox[{"KeyValueMap", "[", 
-             RowBox[{
-              RowBox[{
-               RowBox[{"Outer", "[", 
-                RowBox[{"List", ",", "#1", ",", "#2"}], "]"}], "&"}], ",", 
-              RowBox[{"GroupBy", "[", 
-               RowBox[{
-                RowBox[{"Normal", "[", "vList", "]"}], ",", 
-                RowBox[{"Last", "->", "First"}]}], "]"}]}], "]"}], ",", "2"}],
-            "]"}]}], "]"}]}]}], ";", "\n", "\[IndentingNewLine]", 
-      RowBox[{"nodes", "=", " ", 
+           RowBox[{"#", "->", " ", 
+            RowBox[{"getDisk", "[", 
+             RowBox[{"#", ",", "run"}], "]"}]}], "&"}], ",", 
+          "nodeNeighbours"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"vDisk", " ", "=", " ", 
+       RowBox[{"disks", "[", "node", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"disks", " ", "=", " ", 
        RowBox[{"Map", "[", 
+        RowBox[{"diskXZ", ",", 
+         RowBox[{"Select", "[", 
+          RowBox[{"disks", ",", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"diskZ", "[", "#", "]"}], "<", 
+             RowBox[{"diskZ", "[", "vDisk", "]"}]}], "&"}]}], "]"}]}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"vectors", " ", "=", " ", 
+       RowBox[{"Map", "[", " ", 
         RowBox[{
          RowBox[{
-          RowBox[{"Append", "[", 
-           RowBox[{"#", ",", 
-            RowBox[{"\"\<Chain\>\"", "->", " ", 
-             RowBox[{"nodeChainLookup", "[", "#DiskNumber", "]"}]}]}], "]"}], 
-          "&"}], ",", "nodes"}], "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"nodes", "=", " ", 
-       RowBox[{"Map", "[", 
+          RowBox[{"#", "-", " ", 
+           RowBox[{"diskXZ", "[", "vDisk", "]"}]}], "&"}], ",", "disks"}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"areas", " ", "=", " ", 
+       RowBox[{"If", "[", 
         RowBox[{
          RowBox[{
-          RowBox[{"Append", "[", 
-           RowBox[{"#", ",", 
-            RowBox[{"\"\<Parastichy\>\"", "->", " ", 
-             RowBox[{
-              RowBox[{"run", "[", "\"\<Parastichy\>\"", "]"}], "[", "#Chain", 
-              "]"}]}]}], "]"}], "&"}], ",", "nodes"}], "]"}]}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", "nodes"}]}], 
-    "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]"}], "Input",
+          RowBox[{"Length", "[", "vectors", "]"}], "==", "2"}], ",", 
+         RowBox[{"Abs", "@", 
+          RowBox[{"Det", "@", " ", 
+           RowBox[{"(", 
+            RowBox[{"Values", "@", "vectors"}], ")"}]}]}], ",", 
+         RowBox[{"Missing", "[", "]"}]}], "]"}]}], ";", "\[IndentingNewLine]",
+       "areas"}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}], "\[IndentingNewLine]"}], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.8723324982198586`*^9, 3.8723326276017904`*^9}, {
    3.8723977001952763`*^9, 3.872397735964402*^9}, {3.8723980106589384`*^9, 
@@ -1522,9 +1523,10 @@ Cell[BoxData[{
    3.8729112209837875`*^9}, 3.872911272081191*^9, {3.872937460661058*^9, 
    3.8729375123629093`*^9}, {3.8729375796377087`*^9, 3.872937606259457*^9}, 
    3.8729376373648787`*^9, {3.872938006054778*^9, 3.872938026152614*^9}, {
-   3.8729423772610254`*^9, 3.872942402440152*^9}},
- CellLabel->
-  "In[160]:=",ExpressionUUID->"212d93fc-bb9c-4366-ad03-6e622e848fbe"]
+   3.8729423772610254`*^9, 3.872942402440152*^9}, 3.8739731837765455`*^9, {
+   3.873973226741705*^9, 
+   3.8739732271381083`*^9}},ExpressionUUID->"212d93fc-bb9c-4366-ad03-\
+6e622e848fbe"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -4424,46 +4426,46 @@ Cell[42379, 906, 9199, 163, 594, "Input",ExpressionUUID->"15e75fbe-967c-44f1-86a
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[51615, 1074, 164, 3, 74, "Section",ExpressionUUID->"82926184-1112-44a0-be3d-e9cd6ea8da45"],
-Cell[51782, 1079, 19096, 447, 2022, "Input",ExpressionUUID->"212d93fc-bb9c-4366-ad03-6e622e848fbe",
+Cell[51782, 1079, 18880, 449, 1834, "Input",ExpressionUUID->"212d93fc-bb9c-4366-ad03-6e622e848fbe",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[70915, 1531, 162, 3, 74, "Section",ExpressionUUID->"fe596e68-0dda-4801-93e2-f79621326472"],
-Cell[71080, 1536, 11230, 204, 1180, "Input",ExpressionUUID->"8b12ee36-315e-467a-93be-2af9a85bf88d",
+Cell[70699, 1533, 162, 3, 74, "Section",ExpressionUUID->"fe596e68-0dda-4801-93e2-f79621326472"],
+Cell[70864, 1538, 11230, 204, 1180, "Input",ExpressionUUID->"8b12ee36-315e-467a-93be-2af9a85bf88d",
  InitializationCell->True],
-Cell[82313, 1742, 3793, 86, 301, "Input",ExpressionUUID->"74b52111-1d23-4f8e-9305-7dd8994af4ca",
+Cell[82097, 1744, 3793, 86, 301, "Input",ExpressionUUID->"74b52111-1d23-4f8e-9305-7dd8994af4ca",
  InitializationCell->True],
-Cell[86109, 1830, 6417, 126, 532, "Input",ExpressionUUID->"13d281b0-6a41-489c-b446-b5db095d3c80",
+Cell[85893, 1832, 6417, 126, 532, "Input",ExpressionUUID->"13d281b0-6a41-489c-b446-b5db095d3c80",
  InitializationCell->True],
-Cell[92529, 1958, 6661, 104, 259, "Input",ExpressionUUID->"42f9121c-e31e-4ddf-88fc-a070f493771f",
+Cell[92313, 1960, 6661, 104, 259, "Input",ExpressionUUID->"42f9121c-e31e-4ddf-88fc-a070f493771f",
  InitializationCell->True],
-Cell[99193, 2064, 5866, 105, 405, "Input",ExpressionUUID->"0d48f50d-3e32-4b1e-860d-a7823b19968a",
+Cell[98977, 2066, 5866, 105, 405, "Input",ExpressionUUID->"0d48f50d-3e32-4b1e-860d-a7823b19968a",
  InitializationCell->True],
-Cell[105062, 2171, 4485, 108, 343, "Input",ExpressionUUID->"0a65e49c-b2c5-44c1-beed-0dda6949a9df",
+Cell[104846, 2173, 4485, 108, 343, "Input",ExpressionUUID->"0a65e49c-b2c5-44c1-beed-0dda6949a9df",
  InitializationCell->True],
-Cell[109550, 2281, 17367, 272, 491, "Input",ExpressionUUID->"a4d8a1bc-875c-4d47-ad94-9f8b2ad81bca",
+Cell[109334, 2283, 17367, 272, 491, "Input",ExpressionUUID->"a4d8a1bc-875c-4d47-ad94-9f8b2ad81bca",
  InitializationCell->True],
-Cell[126920, 2555, 12930, 204, 468, "Input",ExpressionUUID->"513aff78-73d8-4540-b0a3-eb2e825bb45a",
+Cell[126704, 2557, 12930, 204, 468, "Input",ExpressionUUID->"513aff78-73d8-4540-b0a3-eb2e825bb45a",
  InitializationCell->True],
-Cell[139853, 2761, 4939, 105, 552, "Input",ExpressionUUID->"7b6e07ad-c2cf-4ede-864a-e066b48066f4",
+Cell[139637, 2763, 4939, 105, 552, "Input",ExpressionUUID->"7b6e07ad-c2cf-4ede-864a-e066b48066f4",
  InitializationCell->True],
-Cell[144795, 2868, 2613, 64, 364, "Input",ExpressionUUID->"f2039743-db9d-4f7f-b141-a26391233b17",
+Cell[144579, 2870, 2613, 64, 364, "Input",ExpressionUUID->"f2039743-db9d-4f7f-b141-a26391233b17",
  InitializationCell->True],
-Cell[147411, 2934, 1917, 48, 280, "Input",ExpressionUUID->"a9cf26b1-be1e-4622-b662-546cfd655b8a",
+Cell[147195, 2936, 1917, 48, 280, "Input",ExpressionUUID->"a9cf26b1-be1e-4622-b662-546cfd655b8a",
  InitializationCell->True],
-Cell[149331, 2984, 15812, 237, 405, "Input",ExpressionUUID->"a04cc5cb-f6d3-44cb-948c-5de7b31d7bb1",
+Cell[149115, 2986, 15812, 237, 405, "Input",ExpressionUUID->"a04cc5cb-f6d3-44cb-948c-5de7b31d7bb1",
  InitializationCell->True],
-Cell[165146, 3223, 28589, 533, 2167, "Input",ExpressionUUID->"7ab97dfc-16f0-46d4-b3f5-7645f6742ffd",
+Cell[164930, 3225, 28589, 533, 2167, "Input",ExpressionUUID->"7ab97dfc-16f0-46d4-b3f5-7645f6742ffd",
  InitializationCell->True],
-Cell[193738, 3758, 3995, 99, 573, "Input",ExpressionUUID->"852c2853-bfd6-4866-bf92-ccc59ded20a4",
+Cell[193522, 3760, 3995, 99, 573, "Input",ExpressionUUID->"852c2853-bfd6-4866-bf92-ccc59ded20a4",
  InitializationCell->True],
-Cell[197736, 3859, 7325, 163, 761, "Input",ExpressionUUID->"f84550c7-7952-4387-a527-80b00981d42e",
+Cell[197520, 3861, 7325, 163, 761, "Input",ExpressionUUID->"f84550c7-7952-4387-a527-80b00981d42e",
  InitializationCell->True],
-Cell[205064, 4024, 7882, 176, 804, "Input",ExpressionUUID->"3128a188-5c1c-4d25-8a9b-47c693cc3557",
+Cell[204848, 4026, 7882, 176, 804, "Input",ExpressionUUID->"3128a188-5c1c-4d25-8a9b-47c693cc3557",
  InitializationCell->True],
-Cell[212949, 4202, 5751, 121, 594, "Input",ExpressionUUID->"dbcd4870-d590-4edc-9959-269a0ebe0f96",
+Cell[212733, 4204, 5751, 121, 594, "Input",ExpressionUUID->"dbcd4870-d590-4edc-9959-269a0ebe0f96",
  InitializationCell->True],
-Cell[218703, 4325, 2781, 55, 238, "Input",ExpressionUUID->"c6c97b88-1480-46d1-9cb2-3405fa847775",
+Cell[218487, 4327, 2781, 55, 238, "Input",ExpressionUUID->"c6c97b88-1480-46d1-9cb2-3405fa847775",
  InitializationCell->True]
 }, Open  ]]
 }

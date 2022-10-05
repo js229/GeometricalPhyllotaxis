@@ -203,26 +203,6 @@ res = Append[res,"ChainStatistics"->chainStatistics[run]];
 res = Append[res,"NodeStatistics"->nodeStatistics[run]];
 res
 ];
-(*
-doParameterRun[experimentParameter_] := Module[{run},
-run = makeRunFromParameter[experimentParameter];
-
-run= CheckAbort[executeRun[run],Missing["Aborted run"]];
-debugLastRun= run;
-(*resultFunction[r_] :=  Last@r["Parastichy"];
-resultFunction[Missing[r_]] := Missing[r];
-resultFunction[run]*)
-run
-]*)
-(*
-makeCh8RunFromParameter[experimentParameter_] := Module[{lattice,run,arena},
-lattice = latticeOrthogonal[experimentParameter["latticeIC"]];
-run = runFromLattice[lattice];
-arena = makeArena[run,experimentParameter["rSlope"],experimentParameter["rScale"],experimentParameter["zMax"]
-];
-run = addDisksFromGraph[Append[run,"Arena"->arena]];
-run
-]*)
 
 disksNumbersInChain[run_,chain_] := Module[{diskNumbers},
 diskNumbers = VertexList[ run["CompletedChainGraphs"][chain]];
@@ -283,6 +263,18 @@ nodes= Map[Append[#,"Chain"-> nodeChainLookup[#DiskNumber]]&,nodes];
 nodes= Map[Append[#,"Parastichy"-> run["Parastichy"][#Chain]]&,nodes];
 
 nodes
+];
+
+areaPerNode[run_,node_] := Module[{g,nodes,nodeNeighbours,nodeAreas,disks,vDisk,vectors,areas},
+g  = run["ContactGraph"];
+nodeNeighbours =  VertexList@NeighborhoodGraph[g,node];
+
+disks = Association@Map[#-> getDisk[#,run]&,nodeNeighbours];
+vDisk = disks[node];
+disks = Map[diskXZ,Select[disks,diskZ[#]<diskZ[vDisk]&]];
+vectors = Map[ #- diskXZ[vDisk]&,disks];
+areas = If[Length[vectors]==2,Abs@Det@ (Values@vectors),Missing[]];
+areas
 ];
 
 
