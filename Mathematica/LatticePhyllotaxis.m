@@ -314,21 +314,20 @@ vanItersonTouchingRegion[mn_] := vanItersonTouchingCircleXX[mn] /. Circle->Disk
 
 
 (* ::Input::Initialization:: *)
-Clear[vanItersonPolygon,viTriangleDiscretized];
 
 vanItersonPolygon[mn_] := viTriangleDiscretized[mn,"PlusMinus"] ;
 vanItersonPolygon[mn_,type_] := viTriangleDiscretized[mn,type] ;
 vanItersonTriangleArcs[mn_]  := Association@Map[#Type->#Arc &,makeArcs[mn]]
 
-viTriangleDiscretized[{0,1},"PlusMinus"] = 
+viTriangleDiscretized[{0,1},"PlusMinus"] := 
 Polygon@ Join[{{-1/2,Sqrt[3]/2},{-1/2,2},{1/2,2},{1/2,Sqrt[3]/2}},
 jDiscretize[Circle[{0,0},1,{\[Pi]/3,2\[Pi]/3}]]];
 
-viTriangleDiscretized[{0,1},"Plus"] = 
+viTriangleDiscretized[{0,1},"Plus"] := 
 Polygon@Join@{{{0,1},{0,2},{1/2,2},{1/2,Sqrt[3]/2}},
 jDiscretize[Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}]]
 };
-viTriangleDiscretized[{0,1},"Minus"] = 
+viTriangleDiscretized[{0,1},"Minus"] := 
 Polygon@Join@{{{-1/2,Sqrt[3]/2},{-1/2,2},{0,2},{0,1}},
 jDiscretize[Circle[{0,0},1,{\[Pi]/2,2 \[Pi]/3}]]
 };
@@ -1153,13 +1152,6 @@ x = x-Round[N[x]];
 If[x<0,x=-x];
 {x,Abs[y]}
 ]];
-(*latticeGMNinDHalf[{m_,n_}] :=Function[{xy},
-Module[{x,y},
-{x,y} = N@gMNRealPair[{m,n}][xy];
-x = x-Round[x];
-If[x<0,x=-x];
-{x,Abs[y]}
-]];*)
 
 
 
