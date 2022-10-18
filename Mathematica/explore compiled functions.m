@@ -657,19 +657,13 @@ Disk[res,r]
 
 
 (* ::Input::Initialization:: *)
-(* for some ics, couldn't guarantee the lower one is discardable,
-but should be provided pattern is a dropped coin one *)
-diskdiskUpperTouchingPoint[pairDisks_,r_] := Module[
-{lrPoints},
-lrPoints= newdiskdiskTouchingPoint[pairDisks,r];
-
-If[MissingQ[lrPoints],Return[lrPoints]];
-Last[SortBy[lrPoints,N@Last[#]&]]
+sssTriangleInteriorAngle[a_,b_,c_] := Module[{tri,angle},
+tri =SSSTriangle[a,b,c];
+If[Head[tri]==SSSTriangle,
+Return[Missing["Not a triangle"]]];
+angle = TriangleMeasurement[tri,{"InteriorAngle",1}];
+angle
 ];
-
-
-
-(* ::Input::Initialization:: *)
 
 
 newdiskdiskTouchingPoint[diskPair_,r_] := Module[{c1,c2,r1,r2,interdisk,interdiskVectorNorm,interdiskNormal,
@@ -688,11 +682,120 @@ normal = (r1+r)*Sin[angle]* interdiskNormal;
 {c1+vector+normal,c1+vector-normal}
 
 ]
-sssTriangleInteriorAngle[a_,b_,c_] := Module[{tri,angle},
-tri =SSSTriangle[a,b,c];
-If[Head[tri]==SSSTriangle,
-Return[Missing["Not a triangle"]]];
-angle = TriangleMeasurement[tri,{"InteriorAngle",1}];
-angle
+
+
+(* ::Input::Initialization:: *)
+(* for some ics, couldn't guarantee the lower one is discardable,
+but should be provided pattern is a dropped coin one *)
+diskdiskUpperTouchingPoint[pairDisks_,r_] := Module[
+{lrPoints},
+lrPoints= newdiskdiskTouchingPoint[pairDisks,r];
+
+If[MissingQ[lrPoints],Return[lrPoints]];
+Last[SortBy[lrPoints,N@Last[#]&]]
 ];
+(*
+diskdiskTouchingPoint[pairDisks_,r_] := Module[{xy1,xy2,r1,r2,interdisk,sTriangle,triangle
+,rTrianglePT,lTrianglePT,transform},
+{{xy1,r1},{xy2,r2}}= List@@@ pairDisks;
+interdisk = Norm[xy1-xy2];
+If[interdisk > (r1+r) +( r2 + r),
+Return[Missing["interdisk too large"]]];
+(* if we knew r was decreasing could filter out this disk at this point *)
+
+Off[SSSTriangle::tri];
+sTriangle =SSSTriangle[r+r2,r+r1,interdisk];
+On[SSSTriangle::tri];
+If[Head[sTriangle]===SSSTriangle,
+Return[Missing["not a triangle"]]
+(*Abort[];*)
+];
+triangle = (List@sTriangle)[[1,1]];
+transform =Composition[TranslationTransform[xy1],RotationTransform[{triangle[[2]]-triangle[[1]],xy2-xy1}]
+];
+rTrianglePT = (transform[triangle])[[3]];
+lTrianglePT = (ReflectionTransform[RotationTransform[90 Degree][xy2-xy1],xy1])[rTrianglePT];
+{rTrianglePT,lTrianglePT}
+];
+*)
+
+
+
+(* ::Input::Initialization:: *)
+ddTouchingCompilable[parameterList_,useCompiled_:True] := Module[{res,rTrianglePT,lTrianglePT},
+res = 
+If[useCompiled,
+ddTouchingCompiled[parameterList]
+,
+ddTouchingCompilableRealVectorFunction[parameterList]
+];
+{rTrianglePT,lTrianglePT} = Partition[res,2]
+];
+
+(*
+parameterList={0.`,0.`,1.`,0.`,0.5`,0.8660254037844386`,0.`,0.`,1.`,0.`};
+
+ddTouchingCompilable[parameterList,True]//RepeatedTiming (* 0.001020937890625`,{{0.5`,0.8660254037844386`},{0.5`,-0.8660254037844386`}}} *)
+ddTouchingCompilable[parameterList,False]//RepeatedTiming
+(* {0.0009218720703125`,{{0.5`,0.8660254037844386`},{0.5`,-0.8660254037844386`}}} *)
+*)
+
+ddTouchingCompilableRealVectorFunction[parameterList_] := Module[{xy1,xy2,triangleList,triangle,transform,rTrianglePT,lTrianglePT,a,b,xy21Rotated},
+triangleList = Take[parameterList,6];
+xy1 = Take[parameterList,{7,8}];
+xy2 = Take[parameterList,{9,10}];
+triangle= Partition[triangleList,2];(* 3 sets of xy points *)
+transform =Composition[TranslationTransform[xy1],RotationTransform[{triangle[[2]]-triangle[[1]],xy2-xy1}]
+];
+rTrianglePT = (transform[triangle])[[3]];
+{a,b} = xy2-xy1;
+xy21Rotated = {-b,a};
+lTrianglePT = (ReflectionTransform[xy21Rotated,xy1])[rTrianglePT];
+Flatten@{rTrianglePT,lTrianglePT}
+];
+ddTouchingCompiled = compileRealVectorFunction[ddTouchingCompilableRealVectorFunction];
+
+
+
+
+(* ::Input::Initialization:: *)
+
+
+diskdiskTouchingPoint[pairDisks_,r_] := Module[{xy1,xy2,r1,r2,interdisk,sTriangle,triangle
+,res},
+{{xy1,r1},{xy2,r2}}= List@@@ pairDisks;
+interdisk = Norm[xy1-xy2];
+If[interdisk > (r1+r) +( r2 + r),
+Return[Missing["interdisk too large"]]];
+(* if we knew r was decreasing could filter out this disk at this point *)
+
+Off[SSSTriangle::tri];
+sTriangle =SSSTriangle[r+r2,r+r1,interdisk];
+On[SSSTriangle::tri];
+If[Head[sTriangle]===SSSTriangle,
+Return[Missing["not a triangle"]]
+(*Abort[];*)
+];
+triangle = (List@sTriangle)[[1,1]];
+(* {xy1,xy2,xy3} *)
+triangleList= Flatten[triangle];
+parameterList= N/@ Flatten[{triangleList,xy1,xy2}];
+
+res= ddTouchingCompilable[parameterList,True];
+
+res
+];
+
+
+
+(* ::Input::Initialization:: *)
+compileRealVectorFunction[kf_] := Module[{res,f,arg},
+f = Function[
+ Typed[arg,"PackedArray"::["Real64", 1]],
+Typed[KernelFunction[kf],{ "PackedArray"::["Real64", 1]}-> "PackedArray"::["Real64", 1]][arg]
+
+];
+res=FunctionCompile[f]
+];
+
 
