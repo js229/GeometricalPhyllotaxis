@@ -1051,12 +1051,20 @@ xtable= latticeParastichyXZThrough[lattice,m];
 ];
 latticeParastichyLines[lattice_,m_,k_] := latticeParastichyLinesThroughXZ[lattice,m,latticePoint[lattice,k]];
 latticeParastichyLinesAbove[lattice_,m_,k_] := latticeParastichyLinesAboveXZ[lattice,m,latticePoint[lattice,k]];
+latticeParastichyLinesBelow[lattice_,m_,k_] := latticeParastichyLinesBelowXZ[lattice,m,latticePoint[lattice,k]];
 
 
 (* ::Input::Initialization:: *)
 latticeParastichyLinesAboveXZ[lattice_,m_,throughxz_] := Module[{res,cylinderLU,lines},
 cylinderLU = latticeGetNodeCylinderLU[lattice];
 cylinderLU[[1]] = throughxz [[2]];
+res = latticeSetNodeCylinderLU[lattice,cylinderLU];
+lines = latticeParastichyLinesThroughXZ[res,m,throughxz];
+lines
+];
+latticeParastichyLinesBelowXZ[lattice_,m_,throughxz_] := Module[{res,cylinderLU,lines},
+cylinderLU = latticeGetNodeCylinderLU[lattice];
+cylinderLU[[2]] = throughxz [[2]];
 res = latticeSetNodeCylinderLU[lattice,cylinderLU];
 lines = latticeParastichyLinesThroughXZ[res,m,throughxz];
 lines
@@ -1201,7 +1209,9 @@ latticeMoebiusTransform[{m,n}][{0.1,(Sqrt[3]/(2)-.25)}],cylinderLU];
 
 
 (* ::Input::Initialization:: *)
-latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];cylinderLU = cylinderLU + {-latticeRise[lattice],latticeRise[lattice]};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
+latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];
+r= latticeDiskRadius[lattice];
+cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
 ];
 
 latticeDiskRadius[lattice_] := Module[{pv1},
