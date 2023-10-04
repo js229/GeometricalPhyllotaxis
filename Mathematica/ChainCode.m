@@ -367,6 +367,11 @@ lrPaths = Association@Map[#->lrNodePath[#,res["CurrentChainGraph"]]&,Keys@lrCase
 lrPaths = Select[lrPaths,Length[#]>0&];
 
 If[Length[lrPaths]==0,Return[res]];
+If[Length[lrPaths]>1,
+Print["Multiple paths"];
+Print[lrPaths];
+Print[res["CurrentChainGraph"]]
+];
 
 res["CurrentChainNodePath"]= First@First[lrPaths];
 
