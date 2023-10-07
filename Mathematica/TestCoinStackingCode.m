@@ -27,19 +27,19 @@ Get["LatticePhyllotaxis.m",Path->{PersistentSymbol["persistentGitHubPath","Local
 
 
 (* ::Input::Initialization:: *)
+(* for display, not for calculation  *) 
 
+diskAndVisibleCopies[Disk[{x_,z_},r_]] := {Disk[{x,z},r],If[x+r>1/2,moveDiskLeft[Disk[{x,z},r]],Nothing[]],If[x-r<-1/2,moveDiskRight[Disk[{x,z},r]],Nothing[]]};
 
+showDiskXZ[run_,n_] := run["DiskData"][n]["Disk"];
 
-
-
-(* ::Input::Initialization:: *)
-(* rest of code in Transtions..nb *) 
 showRun[run_] := Module[{disks,chains,ffs,cylinder,contacts},
-ffs= Directive[FaceForm[White],EdgeForm[None]];
-disks =Union[run["PastDisks"],run["CurrentDisks"]];
+ffs= Directive[FaceForm[White],EdgeForm[Black]];
+disks =Association@Map[#->showDiskXZ[run,#]&,
+Select[VertexList[run["ContactGraph"]],bareNumberQ]];
 
 contacts = graphToContactLines[run];
-chains = Map[lineChain[#,run]&,Keys[run["CompletedChainGraphs"]]];
+
 cylinder = {LightGreen,Rectangle[{-1/2,run["Arena"]["CylinderLU"][[1]]},{1/2,run["Arena"]["CylinderLU"][[2]]}]};
 
 Graphics[{
@@ -54,10 +54,11 @@ cylinder
 ,Axes->False
 ]
 ];
-graphToContactLines[run_] := Module[{g,lines,res,cols},
+
+graphToContactLines[run_] := Module[{g,dlines,res},
 g = run["ContactGraph"];
-lines = Line/@Map[diskXZ[getDisk[#,run]]&,List@@@EdgeList[g],{2}];
-res = lineCylinderIntersectionColoured/@lines;
+dlines = Line/@Map[diskXZ[getDiskFromRun[run,#]]&,List@@@EdgeList[g],{2}];
+res = lineCylinderIntersectionColoured/@dlines;
 res
 ];
 lineCylinderIntersectionColoured[Line[{{x1_,z1_},{x2_,z2_}}]] := Module[{slope,col},

@@ -43,7 +43,7 @@ leftAndRightNumbers[n_List] := Join@@{n,moveNumberRight/@n,moveNumberLeft/@n};
 bareNumber[left[n_]]  := n;
 bareNumber[right[n_]] := n;
 bareNumber[n_] := n;
-bareNumberQ[n_] := n==bareNumber[n];
+bareNumberQ[n_] := n===bareNumber[n];
 
 moveDiskRight[Disk[{x_,z_},r_]] :=
 Disk[{x+1,z},r];
@@ -53,122 +53,98 @@ moveNumberedDiskRight[n_->d_] := moveNumberRight[n]->moveDiskRight[d];
 moveNumberedDiskLeft[n_->d_] := moveNumberLeft[n]->moveDiskLeft[d];
 
 
-getDisk[n_] := Module[{res},
-res= globalRun["CurrentDisks"][n];
-If[MissingQ[res],
-res= globalRun["PastDisks"][n]];
-res
-];
-getDisk[right[n_]] := moveDiskRight[getDisk[n]];
-getDisk[left[n_]] := moveDiskLeft[getDisk[n]];
+getDisk[n_] := getDiskFromRun[globalRun,n] 
+getDiskFromRun[run_,n_] := run["DiskData"][n]["Disk"];
+getDiskFromRun[run_,right[n_]] :=  moveDiskRight[getDiskFromRun[run,n]];
+getDiskFromRun[run_,left[n_]] := moveDiskLeft[getDiskFromRun[run,n]];
 
-diskIsLeft[Disk[{x_,z_},r_]] :=x<-1/2
-diskIsRight[Disk[{x_,z_},r_]] :=x>1/2
+getDiskXZ[run_,n_] := diskXZ[getDiskFromRun[run,n]];
+getDiskXZ[n_] :=getDiskXZ[globalRun,n] ;
+getDiskZ[run_,n_] := diskZ[getDiskFromRun[run,n]];getDiskZ[n_] :=getDiskZ[globalRun,n] ;
+
+diskIsLeft[Disk[{x_,z_},r_]] :=x<-1/2;
+diskIsRight[Disk[{x_,z_},r_]] :=x>1/2;
 diskIsNormalised[d_] := (! diskIsLeft[d]) && (! diskIsRight[d]);
 
-diskAndVisibleCopies[Disk[{x_,z_},r_]] := {Disk[{x,z},r],If[x+r>1/2,moveDiskLeft[Disk[{x,z},r]],Nothing[]],If[x-r<-1/2,moveDiskRight[Disk[{x,z},r]],Nothing[]]};
 
 disksMaximum[] := 
-Max@Map[diskTopZ,globalRun["CurrentDisks"]];
+Max@Map[diskTopZ[getDisk[#]]&,Keys[globalRun["DiskData"]]];
 
-highestDiskZ[run_] := Max@Map[diskZ,Values@run["CurrentDisks"]];
-smallestRadius[run_] := Min@Map[diskR,Values@run["CurrentDisks"]];
+highestDiskZ[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 (* used in RunCoinStacking as well for setup, so don't use the global *)
 
 nextRadius[] := Module[{highestZ},
 highestZ=highestDiskZ[globalRun];
 globalRun["Arena"]["rFunction"][highestZ]
 ];
-nextDiskNumber[] := Max@Keys[globalRun["CurrentDisks"]]+1;nextChainNumber[]:= Max[Keys[globalRun["CompletedChainGraphs"]]]+1;
-
-
-(* ::Input::Initialization:: *)
-extendDisksRight[nextR_] := Module[
-{extendedDisksRight},
-extendedDisksRight = 
-Select[globalRun["CurrentDisks"],diskLeftX[#]+1     <= 1/2 +nextR&];
-extendedDisksRight = Association[Map[moveNumberedDiskRight,Normal[extendedDisksRight]]];
-extendedDisksRight
-
-];
-extendDisksLeft[nextR_] := Module[
-{extendedDisksLeft},
-extendedDisksLeft = Select[globalRun["CurrentDisks"],diskRightX[#]-1 + nextR >=- 1/2 &];
-extendedDisksLeft = Association[Map[moveNumberedDiskLeft,Normal[extendedDisksLeft]]];
-
-extendedDisksLeft
-
-];
-extendDisksLeftRight[nextR_]:= Module[{extendedDisks},
-extendedDisks = 
-Append[globalRun["CurrentDisks"], extendDisksRight[nextR]];
-extendedDisks = 
-Append[extendedDisks, extendDisksLeft[nextR]];
-extendedDisks 
-];
-
+nextDiskNumber[] := Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]]+1;
 
 
 (* ::Input::Initialization:: *)
 
-executeRun[run_,chainMax_:Missing[]] := Module[{i,imax,res,timing},
+
+
+executeRun[run_,chainMax_:Missing[]] := Module[{i,imax,res,diskTime},
 Off[SSSTriangle::tri];
 
 globalRun=run;
-globalUsedPairs= Association[];
-globalSupportPairs= {};
 
-If[!MissingQ[chainMax],
-globalRun["Arena"]["ChainMax"]=chainMax];
-imax = globalRun["Arena"]["ChainMax"];
-If[!NumericQ[imax],imax=500];
-Monitor[
-For[i=1,i<= imax,i++,
+globalLastSupportDiskNumbers = VertexList[globalRun["ContactGraph"]];
+
+If[!NumericQ[imax],imax=2000];
+monitorFunction := For[i=1,i<= imax,i++,
 If[runCompletesArena[],Break[]];
-timing = First@Timing[addNextDisk[]];
+diskTime= First@Timing[addNextDisk[]];
 ];
-,
-StringTemplate[" Z `Z`; per-chain time `timing`"][<|"chain"->nextChainNumber[]-1
-,"disk"-> nextDiskNumber[]-1
-,"Z"-> highestDiskZ[]
-,"parastichy"->  Last[globalRun["Parastichy"]]
-,"timing"->timing
-,"disktime"-> globalRun["CurrentTimePerDisk"]|>]
-];
-globalRun
+monitorString := StringTemplate[" Z `Z`; per-chain time `timing`;next disk `disk`; parastichy `parastichy`"][<|
+"disk"-> nextDiskNumber[]
+,"Z"-> disksMaximum[]
+,"timing"->diskTime
+,"parastichy"->monitorParastichy
+(*,"gxy"->AnnotationValue[{globalRun["ContactGraph"],1},VertexCoordinates]
+*)|>];
+If[False,monitorFunction,Monitor[monitorFunction,monitorString]];
+
+result= postRun[globalRun];
+Print[First[result["Chains"]]];
+result
 ];
 
 
 
 (* ::Input::Initialization:: *)
 
-runCompletesArena[] := Module[{},
-If[globalRun["Arena"]["ChainMax"]!="Fill",Print["Set chainmax"];Abort[]];
-
-disksMaximum[]>globalRun["Arena"]["CylinderLU"][[2]]+ 2 * globalRun["Arena"]["rFunction"][globalRun["Arena"]["CylinderLU"][[2]]];
+runCompletesArena[] := Module[{cutoff},
+cutoff= globalRun["Arena"]["CylinderLU"][[2]]+ 2 * globalRun["Arena"]["rFunction"][globalRun["Arena"]["CylinderLU"][[2]]];
+disksMaximum[]>cutoff || Max[Keys[globalRun["DiskData"]]]> globalRun["Arena"]["diskMax"]
 ];
 
 
 
 
 (* ::Input::Initialization:: *)
-addNextDisk[]:=Module[{nextR,path,n,g,timing},
+
+diskListRowFromDisk[node_,disk_] := Module[{},
+node-><|"DiskNumber"->node,"Disk"->disk|>
+];
+
+addNextDisk[]:=Module[{nextR,row,n,timing},
 nextR=nextRadius[];
 row=findNextDiskFromSupportSet[nextR];
-globalRun["NextDisk"]= row["NextDisk"];
-globalRun["NextDiskRestsOn"]= row["NextDiskRestsOn"];
 n=nextDiskNumber[];
-globalUsedPairs=Append[globalUsedPairs,globalRun["NextDiskRestsOn"]->n];
 
-globalRun["CurrentTimePerDisk"]=timing;globalRun["CurrentDisks"]=Append[globalRun["CurrentDisks"],n->globalRun["NextDisk"]];(*globalRun["CurrentChain"]=Append[globalRun["CurrentChain"],n];globalRun["CurrentChain"]=SortBy[globalRun["CurrentChain"],diskX[getDisk[#1]]&];*)globalRun["ContactGraph"]=updateContactGraph[n];
-(*globalRun["CurrentChainGraph"]=Subgraph[globalRun["ContactGraph"],leftAndRightNumbers[globalRun["CurrentChain"]]];
-*)]
+updateContactGraph[n,row["NextDisk"],row["NextDiskRestsOn"]];
+AppendTo[globalRun["DiskData"],
+diskListRowFromDisk[n,row["NextDisk"]]];
+globalLastSupportDiskNumbers= Join[globalLastSupportDiskNumbers,leftRightCouldSupport[
+globalRun["ContactGraph"],n,nextRadius[]]];
+
+]
 
 
 (* ::Input::Initialization:: *)
 findNextDiskFromSupportSet[nextR_]:= Module[{supportTable,res},
-globalSupportPairs=supportPairsFromTopChain[nextR];
-supportTable= Select[globalSupportPairs,!#SelfIntersecting&];
+supportTable=supportPairs[nextR];
 supportTable= SortBy[supportTable,diskZ[#NextDisk]&];
 If[Length[supportTable]==0,Print["No valid supports"];Abort[]];
 res=First[supportTable];
@@ -178,52 +154,49 @@ res
 
 (* ::Input::Initialization:: *)
 
+vectorXZ[n1_\[DirectedEdge]n2_ | n1_\[UndirectedEdge] n2_ | {n1_,n2_}] := Module[{}, getDiskXZ[n2]-getDiskXZ[n1]];
 
+neighbours[g_,n_] :=  Complement[VertexList[Graph[EdgeList[g,n\[UndirectedEdge]_]]],{n}]
+vectorsFromNode[g_,n_] := Module[{nbrs},
+nbrs := Join[Map[ n\[DirectedEdge] # & , neighbours[g,n]],Map[ left[n]\[DirectedEdge] # & , neighbours[g,left[n]]]];
+Association@Map[#->vectorXZ[#]&,nbrs]
+];
 
+clockwiseSortFunction[xy_] := Module[{x,y},
+{x,y}=xy/Norm[xy];
+-If[x>0,1+y,-(1+y)]
+]; (* sorts in clockwise order *)
 
+mostClockwiseEdgeFromNode[g_,n_] := Module[{vectors},
+vectors = vectorsFromNode[g,n];
+If[Length[vectors]==0,Return[Missing[]]];
+vectors = SortBy[vectors,clockwiseSortFunction];
+First[Keys[vectors]]
+];
 
-(* ::Input::Initialization:: *)
-topChain[graph_] := Module[{g,chain,graphXY,neighbours,highestNode,lastNode,nextNode},
+topChain[graph_] := Module[{g,chain,neighbours,highestNode,lastNode,nextNode,from,nextEdge,chainMax=500},
 
 g=graph;
-If[VertexList[g]=={left[1],1,2,right[1]},Return[{2,1,left[1],2}]]; (* megabodge *)
-If[VertexList[g]=={left[1],1,right[1]},Return[{1,right[1],left[1]}]]; (* megabodge *)
-If[VertexList[g]=={1,right[1]},Return[{1,right[1]}]]; (* megabodge *)
-If[VertexList[g]=={left[1],1},Return[{1,left[1],right[1]}]]; (* megabodge *)
+highestNode=Last[SortBy[Select[VertexList[g],bareNumberQ],getDiskZ[#]&]];
 
-graphXY[n_] := AnnotationValue[{g,n},VertexCoordinates];
 
-neighbours[n_] :=  Complement[VertexList[Graph[EdgeList[g,n\[UndirectedEdge]_]]],{n}];
-highestNode=Last[SortBy[Select[VertexList[g],bareNumberQ],Last[graphXY[#]]&]];
+nbrs[n_] := Join[Map[ n\[DirectedEdge] # & , neighbours[g,n]],Map[ left[n]\[DirectedEdge] # & , neighbours[g,left[n]]]];
 chain= {highestNode};
-nextRight[n_] := Module[{res,vectors,rightVectors},
-vectors =Association@Map[#->vectorXY[n,#]&,neighbours[n]];
-rightVectors=Select[vectors,First[#]>=0&];
-If[Length[rightVectors]>0,
-(* usually *)
-rightVectors= SortBy[rightVectors,-Last[#]&];
-res=First[Keys[rightVectors]]
-, (* otherwise go backwards and hence sort other direction *)
-vectors= SortBy[vectors,Last[#]&];
-If[Length[vectors]>0,
-res=First[Keys[vectors]],
-res=Missing["No edges from node"]
-]
-];
-res
-];
-For[i=1,i<10,i++,
+
+For[i=1,i<chainMax,i++,
 lastNode=Last[chain];
-nextNode =nextRight[lastNode];
-If[MissingQ[nextNode], (* _should only happen for 1 left[1] *)
+nextEdge =mostClockwiseEdgeFromNode[g,lastNode];
+If[MissingQ[nextEdge], (* may only happen for 1 left[1] megabodge *)
 Break[]];
+{from,nextNode}=List@@nextEdge;
+If[MatchQ[from,left[_]],chain=Append[chain,from]];
 chain=Append[chain,nextNode];
-g=EdgeDelete[g,lastNode\[UndirectedEdge]nextNode]; (* could move up into backwards branch *);
+g=EdgeDelete[g,from\[UndirectedEdge]nextNode]; (* could move up into backwards branch *);
 If[MatchQ[Last[chain],right[_]],
 chain=Append[chain,moveNumberLeft[Last[chain]]]];
-If[MemberQ[VertexList[g],left[Last[chain]]],chain=Append[chain,left[Last[chain]]]];
+
 If[Last[chain]==First[chain],Break[];]
-];
+];If[i==chainMax,Print["i10"];Abort[]];
 chain
 ];
 
@@ -231,34 +204,48 @@ chain
 
 
 (* ::Input::Initialization:: *)
+supportPairs[nextR_] :=Module[{supportGraph,supportChain},
+supportGraph=  Subgraph[globalRun["ContactGraph"],globalLastSupportDiskNumbers];
+(* topchain picks the top of the graph, but is faster if we only supply the subgraph corresponding to the current support *) 
+supportChain = topChain[supportGraph];
+globalLastSupportDiskNumbers=disksInSupportChain[supportGraph,supportChain,nextR];
+supportPairsFromSupportDisks[globalLastSupportDiskNumbers,nextR]
+];
 
+disksInSupportChain[g_,chain_,nextR_] :=
+addLeftRightSupporters[g,DeleteDuplicates[chain],nextR]; 
 
-supportPairsFromTopChain[nextR_] :=Module[{pairs,supportDisks,supportTable,extendedDisks,res},
-
-supportDisks=topChain[globalRun["ContactGraph"]];
+addLeftRightSupporters[g_,sDisks_,nextR_] := Module[{},
+supportDisks=sDisks;
 supportDisks= DeleteDuplicates[bareNumber/@ supportDisks];
-supportDisks = Flatten[Map[leftRightCouldSupport[#,nextR]&,supportDisks]];
+supportDisks =Flatten[Map[leftRightCouldSupport[g,#,nextR]&,supportDisks]];
+supportDisks
+]
+
+supportPairsFromSupportDisks[supportDisks_,nextR_] :=Module[{pairs,supportTable,extendedDisks,res},
 
 pairs = Flatten[Table[{supportDisks[[i]],supportDisks[[j]]},{i,1,Length[supportDisks]},{j,1,Length[supportDisks]}],1];
-pairs = DeleteCases[pairs,{left[_],left[_]}|{right[_],right[_]}|{left[_],right[_]} ];
-
-usedPairs= Keys[globalUsedPairs];
-usedPairs = Union[usedPairs,Map[moveNumberLeft,usedPairs,{2}],Map[moveNumberRight,usedPairs,{2}]];
-pairs=Complement[pairs,usedPairs];
 
 supportTable = Association@Map[makeSupportTableRow[#]&,pairs];
 (* assumes r nonincreasing *)
-supportTable= filterForNonIncreasingR[nextR,supportTable];
-supportTable=  calculateSupportTableSelfIntersecting[supportTable,nextR];
+supportTable = Select[supportTable,Abs[#EdgeSeparation]< 2* nextR&];
+(* now calculate the next disk position for the pair *) 
+supportTable = Map[Append[#,"NextDisk"->diskOnThisPair[#NextDiskRestsOn,nextR]]&,supportTable];
+supportTable = Select[supportTable,!MissingQ[#NextDisk]&];
+supportTable = Select[supportTable,diskIsNormalised[#NextDisk]&];
+(* check for disk which intersect existing disks *) 
+disksToCheckIntersection=Association@Map[#-> getDisk[#]&,supportDisks];
+supportTable= Map[supportTableFindIntersections[#,nextR,disksToCheckIntersection]&,supportTable];
+supportTable= Select[supportTable,Length[#Intersection]==0&];
+
 supportTable
 ];
 
 
-leftRightCouldSupport[node_,nextR_] := Module[{xy,res},
-graphXY[n_] := AnnotationValue[{globalRun["ContactGraph"],n},VertexCoordinates];
+leftRightCouldSupport[g_,node_,nextR_] := Module[{xy,res},
 
 res= {node};
-xy = graphXY[node];
+xy = getDiskXZ[node];
 If[xy[[1]]-1 >=-0.5-  2* nextR,res=Append[res,left[node]]];
 If[xy[[1]]+1 <=   0.5+  2* nextR,res=Append[res,right[node]]];
 res 
@@ -270,27 +257,17 @@ hDiff= diskX[getDisk[node2]]-diskX[getDisk[node1]];
 If[hDiff<= 0,Return[Nothing[]]];
 res=<|"NextDiskRestsOn"->{node1,node2}
 , "EdgeSeparation"->diskLeftX[getDisk[node2]]-diskRightX[getDisk[node1]] 
-,"Used"->Missing[]|>;
-
+|>;
 {node1,node2}->res
 ]
-filterForNonIncreasingR[nextR_,supportTable_] := Module[{res},
-res = Select[supportTable,Abs[#EdgeSeparation]< 2* nextR&];
-res = Map[Append[#,"NextDisk"->diskOnThisPair[#NextDiskRestsOn,nextR]]&,res];
-res = Select[res,diskIsNormalised[#NextDisk]&];
-res
+
+
+supportTableFindIntersections[row_,nextR_,disks_] := Module[{res,extendedDisks,locationIntersectsQ,intersections},
+intersections= Map[diskdiskIntersectionQ[row["NextDisk"],#]&,KeyDrop[disks,row["NextDiskRestsOn"]]];
+intersections= Keys@Select[ intersections,TrueQ];
+Append[row,"Intersection"->intersections]
 ];
 
-
-
-calculateSupportTableSelfIntersecting[sTable_,nextR_] :=Module[{res,extendedDisks,locationIntersectsQ},
-supportTable=sTable;
-extendedDisks = extendDisksLeftRight[ nextR];
-locationIntersectsQ[d_] := 
- Or@@Map[diskdiskIntersectionQ[d,#]&,extendedDisks];
-supportTable= Map[Append[#,"SelfIntersecting"->locationIntersectsQ[#NextDisk]]&,supportTable];
-supportTable
-];
 
 diskOnThisPair[{n1_,n2_},r_] := Module[{res,d1,d2,xl,xr,xres},
 d1 = getDisk[n1];
@@ -305,39 +282,51 @@ diskdiskIntersectionQ[Disk[xy1_,r1_],Disk[xy2_,r2_]]:= Norm[xy1-xy2,2] < (r1+ r2
 
 
 (* ::Input::Initialization:: *)
-updateContactGraph[n_] := Module[{g,n1,n2,d,d1,d2,d1Left},
+
+
+updateContactGraph[n_,disk_,{n1_,n2_}] := Module[{g,d,d1,d2,d1Left},
 g = globalRun["ContactGraph"];
-{n1,n2}= globalRun["NextDiskRestsOn"];
+g= vertexAddDisk[g,n,disk];
 
-
-{d,d1,d2} = {getDisk[n],getDisk[n1],getDisk[n2]};
-g = vertexAddWithCoordinates[g,n,diskXZ[d]];
-g = vertexAddWithCoordinates[g,n1,diskXZ[d1]];(* surely not needed *)
-g = vertexAddWithCoordinates[g,n2,diskXZ[d2]];
+If[!bareNumberQ[n1],
+ g= vertexAddSideDisk[g,n1]];
+If[!bareNumberQ[n2],
+ g= vertexAddSideDisk[g,n2]];
 g= EdgeAdd[g,
-{n1 \[UndirectedEdge] n,n \[UndirectedEdge] n2 }];
-g = Graph[g,AnnotationRules->{n1 \[UndirectedEdge] n->{EdgeStyle-> Red},
-n \[UndirectedEdge] n2 ->{ EdgeStyle->Blue}}];
+{n \[UndirectedEdge] n1,n \[UndirectedEdge] n2 }];
 
-g
+globalRun["ContactGraph"]=g;
+
 ];
 
 
+
+
 (* ::Input::Initialization:: *)
-vertexAddWithCoordinates[g_,v_,vxy_] := Module[{vc,res},
-If[MemberQ[VertexList[g],v],Return[g]];
+vertexAddDisk[g_,v_,Disk[xz_,r_]] := Module[{vxy,vr,res},
 res = VertexAdd[g,v];
-vc = AnnotationValue[g,VertexCoordinates];
-vc = Append[vc,vxy];
-res = Annotate[res,VertexCoordinates->vc];
+(*AnnotationValue[{res,v},VertexCoordinates]=xz;
+AnnotationValue[{res,v},"DiskRadius"]=r;*)
 res
-]
+];
+vertexAddSideDisk[g_,v_] :=Module[{res,baseDiskXZ,baseDiskR,xz},
+res= VertexAdd[g,v];
+(*baseDiskXZ= AnnotationValue[{res,bareNumber[v]},VertexCoordinates];
+baseDiskR= AnnotationValue[{res,bareNumber[v]},"DiskRadius"];
+If[MatchQ[v,left[_]],xz=baseDiskXZ-{1,0}];
+If[MatchQ[v,right[_]],xz=baseDiskXZ+{1,0}];
+AnnotationValue[{res,v},VertexCoordinates]=xz;
+AnnotationValue[{res,v},"DiskRadius"]=baseDiskR;
+*)
+res
+];
+
+
 
 
 
 (* ::Input::Initialization:: *)
-(* for some ics, couldn't guarantee the lower one is discardable,
-but should be provided pattern is a dropped coin one *)
+(*  *)
 diskdiskUpperTouchingPoint[pairDisks_,r_] := Module[
 {lrPoints},
 lrPoints= newdiskdiskTouchingPoint[pairDisks,r];
@@ -362,6 +351,7 @@ interdiskNormal =  {-interdiskVectorNorm[[2]],interdiskVectorNorm[[1]]};
 
 
 angle = sssTriangleInteriorAngle[r2+r,r+r1,interdisk];
+If[MissingQ[angle],Return[angle]];
 vector=(r1+r)*Cos[angle]*interdiskVectorNorm;
 normal = (r1+r)*Sin[angle]* interdiskNormal;
 {c1+vector+normal,c1+vector-normal}
@@ -378,54 +368,133 @@ angle
 
 
 (* ::Input::Initialization:: *)
-tryToCompleteCurrentChain[] := Module[{res,nodeList,lrNodes,lrCases,lrPaths},
 
-globalRun["CurrentChainNodePath"]=Missing["No chain"];
-
-nodeList = VertexList@globalRun["CurrentChainGraph"];
-lrNodes = Cases[nodeList,left[_] | right[_]];
-lrCases = Association@Map[#->MemberQ[nodeList,bareNumber[#]]&,lrNodes];
-lrCases = Select[lrCases,TrueQ];
-
-If[Length[lrCases]==0,Return[]];
-lrPaths = Association@Map[#->lrNodePath[#,globalRun["CurrentChainGraph"]]&,Keys@lrCases];
-lrPaths = Select[lrPaths,Length[#]>0&];
-
-If[Length[lrPaths]==0,Return[]];
-If[Length[lrPaths]>1,
-Print["Multiple paths"];
-Print[lrPaths];
-Print[globalRun["CurrentChainGraph"]]
+pretty[run_] := Module[{g,setGraphXY,res,vc,es},
+g=run["ContactGraph"];
+vc = Map[getDiskXZ[run,#]&,VertexList[g]];
+g = Graph[g,VertexCoordinates->vc];
+es = Map[#->edgeStyle[#]&,EdgeList[g]];
+g= Graph[g,EdgeStyle->es];
+g=Graph[g,VertexLabels->None];
+res=run;
+res["ContactGraph"]=g;
+res
 ];
-
-globalRun["CurrentChainNodePath"]= First@First[lrPaths];
-];
-
-lrNodePath[lrNode_,g_] := FindPath[g,lrNode,bareNumber[lrNode]]
+edgeStyle[upper_ \[UndirectedEdge] lower_] := Module[{vxy},
+vxy=vectorXZ[upper\[UndirectedEdge] lower];
+If[First[vxy]>= 0,Blue,Red]
+]
+edgeStyle[upper_ \[DirectedEdge] lower_] := edgeStyle[upper \[UndirectedEdge] lower]
 
 
 (* ::Input::Initialization:: *)
-setUpNewChain[] := Module[{chainNumber,completedChainGraph},
 
+lowerEdges[g_,node_]:=  Select[vectorsFromNode[g,node],Last[#]<0&];
+ edgeCheck[run_] := Module[{g,res},
+g=run["ContactGraph"];
+res=Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];
+If[Or@@ Map[Length[#]!=2&,res],"Print some nodes without two supports"];
+edgeStyler[edgeList_] := Map[edgeStyle,edgeList];
+res = Map[Sort@edgeStyler[Keys[#]]=={RGBColor[0, 0, 1],RGBColor[1, 0, 0]}&,res];
+If[Or@@ res,"Print some lopsided nodes"];
 
-completedChainGraph = globalRun["CurrentChainGraph"];
-chainNumber = nextChainNumber[];
-globalRun["CompletedChainGraphs"]= Append[globalRun["CompletedChainGraphs"],
-chainNumber->completedChainGraph];
-globalRun["CompletedChainNodePaths"]= Append[globalRun["CompletedChainNodePaths"],
-chainNumber->globalRun["CurrentChainNodePath"]];
+];
 
-globalRun["PastDisks"]= Append[globalRun["PastDisks"],globalRun["CurrentDisks"]];
+postRun[run_] := Module[{res,chains},
+res = pretty[run];
+edgeCheck[res];
+chains= topdownChains[res["ContactGraph"]];
 
+res=Prepend[res,"Chains"->chains];
+res["ContactGraph"]=reColour[res];
+res
+];
 
-globalRun["CurrentDisks"]= KeyTake[
-globalRun["CurrentDisks"],globalRun["CurrentChain"]];
+reColour[run_] := Module[{g,chains,v,e},
+chains=Map[#Chain&,run["Chains"]];
+vList[gr_] := Map[#->AnnotationValue[{gr,#},VertexCoordinates]&,VertexList[gr]];v=vList[run["ContactGraph"]];
 
-globalRun["CurrentChain"] = {};
-globalRun["CurrentOverlaps"] = {};
-globalRun["UsedOverlaps"]= {};
+eList[gr_] := Map[#->AnnotationValue[{gr,#},EdgeStyle]&,EdgeList[gr]];
 
+chainEdges=Association@Flatten@Map[eList,Values@chains];
+grayChains= Association@Map[#->Gray&,EdgeList[run["ContactGraph"]]];
+chainEdges=Join[grayChains,chainEdges];
+Graph[Keys[v],Keys[chainEdges],
+VertexCoordinates->Values[v],
+EdgeStyle->KeyValueMap[#1->#2&,chainEdges]]
+];
 
-globalRun["CurrentChainGraph"] = Graph[{}];
+topdownChains[graph_] := Module[{i,g,chainGraphSet,chain,chainGraph},
+(* relies on looking coordinates up in globalRun ... *)
+g=Graph[graph,VertexLabels->"Name"];
+chainGraphSet=List[];
+For[i=1,i<1000,i++,
+chain=topChain[g];
 
+chainGraph=Subgraph[g,chain];
+chainGraph= Graph[chainGraph,VertexLabels->"Name"];
+chainGraphSet=Append[chainGraphSet, chainGraph];
+g=stripChain[g,chain];
+If[Length[VertexList[g]]==0,Break[]];
+];
+chainSet=
+Reverse@Association@MapIndexed[First[#2]-><|"Chain"->#1|>&,Reverse[chainGraphSet]];
+chainSet= Map[Append[#,"Parastichy"->chainParastichy[#Chain]]&,chainSet];
+chainSet= Map[Append[#,"MeanZ"->chainMeanZ[#Chain]]&,chainSet];
+chainSet
+];
+
+chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
+
+stripChain[g_,chain_]:= Module[{lrchain},
+lrchain =leftAndRightNumbers[DeleteDuplicates[bareNumber/@chain]];
+
+lrchain= Intersection[lrchain,VertexList[g]];
+VertexDelete[g,lrchain]
+];
+
+chainParastichy[chain_]:=Module[{},
+If[AcyclicGraphQ[chain],
+acyclicChainParastichy[chain]
+,cyclicChainParastichy[chain]
 ]
+];
+
+cyclicChainParastichy[chain_] := Module[{edges,res},
+(*If[Length[FindCycle[chain,{4,\[Infinity]}]]!=0,Print["4cycle found"]];
+*)
+edges= Flatten[FindCycle[chain,Infinity,All],2];
+res=Association@Map[#->EdgeDelete[chain,#]&,edges];
+res=Select[res,gIsLinear];
+res=Select[res,gIsChain];
+If[Length[res]==0,
+Return[Missing["Can't decyclic"]]];
+(*If[Length[res]>1,w=res;Print["Multi decyclics",chain,res]];
+*)res=First[res];
+If[!AcyclicGraphQ[res],
+Print["Can't declyce",chain];Return[Missing[]]];
+acyclicChainParastichy[res]
+];
+
+gIsLinear[g_] := Module[{res},
+res=Map[EdgeCount[g,#\[UndirectedEdge] _]&,VertexList[g]];
+And@@Map[#<=2&,res]
+];
+gIsChain[g_] := Module[{v,first,last,graph},
+v=VertexList[g];
+v=SortBy[v,AnnotationValue[{g,#},VertexCoordinates]&];
+first=First[v];last=Last[v];
+graph=VertexDelete[g,{first,last}];
+ConnectedGraphQ[graph]
+];
+
+
+acyclicChainParastichy[chain_]:=Module[{},
+If[!AcyclicGraphQ[chain],Print["aCP"];Abort[]];
+KeySort@Counts[Map[AnnotationValue[{chain,#},EdgeStyle]&,EdgeList[chain]]
+]
+];
+
+
+
+

@@ -20,53 +20,70 @@
 
 
 (* ::Input::Initialization:: *)
-SetDirectory[NotebookDirectory[]];Get["CoinStackingCode.m",Path->{PersistentSymbol["persistentGitHubPath","Local"]}]
+SetDirectory[NotebookDirectory[]];(*Get["CoinStackingCode.m",Path->{PersistentSymbol["persistentGitHubPath","Local"]}]
+*)
 Get["LatticePhyllotaxis.m",Path->{PersistentSymbol["persistentGitHubPath","Local"]}];
 
 
 
 (* ::Input::Initialization:: *)
-makeArena[run_,runParameters_] := Module[{arenaAssociation,cylinderLU
-,r,hBase,hStart,hEnd},
-r= smallestRadius[run];
-{hBase,hStart,hEnd} =  hRangeNeeded[highestDiskZ[run],smallestRadius[run],runParameters["rSlope"],runParameters["rScale"]];
-If[hEnd> runParameters["zMax"],
-Print["run stops while r still changing"];];
-cylinderLU = {hBase- 2 r, runParameters["zMax"]};
 
-arenaAssociation = <| 
-"rFunction"->createRofH[highestDiskZ[run],smallestRadius[run],runParameters["rSlope"],runParameters["rScale"]]
-,"ChainMax"-> "Fill"
-,"rFixedAfter"-> hEnd
-,"CylinderLU"-> cylinderLU
-,"ExcludePreviousIntersectors"->False (* if r is fixed changing this optimises but can fail for r variable *)
-|>;
-arenaAssociation
+
+doParameterRun[experimentParameter_] := Module[{run},
+run = makeRunFromParameter[experimentParameter];
+run= CheckAbort[executeRun[run],Missing["Aborted run"]];
+debugLastRun= run;
+run
+]
+
+makeRunFromParameter[experimentParameter_] := Module[{lattice,run,arena,g,chainNumber},
+lattice = latticeOrthogonal[{0,1}];
+run = runFromLattice[lattice];
+If[MissingQ[run],Print["mRFP Not implemented"];Abort[]];
+run["Arena"] = makeArena[run,experimentParameter];
+
+run
+];
+runFromLattice[lattice_] :=  Module[{g,d},
+If[!(lattice["d"]==0 && lattice["h"] == 1),Return[Missing["Unimplemented"]]];
+g= Graph[ {left[1]\[UndirectedEdge]1,1\[UndirectedEdge]right[1]}];
+d = <|1-><|"DiskNumber"->1,"Disk"->Disk[{0,0},0.5]|>|>;
+<|"ContactGraph"->g,"DiskData"->d|>
 ];
 
 
 
+
+
 (* ::Input::Initialization:: *)
+smallestRadius[run_] := Min@Map[diskR[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 
 
-runFromLattice[lattice_] := Module[{graphXY,graphR,nodesAsDisks,run,g,lNode,lrNodePath,subg,cylinderLU,rFunction,arenaAssociation,bareNodes},
-g = graphFromLattice[lattice];
-graphXY[node_] := AnnotationValue[{g,node},VertexCoordinates];
-graphR[node_] :=  AnnotationValue[{g,node},"DiskRadius"];
-nodesAsDisks = Map[Disk[graphXY[#],graphR[#]]&,VertexList[g]];
-nodesAsDisks = SortBy[nodesAsDisks,graphXY[#]&];
-nodesAsDisks = Association@MapIndexed[(First[#2]-> #1)&,nodesAsDisks];
-run = <|"CurrentDisks"->nodesAsDisks|>;
+makeArena[run_,runParameters_] := Module[{arenaAssociation,cylinderLU
+,r,hBase,hStart,hEnd},
+r= smallestRadius[run];
 
-lNode = First[Cases[VertexList[g],left[_]]];
-lrNodePath = First@FindPath[g,lNode,bareNumber[lNode]];
-subg = Subgraph[g,lrNodePath];
-bareNodes = Select[lrNodePath,#==bareNumber[#]&];
-run["CurrentDisks"] = KeyTake[run["CurrentDisks"] ,bareNodes];
-run ["ContactGraph"] = subg;
-run ["ContactGraph"] = g;
+{hBase,hStart,hEnd} =  hRangeNeeded[highestDiskZ[run],smallestRadius[run],runParameters["rSlope"],runParameters["rScale"]];
+If[hEnd> runParameters["zMax"],
+Print["run stops while r still changing"]
+,
+Print["r fixed after",hEnd]
 
-run
+];
+cylinderLU = {hBase- 2 r, runParameters["zMax"]};
+
+arenaAssociation = <| 
+"rFunction"->createRofH[highestDiskZ[run],smallestRadius[run],runParameters["rSlope"],runParameters["rScale"]]
+,"rFixedAfter"-> hEnd
+,"CylinderLU"-> cylinderLU
+,"diskMax"-> runParameters["diskMax"]
+|>;
+arenaAssociation
+];
+
+createRofH[zMax_,rStart_,rSlope_,rScale_] := Module[{r,hBase,hStart,hEnd},
+{hBase,hStart,hEnd} = hRangeNeeded[zMax,rStart,rSlope,rScale];
+linearInterpolator[{hStart,hEnd},{rStart,-rSlope}] 
 ];
 
 linearInterpolator[{hStart_,hEnd_},{r_,rSlope_}] := 
@@ -75,11 +92,6 @@ Function[{h}, r+ Piecewise[ {
 ,{(h-hStart) * rSlope ,h>=hStart && h< hEnd}
 , { (hEnd-hStart) * rSlope ,h>hEnd}
 }]];
-
-createRofH[zMax_,rStart_,rSlope_,rScale_] := Module[{r,hBase,hStart,hEnd},
-{hBase,hStart,hEnd} = hRangeNeeded[zMax,rStart,rSlope,rScale];
-linearInterpolator[{hStart,hEnd},{rStart,-rSlope}] 
-];
 
 
 hRangeNeeded[zBase_,rStart_,rSlope_,rScale_] := Module[{r,rEnd,hBase,hStart,hEnd,hSlopeRange},
@@ -98,70 +110,8 @@ hEnd = hStart+ hSlopeRange;
 
 (* ::Input::Initialization:: *)
 
-
-graphFromLattice[lattice_] := Module[{r,primary,run,lefts,rights,nodes,isConnected,edges,g},
-If[lattice["d"]==0 && lattice["h"] == 1,
-g= Graph[ {left[1]\[UndirectedEdge]1,1\[UndirectedEdge]right[1]},VertexCoordinates->{{-1,0},{0,0},{1,0}}];
-(*g= Graph[ {1\[UndirectedEdge]right[1]},VertexCoordinates->{{0,0},{1,0}}];
-*)(*g= Graph[ {left[1]\[UndirectedEdge]1,left[1]\[UndirectedEdge]2,1\[UndirectedEdge]2},VertexCoordinates->{{-1,0},{0,0},{-1/2,Sqrt[3]/2}}];
-*)
-AnnotationValue[{g,VertexList[g]},"DiskRadius"] = 1.0;
-,Return[Missing["Unimplemented"]];
-];
-g = Graph[g,PlotTheme->"Labeled",
-VertexStyle->Directive[EdgeForm[None],FaceForm[None]],
-VertexLabels->Placed[Automatic,Center]];
-g = Graph[g,AnnotationRules->Map[#->{EdgeStyle->Gray}&,EdgeList[g]]];
-g
-
-];
-
-
-
-
-
-
-(* ::Input::Initialization:: *)
-
-doParameterRun[experimentParameter_] := Module[{run},
-run = makeRunFromParameter[experimentParameter];
-
-run= CheckAbort[executeRun[run],Missing["Aborted run"]];
-debugLastRun= run;
-run
-]
-
-makeRunFromParameter[experimentParameter_] := Module[{lattice,run,arena,g,chainNumber},
-lattice = latticeOrthogonal[{0,1}];
-run = runFromLattice[lattice];
-If[MissingQ[run],Print["mRFP Not implemented"];Abort[]];
-run["Arena"] = makeArena[run,experimentParameter];
-
-g=run["ContactGraph"];
-chainNumber=1;
-
-run = Append[run,
-<|
-
-"PastDisks"-> Association[]
-,"Parastichy"-> Association[]
-,"CompletedChainGraphs"-> <|chainNumber->g|>
-,"CompletedChainNodePaths" -> <|chainNumber->{}|>
-,"UsedOverlaps"->{}
-,"CurrentChain"->{}
-,"CurrentChainGraph"->Missing[]
-|>
-];
-run
-];
-
-
-
-
-(* ::Input::Initialization:: *)
-
 makeExperimentParameters[rScaleRange_,rSlopeRange_,zMaxRange_] := Module[{experimentParameters},
-experimentParameters = Flatten@Outer[<|"rScale"->#1,"rSlope"->#2,"zMax"-> #3|>&,rScaleRange,rSlopeRange,zMaxRange];
+experimentParameters = Flatten@Outer[<|"rScale"->#1,"rSlope"->#2,"zMax"-> #3,"diskMax"->\[Infinity]|>&,rScaleRange,rSlopeRange,zMaxRange];
 experimentParameters = MapIndexed[Append[#1,"runNumber"->First[#2]]&,experimentParameters];
 experimentParameters
 ];
