@@ -59,32 +59,23 @@ d = <|1-><|"DiskNumber"->1,"Disk"->Disk[{0,0},0.5]|>|>;
 smallestRadius[run_] := Min@Map[diskR[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 
 
-makeArena[run_,runParameters_] := Module[{arenaAssociation,cylinderLU
-,r,hBase,hStart,hEnd},
-r= smallestRadius[run];
-
-{hBase,hStart,hEnd} =  hRangeNeeded[highestDiskZ[run],smallestRadius[run],runParameters["rSlope"],runParameters["rScale"]];
-If[hEnd> runParameters["zMax"],
-Print["run stops while r still changing"]
-,
-Print["r fixed after",hEnd]
-
-];
-cylinderLU = {hBase- 2 r, runParameters["zMax"]};
+makeArena[run_,runParameters_] := Module[{initialRadius,finalRadius,hBase,hStart,hEnd,rOfH,arenaAssociation},
+initialRadius  = 0.5;
+hBase =1;
+finalRadius= initialRadius/runParameters["rScale"];
+{hStart,hEnd} = hBase + {0,hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]]};
+rOfH =linearInterpolator[{hStart,hEnd},{0.5,-runParameters["rSlope"]}] ;
 
 arenaAssociation = <| 
-"rFunction"->createRofH[highestDiskZ[run],smallestRadius[run],runParameters["rSlope"],runParameters["rScale"]]
+"rFunction"->rOfH
 ,"rFixedAfter"-> hEnd
-,"CylinderLU"-> cylinderLU
+,"zMax"->runParameters["zMax"]
+,"CylinderLU"-> Missing[]
 ,"diskMax"-> runParameters["diskMax"]
 |>;
 arenaAssociation
 ];
 
-createRofH[zMax_,rStart_,rSlope_,rScale_] := Module[{r,hBase,hStart,hEnd},
-{hBase,hStart,hEnd} = hRangeNeeded[zMax,rStart,rSlope,rScale];
-linearInterpolator[{hStart,hEnd},{rStart,-rSlope}] 
-];
 
 linearInterpolator[{hStart_,hEnd_},{r_,rSlope_}] := 
 Function[{h}, r+ Piecewise[ {
@@ -94,15 +85,9 @@ Function[{h}, r+ Piecewise[ {
 }]];
 
 
-hRangeNeeded[zBase_,rStart_,rSlope_,rScale_] := Module[{r,rEnd,hBase,hStart,hEnd,hSlopeRange},
-r = rStart;
-rEnd = r/rScale;
-hSlopeRange = -(rEnd-r)/rSlope ;
-hBase = zBase; 
-hStart = hBase + 2 * r;
-hEnd = hStart+ hSlopeRange;
-{hBase,hStart,hEnd} 
-
+hRangeNeeded[{rStart_,rEnd_},rSlope_] := Module[{hSlopeRange},
+hSlopeRange = -(rEnd-rStart)/rSlope ;
+hSlopeRange
 ];
 
 

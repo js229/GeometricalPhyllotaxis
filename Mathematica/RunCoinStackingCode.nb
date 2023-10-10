@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     16121,        417]
-NotebookOptionsPosition[     15265,        393]
-NotebookOutlinePosition[     15770,        412]
-CellTagsIndexPosition[     15727,        409]
+NotebookDataLength[     14068,        370]
+NotebookOptionsPosition[     13209,        346]
+NotebookOutlinePosition[     13718,        365]
+CellTagsIndexPosition[     13675,        362]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -43,7 +43,7 @@ Cell[BoxData[{
  InitializationCell->True,
  CellFrameLabels->{{None, None}, {None, None}},
  CellLabel->
-  "In[839]:=",ExpressionUUID->"9ea6b723-d3fd-40f4-a7e8-a833165f76e7"],
+  "In[151]:=",ExpressionUUID->"9ea6b723-d3fd-40f4-a7e8-a833165f76e7"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", "\[IndentingNewLine]", 
@@ -149,7 +149,7 @@ Cell[BoxData[
    "\[IndentingNewLine]", "\[IndentingNewLine]"}]}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "In[841]:=",ExpressionUUID->"6579b71c-7c78-466e-8bdd-60f932470f18"],
+  "In[153]:=",ExpressionUUID->"6579b71c-7c78-466e-8bdd-60f932470f18"],
 
 Cell[BoxData[{
  RowBox[{
@@ -176,89 +176,57 @@ Cell[BoxData[{
      RowBox[{
       RowBox[{"{", 
        RowBox[{
-       "arenaAssociation", ",", "cylinderLU", "\[IndentingNewLine]", ",", "r",
-         ",", "hBase", ",", "hStart", ",", "hEnd"}], "}"}], ",", 
+       "initialRadius", ",", "finalRadius", ",", "hBase", ",", "hStart", ",", 
+        "hEnd", ",", "rOfH", ",", "arenaAssociation"}], "}"}], ",", 
       "\[IndentingNewLine]", 
       RowBox[{
-       RowBox[{"r", "=", " ", 
-        RowBox[{"smallestRadius", "[", "run", "]"}]}], ";", 
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"initialRadius", "  ", "=", " ", "0.5"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"hBase", " ", "=", "1"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"finalRadius", "=", " ", 
+        RowBox[{"initialRadius", "/", 
+         RowBox[{"runParameters", "[", "\"\<rScale\>\"", "]"}]}]}], ";", 
+       "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{"{", 
-         RowBox[{"hBase", ",", "hStart", ",", "hEnd"}], "}"}], " ", "=", "  ", 
-        RowBox[{"hRangeNeeded", "[", 
+         RowBox[{"hStart", ",", "hEnd"}], "}"}], " ", "=", " ", 
+        RowBox[{"hBase", " ", "+", " ", 
+         RowBox[{"{", 
+          RowBox[{"0", ",", 
+           RowBox[{"hRangeNeeded", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{"initialRadius", ",", "finalRadius"}], "}"}], ",", 
+             RowBox[{"runParameters", "[", "\"\<rSlope\>\"", "]"}]}], "]"}]}],
+           "}"}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"rOfH", " ", "=", 
+        RowBox[{"linearInterpolator", "[", 
          RowBox[{
-          RowBox[{"highestDiskZ", "[", "run", "]"}], ",", 
-          RowBox[{"smallestRadius", "[", "run", "]"}], ",", 
-          RowBox[{"runParameters", "[", "\"\<rSlope\>\"", "]"}], ",", 
-          RowBox[{"runParameters", "[", "\"\<rScale\>\"", "]"}]}], "]"}]}], 
-       ";", "\[IndentingNewLine]", 
-       RowBox[{"If", "[", 
-        RowBox[{
-         RowBox[{"hEnd", ">", " ", 
-          RowBox[{"runParameters", "[", "\"\<zMax\>\"", "]"}]}], ",", 
-         "\[IndentingNewLine]", 
-         RowBox[{
-         "Print", "[", "\"\<run stops while r still changing\>\"", "]"}], 
-         "\[IndentingNewLine]", ",", "\[IndentingNewLine]", 
-         RowBox[{"Print", "[", 
-          RowBox[{"\"\<r fixed after\>\"", ",", "hEnd"}], "]"}]}], 
-        "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}], ";", 
+          RowBox[{"{", 
+           RowBox[{"hStart", ",", "hEnd"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"0.5", ",", 
+            RowBox[{"-", 
+             RowBox[{"runParameters", "[", "\"\<rSlope\>\"", "]"}]}]}], 
+           "}"}]}], "]"}]}], " ", ";", "\[IndentingNewLine]", 
        "\[IndentingNewLine]", 
-       RowBox[{"cylinderLU", " ", "=", " ", 
-        RowBox[{"{", 
-         RowBox[{
-          RowBox[{"hBase", "-", " ", 
-           RowBox[{"2", " ", "r"}]}], ",", " ", 
-          RowBox[{"runParameters", "[", "\"\<zMax\>\"", "]"}]}], "}"}]}], ";",
-        "\[IndentingNewLine]", "\[IndentingNewLine]", 
        RowBox[{"arenaAssociation", " ", "=", " ", 
         RowBox[{"<|", " ", "\[IndentingNewLine]", 
          RowBox[{
-          RowBox[{"\"\<rFunction\>\"", "->", 
-           RowBox[{"createRofH", "[", 
-            RowBox[{
-             RowBox[{"highestDiskZ", "[", "run", "]"}], ",", 
-             RowBox[{"smallestRadius", "[", "run", "]"}], ",", 
-             RowBox[{"runParameters", "[", "\"\<rSlope\>\"", "]"}], ",", 
-             RowBox[{"runParameters", "[", "\"\<rScale\>\"", "]"}]}], "]"}]}],
-           "\[IndentingNewLine]", ",", 
+          RowBox[{"\"\<rFunction\>\"", "->", "rOfH"}], "\[IndentingNewLine]", 
+          ",", 
           RowBox[{"\"\<rFixedAfter\>\"", "->", " ", "hEnd"}], 
           "\[IndentingNewLine]", ",", 
-          RowBox[{"\"\<CylinderLU\>\"", "->", " ", "cylinderLU"}], 
+          RowBox[{"\"\<zMax\>\"", "->", 
+           RowBox[{"runParameters", "[", "\"\<zMax\>\"", "]"}]}], 
           "\[IndentingNewLine]", ",", 
+          RowBox[{"\"\<CylinderLU\>\"", "->", " ", 
+           RowBox[{"Missing", "[", "]"}]}], "\[IndentingNewLine]", ",", 
           RowBox[{"\"\<diskMax\>\"", "->", " ", 
            RowBox[{"runParameters", "[", "\"\<diskMax\>\"", "]"}]}]}], 
          "\[IndentingNewLine]", "|>"}]}], ";", "\[IndentingNewLine]", 
        "arenaAssociation"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"createRofH", "[", 
-     RowBox[{"zMax_", ",", "rStart_", ",", "rSlope_", ",", "rScale_"}], "]"}],
-     " ", ":=", " ", 
-    RowBox[{"Module", "[", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{"r", ",", "hBase", ",", "hStart", ",", "hEnd"}], "}"}], ",", 
-      "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{
-        RowBox[{"{", 
-         RowBox[{"hBase", ",", "hStart", ",", "hEnd"}], "}"}], " ", "=", " ", 
-        RowBox[{"hRangeNeeded", "[", 
-         RowBox[{"zMax", ",", "rStart", ",", "rSlope", ",", "rScale"}], 
-         "]"}]}], ";", "\[IndentingNewLine]", 
-       RowBox[{"linearInterpolator", "[", 
-        RowBox[{
-         RowBox[{"{", 
-          RowBox[{"hStart", ",", "hEnd"}], "}"}], ",", 
-         RowBox[{"{", 
-          RowBox[{"rStart", ",", 
-           RowBox[{"-", "rSlope"}]}], "}"}]}], "]"}]}]}], " ", 
-     "\[IndentingNewLine]", "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{
@@ -303,40 +271,25 @@ Cell[BoxData[{
   RowBox[{
    RowBox[{
     RowBox[{"hRangeNeeded", "[", 
-     RowBox[{"zBase_", ",", "rStart_", ",", "rSlope_", ",", "rScale_"}], 
-     "]"}], " ", ":=", " ", 
-    RowBox[{"Module", "[", 
      RowBox[{
       RowBox[{"{", 
-       RowBox[{
-       "r", ",", "rEnd", ",", "hBase", ",", "hStart", ",", "hEnd", ",", 
-        "hSlopeRange"}], "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"rStart_", ",", "rEnd_"}], "}"}], ",", "rSlope_"}], "]"}], " ",
+     ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "hSlopeRange", "}"}], ",", "\[IndentingNewLine]", 
       RowBox[{
-       RowBox[{"r", " ", "=", " ", "rStart"}], ";", "\[IndentingNewLine]", 
-       RowBox[{"rEnd", " ", "=", " ", 
-        RowBox[{"r", "/", "rScale"}]}], ";", "\[IndentingNewLine]", 
        RowBox[{"hSlopeRange", " ", "=", " ", 
         RowBox[{
          RowBox[{"-", 
           RowBox[{"(", 
-           RowBox[{"rEnd", "-", "r"}], ")"}]}], "/", "rSlope"}]}], " ", ";", 
-       "\[IndentingNewLine]", 
-       RowBox[{"hBase", " ", "=", " ", "zBase"}], ";", " ", 
-       "\[IndentingNewLine]", 
-       RowBox[{"hStart", " ", "=", " ", 
-        RowBox[{"hBase", " ", "+", " ", 
-         RowBox[{"2", " ", "*", " ", "r"}]}]}], ";", "\[IndentingNewLine]", 
-       RowBox[{"hEnd", " ", "=", " ", 
-        RowBox[{"hStart", "+", " ", "hSlopeRange"}]}], ";", 
-       "\[IndentingNewLine]", 
-       RowBox[{"{", 
-        RowBox[{"hBase", ",", "hStart", ",", "hEnd"}], "}"}]}]}], " ", 
-     "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
+           RowBox[{"rEnd", "-", "rStart"}], ")"}]}], "/", "rSlope"}]}], " ", 
+       ";", "\[IndentingNewLine]", "hSlopeRange"}]}], "\[IndentingNewLine]", 
+     "]"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
  InitializationCell->True,
  CellFrameLabels->{{None, None}, {None, None}},
  CellLabel->
-  "In[864]:=",ExpressionUUID->"3fa4f6d0-e10b-4851-ae09-6b0796ee143b"],
+  "In[820]:=",ExpressionUUID->"3fa4f6d0-e10b-4851-ae09-6b0796ee143b"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -389,11 +342,11 @@ Cell[BoxData[
         "]"}], "&"}], ",", "experimentParameters"}], "]"}]}]}]}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "In[849]:=",ExpressionUUID->"8f6dc615-b126-41b4-97c8-697c4117cd6b"]
+  "In[161]:=",ExpressionUUID->"8f6dc615-b126-41b4-97c8-697c4117cd6b"]
 },
 AutoGeneratedPackage->Automatic,
-WindowSize->{478.5, 523.75},
-WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowSize->{960, 532.75},
+WindowMargins->{{-4.5, Automatic}, {Automatic, -4.5}},
 TaggingRules-><|"TryRealOnly" -> False|>,
 Magnification:>1. Inherited,
 FrontEndVersion->"13.3 for Microsoft Windows (64-bit) (July 24, 2023)",
@@ -413,11 +366,11 @@ CellTagsIndex->{}
 Notebook[{
 Cell[558, 20, 942, 25, 235, "Input",ExpressionUUID->"9ea6b723-d3fd-40f4-a7e8-a833165f76e7",
  InitializationCell->True],
-Cell[1503, 47, 4196, 104, 673, "Input",ExpressionUUID->"6579b71c-7c78-466e-8bdd-60f932470f18",
+Cell[1503, 47, 4196, 104, 520, "Input",ExpressionUUID->"6579b71c-7c78-466e-8bdd-60f932470f18",
  InitializationCell->True],
-Cell[5702, 153, 7425, 185, 1339, "Input",ExpressionUUID->"3fa4f6d0-e10b-4851-ae09-6b0796ee143b",
+Cell[5702, 153, 5369, 138, 722, "Input",ExpressionUUID->"3fa4f6d0-e10b-4851-ae09-6b0796ee143b",
  InitializationCell->True],
-Cell[13130, 340, 2131, 51, 425, "Input",ExpressionUUID->"8f6dc615-b126-41b4-97c8-697c4117cd6b",
+Cell[11074, 293, 2131, 51, 235, "Input",ExpressionUUID->"8f6dc615-b126-41b4-97c8-697c4117cd6b",
  InitializationCell->True]
 }
 ]

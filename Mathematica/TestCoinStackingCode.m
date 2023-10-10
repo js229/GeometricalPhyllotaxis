@@ -40,7 +40,8 @@ Select[VertexList[run["ContactGraph"]],bareNumberQ]];
 
 contacts = graphToContactLines[run];
 
-cylinder = {LightGreen,Rectangle[{-1/2,run["Arena"]["CylinderLU"][[1]]},{1/2,run["Arena"]["CylinderLU"][[2]]}]};
+cylinderLU = If[MissingQ[run["Arena"]["CylinderLU"]],{0,20},run["Arena"]["CylinderLU"]];
+cylinder = {LightGreen,Rectangle[{-1/2,cylinderLU[[1]]},{1/2,cylinderLU[[2]]}]};
 
 Graphics[{
 cylinder
