@@ -54,7 +54,7 @@ d = <|1-><|"DiskNumber"->1,"Disk"->Disk[{0,0},0.5]|>|>;
 <|"ContactGraph"->g,"DiskData"->d|>
 ];
 
-graphFromTCLattice[lattice_] := Module[{m,n},
+graphFromTCLattice[lattice_] := Module[{m,n,r,disks,diskx,diskxy,disknxy,disksOn,disksOf,diskData,g},
 {m,n}=First@Keys[lattice["parastichyNumbers"]];
 
 r=Sqrt[N@lattice["parastichyNumbers"][{m,n}]] ;
@@ -65,7 +65,7 @@ disknxy[node_] := diskxy[disks[node]];
 disknxy[left[node_]] := diskxy[disks[node]]+{-1,0};
 disknxy[right[node_]] := diskxy[disks[node]]+{1,0};
 disksOn= Flatten[Map[{#\[DirectedEdge]#-m,#\[DirectedEdge]#-n}&,Keys[lattice["namedLatticePoints"]]]];
-disksOf[a_\[DirectedEdge]b_] := Module[ {},
+disksOf[a_\[DirectedEdge]b_] := Module[ {d1,d2},
 If[b<0,Return[Nothing[]]];
 d1=disks[a];d2=disks[b];
 If[Abs[diskx[d2]-diskx[d1]] <1/2, Return[a\[UndirectedEdge]b]];
@@ -73,7 +73,9 @@ If[diskx[d1]> 0,Return[a\[UndirectedEdge]right[b]], Return[a\[UndirectedEdge]lef
 ];
 g=Graph[Map[disksOf,disksOn]];
 g= Graph[g,VertexCoordinates->Map[disknxy[#]&,VertexList[g]],VertexLabels->"Name"];
-<|"ContactGraph"->g,"DiskData"->disks|>
+
+diskData = Association@KeyValueMap[#1-><|"DiskNumber"->#1,"Disk"->#2|>&,disks];
+<|"ContactGraph"->g,"DiskData"->diskData|>
 ];
 
 
@@ -91,6 +93,7 @@ finalRadius= initialRadius/runParameters["rScale"];
 rOfH =linearInterpolator[{hStart,hEnd},{0.5,-runParameters["rSlope"]}] ;
 
 arenaAssociation=runParameters;
+If[KeyMemberQ[arenaAssociation,"Lattice"],arenaAssociation=KeyDrop[arenaAssociation,"Lattice"]];
 arenaAssociation = Append[arenaAssociation,
 <| 
 "rFunction"->rOfH

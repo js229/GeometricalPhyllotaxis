@@ -777,15 +777,18 @@ onepos = Position[pnumbers,1,1];If[Length[onepos]>= 2, hatpos = onepos[[2]]; pnu
 (* ::Input::Initialization:: *)
 latticeCreateDH[{d_,0}] := Nothing; (* silently drop from lists *) 
 
-latticeCreateDH[{d_,h_},cylinderLU_:{-0.2,3.2},firstnEqual_:1]  :=  Module[{lattice},
+latticeCreateDH[{d_,h_},args___] := latticeCreateDH[{d,h,1},args];
+
+latticeCreateDH[{d_,h_,j_},cylinderLU_:{-0.2,3.2},firstnEqual_:1]  :=  Module[{lattice},
 lattice = Association [
-"d"-> d
-,"h"-> h
+"d"-> d/j
+,"h"-> h/j
+,"Jugacy"->j
 (* always has periodicity (1,0); this is how much of it we display: *) 
 ,"cylinder" -> { {-1/2,1/2},cylinderLU} 
 (* the region of the unscaled, Euclidean cylinder we display  nodes from; normally the same, but not if we are applying a scaling to it *)
 ,"nodeCylinder" -> { {-1/2,1/2},cylinderLU} 
-,"parastichyVectors" ->  tgetThreeParastichyVectorsDH[{d,h}]
+,"parastichyVectors" ->  tgetThreeParastichyVectorsDH[{d,h}]/j
 ,"scalings"-> <||>
 ];
 lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];
@@ -883,14 +886,22 @@ latticePrincipal3ParastichyNumbers[lattice_] :=Take[latticeParastichyNumbers[lat
 
 
 (* ::Input::Initialization:: *)
-lNamedLatticePoints[lattice_] := Module[{nmin,nmax,irange,points,h,cylinderLU},h = lattice["h"];cylinderLU=lattice["nodeCylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};points = Association[ Table[i->N@First@latticePointWithCopies[lattice,i],{i,nmin,nmax}]];
+lNamedLatticePoints[lattice_] := Module[{nmin,nmax,irange,points,h,cylinderLU,pointSet,},h = lattice["h"];cylinderLU=lattice["nodeCylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};
+points = Association[ Table[i->N@First@latticePointWithCopies[lattice,i],{i,nmin,nmax}]];
+If[!KeyMemberQ[lattice,"Jugacy"] || lattice["Jugacy"]==1,Return[points]];
+j= lattice["Jugacy"];points = Association[ Table[i->N@First@latticePointWithCopies[lattice,{i,j}],{i,nmin,nmax}]];
+pointSet[copyNumber_] := KeyValueMap[<|"PointNumber"->{#1,copyNumber},"PointPosition"->#2 +{(copyNumber-1)/j,0}|>&,points];
+pointsAndCopies = Flatten@Map[pointSet,Range[j]];
+points = Association@Map[#PointNumber->#PointPosition&,pointsAndCopies];
+points = Map[reCylinderise,points];
 points
 ]; 
-(* will break any multijugacy *) 
+reCylinderise[{x_,y_}]:= {x - Round[x],y}
 
+(*
 lCalculateLatticePoints[lattice_] :=  Module[{nmin,nmax,irange,points,h,cylinderLU},h = lattice["h"];cylinderLU=lattice["nodeCylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};points = N@Flatten[Table[latticePointWithCopies[lattice,i],{i,nmin,nmax}],1];
 points
-];
+];*)
 
 latticePoints[lattice_] := Values[lattice["namedLatticePoints"] ];
 latticeNamedPoints[lattice_]  := lattice["namedLatticePoints"];
@@ -921,8 +932,22 @@ If[ jp . jp < jm . jm, jp,jm]
 ];
 
 
+latticePoint[lattice_,m_] := Module[{res},
+res= lpoint[{lattice["d"],lattice["h"]},m];
+If[!KeyMemberQ[lattice,"Jugacy"] || lattice["Jugacy"]==1,Return[res]];
+res = res * lattice["Jugacy"];
+res= reCylinderise[res];
+Return[res]
+];
 
-latticePoint[lattice_,m_] :=lpoint[{lattice["d"],lattice["h"]},m];
+(* looks the wrong way round, but isnt. if there is j>1, we need the vector within the 1/j strip in order to work out parastichy lines
+probably better to rename this function *)
+latticePoint[lattice_,{m_,j_}] := Module[{res},
+res= lpoint[{lattice["d"],lattice["h"]},m];
+Return[res]
+];
+
+
 latticePointWithCopies[lattice_,m_] := Module[{cylinder,lp,i,x},
 (* including periodic copies within the display cylinder *) 
 cylinder = latticeGetCylinder[lattice];
@@ -988,22 +1013,20 @@ barem[m_] :=m /. hat -> Identity;
 zeroParastichyQ[m_] := barem[m] == 0;
 
 latticeParastichySlope[lattice_,m_] := Module[{parastichyVectorM,pSlope},
-parastichyVectorM = latticePoint[lattice,m];
- If[parastichyVectorM[[1]]==0 ,Return[\[Infinity]]];
-parastichyVectorM[[2]]/parastichyVectorM[[1]]
+parastichyVectorM = latticePoint[lattice,m];If[parastichyVectorM[[1]]==0 ,Return[\[Infinity]]];parastichyVectorM[[2]]/parastichyVectorM[[1]]
 ];
 
 latticeParastichyVerticalSeparation[lattice_,m_] := Module[{parastichyVectorM,pSlope},
- If[zeroParastichyQ[m],Return[latticeRise[lattice]]];
-parastichyVectorM = latticePoint[lattice,m];
- If[parastichyVectorM[[1]]==0 ,Return[0]];
-pSlope = parastichyVectorM[[2]]/parastichyVectorM[[1]];
-latticeRise[lattice]/pSlope
+If[zeroParastichyQ[m],Return[latticeRise[lattice]]];parastichyVectorM = latticePoint[lattice,m];If[parastichyVectorM[[1]]==0 ,Return[0]];pSlope = parastichyVectorM[[2]]/parastichyVectorM[[1]];latticeRise[lattice]/pSlope
 ];
 
-latticeParastichyHorizontalSeparation[lattice_,m_] := Module[{},
+latticeParastichyHorizontalSeparation[lattice_,m_] := Module[{j,res},
 If[zeroParastichyQ[m],Return[1]];
-1/barem[m]
+res= 1/barem[m];
+If[!KeyMemberQ[lattice,"Jugacy"] || lattice["Jugacy"]==1,Return[res]];
+j =  lattice["Jugacy"];
+res = res/ j;
+Return[res]
 ];
 
 
@@ -1200,6 +1223,7 @@ latticeTriplePoint[{m_,n_}] := latticeDHHexagonal[{m,n}];latticeDHHexagonal[{m_,
 
 latticeTouchingCircle[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
 latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}],cylinderLU,2];
+
 latticeEquiLength[{m_,n_},cylinderLU_:{-0.2,3.2}] := (* ie p numbers are (m+n),m=n *)latticeCreateDH[latticeMoebiusTransform[{m,n}][ {Cos[\[Pi]/6],Sin[\[Pi]/6]}],cylinderLU];
 latticeOrthogonal[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[latticeMoebiusTransform[{m,n}][ { 0,1}],cylinderLU,2];
 latticeWithMN[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[

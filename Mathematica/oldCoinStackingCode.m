@@ -147,9 +147,7 @@ nextR=nextRadius[];
 row=newFindNextDiskFromSupportSet[nextR];
 n=nextDiskNumber[];
 
-(*updateContactGraph[n,row["NextDisk"],row["NextDiskRestsOn"]];
-*)
-updateContactGraph[n,row["NextDiskRestsOn"]];
+updateContactGraph[n,row["NextDisk"],row["NextDiskRestsOn"]];
 AppendTo[globalRun["DiskData"],
 diskListRowFromDisk[n,row["NextDisk"]]];
 globalRun["LastSupportDiskNumbers"]= Join[globalRun["LastSupportDiskNumbers"],
@@ -174,13 +172,12 @@ res
 
 (* ::Input::Initialization:: *)
 
-vectorXZ[run_,n1_\[DirectedEdge]n2_ | n1_\[UndirectedEdge] n2_ | {n1_,n2_}] := Module[{}, getDiskXZ[run,n2]-getDiskXZ[run,n1]];
+vectorXZ[n1_\[DirectedEdge]n2_ | n1_\[UndirectedEdge] n2_ | {n1_,n2_}] := Module[{}, getDiskXZ[n2]-getDiskXZ[n1]];
 
 neighbours[g_,n_] :=  Complement[VertexList[Graph[EdgeList[g,n\[UndirectedEdge]_]]],{n}]
-
-vectorsFromNode[run_,g_,n_] := Module[{nbrs},
+vectorsFromNode[g_,n_] := Module[{nbrs},
 nbrs := Join[Map[ n\[DirectedEdge] # & , neighbours[g,n]],Map[ left[n]\[DirectedEdge] # & , neighbours[g,left[n]]]];
-Association@Map[#->vectorXZ[run,#]&,nbrs]
+Association@Map[#->vectorXZ[#]&,nbrs]
 ];
 
 clockwiseSortFunction[xy_] := Module[{x,y},
@@ -188,28 +185,25 @@ clockwiseSortFunction[xy_] := Module[{x,y},
 -If[x>0,1+y,-(1+y)]
 ]; (* sorts in clockwise order *)
 
-mostClockwiseEdgeFromNode[run_,g_,n_] := Module[{vectors},
-vectors = vectorsFromNode[run,g,n];
+mostClockwiseEdgeFromNode[g_,n_] := Module[{vectors},
+vectors = vectorsFromNode[g,n];
 If[Length[vectors]==0,Return[Missing[]]];
 vectors = SortBy[vectors,clockwiseSortFunction];
 First[Keys[vectors]]
 ];
 
-topChain[graph_] := topChainInRun[globalRun,graph];
-
-topChainInRun[run_,graph_] := Module[{g,chain,neighbours,highestNode,lastNode,nextNode,from,nextEdge,chainMax=500},
+topChain[graph_] := Module[{g,chain,neighbours,highestNode,lastNode,nextNode,from,nextEdge,chainMax=500},
 
 g=graph;
-highestNode=Last[SortBy[Select[VertexList[g],bareNumberQ],getDiskZ[run,#]&]];
+highestNode=Last[SortBy[Select[VertexList[g],bareNumberQ],getDiskZ[#]&]];
 
 
 nbrs[n_] := Join[Map[ n\[DirectedEdge] # & , neighbours[g,n]],Map[ left[n]\[DirectedEdge] # & , neighbours[g,left[n]]]];
 chain= {highestNode};
 
 For[i=1,i<chainMax,i++,
-monitorTopChainCount={"TopChain",Length[VertexList[g]],i};
 lastNode=Last[chain];
-nextEdge =mostClockwiseEdgeFromNode[run,g,lastNode];
+nextEdge =mostClockwiseEdgeFromNode[g,lastNode];
 If[MissingQ[nextEdge], (* may only happen for 1 left[1] megabodge *)
 Break[]];
 {from,nextNode}=List@@nextEdge;
@@ -230,7 +224,6 @@ chain
 (* ::Input::Initialization:: *)
 
 newsupportPairs[nextR_] :=Module[{supportGraph,supportChain},
-
 supportGraph=  Subgraph[globalRun["ContactGraph"],globalRun["LastSupportDiskNumbers"]];
 supportChain = topChain[supportGraph];
 
@@ -336,30 +329,50 @@ res = diskdiskUpperTouchingPoint[{d1,d2},r];
 If[MissingQ[res],Return[res]]; (* no overlap *) 
 Disk[res,r]
 ];
-
+(*
+diskOnThisPair[{n1_,n2_},r_] := Module[{res,d1,d2,xl,xr,xres},
+d1 = getDisk[n1];
+d2 = getDisk[n2];
+res = diskdiskUpperTouchingPoint[{d1,d2},r];
+If[MissingQ[res],Return[res]]; (* no overlap *) 
+Disk[res,r]
+];*)
 diskdiskIntersectionQ[Disk[xy1_,r1_],Disk[xy2_,r2_]]:= Norm[xy1-xy2,2] < (r1+ r2);
 
 
 
 
 (* ::Input::Initialization:: *)
-updateContactGraph[n_,disk_,{n1_,n2_}] := updateContactGraph[n,{n1,n2}]
 
 
-updateContactGraph[n_,{n1_,n2_}] := Module[{g,d,d1,d2,d1Left},
+updateContactGraph[n_,disk_,{n1_,n2_}] := Module[{g,d,d1,d2,d1Left},
 g = globalRun["ContactGraph"];
-g=  VertexAdd[g,n];
+g= vertexAddDisk[g,n,disk];
 
 If[!bareNumberQ[n1],
- g= VertexAdd[g,n1]];
+ g= vertexAddSideDisk[g,n1]];
 If[!bareNumberQ[n2],
- g= VertexAdd[g,n2]];
+ g= vertexAddSideDisk[g,n2]];
 g= EdgeAdd[g,
 {n \[UndirectedEdge] n1,n \[UndirectedEdge] n2 }];
 
 globalRun["ContactGraph"]=g;
 
 ];
+
+
+
+
+(* ::Input::Initialization:: *)
+vertexAddDisk[g_,v_,Disk[xz_,r_]] := Module[{vxy,vr,res},
+res = VertexAdd[g,v];
+res
+];
+vertexAddSideDisk[g_,v_] :=Module[{res,baseDiskXZ,baseDiskR,xz},
+res= VertexAdd[g,v];
+res
+];
+
 
 
 
@@ -408,34 +421,32 @@ angle
 
 (* ::Input::Initialization:: *)
 
-postRun[run_] := Module[{res,chains,nrchains},
-res = pretty[run];
-edgeCheck[res];
-res
-];
 pretty[run_] := Module[{g,setGraphXY,res,vc,es},
 g=run["ContactGraph"];
 vc = Map[getDiskXZ[run,#]&,VertexList[g]];
 g = Graph[g,VertexCoordinates->vc];
-es = Map[#->edgeStyle[run,#]&,EdgeList[g]];
+es = Map[#->edgeStyle[#]&,EdgeList[g]];
 g= Graph[g,EdgeStyle->es];
 g=Graph[g,VertexLabels->None];
-g=Graph[g,VertexSize->Tiny];
-
 res=run;
 res["ContactGraph"]=g;
 res
 ];
-edgeStyle[run_,upper_ \[UndirectedEdge] lower_] := Module[{vxy},
-vxy=vectorXZ[run,upper\[UndirectedEdge] lower];
+edgeStyle[upper_ \[UndirectedEdge] lower_] := Module[{vxy},
+vxy=vectorXZ[upper\[UndirectedEdge] lower];
 If[First[vxy]>= 0,Blue,Red]
 ]
-edgeStyle[upper_ \[DirectedEdge] lower_] := edgeStyle[upper \[UndirectedEdge] lower];
+edgeStyle[upper_ \[DirectedEdge] lower_] := edgeStyle[upper \[UndirectedEdge] lower]
 
 
 (* ::Input::Initialization:: *)
 
-
+lowerEdges[g_,node_]:=  Select[earlierVectorsFromNode[g,node],Last[#]<0&];
+earlierVectorsFromNode[g_,n_] := Module[{},
+vfn= vectorsFromNode[g,n];
+keyEarlier[ a_\[DirectedEdge] b_] := bareNumber[a]>= bareNumber[b];
+KeySelect[vfn,keyEarlier]
+];
  edgeCheck[run_] := Module[{g,res,edgeStyler,res2},
 g=run["ContactGraph"];
 res=Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];
@@ -443,7 +454,7 @@ If[Or@@ Map[Length[#]!=2&,res],"Print some nodes without two supports"];
 
 edgeStyler[edgeList_] := Map[edgeStyle,edgeList];
 
-res2= Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];
+res2= Map[Keys@lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];
 res2 =Association@Map[#->Sort@edgeStyler[#]&,res2];
 res2= Select[res2,# != {RGBColor[0, 0, 1],RGBColor[1, 0, 0]}&];
 
@@ -464,18 +475,27 @@ Print["Node ", n, " is lopsided"]];
 
 ];
 
-lowerEdges[g_,n_] := Module[{nxy,edges,nodes},
-nxy=AnnotationValue[{g,n},VertexCoordinates];
-edges= EdgeList[g,n \[UndirectedEdge]_];
-nodes= Complement[Flatten[List@@@edges],{n}];
-nodes= Association@Map[(n \[DirectedEdge] #)-> Last[AnnotationValue[{g,#},VertexCoordinates]]-Last[nxy]&,nodes];
-nodes = Select[nodes,#<=0&];
-Keys[nodes]
-];
+
 
 
 (* ::Input::Initialization:: *)
-(*
+
+postRun[run_] := Module[{res,chains,nrchains},
+res = pretty[run];
+edgeCheck[res];
+
+chains= topdownChains[res["ContactGraph"],If[MissingQ[
+run["Arena"]["PostFixChains"]],1,run["Arena"]["PostFixChains"]]];
+
+res=Prepend[res,"Chains"->chains];
+
+nrchains= flattestChainData[res["ContactGraph"]];
+res=Prepend[res,"NRChains"->nrchains];
+
+res["ContactGraph"]=reColour[res];
+res
+];
+
 reColour[run_] := Module[{g,chains,v,e},
 chains=Map[#Chain&,run["Chains"]];
 vList[gr_] := Map[#->AnnotationValue[{gr,#},VertexCoordinates]&,VertexList[gr]];v=vList[run["ContactGraph"]];
@@ -488,102 +508,8 @@ chainEdges=Join[grayChains,chainEdges];
 Graph[Keys[v],Keys[chainEdges],
 VertexCoordinates->Values[v],
 EdgeStyle->KeyValueMap[#1->#2&,chainEdges]]
-];*)
-
-
-(* ::Input::Initialization:: *)
-
-edgeDirectedRightwards[g_,v1_ \[UndirectedEdge] v2_] := Module[{v1xy,v2xy},
-v1xy=AnnotationValue[{g,v1},VertexCoordinates];
-v2xy=AnnotationValue[{g,v2},VertexCoordinates];
-If[First[v1xy]<First[v2xy],
-v1\[DirectedEdge] v2,v2\[DirectedEdge] v1]
 ];
 
-directedGraphRightwards[g_] := Module[{v,vxy,edges,d},
-v=VertexList[g];
-vxy=Map[#->AnnotationValue[{g,#},VertexCoordinates]&,v];
-edges =EdgeList[g];
-edges= Map[edgeDirectedRightwards[g,#]&,edges];
-d=Graph[v,edges,VertexCoordinates->vxy,VertexSize->Tiny,VertexLabels->"Name"
-,EdgeShapeFunction->{{"HalfFilledArrow","ArrowSize"->.05}}
-];
-d
-];
-
-
-(* ::Input::Initialization:: *)
-leftRightChainEdges[d_] := Module[{nonbares,nonbarePaths,nonbarePath,pathToDE,pathscore,chains},
-nonbares=Select[VertexList[d],!bareNumberQ[#]&];
-nonbarePaths[left[node_]] :=  FindPath[d,left[node],node,\[Infinity],All];
-nonbarePaths[right[node_]] :=  FindPath[d,node,right[node],\[Infinity],All];
-pathscore[path_] := Module[{z},
-z= Map[Last@AnnotationValue[{d,#},VertexCoordinates]&,path];
-z= z- Mean[z];
-z= Map[Abs,z];
-z= Total[z];
-z
-];
-nonbarePath[node_] :=  First@SortBy[nonbarePaths[node],pathscore];
-
-pathToDE[path_] := (monitorTopChainCount=path;Map[Apply[UndirectedEdge,#]&,Partition[path,2,1]]);
-chains=Association@Map[bareNumber[#]->pathToDE[nonbarePath[#]]&,nonbares];
-chains
-];
-(*
-pickShortest[edgeList_] := First@SortBy[edgeList,#Xdifference&];
-
-*)
-
-
-
-
-
-(* ::Input::Initialization:: *)
-countbyPath[chain_] := Module[{res},
-res=Counts[classifyPath[chain]];
-res= Append[<|RGBColor[0, 0, 1]->0,RGBColor[1, 0, 0]->0|>,res];
-res=KeySort[res];
-res
-]; 
-classifyPath[chain_] := Map[classifyPathEdge[chain,#]&,EdgeList[chain]];
-classifyPathEdge[g_,v1_\[UndirectedEdge] v2_] := Module[{v1xy,v2xy},
-v1xy=AnnotationValue[{g,v1},VertexCoordinates];
-v2xy=AnnotationValue[{g,v2},VertexCoordinates];
-{v1xy,v2xy}= SortBy[{v1xy,v2xy},First];
-If[ Last[v1xy]>=Last[v2xy],Red,Blue]
-];
-
-
-chainFromEdges[chainEdges_]:= Union@@(List@@@chainEdges)
-
-flattestChains[g_] := Module[{d,chainEdges,chains},
-d=directedGraphRightwards[g];
-chainEdges= leftRightChainEdges[d];
-chains= Map[<|"Chain"->Subgraph[g,#]|>&,chainEdges];
-chains = Map[Append[#,"Parastichy"->countbyPath[#Chain]]&,chains];
-chains
-]
-
-
-(* ::Input::Initialization:: *)
-postRunFlatChain[run_] := Module[{res,chains,nrchains},
-res = run;
-(* topdown uses the topChain code from the runtime, so looks up xy coords in the run["DiskData"]; flattestChainData relies on these having gone into the graph vertexcoordinates already, sigh *)
-res= Append[res,"FlatChains"->flattestChainData[res["ContactGraph"]]];
-
-res
-];
-postRunChain[run_] := Module[{res,chains,nrchains},
-res = run;
-(* topdown uses the topChain code from the runtime, so looks up xy coords in the run["DiskData"]; flattestChainData relies on these having gone into the graph vertexcoordinates already, sigh *)
-res=Append[res,"Chains"->topdownChains[res,res["ContactGraph"]]];
-
-res
-];
-
-
-(* ::Input::Initialization:: *)
 flattestChainData[graph_,chainsToDo_:100] := Module[{i,g,chainGraphSet,chains},
 chains= flattestChains[graph];
 
@@ -593,42 +519,27 @@ chainSet= Map[Append[#,"MeanRadius"->chainMeanRadius[#Chain]]&,chainSet];
 chainSet
 ];
 
-
-
-chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
-
-chainMeanRadius[chain_] := Module[{e,gxy},
-gxy[n_] :=AnnotationValue[{chain,n},VertexCoordinates];
-norm[n1_,n2_] := Norm[gxy[n2]-gxy[n1]];
-e=EdgeList[chain];
-e=norm @@@ e;
-Mean[e]/2
-];
-
-
-
-(* ::Input::Initialization:: *)
-topdownChains[run_,graph_,chainsToDo_:100] := Module[{i,g,chainGraphSet,chain,chainGraph},
+(*
+topdownChains[graph_,chainsToDo_:100] := Module[{i,g,chainGraphSet,chain,chainGraph},
+(* relies on looking coordinates up in globalRun ... *)
 g=Graph[graph,VertexLabels->"Name"];
-
 chainGraphSet=List[];
 For[i=0,i<chainsToDo,i++,
-monitorTopDownChainCount=i;
-chain=topChainInRun[run,g];
+chain=topChain[g];
+
 chainGraph=Subgraph[g,chain];
 chainGraph= Graph[chainGraph,VertexLabels->"Name"];
 chainGraphSet=Append[chainGraphSet, chainGraph];
 g=stripChain[g,chain];
-
 If[Length[VertexList[g]]==0,Break[]];
-];monitorTopDownChainCount="Done";
+];
 chainSet=
-Association@MapIndexed[First[#2]-><|"Chain"->#1|>&,Reverse[chainGraphSet]];
+Reverse@Association@MapIndexed[First[#2]-><|"Chain"->#1|>&,Reverse[chainGraphSet]];
 chainSet= Map[Append[#,"Parastichy"->chainParastichy[#Chain]]&,chainSet];
 chainSet= Map[Append[#,"MeanZ"->chainMeanZ[#Chain]]&,chainSet];
 chainSet= Map[Append[#,"MeanRadius"->chainMeanRadius[#Chain]]&,chainSet];
 chainSet
-];
+];*)
 
 chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
 
@@ -643,21 +554,14 @@ Mean[e]/2
 
 
 (* ::Input::Initialization:: *)
-stripChain[g_,chain_]:= Module[{lrchain},
+(*stripChain[g_,chain_]:= Module[{lrchain},
 lrchain =leftAndRightNumbers[DeleteDuplicates[bareNumber/@chain]];
 
 lrchain= Intersection[lrchain,VertexList[g]];
 VertexDelete[g,lrchain]
 ];
 
-chainEncircles[chain_] := Module[{lrNode},
-lrNode=Select[VertexList[chain],!bareNumberQ[#]&];
-If[Length[lrNode]!=1,Return[False]];
-MemberQ[VertexList[chain],bareNumber[First[lrNode]]]
-];
-
 chainParastichy[chain_]:=Module[{},
-If[!chainEncircles[chain],Return[Missing["Not encircling"]]];
 If[AcyclicGraphQ[chain],
 acyclicChainParastichy[chain]
 ,cyclicChainParastichy[chain]
@@ -665,8 +569,8 @@ acyclicChainParastichy[chain]
 ];
 
 cyclicChainParastichy[chain_] := Module[{reducedchain,v,first,last,edges,res},
-
-
+(*If[Length[FindCycle[chain,{4,\[Infinity]}]]!=0,Print["4cycle found"]];
+*)
 v=VertexList[chain];
 v=SortBy[v,AnnotationValue[{chain,#},VertexCoordinates]&];
 first=First[v];last=Last[v];
@@ -713,10 +617,72 @@ acyclicChainParastichy[chain_]:=Module[{res},
 If[!AcyclicGraphQ[chain],Print["aCP"];Abort[]];
 res=KeySort@Counts[Map[AnnotationValue[{chain,#},EdgeStyle]&,EdgeList[chain]]
 ];
-res = Append[<|RGBColor[0, 0, 1]->0,RGBColor[1, 0, 0]->0|>,res];
+res = Append[<|\[Rule]0,\[Rule]0|>,res];
 res
+];
+*)
+
+
+(* ::Input::Initialization:: *)
+
+edgeType[g_,v1_ \[UndirectedEdge] v2_] := Module[{v1xy,v2xy},
+v1xy=AnnotationValue[{g,v1},VertexCoordinates];
+v2xy=AnnotationValue[{g,v2},VertexCoordinates];
+If[First[v1xy]<First[v2xy],
+v1\[DirectedEdge] v2,v2\[DirectedEdge] v1]
+];
+pickShortest[edgeList_] := First@SortBy[edgeList,#Xdifference&];
+dgraph[g_] := Module[{v,vxy},
+v=VertexList[g];
+vxy=Map[#->AnnotationValue[{g,#},VertexCoordinates]&,v];
+edges =EdgeList[g];
+edges= Map[edgeType[g,#]&,edges];
+d=Graph[v,edges,VertexCoordinates->vxy,VertexSize->Tiny,VertexLabels->"Name"
+,EdgeShapeFunction->{{"HalfFilledArrow","ArrowSize"->.05}}
+];
+d
+];
+leftRightChainEdges[d_] := Module[{},
+nonbares=Select[VertexList[d],!bareNumberQ[#]&];
+nonbarePaths[left[node_]] :=  FindPath[d,left[node],node,\[Infinity],All];
+nonbarePaths[right[node_]] :=  FindPath[d,node,right[node],\[Infinity],All];
+nonbarePath[node_] :=  First@SortBy[nonbarePaths[node],pathscore];
+pathToDE[path_] := Map[Apply[UndirectedEdge,#]&,Partition[path,2,1]];
+pathscore[path_] := Module[{z},
+z= Map[Last@AnnotationValue[{d,#},VertexCoordinates]&,path];
+z= z- Mean[z];
+z= Map[Abs,z];
+z= Total[z];
+z
+];
+chains=Association@Map[bareNumber[#]->pathToDE[nonbarePath[#]]&,nonbares];
+chains
 ];
 
 
+classifyPathEdge[g_,v1_\[UndirectedEdge] v2_] := Module[{v1xy,v2xy},
+v1xy=AnnotationValue[{g,v1},VertexCoordinates];
+v2xy=AnnotationValue[{g,v2},VertexCoordinates];
+{v1xy,v2xy}= SortBy[{v1xy,v2xy},First];
+If[ Last[v1xy]>=Last[v2xy],Red,Blue]
+];
+
+classifyPath[chain_] := Map[classifyPathEdge[chain,#]&,EdgeList[chain]];
 
 
+(* ::Input::Initialization:: *)
+countbyPath[chain_] := Module[{res},
+res=Counts[classifyPath[chain]];
+res= Append[<|RGBColor[0, 0, 1]->0,RGBColor[1, 0, 0]->0|>,res];
+res=KeySort[res];
+res
+]; 
+chainFromEdges[chainEdges_]:= Union@@(List@@@chainEdges)
+
+flattestChains[g_] := Module[{d},
+d=dgraph[g];
+chainEdges= leftRightChainEdges[d];
+chains= Map[<|"Chain"->Subgraph[g,#]|>&,chainEdges];
+chains = Map[Append[#,"Parastichy"->countbyPath[#Chain]]&,chains];
+chains
+]
