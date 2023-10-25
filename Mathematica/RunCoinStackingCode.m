@@ -83,14 +83,17 @@ diskData = Association@KeyValueMap[#1-><|"DiskNumber"->#1,"Disk"->#2|>&,disks];
 
 (* ::Input::Initialization:: *)
 smallestRadius[run_] := Min@Map[diskR[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
+highestCentre[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 
 
 makeArena[run_,runParameters_] := Module[{initialRadius,finalRadius,hBase,hStart,hEnd,rOfH,arenaAssociation},
 initialRadius  = 0.5;
-hBase =1;
+initialRadius= smallestRadius[run] ;
+(*hBase =1;*)
+hBase=highestCentre[run];
 finalRadius= initialRadius/runParameters["rScale"];
 {hStart,hEnd} = hBase + {0,hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]]};
-rOfH =linearInterpolator[{hStart,hEnd},{0.5,-runParameters["rSlope"]}] ;
+rOfH =linearInterpolator[{hStart,hEnd},{initialRadius,-runParameters["rSlope"]}] ;
 
 arenaAssociation=runParameters;
 If[KeyMemberQ[arenaAssociation,"Lattice"],arenaAssociation=KeyDrop[arenaAssociation,"Lattice"]];

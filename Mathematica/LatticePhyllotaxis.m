@@ -886,7 +886,8 @@ latticePrincipal3ParastichyNumbers[lattice_] :=Take[latticeParastichyNumbers[lat
 
 
 (* ::Input::Initialization:: *)
-lNamedLatticePoints[lattice_] := Module[{nmin,nmax,irange,points,h,cylinderLU,pointSet,},h = lattice["h"];cylinderLU=lattice["nodeCylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};
+lNamedLatticePoints[lattice_] := Module[{nmin,nmax,irange,points,h,cylinderLU,pointSet,pointsAndCopies},
+h = lattice["h"];cylinderLU=lattice["nodeCylinder"][[2]];{nmin,nmax}= {Ceiling[Min[cylinderLU]/h],Floor[Max[cylinderLU]/h]};irange = {nmin,nmax};
 points = Association[ Table[i->N@First@latticePointWithCopies[lattice,i],{i,nmin,nmax}]];
 If[!KeyMemberQ[lattice,"Jugacy"] || lattice["Jugacy"]==1,Return[points]];
 j= lattice["Jugacy"];points = Association[ Table[i->N@First@latticePointWithCopies[lattice,{i,j}],{i,nmin,nmax}]];

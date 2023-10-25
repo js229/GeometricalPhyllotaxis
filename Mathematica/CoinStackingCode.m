@@ -118,7 +118,6 @@ StringTemplate["next disk `disk`; Z `ztogo`; per-disk time `timing`"][<|
 If[False,monitorFunction,Monitor[monitorFunction,monitorString]];
 
 result= postRun[globalRun];
-Print["run complete"];
 result
 ];
 
@@ -140,25 +139,37 @@ diskListRowFromDisk[node_,disk_] := Module[{},
 node-><|"DiskNumber"->node,"Disk"->disk|>
 ];
 
-addNextDisk[]:=Module[{nextR,row,n,timing},
+addNextDisk[]:=Module[{nextR,row,n,timing,disk},
 
 nextR=nextRadius[];
 
 row=newFindNextDiskFromSupportSet[nextR];
+disk = row["NextDisk"];
+disk= jiggleDisk[run,disk];
 n=nextDiskNumber[];
 
-(*updateContactGraph[n,row["NextDisk"],row["NextDiskRestsOn"]];
-*)
+
 updateContactGraph[n,row["NextDiskRestsOn"]];
 AppendTo[globalRun["DiskData"],
-diskListRowFromDisk[n,row["NextDisk"]]];
+diskListRowFromDisk[n,disk]];
 globalRun["LastSupportDiskNumbers"]= Join[globalRun["LastSupportDiskNumbers"],
 leftRightCouldSupport[n,nextRadius[]]];
 
 monitorRise=disksMaximum[]-monitorZ;
 monitorZ= disksMaximum[];
 
-]
+];
+
+jiggleDisk[run_,disk_] := Module[{res,noise},
+res=disk;
+noise=run["Arena"]["Noise"];
+If[MissingQ[noise],Return[res]];
+
+res=jiggleDiskRadius[res,noise];
+Return[res];
+];
+
+jiggleDiskRadius[Disk[xy_,r_],noise_] := Disk[xy,RandomReal[r*{1-noise,1+noise}]]
 
 
 (* ::Input::Initialization:: *)
@@ -411,6 +422,7 @@ angle
 postRun[run_] := Module[{res,chains,nrchains},
 res = pretty[run];
 edgeCheck[res];
+res= postRunNodeStatistics[res];
 res
 ];
 pretty[run_] := Module[{g,setGraphXY,res,vc,es},
@@ -436,14 +448,14 @@ edgeStyle[upper_ \[DirectedEdge] lower_] := edgeStyle[upper \[UndirectedEdge] lo
 (* ::Input::Initialization:: *)
 
 
- edgeCheck[run_] := Module[{g,res,edgeStyler,res2},
+ edgeCheck[run_] := Module[{g,res,edgeStyler,res2,nodesToCheck},
 g=run["ContactGraph"];
 res=Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];
 If[Or@@ Map[Length[#]!=2&,res],"Print some nodes without two supports"];
 
 edgeStyler[edgeList_] := Map[edgeStyle,edgeList];
-
-res2= Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];
+nodesToCheck = Complement[Select[VertexList[g],bareNumberQ],{1,2,3,4,0,left[1],5,6,7}];
+res2= Map[lowerEdges[g,#]&,nodesToCheck];
 res2 =Association@Map[#->Sort@edgeStyler[#]&,res2];
 res2= Select[res2,# != {RGBColor[0, 0, 1],RGBColor[1, 0, 0]}&];
 
@@ -571,7 +583,6 @@ postRunFlatChain[run_] := Module[{res,chains,nrchains},
 res = run;
 (* topdown uses the topChain code from the runtime, so looks up xy coords in the run["DiskData"]; flattestChainData relies on these having gone into the graph vertexcoordinates already, sigh *)
 res= Append[res,"FlatChains"->flattestChainData[res["ContactGraph"]]];
-
 res
 ];
 postRunChain[run_] := Module[{res,chains,nrchains},
@@ -580,6 +591,12 @@ res = run;
 res=Append[res,"Chains"->topdownChains[res,res["ContactGraph"]]];
 
 res
+];
+postRunNodeStatistics[run_] := Module[{res,angles},
+res = run;
+angles= Map[<|"Angle"->#|>&,computeNodeLowerAngles[run]];
+res= Append[res,"NodeStatistics"-> angles];
+res 
 ];
 
 
@@ -627,7 +644,23 @@ Association@MapIndexed[First[#2]-><|"Chain"->#1|>&,Reverse[chainGraphSet]];
 chainSet= Map[Append[#,"Parastichy"->chainParastichy[#Chain]]&,chainSet];
 chainSet= Map[Append[#,"MeanZ"->chainMeanZ[#Chain]]&,chainSet];
 chainSet= Map[Append[#,"MeanRadius"->chainMeanRadius[#Chain]]&,chainSet];
+chainSet= Map[Append[#,"AngleMean"->chainMeanLatticeAngle[run,#Chain]]&,chainSet];
+chainSet= Map[Append[#,"AngleSD"->chainSDLatticeAngle[run,#Chain]]&,chainSet];
 chainSet
+];
+
+chainMeanLatticeAngle[run_,chain_] := Module[{res,v},
+v=Select[VertexList[chain],bareNumberQ];
+res= KeyTake[run["NodeStatistics"],v];
+res= Map[#Angle&,res];
+Mean[res]
+];
+chainSDLatticeAngle[run_,chain_] := Module[{res,v},
+v=Select[VertexList[chain],bareNumberQ];
+res= KeyTake[run["NodeStatistics"],v];
+res= Map[#Angle&,res];
+If[Length[res]<2,Return[Missing["monoEdge"]]];
+StandardDeviation[res]
 ];
 
 chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
@@ -719,4 +752,12 @@ res
 
 
 
-
+(* ::Input::Initialization:: *)
+computeNodeLowerAngles[run_] := Module[{v,edges,edgePairAngle},
+v=Select[VertexList[run["ContactGraph"]],bareNumberQ];
+edges=Select[Association@Map[#->lowerEdges[run["ContactGraph"], #]&,v],Length[#]==2&];
+edges= Association@KeyValueMap[#1->Values@KeyTake[vectorsFromNode[run,run["ContactGraph"],#1],#2]&,edges];
+edgePairAngle[{e1_,e2_}] := ArcCos[(e1 . e2)/(Norm[e1]*Norm[e2])];
+edges= Map[edgePairAngle,edges];
+edges
+]
