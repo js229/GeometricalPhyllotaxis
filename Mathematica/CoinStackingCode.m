@@ -86,7 +86,6 @@ nextDiskNumber[] := Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]]+1;
 
 executeRun[run_,chainMax_:Missing[]] := Module[{i,imax,res,diskTime},
 Off[SSSTriangle::tri];
-
 globalRun=run;
 
 If[MissingQ[globalRun["LastSupportDiskNumbers"]],
@@ -99,17 +98,14 @@ diskTime= First@Timing[addNextDisk[]];
 ];
 monitorString := Module[{},
 monitorZtogo= run["Arena"]["zMax"]-monitorZ;
-monitorDiskstogo= monitorZtogo/monitorRise;
 
 StringTemplate["next disk `disk`; Z `ztogo`; per-disk time `timing`"][<|
 "disk"-> nextDiskNumber[]
 ,"Z"->  disksMaximum[]
 ,"monitorZtogo"->monitorZtogo
 ,"diskstogo"->monitorDiskstogo
-,
-"ztogo"-> run["Arena"]["zMax"]-monitorZ
+,"ztogo"-> run["Arena"]["zMax"]-monitorZ
 ,"monitorRise"->monitorRise
-,"monitorDiskstogo"->monitorDiskstogo
 ,"radius"->diskR[Last[globalRun["DiskData"]]]
 ,"Zmax"->run["Arena"]["zMax"]
 ,"timing"->diskTime
@@ -140,12 +136,11 @@ node-><|"DiskNumber"->node,"Disk"->disk|>
 ];
 
 addNextDisk[]:=Module[{nextR,row,n,timing,disk},
-
 nextR=nextRadius[];
 
 row=newFindNextDiskFromSupportSet[nextR];
 disk = row["NextDisk"];
-disk= jiggleDisk[run,disk];
+disk= jiggleDisk[globalRun,disk];
 n=nextDiskNumber[];
 
 
@@ -216,12 +211,13 @@ highestNode=Last[SortBy[Select[VertexList[g],bareNumberQ],getDiskZ[run,#]&]];
 
 nbrs[n_] := Join[Map[ n\[DirectedEdge] # & , neighbours[g,n]],Map[ left[n]\[DirectedEdge] # & , neighbours[g,left[n]]]];
 chain= {highestNode};
-
+debug=highestNode==59;debug=False;
 For[i=1,i<chainMax,i++,
-monitorTopChainCount={"TopChain",Length[VertexList[g]],i};
+
 lastNode=Last[chain];
 nextEdge =mostClockwiseEdgeFromNode[run,g,lastNode];
-If[MissingQ[nextEdge], (* may only happen for 1 left[1] megabodge *)
+
+If[debug,Print[chain,nextEdge,prettyGraph[globalRun,g]]];If[MissingQ[nextEdge], (* may only happen for 1 left[1] megabodge *)
 Break[]];
 {from,nextNode}=List@@nextEdge;
 If[MatchQ[from,left[_]],chain=Append[chain,from]];
@@ -281,7 +277,6 @@ res
 newSupportPairsFromSupportDisks[supportDisks_,nextR_] :=Module[{pairs,supportTable,extendedDisks,res,i,j},
 
 pairs = Flatten[Table[{supportDisks[[i]],supportDisks[[j]]},{i,1,Length[supportDisks]},{j,i+1,Length[supportDisks]}],1];
-
 
 newSupportDisks=supportDisks;
 newSupportDisks = Map[#->getDiskFromRun[globalRun,#]&,newSupportDisks];
@@ -425,15 +420,18 @@ edgeCheck[res];
 res= postRunNodeStatistics[res];
 res
 ];
-pretty[run_] := Module[{g,setGraphXY,res,vc,es},
-g=run["ContactGraph"];
+prettyGraph[run_,gp_] := Module[{g,setGraphXY,res,vc,es},
+g=gp;
 vc = Map[getDiskXZ[run,#]&,VertexList[g]];
 g = Graph[g,VertexCoordinates->vc];
 es = Map[#->edgeStyle[run,#]&,EdgeList[g]];
 g= Graph[g,EdgeStyle->es];
-g=Graph[g,VertexLabels->None];
+g=Graph[g,VertexLabels->"Name"];
 g=Graph[g,VertexSize->Tiny];
-
+g
+];
+pretty[run_] := Module[{g,setGraphXY,res,vc,es},
+g=prettyGraph[run,run["ContactGraph"]];
 res=run;
 res["ContactGraph"]=g;
 res
