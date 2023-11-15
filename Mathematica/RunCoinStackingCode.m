@@ -100,6 +100,7 @@ If[KeyMemberQ[arenaAssociation,"Lattice"],arenaAssociation=KeyDrop[arenaAssociat
 arenaAssociation = Append[arenaAssociation,
 <| 
 "rFunction"->rOfH
+,"rFixedBefore"-> hStart
 ,"rFixedAfter"-> hEnd
 ,"CylinderLU"-> {0,runParameters["zMax"]}
 |>];

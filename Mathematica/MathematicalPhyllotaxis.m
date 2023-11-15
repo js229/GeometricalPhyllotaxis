@@ -59,4 +59,50 @@ mpDelta[mn_]:= -1 * If[EvenQ[Length[mpEuclideanQCoefficients[mn]]],1,-1];
 
 
 
+(* ::Input::Initialization:: *)
+mpTouchingCircleCentre[{m_,n_}] := Module[{u,v},
+{u,v}=mpWindingNumberPair[{m,n}];
+{Abs[ m u - n v]/(n^2-m^2),0}
+];
+mpTouchingCircleRadius[{m_,n_}] := Module[{},
+1/(n^2-m^2)
+];
+mpTouchingCircle[mn_] := Circle[mpTouchingCircleCentre[mn],mpTouchingCircleRadius[mn],{0,\[Pi]}];
+
+mpTouchingCircleTanPsiOfTheta[{m_,n_}][\[Theta]_] := ((m^2-n^2) Sin[\[Theta]])/(-2 m n+(m^2+n^2) Cos[\[Theta]]);
+mpTouchingCirclePsiOfTheta[{m_,n_}][\[Theta]_] := Module[{atan},
+atan=ArcTan[mpTouchingCircleTanPsiOfTheta[{m,n}][\[Theta]]];
+If[atan<0,atan=atan+\[Pi]];
+atan
+] ;
+mpTouchingCircleHexagonalPointPsiOne[{m_,n_}] := 
+mpTouchingCirclePsiOfTheta[{m,n}][\[Pi]/3]
+mpTouchingCircleHexagonalPointPsiTwo[{m_,n_}] := 
+mpTouchingCirclePsiOfTheta[{m,n}][2 \[Pi]/3]
+
+(* needs to be Delta aware to get the right orientation *)
+mpTouchingCirclePrimary[{m_,n_}] :=Module[{},
+If[mpDelta[{m,n}]==1,
+psione= \[Pi]- mpTouchingCircleHexagonalPointPsiOne[{m,n}];
+psitwo = \[Pi]- mpTouchingCircleHexagonalPointPsiTwo[{m,n}];
+,
+psione= mpTouchingCircleHexagonalPointPsiOne[{m,n}];
+psitwo = mpTouchingCircleHexagonalPointPsiTwo[{m,n}];
+];
+Circle[mpTouchingCircleCentre[{m,n}],mpTouchingCircleRadius[{m,n}],{psione,psitwo}]
+];
+
+mpTouchingCirclePrimaryNonOpposed[mn_]:= vanItersonTouchingCirclePrimaryNonOpposed[mn];
+
+Clear[mpTouchingCirclePrimaryOpposed];
+mpTouchingCirclePrimaryOpposed[{m_,n_}]:= mpTouchingCirclePrimaryOpposed[{n,m}] /; m>n
+mpTouchingCirclePrimaryOpposed[{m_,n_}] := mpTouchingCirclePrimary[{m,n}] /; m> n/2
+mpTouchingCirclePrimaryOpposed[{m_,n_}] := Module[{centre,radius,psis,psilower,psihigher},
+{centre,radius,psis}= List@@ mpTouchingCirclePrimary[{m,n}];
+{psilower,psihigher}=psis;
+psi=ArcTan[m/n];
+Circle[centre,radius,{psi,psihigher}]
+]
+
+
 
