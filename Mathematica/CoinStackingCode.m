@@ -459,7 +459,7 @@ res2= Map[lowerEdges[g,#]&,nodesToCheck];
 res2 =Association@Map[#->Sort@edgeStyler[#]&,res2];
 res2= Select[res2,# != {RGBColor[0, 0, 1],RGBColor[1, 0, 0]}&];
 
-If[Length[res2]>0,
+If[Length[res2]>0 || Keys[res2]=={{}},
 Print["Print  lopsided nodes", res2];
 ];
 
