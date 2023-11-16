@@ -446,13 +446,15 @@ edgeStyle[upper_ \[DirectedEdge] lower_] := edgeStyle[upper \[UndirectedEdge] lo
 (* ::Input::Initialization:: *)
 
 
- edgeCheck[run_] := Module[{g,res,edgeStyler,res2,nodesToCheck},
+ edgeCheck[run_] := Module[{g,res,edgeStyler,res2,nodesToCheck,lopsidedAllowedTo},
 g=run["ContactGraph"];
 res=Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];
 If[Or@@ Map[Length[#]!=2&,res],"Print some nodes without two supports"];
 
 edgeStyler[edgeList_] := Map[edgeStyle,edgeList];
-nodesToCheck = Complement[Select[VertexList[g],bareNumberQ],{1,2,3,4,0,left[1],5,6,7,8,9,10,11,12}];
+lopsidedAllowedTo = 100;
+
+nodesToCheck = Complement[Select[VertexList[g],bareNumberQ],Range[lopsidedAllowedTo]];
 res2= Map[lowerEdges[g,#]&,nodesToCheck];
 res2 =Association@Map[#->Sort@edgeStyler[#]&,res2];
 res2= Select[res2,# != {RGBColor[0, 0, 1],RGBColor[1, 0, 0]}&];

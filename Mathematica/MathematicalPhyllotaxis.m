@@ -100,8 +100,19 @@ mpTouchingCirclePrimaryOpposed[{m_,n_}] := mpTouchingCirclePrimary[{m,n}] /; m> 
 mpTouchingCirclePrimaryOpposed[{m_,n_}] := Module[{centre,radius,psis,psilower,psihigher},
 {centre,radius,psis}= List@@ mpTouchingCirclePrimary[{m,n}];
 {psilower,psihigher}=psis;
-psi=ArcTan[m/n];
+psi=ArcCos[m/n];
+If[!IntervalMemberQ[Interval[psis],psi],psi=\[Pi]-psi];
 Circle[centre,radius,{psi,psihigher}]
+]
+
+mpTouchingCirclePrimaryNonOpposed[{m_,n_}]:= mpTouchingCirclePrimaryNonOpposed[{n,m}] /; m>n
+mpTouchingCirclePrimaryNonOpposed[{m_,n_}] := Nothing[] /; m> n/2
+mpTouchingCirclePrimaryNonOpposed[{m_,n_}] := Module[{centre,radius,psis,psilower,psihigher},
+{centre,radius,psis}= List@@ mpTouchingCirclePrimary[{m,n}];
+{psilower,psihigher}=psis;
+psi=ArcCos[m/n];
+If[!IntervalMemberQ[Interval[psis],psi],psi=\[Pi]-psi];
+Circle[centre,radius,{psi,psilower}]
 ]
 
 
