@@ -27,6 +27,54 @@ Get["LatticePhyllotaxis.m",Path->{PersistentSymbol["persistentGitHubPath","Local
 
 
 (* ::Input::Initialization:: *)
+makeCappedArena[run_,runParameters_] := Module[{initialRadius,finalRadius,hBase,hStart,hEnd,rOfH,arenaAssociation},
+
+initialRadius= smallestRadius[run] ;
+
+hBase=highestCentre[run];
+finalRadius= initialRadius/runParameters["rScale"];
+{hStart,hEnd} = hBase + {0,hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]]};
+rOfH =linearInterpolator[{hStart,hEnd},{initialRadius,-runParameters["rSlope"]}] ;
+
+bulgeFunction = makeBulgeFunction[finalRadius,1/4,hEnd,hEnd+2];
+rFunction = Piecewise[ {
+{rOfH,h<= hEnd}
+,{bulgeFunction,True}
+}];
+zMax=runParameters["zMax"]+ 1;
+
+arenaAssociation=runParameters;
+If[KeyMemberQ[arenaAssociation,"Lattice"],arenaAssociation=KeyDrop[arenaAssociation,"Lattice"]];
+arenaAssociation = Append[arenaAssociation,
+<| 
+"rFunction"->rFunction
+,"zMax"->zMax
+,"rFixedBefore"-> hStart
+,"rFixedAfter"-> hEnd
+,"CylinderLU"-> {0,runParameters["zMax"]}
+|>];
+arenaAssociation
+];
+
+
+makeBulgeFunction[rMin_,rMax_,zMin_,zMax_] := Module[{zRange,bulgeScale},
+
+bulgeScale =  Cos[ArcSin[rMin/rMax]]/zMax;
+
+zRange=zMax-zMin;
+
+<|"rFunction"->Function[z, Piecewise[
+{{rMin,z<=  zMin}
+,{ rMin/Sin[ArcCos[bulgeScale*(z-zMin)]],z<=zMax}
+,{rMax,True}
+}]]
+,"rMin"->rMin,"rMax"->rMax,"zMin"->zMin,"zMax"->zMax
+|>
+];
+
+
+
+(* ::Input::Initialization:: *)
 
 
 doParameterRun[experimentParameter_] := Module[{run},
@@ -46,6 +94,16 @@ run["Arena"] = makeArena[run,experimentParameter];
 
 run
 ];
+
+runFromRun[run_] :=  Module[{g,d,chain},
+chain = Last[run["Chains"]];
+g= chain["Chain"];
+
+d = Map[ <|#->run["DiskData"][#]|>&,VertexList[g]];
+<|"Arena"->run["Arena"],"ContactGraph"->g,"DiskData"->d|>
+
+];
+
 runFromLattice[lattice_] :=  Module[{g,d},
 If[!(lattice["d"]==0 && lattice["h"] == 1),
 Return[graphFromTCLattice[lattice]]];
@@ -111,8 +169,8 @@ arenaAssociation
 linearInterpolator[{hStart_,hEnd_},{r_,rSlope_}] := 
 Function[{h}, r+ Piecewise[ {
 {0,h< hStart}
-,{(h-hStart) * rSlope ,h>=hStart && h< hEnd}
-, { (hEnd-hStart) * rSlope ,h>hEnd}
+,{(h-hStart) * rSlope , h< hEnd}
+, { (hEnd-hStart) * rSlope ,True}
 }]];
 
 
