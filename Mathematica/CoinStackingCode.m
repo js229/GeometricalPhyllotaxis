@@ -32,6 +32,7 @@ diskXZ[Disk[{x_,z_},_]] := {x,z};
 diskRightX[Disk[{x_,_},r_]] := x+r;
 diskLeftX[Disk[{x_,_},r_]] := x-r;
 diskTopZ[Disk[{_,z_},r_]] := z+r;
+diskBottomZ[Disk[{_,z_},r_]] := z-r;
 diskR[Disk[{_,_},r_]] := r;
 
 
@@ -69,6 +70,8 @@ diskIsNormalised[d_] := (! diskIsLeft[d]) && (! diskIsRight[d]);
 
 disksMaximum[] := 
 Max@Map[diskTopZ[getDisk[#]]&,Keys[globalRun["DiskData"]]];
+diskHighestBottom[] := 
+Max@Map[diskBottomZ[getDisk[#]]&,Keys[globalRun["DiskData"]]];
 
 highestDiskZ[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 (* used in RunCoinStacking as well for setup, so don't use the global *)
@@ -83,34 +86,31 @@ nextDiskNumber[] := Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]]+1;
 (* ::Input::Initialization:: *)
 
 
-
-executeRun[run_,chainMax_:Missing[]] := Module[{i,imax,res,diskTime},
+Clear[executeRun];
+executeRun[run_] := Module[{i,imax,res,diskTime},
 Off[SSSTriangle::tri];
 globalRun=run;
 
 If[MissingQ[globalRun["LastSupportDiskNumbers"]],
 globalRun["LastSupportDiskNumbers"] = VertexList[globalRun["ContactGraph"]]];
+If[MissingQ[globalRun["SupportDiskNumbers"]],globalRun["SupportDiskNumbers"]=Association[]];
 
 If[!NumericQ[imax],imax=20000];
 monitorFunction := For[i=1,i<= imax,i++,
 If[runCompletesArena[],Break[]];
 diskTime= First@Timing[addNextDisk[]];
 ];
-monitorString := Module[{},
-monitorZtogo= run["Arena"]["zMax"]-monitorZ;
-
-StringTemplate["next disk `disk`; Z `ztogo`; per-disk time `timing`"][<|
+monitorString := Module[{z},
+z=diskHighestBottom[];
+StringTemplate["next disk `disk`; Z `zToSwitch`,`zToMax`; r `radius`; per-disk time `timing`"][<|
 "disk"-> nextDiskNumber[]
-,"Z"->  disksMaximum[]
-,"monitorZtogo"->monitorZtogo
-,"diskstogo"->monitorDiskstogo
-,"ztogo"-> run["Arena"]["zMax"]-monitorZ
-,"monitorRise"->monitorRise
-,"radius"->diskR[Last[globalRun["DiskData"]]]
-,"Zmax"->run["Arena"]["zMax"]
+,"zToSwitch"-> run["Arena"]["rSwitchAt"]-z
+,"zToMax"->run["Arena"]["zMax"]-z
+,"radius"->diskR[Last[globalRun["DiskData"]]["Disk"]]
 ,"timing"->diskTime
 |>]
 ];
+
 If[False,monitorFunction,Monitor[monitorFunction,monitorString]];
 
 result= postRun[globalRun];
@@ -122,7 +122,7 @@ result
 (* ::Input::Initialization:: *)
 
 runCompletesArena[] := Module[{cutoff},
-disksMaximum[]>globalRun["Arena"]["zMax"] || 
+diskHighestBottom[]>globalRun["Arena"]["zMax"] || 
 Max[Keys[globalRun["DiskData"]]]> globalRun["Arena"]["diskMax"]
 ];
 
@@ -147,11 +147,13 @@ n=nextDiskNumber[];
 updateContactGraph[n,row["NextDiskRestsOn"]];
 AppendTo[globalRun["DiskData"],
 diskListRowFromDisk[n,disk]];
+
 globalRun["LastSupportDiskNumbers"]= Join[globalRun["LastSupportDiskNumbers"],
 leftRightCouldSupport[n,nextRadius[]]];
+AppendTo[globalRun["SupportDiskNumbers"],n->globalRun["LastSupportDiskNumbers"]];
 
 monitorRise=disksMaximum[]-monitorZ;
-monitorZ= disksMaximum[];
+monitorZ= diskHighestBottom[];
 
 ];
 
@@ -182,6 +184,7 @@ res
 
 vectorXZ[run_,n1_\[DirectedEdge]n2_ | n1_\[UndirectedEdge] n2_ | {n1_,n2_}] := Module[{}, getDiskXZ[run,n2]-getDiskXZ[run,n1]];
 
+Clear[neighbours];
 neighbours[g_,n_] :=  Complement[VertexList[Graph[EdgeList[g,n\[UndirectedEdge]_]]],{n}]
 
 vectorsFromNode[run_,g_,n_] := Module[{nbrs},
@@ -289,6 +292,7 @@ monitornewSupportTable = newSupportTable;
 newSupportTable = Select[newSupportTable,!MissingQ[#NextDisk]&];
 newSupportTable = Select[newSupportTable,isLeftRightSupported];
 newSupportTable = Select[newSupportTable,diskIsNormalised[#NextDisk]&];
+
 
 newdisksToCheckIntersection=Association[newSupportDisks];
 (* the centre of the new disk must be above the line trhrough the centres of the support *) 

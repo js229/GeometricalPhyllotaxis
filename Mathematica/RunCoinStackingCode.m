@@ -27,73 +27,8 @@ Get["LatticePhyllotaxis.m",Path->{PersistentSymbol["persistentGitHubPath","Local
 
 
 (* ::Input::Initialization:: *)
-makeCappedArena[run_,runParameters_] := Module[{initialRadius,finalRadius,hBase,hStart,hEnd,rOfH,arenaAssociation},
-
-initialRadius= smallestRadius[run] ;
-
-hBase=highestCentre[run];
-finalRadius= initialRadius/runParameters["rScale"];
-{hStart,hEnd} = hBase + {0,hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]]};
-rOfH =linearInterpolator[{hStart,hEnd},{initialRadius,-runParameters["rSlope"]}] ;
-
-bulgeFunction = makeBulgeFunction[finalRadius,1/4,hEnd,hEnd+2];
-rFunction = Piecewise[ {
-{rOfH,h<= hEnd}
-,{bulgeFunction,True}
-}];
-zMax=runParameters["zMax"]+ 1;
-
-arenaAssociation=runParameters;
-If[KeyMemberQ[arenaAssociation,"Lattice"],arenaAssociation=KeyDrop[arenaAssociation,"Lattice"]];
-arenaAssociation = Append[arenaAssociation,
-<| 
-"rFunction"->rFunction
-,"zMax"->zMax
-,"rFixedBefore"-> hStart
-,"rFixedAfter"-> hEnd
-,"CylinderLU"-> {0,runParameters["zMax"]}
-|>];
-arenaAssociation
-];
 
 
-makeBulgeFunction[rMin_,rMax_,zMin_,zMax_] := Module[{zRange,bulgeScale},
-
-bulgeScale =  Cos[ArcSin[rMin/rMax]]/zMax;
-
-zRange=zMax-zMin;
-
-<|"rFunction"->Function[z, Piecewise[
-{{rMin,z<=  zMin}
-,{ rMin/Sin[ArcCos[bulgeScale*(z-zMin)]],z<=zMax}
-,{rMax,True}
-}]]
-,"rMin"->rMin,"rMax"->rMax,"zMin"->zMin,"zMax"->zMax
-|>
-];
-
-
-
-(* ::Input::Initialization:: *)
-
-
-doParameterRun[experimentParameter_] := Module[{run},
-run = makeRunFromParameter[experimentParameter];
-run= CheckAbort[executeRun[run],Missing["Aborted run"]];
-debugLastRun= run;
-run
-]
-
-makeRunFromParameter[experimentParameter_] := Module[{lattice,run,arena,g,chainNumber},
-lattice=experimentParameter["Lattice"];
-If[MissingQ[lattice],
-lattice = latticeOrthogonal[{0,1}]];
-run = runFromLattice[lattice];
-If[MissingQ[run],Print["mRFP Not implemented"];Abort[]];
-run["Arena"] = makeArena[run,experimentParameter];
-
-run
-];
 
 runFromRun[run_] :=  Module[{g,d,chain},
 chain = Last[run["Chains"]];
@@ -145,7 +80,7 @@ highestCentre[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"
 
 
 makeArena[run_,runParameters_] := Module[{initialRadius,finalRadius,hBase,hStart,hEnd,rOfH,arenaAssociation},
-initialRadius  = 0.5;
+Print["Deprecated makeArena"];
 initialRadius= smallestRadius[run] ;
 (*hBase =1;*)
 hBase=highestCentre[run];
@@ -190,6 +125,7 @@ experimentParameters = MapIndexed[Append[#1,"runNumber"->First[#2]]&,experimentP
 experimentParameters
 ];
 
+
 runParameterSets[experimentParameters_] := 
 Map[
-Monitor[Append[#,"Results"->doParameterRun[#]],#]&,experimentParameters]
+Monitor[Append[#,"Results"->CheckAbort[doRunFromParameter[#],Missing["Aborted run"]];[#]],#]&,experimentParameters]
