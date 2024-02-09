@@ -231,6 +231,8 @@ chain=Append[chain,moveNumberLeft[Last[chain]]]];
 
 If[Last[chain]==First[chain],Break[];]
 ];If[i==chainMax,Print["i10"];Abort[]];
+
+
 chain
 ];
 
@@ -238,11 +240,24 @@ chain
 
 
 (* ::Input::Initialization:: *)
+logSupportChain[chainNumbers_] := Module[{chain,res,g,highestn,para},
+If[!KeyMemberQ[globalRun,"RunChains"],
+globalRun=Append[globalRun,"RunChains"->Association[]]];
+res=globalRun["RunChains"];
+highestn=Max[bareNumber/@chainNumbers];
+chain= Subgraph[globalRun["ContactGraph"],chainNumbers];
+chain=prettyGraph[globalRun,chain];
+para=chainParastichy[chain];
+res=Append[res,highestn-><|"Chain"->chain,"Parastichy"->para|>];
+globalRun["RunChains"]=res;
+];
+
 
 newsupportPairs[nextR_] :=Module[{supportGraph,supportChain},
 
 supportGraph=  Subgraph[globalRun["ContactGraph"],globalRun["LastSupportDiskNumbers"]];
 supportChain = topChain[supportGraph];
+logSupportChain[supportChain];
 
 
 globalRun["LastSupportDiskNumbers"]=disksInSupportChain[supportChain,nextR];
@@ -469,7 +484,7 @@ Print["Print  lopsided nodes", res2];
 
 ];
 
-edgeCheckNode[n_] := Module[{g,res,edgeStyler,res2},
+edgeCheckNode[n_] := Module[{g,res,edgeStyler,res2,le},
 If[bareNumber[n]===1,Return[True]];
 g=globalRun["ContactGraph"];
 le = lowerEdges[g,n];
@@ -585,7 +600,6 @@ chains
 (* ::Input::Initialization:: *)
 postRunFlatChain[run_] := Module[{res,chains,nrchains},
 res = run;
-(* topdown uses the topChain code from the runtime, so looks up xy coords in the run["DiskData"]; flattestChainData relies on these having gone into the graph vertexcoordinates already, sigh *)
 res= Append[res,"FlatChains"->flattestChainData[res["ContactGraph"]]];
 res
 ];
