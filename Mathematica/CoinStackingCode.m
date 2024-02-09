@@ -543,7 +543,7 @@ z
 nonbarePath[node_] :=  First@SortBy[nonbarePaths[node],pathscore];
 
 pathToDE[path_] := (monitorTopChainCount=path;Map[Apply[UndirectedEdge,#]&,Partition[path,2,1]]);
-chains=Association@Map[bareNumber[#]->pathToDE[nonbarePath[#]]&,nonbares];
+chains=Association@Map[(monitorFlatChain=#;bareNumber[#]->pathToDE[nonbarePath[#]])&,nonbares];
 chains
 ];
 (*
