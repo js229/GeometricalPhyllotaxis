@@ -91,9 +91,10 @@ executeRun[run_] := Module[{i,imax,res,diskTime},
 Off[SSSTriangle::tri];
 globalRun=run;
 
-If[MissingQ[globalRun["LastSupportDiskNumbers"]],
-globalRun["LastSupportDiskNumbers"] = VertexList[globalRun["ContactGraph"]]];
-If[MissingQ[globalRun["SupportDiskNumbers"]],globalRun["SupportDiskNumbers"]=Association[]];
+
+
+globalRun["TopChain"] = topChainInRun[globalRun,globalRun["ContactGraph"]];
+globalRun["RunChains"]= Association[]; 
 
 If[!NumericQ[imax],imax=20000];
 monitorFunction := For[i=1,i<= imax,i++,
@@ -104,7 +105,7 @@ monitorString := Module[{z},
 z=diskHighestBottom[];
 StringTemplate["next disk `disk`; Z `zToSwitch`,`zToMax`; r `radius`; per-disk time `timing`"][<|
 "disk"-> nextDiskNumber[]
-,"zToSwitch"-> run["Arena"]["rSwitchAt"]-z
+,"zToSwitch"-> run["Arena"]["rFixedAfter"]-z
 ,"zToMax"->run["Arena"]["zMax"]-z
 ,"radius"->diskR[Last[globalRun["DiskData"]]["Disk"]]
 ,"timing"->diskTime
@@ -113,8 +114,8 @@ StringTemplate["next disk `disk`; Z `zToSwitch`,`zToMax`; r `radius`; per-disk t
 
 If[False,monitorFunction,Monitor[monitorFunction,monitorString]];
 
-result= postRun[globalRun];
-result
+res= postRun[globalRun];
+res
 ];
 
 
@@ -138,22 +139,29 @@ node-><|"DiskNumber"->node,"Disk"->disk|>
 addNextDisk[]:=Module[{nextR,row,n,timing,disk},
 nextR=nextRadius[];
 
-row=newFindNextDiskFromSupportSet[nextR];
+row=findNextDiskFromChain[nextR];
 disk = row["NextDisk"];
 disk= jiggleDisk[globalRun,disk];
 n=nextDiskNumber[];
 
 
 updateContactGraph[n,row["NextDiskRestsOn"]];
+
 AppendTo[globalRun["DiskData"],
 diskListRowFromDisk[n,disk]];
 
-globalRun["LastSupportDiskNumbers"]= Join[globalRun["LastSupportDiskNumbers"],
-leftRightCouldSupport[n,nextRadius[]]];
-AppendTo[globalRun["SupportDiskNumbers"],n->globalRun["LastSupportDiskNumbers"]];
 
-monitorRise=disksMaximum[]-monitorZ;
+tw=globalRun["TopChain"];
+tw= updateGraphXY[tw,n,row["NextDiskRestsOn"],First[disk]];
+twc=topChainInRun[globalRun,tw];
+twc=prettyGraph[globalRun,twc];
+
+ 
+globalRun["TopChain"]=twc;
+logSupportChain[n];
+
 monitorZ= diskHighestBottom[];
+monitorRise=disksMaximum[]-monitorZ;
 
 ];
 
@@ -171,11 +179,15 @@ jiggleDiskRadius[Disk[xy_,r_],noise_] := Disk[xy,RandomReal[r*{1-noise,1+noise}]
 
 (* ::Input::Initialization:: *)
 
-newFindNextDiskFromSupportSet[nextR_]:= Module[{newSupportTable,res},
-newSupportTable=newsupportPairs[nextR];
-newSupportTable= SortBy[newSupportTable,diskZ[#NextDisk]&];
-If[Length[newSupportTable]==0,Print["No valid supports looking for ", nextDiskNumber[]];Abort[]];
-res=First[newSupportTable];
+findNextDiskFromChain[nextR_]:= Module[{chainNumbers,supportTable,res},
+chainNumbers=VertexList[globalRun["TopChain"]];
+
+supportTable=supportPairsFromSupportChainNumbers[chainNumbers,nextR];
+
+
+supportTable= SortBy[supportTable,diskZ[#NextDisk]&];
+If[Length[supportTable]==0,Print["No valid supports looking for ", nextDiskNumber[]];Abort[]];
+res=First[supportTable];
 res
 ];
 
@@ -204,9 +216,12 @@ vectors = SortBy[vectors,clockwiseSortFunction];
 First[Keys[vectors]]
 ];
 
-topChain[graph_] := topChainInRun[globalRun,graph];
+topChain[graph_] := topChainNumbersInRun[globalRun,graph];
 
-topChainInRun[run_,graph_] := Module[{g,chain,neighbours,highestNode,lastNode,nextNode,from,nextEdge,chainMax=500},
+topChainInRun[run_,graph_] := 
+Subgraph[graph,topChainNumbersInRun[run,graph] ];
+
+topChainNumbersInRun[run_,graph_] := Module[{g,chain,neighbours,highestNode,lastNode,nextNode,from,nextEdge,chainMax=500},
 
 g=graph;
 highestNode=Last[SortBy[Select[VertexList[g],bareNumberQ],getDiskZ[run,#]&]];
@@ -240,37 +255,92 @@ chain
 
 
 (* ::Input::Initialization:: *)
-logSupportChain[chainNumbers_] := Module[{chain,res,g,highestn,para},
-If[!KeyMemberQ[globalRun,"RunChains"],
-globalRun=Append[globalRun,"RunChains"->Association[]]];
-res=globalRun["RunChains"];
-highestn=Max[bareNumber/@chainNumbers];
-chain= Subgraph[globalRun["ContactGraph"],chainNumbers];
-chain=prettyGraph[globalRun,chain];
-para=chainParastichy[chain];
-res=Append[res,highestn-><|"Chain"->chain,"Parastichy"->para|>];
-globalRun["RunChains"]=res;
+logSupportChain[n_] := Module[{res,chain},
+chain = globalRun["TopChain"];
+AppendTo[globalRun["RunChains"],
+n-> <|"Chain"->chain,"Parastichy"->chainParastichy[chain]|>];
 ];
 
 
-newsupportPairs[nextR_] :=Module[{supportGraph,supportChain},
-
-supportGraph=  Subgraph[globalRun["ContactGraph"],globalRun["LastSupportDiskNumbers"]];
-supportChain = topChain[supportGraph];
-logSupportChain[supportChain];
 
 
-globalRun["LastSupportDiskNumbers"]=disksInSupportChain[supportChain,nextR];
+(* ::Input::Initialization:: *)
 
-res=newSupportPairsFromSupportDisks[globalRun["LastSupportDiskNumbers"],nextR];
-res
+supportPairsFromSupportChainNumbers[supportChainNumbers_,nextR_] :=Module[{supportDisks,pairs,supportTable,supportLine,supportLineFunction,newdisksToCheckIntersection,diskAboveSupportLineQ,extendedDisks,res,i,j},
+
+supportDisks =addLeftRightSupporters[DeleteDuplicates[supportChainNumbers],nextR]; 
+
+supportDisks = Map[#->getDiskFromRun[globalRun,#]&,supportDisks];
+pairs = Flatten[Table[{supportDisks[[i]],supportDisks[[j]]},{i,1,Length[supportDisks]},{j,i+1,Length[supportDisks]}],1];
+
+supportTable = Map[newMakeSupportTableRow[#]&,pairs];
+supportTable = Select[supportTable,Abs[#GapSeparation]< 2* nextR&];
+supportTable = Map[Append[#,"NextDisk"->newDiskOnThisPair[{#Disk1,#Disk2},nextR]]&,supportTable];
+supportTable = Select[supportTable,!MissingQ[#NextDisk]&];
+supportTable = Select[supportTable,isLeftRightSupported];
+supportTable = Select[supportTable,diskIsNormalised[#NextDisk]&];
+
+
+newdisksToCheckIntersection=Association[supportDisks];
+(* the centre of the new disk must be above the line through the centres of the support *) 
+
+supportLine =  SortBy[Values@Map[diskXZ,newdisksToCheckIntersection],First];
+supportLineFunction = Interpolation[supportLine,InterpolationOrder->1];
+diskAboveSupportLineQ[disk_]:= diskZ[disk] > supportLineFunction[diskX[disk]];
+
+supportTable = Select[supportTable,diskAboveSupportLineQ[#NextDisk]&];
+
+
+supportTable= Map[newsupportTableFindIntersections[#,nextR,newdisksToCheckIntersection]&,supportTable];
+supportTable= Select[supportTable,Length[#Intersection]==0&];
+
+supportTable
 ];
+
+isLeftRightSupported[row_] := Module[{x1,x2,xDisk,z1,z2,zDisk},
+x1=diskX[row["Disk1"]];
+x2 = diskX[row["Disk2"]];
+xDisk = diskX[row["NextDisk"]];
+z1=diskZ[row["Disk1"]];
+z2 = diskZ[row["Disk2"]];
+zDisk = diskZ[row["NextDisk"]];
+
+IntervalMemberQ[Interval[{x1,x2}],xDisk] && (zDisk > z1 || zDisk > z2)
+];
+
+
+newMakeSupportTableRow[{node1_->d1_,node2_->d2_}] := Module[{res,hDiff,eSep},
+hDiff= diskX[d2]-diskX[d1];
+
+If[hDiff> 0,
+eSep= diskLeftX[d2]-diskRightX[d1] 
+,
+eSep = diskLeftX[d1]-diskRightX[d2] 
+];
+eSep = If[eSep>0,eSep,0];
+<|"Disk1"->d1,"Disk2"->d2,"NextDiskRestsOn"->{node1,node2}, "GapSeparation"->eSep|>
+]
+
+newsupportTableFindIntersections[row_,nextR_,disks_] := Module[{res,extendedDisks,locationIntersectsQ,intersections},
+intersections= Map[diskdiskIntersectionQ[row["NextDisk"],#]&,KeyDrop[disks,row["NextDiskRestsOn"]]];
+intersections= Keys@Select[ intersections,TrueQ];
+Append[row,"Intersection"->intersections]
+];
+
+
+newDiskOnThisPair[{d1_,d2_},r_] := Module[{res},
+res = diskdiskUpperTouchingPoint[{d1,d2},r];
+If[MissingQ[res],Return[res]]; (* no overlap *) 
+Disk[res,r]
+];
+
+diskdiskIntersectionQ[Disk[xy1_,r1_],Disk[xy2_,r2_]]:= Norm[xy1-xy2,2] < (r1+ r2);
 
 
 disksInSupportChain[chain_,nextR_] :=
 addLeftRightSupporters[DeleteDuplicates[chain],nextR]; 
 
-addLeftRightSupporters[sDisks_,nextR_] := Module[{},
+addLeftRightSupporters[sDisks_,nextR_] := Module[{supportDisks},
 supportDisks=sDisks;
 supportDisks= DeleteDuplicates[bareNumber/@ supportDisks];
 supportDisks =Flatten[Map[leftRightCouldSupport[#,nextR]&,supportDisks]];
@@ -292,7 +362,7 @@ res
 
 
 (* ::Input::Initialization:: *)
-newSupportPairsFromSupportDisks[supportDisks_,nextR_] :=Module[{pairs,supportTable,extendedDisks,res,i,j},
+(*newSupportPairsFromSupportDisks[supportDisks_,nextR_] :=Module[{newSupportDisks,newPairs,newSupportTable,supportLine,supportLineFunction,newdisksToCheckIntersection,pairs,diskAboveSupportLineQ,supportTable,extendedDisks,res,i,j},
 
 pairs = Flatten[Table[{supportDisks[[i]],supportDisks[[j]]},{i,1,Length[supportDisks]},{j,i+1,Length[supportDisks]}],1];
 
@@ -324,7 +394,7 @@ newSupportTable= Select[newSupportTable,Length[#Intersection]==0&];
 
 newSupportTable
 ];
-
+*)
 isLeftRightSupported[row_] := Module[{x1,x2,xDisk,z1,z2,zDisk},
 x1=diskX[row["Disk1"]];
 x2 = diskX[row["Disk2"]];
@@ -368,24 +438,40 @@ diskdiskIntersectionQ[Disk[xy1_,r1_],Disk[xy2_,r2_]]:= Norm[xy1-xy2,2] < (r1+ r2
 
 
 (* ::Input::Initialization:: *)
-updateContactGraph[n_,disk_,{n1_,n2_}] := updateContactGraph[n,{n1,n2}]
 
 
 updateContactGraph[n_,{n1_,n2_}] := Module[{g,d,d1,d2,d1Left},
 g = globalRun["ContactGraph"];
-g=  VertexAdd[g,n];
+g= updateGraph[g,n,{n1,n2}];
+globalRun["ContactGraph"]=g;
+];
 
+SetAttributes[updateGraph,HoldFirst];
+updateGraph[g_,n_,{n1_,n2_}] := Module[{},
+g=  VertexAdd[g,n];
 If[!bareNumberQ[n1],
  g= VertexAdd[g,n1]];
 If[!bareNumberQ[n2],
  g= VertexAdd[g,n2]];
 g= EdgeAdd[g,
-{n \[UndirectedEdge] n1,n \[UndirectedEdge] n2 }];
-
-globalRun["ContactGraph"]=g;
-
+{n \[UndirectedEdge] n1,n \[UndirectedEdge] n2}];
+g
 ];
+SetAttributes[updateGraphXY,HoldFirst];
+updateGraphXY[g_,n_,{n1_,n2_},xy_] := Module[{},
+g=updateGraph[g,n,{n1,n2}] ;
+AnnotationValue[{g,n},VertexCoordinates]= xy;
+If[Head[n1]===left,
+AnnotationValue[{g,n1},VertexCoordinates]= AnnotationValue[{g,bareNumber[n1]},VertexCoordinates]-{1,0}];
+If[Head[n1]===right,
+AnnotationValue[{g,n1},VertexCoordinates]= AnnotationValue[{g,bareNumber[n1]},VertexCoordinates]+{1,0}];
+If[Head[n2]===left,
+AnnotationValue[{g,n2},VertexCoordinates]= AnnotationValue[{g,bareNumber[n2]},VertexCoordinates]-{1,0}];
+If[Head[n2]===right,
+AnnotationValue[{g,n2},VertexCoordinates]= AnnotationValue[{g,bareNumber[n2]},VertexCoordinates]+{1,0}];
 
+g
+];
 
 
 
@@ -598,18 +684,18 @@ chains
 
 
 (* ::Input::Initialization:: *)
-postRunFlatChain[run_] := Module[{res,chains,nrchains},
+(*postRunFlatChain[run_] := Module[{res,chains,nrchains},
 res = run;
 res= Append[res,"FlatChains"->flattestChainData[res["ContactGraph"]]];
 res
-];
-postRunChain[run_] := Module[{res,chains,nrchains},
+];*)
+(*postRunChain[run_] := Module[{res,chains,nrchains},
 res = run;
 (* topdown uses the topChain code from the runtime, so looks up xy coords in the run["DiskData"]; flattestChainData relies on these having gone into the graph vertexcoordinates already, sigh *)
 res=Append[res,"Chains"->topdownChains[res,res["ContactGraph"]]];
 
 res
-];
+];*)
 postRunNodeStatistics[run_] := Module[{res,angles},
 res = run;
 angles= Map[<|"Angle"->#|>&,computeNodeLowerAngles[run]];
@@ -619,7 +705,7 @@ res
 
 
 (* ::Input::Initialization:: *)
-flattestChainData[graph_,chainsToDo_:100] := Module[{i,g,chainGraphSet,chains},
+flattestChainData[graph_,chainsToDo_:100] := Module[{i,g,chainGraphSet,chains,chainSet},
 chains= flattestChains[graph];
 
 chainSet=chains /. DirectedEdge -> UndirectedEdge;
@@ -632,7 +718,7 @@ chainSet
 
 chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
 
-chainMeanRadius[chain_] := Module[{e,gxy},
+chainMeanRadius[chain_] := Module[{e,gxy,norm},
 gxy[n_] :=AnnotationValue[{chain,n},VertexCoordinates];
 norm[n1_,n2_] := Norm[gxy[n2]-gxy[n1]];
 e=EdgeList[chain];
@@ -643,13 +729,13 @@ Mean[e]/2
 
 
 (* ::Input::Initialization:: *)
-topdownChains[run_,graph_,chainsToDo_:100] := Module[{i,g,chainGraphSet,chain,chainGraph},
+(*topdownChains[run_,graph_,chainsToDo_:100] := Module[{i,g,chainGraphSet,chain,chainGraph},
 g=Graph[graph,VertexLabels->"Name"];
 
 chainGraphSet=List[];
 For[i=0,i<chainsToDo,i++,
 monitorTopDownChainCount=i;
-chain=topChainInRun[run,g];
+chain=topChainNumbersInRun[run,g];
 chainGraph=Subgraph[g,chain];
 chainGraph= Graph[chainGraph,VertexLabels->"Name"];
 chainGraphSet=Append[chainGraphSet, chainGraph];
@@ -666,7 +752,7 @@ chainSet= Map[Append[#,"AngleMean"->chainMeanLatticeAngle[run,#Chain]]&,chainSet
 chainSet= Map[Append[#,"AngleSD"->chainSDLatticeAngle[run,#Chain]]&,chainSet];
 chainSet
 ];
-
+*)
 chainMeanLatticeAngle[run_,chain_] := Module[{res,v},
 v=Select[VertexList[chain],bareNumberQ];
 res= KeyTake[run["NodeStatistics"],v];
