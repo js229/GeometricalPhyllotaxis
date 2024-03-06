@@ -90,7 +90,7 @@ Clear[executeRun];
 executeRun[run_] := Module[{i,imax,res,diskTime},
 Off[SSSTriangle::tri];
 globalRun=run;
-
+globalRun["SpecifiedDiskMax"]= Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]];
 
 
 globalRun["TopChain"] = topChainInRun[globalRun,globalRun["ContactGraph"]];
@@ -136,7 +136,7 @@ diskListRowFromDisk[node_,disk_] := Module[{},
 node-><|"DiskNumber"->node,"Disk"->disk|>
 ];
 
-addNextDisk[]:=Module[{nextR,row,n,timing,disk},
+addNextDisk[]:=Module[{nextR,row,n,timing,disk,tw,twc},
 nextR=nextRadius[];
 
 row=findNextDiskFromChain[nextR];
@@ -545,7 +545,7 @@ edgeStyle[run_,upper_ \[UndirectedEdge] lower_] := Module[{vxy},
 vxy=vectorXZ[run,upper\[UndirectedEdge] lower];
 If[First[vxy]>= 0,Blue,Red]
 ]
-edgeStyle[upper_ \[DirectedEdge] lower_] := edgeStyle[upper \[UndirectedEdge] lower];
+(*edgeStyle[upper_ \[DirectedEdge] lower_] := edgeStyle[upper \[UndirectedEdge] lower];*)edgeStyle[run_,upper_ \[DirectedEdge] lower_] := edgeStyle[run,upper \[UndirectedEdge] lower];
 
 
 (* ::Input::Initialization:: *)
@@ -557,7 +557,7 @@ res=Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];
 If[Or@@ Map[Length[#]!=2&,res],"Print some nodes without two supports"];
 
 edgeStyler[edgeList_] := Map[edgeStyle,edgeList];
-lopsidedAllowedTo = 100;
+lopsidedAllowedTo = run["SpecifiedDiskMax"];
 
 nodesToCheck = Complement[Select[VertexList[g],bareNumberQ],Range[lopsidedAllowedTo]];
 res2= Map[lowerEdges[g,#]&,nodesToCheck];
