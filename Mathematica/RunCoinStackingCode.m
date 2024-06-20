@@ -22,7 +22,7 @@
 (* ::Input::Initialization:: *)
 SetDirectory[NotebookDirectory[]];(*Get["CoinStackingCode.m",Path->{PersistentSymbol["persistentGitHubPath","Local"]}]
 *)
-Get["LatticePhyllotaxis.m",Path->{PersistentSymbol["persistentGitHubPath","Local"]}];
+Get["ObsoleteLatticePhyllotaxis.m",Path->{PersistentSymbol["persistentGitHubPath","Local"]}];
 
 
 
