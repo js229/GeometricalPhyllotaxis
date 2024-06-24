@@ -3,8 +3,19 @@
 BeginPackage["DiskStacking`"];
 
 
-runFromLattice::usage = "Creates a runnable initial condition from a LatticePhyllotaxis lattice";
 executeRun::usage = "Principal run code";
+readyRunFromParameter::usage = "Prepare run arena";
+readyArenaFromParameter::usage = "Alternative access...";
+pruneRun::usage = "Helper for display";
+pruneRunByDisks::usage = "Helper for display";
+graphToContactLines::usage = "Helper for graphics";
+bareNumberQ::usage = "False for left[] or right [] disks";
+bareNumber::usage = "Take off left[] or right []";
+getDiskFromRun::usage = "";
+diskAndVisibleCopies::usage = "";
+diskR::usage = "";
+diskZ::usage = "";
+linearInterpolatorBySlope::usage = "";
 
 
 Begin["Private`"]
@@ -66,38 +77,63 @@ graphFromTCLattice[lattice_] := Module[{m,n,r,disks,diskx,diskxy,disknxy,disksOn
 
 
 (* ::Input::Initialization:: *)
+readyRunFromParameter[experimentParameters_] := Module[{runParameters,lattice,run,arena},
+runParameters= <|"Capped"->False,"rScale"->10,"rSlope"->0.03`,"zMax"->Missing[],"runNumber"->1,"diskMax"->\[Infinity],"PostFixChains"->20,"Run"->"","Noise"->Missing[],"Lattice"->latticeOrthogonal[{0,1}]|>;
+runParameters= Append[runParameters,experimentParameters];
+
+(* find the initial disk/graph arrangement *)
+run = runFromLattice[runParameters["Lattice"]];
+(* create the r Function *)
+runParameters=Append[runParameters,"InitialRadius"-> smallestRadius[run]];
+runParameters=Append[runParameters,"rFixedBefore"->  highestCentre[run]];
+run["Arena"] = makeArena[runParameters];
+
+run
+];
 smallestRadius[run_] := Min@Map[diskR[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 highestCentre[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 
 
-makeArena[run_,runParameters_] := Module[{initialRadius,finalRadius,hBase,hStart,hEnd,rOfH,arenaAssociation},
-Print["Deprecated makeArena"];
-initialRadius= smallestRadius[run] ;
-(*hBase =1;*)
-hBase=highestCentre[run];
-finalRadius= initialRadius/runParameters["rScale"];
-{hStart,hEnd} = hBase + {0,hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]]};
-rOfH =linearInterpolator[{hStart,hEnd},{initialRadius,-runParameters["rSlope"]}] ;
+(* ::Input::Initialization:: *)
+makeArena[runParameters_] := Module[{initialRadius,finalRadius,hBase,rOfH,arena,zMax},
 
-arenaAssociation=runParameters;
-If[KeyMemberQ[arenaAssociation,"Lattice"],arenaAssociation=KeyDrop[arenaAssociation,"Lattice"]];
-arenaAssociation = Append[arenaAssociation,
-<| 
-"rFunction"->rOfH
-,"rFixedBefore"-> hStart
-,"rFixedAfter"-> hEnd
-,"CylinderLU"-> {0,runParameters["zMax"]}
-|>];
-arenaAssociation
+initialRadius= runParameters["InitialRadius"] ;
+
+hBase=runParameters["rFixedBefore"] ;
+finalRadius= initialRadius/runParameters["rScale"];
+zMax = hBase + hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]];
+rOfH =linearInterpolatorBySlope[{hBase,zMax},{initialRadius,-runParameters["rSlope"]}] ;
+
+arena=KeyDrop[runParameters,{"Lattice"}];
+arena["rFunction"]= rOfH;
+arena["rFixedAfter"]=zMax;
+
+zMax= zMax + runParameters["PostFixChains"]* 4* finalRadius;
+arena["zMax"]= zMax;
+arena["CylinderLU"]= {0,zMax};
+
+arena
 ];
 
 
-linearInterpolator[{hStart_,hEnd_},{r_,rSlope_}] := 
+linearInterpolatorBySlope[{hStart_,hEnd_},{r_,rSlope_}] := 
 Function[{h}, r+ Piecewise[ {
 {0,h< hStart}
 ,{(h-hStart) * rSlope , h< hEnd}
 , { (hEnd-hStart) * rSlope ,True}
 }]];
+
+
+
+linearInterpolatorByEndPoints[{hStart_,hEnd_},{rStart_,rEnd_}] := Block[{rSlope},
+rSlope=(rEnd-rStart)/(hEnd-hStart);
+Function[{h}, rStart+ Piecewise[ {
+{0,h< hStart}
+,{(h-hStart) * rSlope , h< hEnd}
+, { (hEnd-hStart) * rSlope ,True}
+}]]
+];
+
 
 
 hRangeNeeded[{rStart_,rEnd_},rSlope_] := Module[{hSlopeRange},
@@ -125,6 +161,52 @@ Monitor[Append[#,"Results"->CheckAbort[doRunFromParameter[#],Missing["Aborted ru
 (*dPrint[x__] := If[debug, Print[x]];*)
 (**)
 (**)
+
+
+(* ::Section:: *)
+(*Run  pruning*)
+
+
+(* for display convenience *)
+
+
+(* ::Input::Initialization:: *)
+nodesToPruneTo[run_,Zrange_] := Module[{g,nodes},
+g=run["ContactGraph"];
+nodes=Select[VertexList[g],IntervalMemberQ[Interval[Zrange],AnnotationValue[{g,#},VertexCoordinates][[2]]]&];
+nodes
+];
+
+useChainQ[chain_,nodes_] := IntersectingQ[VertexList[chain],nodes];
+
+pruneRun[run_,Zrange_] := Module[{res,nodes},
+res=run;
+nodes=leftAndRightNumbers@nodesToPruneTo[res,Zrange];
+pruneRunByNodes[run,nodes]
+];
+pruneRunByNodes[run_,nodes_] := 
+Module[{res},
+res=run;
+res["ContactGraph"] = Subgraph[res["ContactGraph"] ,nodes];
+res["RunChains"]= Select[res["RunChains"],useChainQ[#Chain,nodes]&];
+res["DiskData"]= KeyTake[res["DiskData"],nodes];
+res["NodeStatistics"] = KeySelect[run["NodeStatistics"],MemberQ[nodes,#]&];
+
+
+res["Arena"]["CylinderLU"] = MinMax[diskZ[#Disk]&/@ res["DiskData"]];
+res
+];
+pruneRunByDisks[run_,diskNumbers_] := 
+Module[{nodes,res},
+nodes=Flatten[leftAndRightNumbers/@Range[diskNumbers]]; 
+pruneRunByNodes[run,nodes]
+];
+pruneRunToTopChain[run_] := Module[{res,chain,nodes},
+chain=Last[run["RunChains"]]["Chain"];
+nodes=Flatten[leftAndRightNumbers[VertexList[chain]]];
+pruneRunByNodes[run,nodes]
+];
+
 
 
 (* ::Section:: *)
@@ -487,7 +569,6 @@ res
 
 
 (* ::Input::Initialization:: *)
-
 isLeftRightSupported[row_] := Module[{x1,x2,xDisk,z1,z2,zDisk},
 x1=diskX[row["Disk1"]];
 x2 = diskX[row["Disk2"]];
@@ -773,7 +854,6 @@ chains
 
 
 (* ::Input::Initialization:: *)
-
 postRunNodeStatistics[run_] := Module[{res,angles},
 res = run;
 angles= Map[<|"Angle"->#|>&,computeNodeLowerAngles[run]];
@@ -819,7 +899,6 @@ Mean[e]/2
 
 
 (* ::Input::Initialization:: *)
-
 chainMeanLatticeAngle[run_,chain_] := Module[{res,v},
 v=Select[VertexList[chain],bareNumberQ];
 res= KeyTake[run["NodeStatistics"],v];
@@ -936,6 +1015,38 @@ edgePairAngle[{e1_,e2_}] := ArcCos[(e1 . e2)/(Norm[e1]*Norm[e2])];
 edges= Map[edgePairAngle,edges];
 edges
 ]
+
+
+(* ::Section:: *)
+(*Graphics  helpers*)
+
+
+(* ::Input::Initialization:: *)
+graphToContactLines[g_,run_,leftRightColours_] := Module[{dlines,fsort,res},dlines = Line/@Map[diskXZ[getDiskFromRun[run,#]]&,List@@@EdgeList[g],{2}];fsort[Line[{p1_,p2_}]] := If[First[p1]<First[p2],Line[{p1,p2}],Line[{p2,p1}]];dlines=Map[fsort,dlines];res = lineCylinderIntersectionColoured[#,leftRightColours]& /@dlines;
+res
+];
+
+graphToContactLines[run_,leftRightColours_] := graphToContactLines[run["ContactGraph"],run,leftRightColours];
+
+lineCylinderIntersectionColoured[Line[{{x1_,z1_},{x2_,z2_}}],leftRightColours_] :=
+ Module[{slope,col},
+slope= (z2-z1)/(x2-x1);
+If[slope>0,col=leftRightColours["Left"],col=leftRightColours["Right"]];If[x1<-1/2,Return[
+{col,
+Line[{{-1/2, z2 - slope * (x2-(-1/2))},{x2,z2}}], Line[{{x1+1,z1},{1/2,z1+slope *( 1/2-(1+x1))}}]
+}
+]];
+If[x2>1/2,Return[
+{col,
+Line[{{-1/2, z2- slope * (x2-1-(-1/2))},{x2-1,z2}}], Line[{{x1,z1},{1/2,z1+slope *( 1/2-(x1))}}]
+}
+]];
+Return[{col,Line[{{x1,z1},{x2,z2}}]}] 
+];
+
+diskAndVisibleCopies[Disk[{x_,z_},r_]] := {Disk[{x,z},r],If[x+r>1/2,moveDiskLeft[Disk[{x,z},r]],Nothing[]],If[x-r<-1/2,moveDiskRight[Disk[{x,z},r]],Nothing[]]};
+
+
 
 
 End[];
