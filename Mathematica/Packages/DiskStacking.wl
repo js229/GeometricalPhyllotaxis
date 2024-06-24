@@ -4,18 +4,22 @@ BeginPackage["DiskStacking`"];
 
 
 executeRun::usage = "Principal run code";
+restartRun::usage = "Restart run code";
 readyRunFromParameter::usage = "Prepare run arena";
-readyArenaFromParameter::usage = "Alternative access...";
 pruneRun::usage = "Helper for display";
 pruneRunByDisks::usage = "Helper for display";
+pruneRunToTopChain::usage = "Helper for display";
 graphToContactLines::usage = "Helper for graphics";
+diskNumbersInRun::usage = "Numbered bare disks in run";
 bareNumberQ::usage = "False for left[] or right [] disks";
 bareNumber::usage = "Take off left[] or right []";
 getDiskFromRun::usage = "";
 diskAndVisibleCopies::usage = "";
 diskR::usage = "";
 diskZ::usage = "";
+diskXZ::usage = "";
 linearInterpolatorBySlope::usage = "";
+left::usage = "Used only as a tag,";
 
 
 Begin["Private`"]
@@ -233,23 +237,32 @@ moveNumberRight[left[n_]] := n;
 moveNumberLeft[n_] := left[n];
 moveNumberLeft[right[n_]] := n;
 leftAndRightNumbers[n_List] := Join@@{n,moveNumberRight/@n,moveNumberLeft/@n};
-bareNumber[left[n_]]  := n;
-bareNumber[right[n_]] := n;
-bareNumber[n_] := n;
-bareNumberQ[n_] := n===bareNumber[n];
 
-moveDiskRight[Disk[{x_,z_},r_]] :=
-Disk[{x+1,z},r];
-moveDiskLeft[Disk[{x_,z_},r_]] :=
-Disk[{x-1,z},r];
+(*
+bareNumber[left[n_]]  := n;  this interacts badly with the Package context *) 
+
+
+
+bareNumber[n_] := n /; bareNumberQ[n];
+bareNumber[n_] := First[n] /; rightNumberQ[n];
+bareNumber[n_] := First[n] /; leftNumberQ[n];
+
+bareNumberQ[n_] := IntegerQ[n];
+leftNumberQ[n_] := StringEndsQ[ToString[Head[n]],"left"];
+rightNumberQ[n_] := StringEndsQ[ToString[Head[n]],"right"];
+
+
+moveDiskRight[Disk[{x_,z_},r_]] := Disk[{x+1,z},r];
+moveDiskLeft[Disk[{x_,z_},r_]] := Disk[{x-1,z},r];
 moveNumberedDiskRight[n_->d_] := moveNumberRight[n]->moveDiskRight[d];
 moveNumberedDiskLeft[n_->d_] := moveNumberLeft[n]->moveDiskLeft[d];
 
 
-getDisk[n_] := getDiskFromRun[globalRun,n] 
-getDiskFromRun[run_,n_] := run["DiskData"][n]["Disk"];
-getDiskFromRun[run_,right[n_]] :=  moveDiskRight[getDiskFromRun[run,n]];
-getDiskFromRun[run_,left[n_]] := moveDiskLeft[getDiskFromRun[run,n]];
+diskNumbersInRun[run_] := Keys[run["DiskData"]];
+getDisk[n_] := getDiskFromRun[globalRun,n];
+getDiskFromRun[run_,n_] := run["DiskData"][n]["Disk"] /; bareNumberQ[n];
+getDiskFromRun[run_,n_] :=  moveDiskRight[getDiskFromRun[run,bareNumber[n]]] /; rightNumberQ[n];
+getDiskFromRun[run_,n_] := moveDiskLeft[getDiskFromRun[run,bareNumber[n]]] /; leftNumberQ[n];
 
 getDiskXZ[run_,n_] := diskXZ[getDiskFromRun[run,n]];
 getDiskXZ[n_] :=getDiskXZ[globalRun,n] ;
@@ -1022,7 +1035,8 @@ edges
 
 
 (* ::Input::Initialization:: *)
-graphToContactLines[g_,run_,leftRightColours_] := Module[{dlines,fsort,res},dlines = Line/@Map[diskXZ[getDiskFromRun[run,#]]&,List@@@EdgeList[g],{2}];fsort[Line[{p1_,p2_}]] := If[First[p1]<First[p2],Line[{p1,p2}],Line[{p2,p1}]];dlines=Map[fsort,dlines];res = lineCylinderIntersectionColoured[#,leftRightColours]& /@dlines;
+graphToContactLines[g_,run_,leftRightColours_] := Module[{dlines,fsort,res},
+dlines = Line/@Map[diskXZ[getDiskFromRun[run,#]]&,List@@@EdgeList[g],{2}];fsort[Line[{p1_,p2_}]] := If[First[p1]<First[p2],Line[{p1,p2}],Line[{p2,p1}]];dlines=Map[fsort,dlines];res = lineCylinderIntersectionColoured[#,leftRightColours]& /@dlines;
 res
 ];
 
