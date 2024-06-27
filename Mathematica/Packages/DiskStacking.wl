@@ -741,51 +741,46 @@ edgeStyle[run_,upper_ \[UndirectedEdge] lower_] := Module[{vxy},
 vxy=vectorXZ[run,upper\[UndirectedEdge] lower];
 If[First[vxy]>= 0,Blue,Red]
 ]
-(*edgeStyle[upper_ \[DirectedEdge] lower_] := edgeStyle[upper \[UndirectedEdge] lower];*)edgeStyle[run_,upper_ \[DirectedEdge] lower_] := edgeStyle[run,upper \[UndirectedEdge] lower];
+edgeStyle[upper_ \[DirectedEdge] lower_] := edgeStyle[upper \[UndirectedEdge] lower];
+edgeStyle[run_,upper_ \[DirectedEdge] lower_] := edgeStyle[run,upper \[UndirectedEdge] lower];
 
 
 (* ::Input::Initialization:: *)
 
 
 
- edgeCheck[run_] := Module[{g,res,edgeStyler,res2,nodesToCheck,lopsidedAllowedTo},
-g=run["ContactGraph"];
-res=Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];
-If[Or@@ Map[Length[#]!=2&,res],"Print some nodes without two supports"];
-
-edgeStyler[edgeList_] := Map[edgeStyle,edgeList];
-lopsidedAllowedTo = run["SpecifiedDiskMax"];
-
-nodesToCheck = Complement[Select[VertexList[g],bareNumberQ],Range[lopsidedAllowedTo]];
-res2= Map[lowerEdges[g,#]&,nodesToCheck];
-res2 =Association@Map[#->Sort@edgeStyler[#]&,res2];
-res2= Select[res2,# != {RGBColor[0, 0, 1],RGBColor[1, 0, 0]}&];
-
-If[Length[res2]>0 &&  Keys[res2]!={{}},
-Print["Print  lopsided nodes", res2];
-];
-
-];
-
-edgeCheckNode[n_] := Module[{g,res,edgeStyler,res2,le},
-If[bareNumber[n]===1,Return[True]];
-g=globalRun["ContactGraph"];
-le = lowerEdges[g,n];
-If[Length[le]!=2,Print["Node ", n, " without two supports"]];
-If[Sort[Map[edgeStyle,Keys[le]]]!= {RGBColor[0, 0, 1],RGBColor[1, 0, 0]},
-Print["Node ", n, " is lopsided"]];
-
-
-];
-
-lowerEdges[g_,n_] := Module[{nxy,edges,nodes},
-nxy=AnnotationValue[{g,n},VertexCoordinates];
-edges= EdgeList[g,n \[UndirectedEdge]_];
-nodes= Complement[Flatten[List@@@edges],{n}];
-nodes= Association@Map[(n \[DirectedEdge] #)-> Last[AnnotationValue[{g,#},VertexCoordinates]]-Last[nxy]&,nodes];
-nodes = Select[nodes,#<=0&];
-Keys[nodes]
-];
+(* ::Input:: *)
+(* edgeCheck[run_] := Module[{g,res,edgeStyler,res2,nodesToCheck,lopsidedAllowedTo},g=run["ContactGraph"];res=Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];If[Or@@ Map[Length[#]!=2&,res],"Print some nodes without two supports"];*)
+(**)
+(*edgeStyler[edgeList_] := Map[edgeStyle,edgeList];lopsidedAllowedTo = run["SpecifiedDiskMax"];*)
+(**)
+(*nodesToCheck = Complement[Select[VertexList[g],bareNumberQ],Range[lopsidedAllowedTo]];res2= Map[lowerEdges[g,#]&,nodesToCheck];res2 =Association@Map[#->Sort@edgeStyler[#]&,res2];res2= Select[res2,# != {RGBColor[0, 0, 1],RGBColor[1, 0, 0]}&];*)
+(**)
+(*If[Length[res2]>0 &&  Keys[res2]!={{}},*)
+(*Print["Print  lopsided nodes", res2];*)
+(*];*)
+(**)
+(*];*)
+(**)
+(*edgeCheckNode[n_] := Module[{g,res,edgeStyler,res2,le},*)
+(*If[bareNumber[n]===1,Return[True]];*)
+(*g=globalRun["ContactGraph"];*)
+(*le = lowerEdges[g,n];*)
+(*If[Length[le]!=2,Print["Node ", n, " without two supports"]];*)
+(*If[Sort[Map[edgeStyle,Keys[le]]]!= {RGBColor[0, 0, 1],RGBColor[1, 0, 0]},*)
+(*Print["Node ", n, " is lopsided"]];*)
+(**)
+(**)
+(*];*)
+(**)
+(*lowerEdges[g_,n_] := Module[{nxy,edges,nodes},*)
+(*nxy=AnnotationValue[{g,n},VertexCoordinates];*)
+(*edges= EdgeList[g,n \[UndirectedEdge]_];*)
+(*nodes= Complement[Flatten[List@@@edges],{n}];*)
+(*nodes= Association@Map[(n \[DirectedEdge] #)-> Last[AnnotationValue[{g,#},VertexCoordinates]]-Last[nxy]&,nodes];*)
+(*nodes = Select[nodes,#<=0&];*)
+(*Keys[nodes]*)
+(*];*)
 
 
 (* ::Input::Initialization:: *)
