@@ -4,7 +4,7 @@ BeginPackage["DiskStacking`"];
 
 
 executeRun::usage = "Principal run code";
-restartRun::usage = "Restart run code";
+(*restartRun::usage = "Restart run code"; should move here*)
 readyRunFromParameter::usage = "Prepare run arena";
 pruneRun::usage = "Helper for display";
 pruneRunByDisks::usage = "Helper for display";
@@ -15,11 +15,12 @@ bareNumberQ::usage = "False for left[] or right [] disks";
 bareNumber::usage = "Take off left[] or right []";
 getDiskFromRun::usage = "";
 diskAndVisibleCopies::usage = "";
-diskR::usage = "";
+diskR::usage = "better to provide an api for the functions that call this";
 diskZ::usage = "";
 diskXZ::usage = "";
 linearInterpolatorBySlope::usage = "";
-left::usage = "Used only as a tag,";
+left::usage = "Used only as a tag, nb right is not here and makes no difference";
+postRunExtractNonOverlappingChains::usage = "";
 
 
 Begin["Private`"]
@@ -27,13 +28,6 @@ Begin["Private`"]
 
 (* ::Input:: *)
 (**)
-
-
-(* ::Input::Initialization:: *)
-(*Needs["LatticePhyllotaxis`"];
-*)
-(*Get["ObsoleteLatticePhyllotaxis.m",Path->{PersistentSymbol["persistentGitHubPath","Local"]}];
-*)
 
 
 (* ::Section:: *)
@@ -857,7 +851,7 @@ chains
 ]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Post run statistics*)
 
 
@@ -870,7 +864,7 @@ res
 ];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Chains by flattest*)
 
 
@@ -898,7 +892,7 @@ Mean[e]/2
 
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Top down chains*)
 
 
@@ -1025,7 +1019,7 @@ edges
 ]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Graphics  helpers*)
 
 
@@ -1056,6 +1050,120 @@ Return[{col,Line[{{x1,z1},{x2,z2}}]}]
 diskAndVisibleCopies[Disk[{x_,z_},r_]] := {Disk[{x,z},r],If[x+r>1/2,moveDiskLeft[Disk[{x,z},r]],Nothing[]],If[x-r<-1/2,moveDiskRight[Disk[{x,z},r]],Nothing[]]};
 
 
+
+
+(* ::Section:: *)
+(*Extract  non - overlapping  chains*)
+
+
+(* ::Input::Initialization:: *)
+postRunExtractNonOverlappingChains[run_] := 
+Module[{res,ppair,chainParastichies,oChains},
+res=run;
+oChains= nonOverlappingChains[res["RunChains"]];
+ppair[redblue_] := Sort[{redblue[Red],redblue[Blue]}];
+oChains =Map[Append[#,"ParastichyPair"-> ppair[#["Parastichy"]]]&,oChains];
+chainParastichies= Map[Association@countsByLength[#Chain]&,oChains];
+res = KeyTake[res,"Arena"];
+res= Append[res,<|"ChainParastichies"->chainParastichies,"ParastichyPairs"->Map[#ParastichyPair&,oChains]|>];
+res
+];
+nonOverlappingChains[chains_] := Module[{nextChain,chainedSoFar,thisChain,res,index},
+nextChain[chain_] := Module[{w},
+w=chain;
+w["ChainedSoFar"]=chainedSoFar;
+w["ThisChain"]=thisChain;
+w["ThisChain"]=Complement[w["ThisChain"],w["ChainedSoFar"]];
+w["ThisChain"] =Union[chainDiskNumbers[chain["Chain"]],w["ThisChain"]];
+w["New"] =!IntersectingQ[w["ChainedSoFar"],w["ThisChain"]];
+If[w["New"],
+w["ChainedSoFar"]=w["ThisChain"];
+w["ThisChain"]={}
+];
+chainedSoFar= w["ChainedSoFar"];
+thisChain=w["ThisChain"];
+w
+];
+
+chainedSoFar = {};thisChain={};
+ res=Map[nextChain,chains];
+res=Select[res,#New&];
+index=1;
+res= Map[Append[#,"ChainNumber"->index++]&,res];
+res=Map[KeyTake[#,{"Parastichy","Chain","Radius"}]&,res];
+res
+];
+
+chainDiskNumbers[chain_] := Select[VertexList[chain],bareNumberQ];
+
+
+
+(* ::Input::Initialization:: *)
+
+edgeDirectedRightwards[g_,v1_ \[UndirectedEdge] v2_] := Module[{v1xy,v2xy},
+v1xy=AnnotationValue[{g,v1},VertexCoordinates];
+v2xy=AnnotationValue[{g,v2},VertexCoordinates];
+If[First[v1xy]<First[v2xy],
+v1\[DirectedEdge] v2,v2\[DirectedEdge] v1]
+];
+
+directedGraphRightwards[g_] := Module[{v,vxy,edges,d,edgestyles},
+v=VertexList[g];
+vxy=Map[#->AnnotationValue[{g,#},VertexCoordinates]&,v];
+edges =EdgeList[g];
+dedges= Map[edgeDirectedRightwards[g,#]&,edges];
+edgeStyles= Table[ dedges[[i]]-> AnnotationValue[{g,edges[[i]]},EdgeStyle],{i,Length[edges]}];
+d=Graph[v,dedges,VertexCoordinates->vxy,VertexSize->Tiny,VertexLabels->"Name"
+,EdgeShapeFunction->{{"HalfFilledArrow","ArrowSize"->.03}}
+,EdgeStyle-> edgeStyles
+];
+d
+];
+strictSubgraph[g_,edges_] := Module[{res},
+res=Subgraph[g,edges];
+res=EdgeDelete[res,EdgeList[res]];
+res= EdgeAdd[res,edges];
+edgeStyles= Table[ EdgeList[res][[i]]-> AnnotationValue[{g,EdgeList[res][[i]]},EdgeStyle],{i,Length[EdgeList[res]]}];
+
+AnnotationValue[res,EdgeStyle]=edgeStyles;
+res
+
+];
+
+chainsByLength[chain_] := Module[{res},
+dchain = directedGraphRightwards[chain] ;
+nodes=SortBy[VertexList[dchain],AnnotationValue[{dchain,#},VertexCoordinates][[1]]&];
+
+lastPath=FindShortestPath[dchain,First[nodes],Last[nodes]];
+res={lastPath};
+For[len=Length[lastPath]+1,len<1000,len++,
+nextPath=First@FindPath[dchain,First[nodes],Last[nodes],len];
+If[Length[nextPath]==Length[lastPath],Break[]];
+lastPath=nextPath;
+res=Append[res,lastPath];
+];
+res 
+];
+lineParastichyCount[chain_] := Module[{res},
+(* chain is now aycclic *)
+res=Counts[Map[AnnotationValue[{chain,#},EdgeStyle]&,EdgeList[chain]]];
+res=KeySort[res];
+res
+];
+countsByLength[chain_] := Module[{},
+chains=chainsByLength[chain];
+edges= Map[Apply[UndirectedEdge,#]&,Map[Partition[#,2,1]&,chains],{2}];
+lines = Map[strictSubgraph[chain,#]&,edges];
+lineCounts=Map[lineParastichyCount,lines];
+summarize[col_] := Module[{res=Map[#[col]&,lineCounts]},
+Counts[res]/Length[res]];
+Map[#->summarize[#]&,{RGBColor[0, 0, 1],RGBColor[1, 0, 0]}]
+
+];
+
+
+(* ::Section:: *)
+(*End*)
 
 
 End[];
