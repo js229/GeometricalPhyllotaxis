@@ -76,31 +76,23 @@ graphFromTCLattice[lattice_] := Module[{m,n,r,disks,diskx,diskxy,disknxy,disksOn
 
 (* ::Input::Initialization:: *)
 readyRunFromParameter[experimentParameters_] := Module[{runParameters,lattice,run,arena},
-runParameters= <|"Capped"->False,"rScale"->10,"rSlope"->0.03`,"zMax"->Missing[],"runNumber"->1,"diskMax"->\[Infinity],"PostFixChains"->20,"Run"->"","Noise"->Missing[],"Lattice"->latticeOrthogonal[{0,1}]|>;
-runParameters= Append[runParameters,experimentParameters];
-
-(* find the initial disk/graph arrangement *)
+runParameters= <|"Capped"->False,"rScale"->10,"rSlope"->0.03`,"zMax"->Missing[],"runNumber"->1,"diskMax"->\[Infinity],"PostFixChains"->20,"Run"->"","Noise"->Missing[],"Lattice"->latticeOrthogonal[{0,1}]|>;runParameters= Append[runParameters,experimentParameters];(* find the initial disk/graph arrangement *)
 run = runFromLattice[runParameters["Lattice"]];
 (* create the r Function *)
-runParameters=Append[runParameters,"InitialRadius"-> smallestRadius[run]];
-runParameters=Append[runParameters,"rFixedBefore"->  highestCentre[run]];
-run["Arena"] = makeArena[runParameters];
+runParameters=Append[runParameters,"InitialRadius"-> smallestRadius[run]];runParameters=Append[runParameters,"rFixedBefore"->  highestCentre[run]];run["Arena"] = makeArena[runParameters];
 
 run
 ];
+
 smallestRadius[run_] := Min@Map[diskR[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 highestCentre[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 
 
 (* ::Input::Initialization:: *)
-makeArena[runParameters_] := Module[{initialRadius,finalRadius,hBase,rOfH,arena,zMax},
-
-initialRadius= runParameters["InitialRadius"] ;
+makeArena[runParameters_] := Module[{initialRadius,finalRadius,hBase,rOfH,arena,zMax},initialRadius= runParameters["InitialRadius"] ;
 
 hBase=runParameters["rFixedBefore"] ;
-finalRadius= initialRadius/runParameters["rScale"];
-zMax = hBase + hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]];
-rOfH =linearInterpolatorBySlope[{hBase,zMax},{initialRadius,-runParameters["rSlope"]}] ;
+finalRadius= initialRadius/runParameters["rScale"];zMax = hBase + hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]];rOfH =linearInterpolatorBySlope[{hBase,zMax},{initialRadius,-runParameters["rSlope"]}] ;
 
 arena=KeyDrop[runParameters,{"Lattice"}];
 arena["rFunction"]= rOfH;
@@ -1099,7 +1091,6 @@ chainDiskNumbers[chain_] := Select[VertexList[chain],bareNumberQ];
 
 
 (* ::Input::Initialization:: *)
-
 edgeDirectedRightwards[g_,v1_ \[UndirectedEdge] v2_] := Module[{v1xy,v2xy},
 v1xy=AnnotationValue[{g,v1},VertexCoordinates];
 v2xy=AnnotationValue[{g,v2},VertexCoordinates];
