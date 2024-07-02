@@ -106,29 +106,37 @@ euclideanMatrixProductNew[{0,1}] = ({
 
 
 
+(* ::Input::Initialization:: *)
+(* redef after having thought about Ch4 *)
+
+
+
 (* requires m & n >= 0 *)
 euclideanHighestCommonFactor[mn_] := Module[{res},
-	res =  Inverse[euclideanMatrixProduct[mn]]  .  mn ;  
-	If[res[[2]] !=0 , Abort[]];
-	First[res]
+res =  Inverse[euclideanMatrixProduct[mn]]  .  mn ;  
+If[res[[2]] !=0 , Abort[]];
+First[res]
 ];
 
 euclideanWindingNumberPair[mn_] := Module[{m,n,u,v},
-	{{m,u},{n,v}}= euclideanMatrixProduct[mn];
-	{u,v}
+{{m,u},{n,v}}= euclideanMatrixProduct[mn];
+{u,v}
 ];
-
-
+(*euclideanWindingNumberPairNew[mn_] := Module[{m,n,u,v},
+{{m,u},{n,v}}= euclideanMatrixProductNew[mn];
+{u,v}
+];
+*)
 euclideanFareyInterval[{0,1}] = {0,1/2};
 euclideanFareyInterval[{1,0}] = {0,1/2};
 euclideanFareyInterval[{1,1}] = {0,1/2}; 
 
 euclideanFareyInterval[{m_,n_}] := Module[{u,v,delta,interval},
-	{u,v} = euclideanWindingNumberPair[{m,n}];
-	delta = euclideanDelta[{m,n}];
-	interval =  {u/m,v/n};
-	If[delta <0, interval=Reverse@interval];
-	interval
+{u,v} = euclideanWindingNumberPair[{m,n}];
+delta = euclideanDelta[{m,n}];
+interval =  {u/m,v/n};
+If[delta <0, interval=Reverse@interval];
+interval
 ];
 
 
@@ -282,45 +290,39 @@ vanItersonTouchingCircleNonPrimary[{1,2}] ={
 
 
 viiPrimaryIsEverNonOpposed[mn_] := Module[{m,n},
-	{m,n} = Sort[mn];
-	m < n - m 
+{m,n} = Sort[mn];
+m < n - m 
 ];
 
 
-(* ::Input:: *)
-(*vanItersonTouchingCirclePrimaryOpposed[mn_]  := circleBranch[mn,"Opposed"];*)
-(*vanItersonTouchingCirclePrimaryNonOpposed[mn_]  := circleBranch[mn,"NonOpposed"];*)
-(**)
-(*circleBranchData[{m_,n_}] := Module[{},*)
-(*mn = Sort[{m,n}];*)
-(*];*)
-(**)
-(*circleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},*)
-(*mn = Sort[{m,n}];*)
-(*branch = vanItersonTouchingCirclePrimary[mn];*)
-(*If[!viiPrimaryIsEverNonOpposed[mn],*)
-(*	If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];*)
-(**)
-(*angle =circleAngleAtLine[branch,viiOrthostichyD[mn]];*)
-(**)
-(*upperpt =  vanItersonTriplePointRight[mn];*)
-(*lowerpt = vanItersonTriplePointLeft[mn];*)
-(**)
-(*{centre,r,theta12} = Apply[List,branch];*)
-(*If[scalingFunction=="NonOpposed",*)
-(*res = Circle[centre,r,SortBy[{xyToArg[branch,upperpt],angle},N]]*)
-(*,*)
-(*res = Circle[centre,r,SortBy[{xyToArg[branch,lowerpt],angle},N]]*)
-(*];*)
-(*Return[res];*)
-(*];*)
-(**)
-(*viiOrthostichyD[{m_,n_}] := Module[{u,v,res},*)
-(*{u,v} = euclideanWindingNumberPair[{m,n}];*)
-(*res = v/n;*)
-(* If[res>1/2,res = 1-res];*)
-(*res*)
-(*]*)
+vanItersonTouchingCirclePrimaryOpposed[mn_]  := circleBranch[mn,"Opposed"];
+vanItersonTouchingCirclePrimaryNonOpposed[mn_]  := circleBranch[mn,"NonOpposed"];
+
+circleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
+mn = Sort[{m,n}];
+branch = vanItersonTouchingCirclePrimary[mn];
+If[!viiPrimaryIsEverNonOpposed[mn],
+	If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
+
+angle =circleAngleAtLine[branch,viiOrthostichyD[mn]];
+
+upperpt =  vanItersonTriplePointRight[mn];
+lowerpt = vanItersonTriplePointLeft[mn];
+
+{centre,r,theta12} = Apply[List,branch];
+If[scalingFunction=="NonOpposed",
+res = Circle[centre,r,SortBy[{xyToArg[branch,upperpt],angle},N]]
+,
+res = Circle[centre,r,SortBy[{xyToArg[branch,lowerpt],angle},N]]
+];
+Return[res];
+];
+viiOrthostichyD[{m_,n_}] := Module[{u,v,res},
+{u,v} = euclideanWindingNumberPair[{m,n}];
+res = v/n;
+ If[res>1/2,res = 1-res];
+res
+]
 
 
 xyToArg[Circle[centre_,r_,theta_],xy_ ]:= ArcTan @@ ( xy - centre);
@@ -495,7 +497,7 @@ vanItersonTouchingCircleDisk[mn_] := Take[vanItersonTouchingCircleXX[mn]/. Circl
 
 
 
-
+Clear[vanItersonRegionBounds]
 vanItersonRegionBounds[{0,1}] := {{-1/2,1/2},{0,1.2}};
 vanItersonRegionBounds[{1,0}] := vanItersonRegionBounds[{0,1}] ;
 vanItersonRegionBounds[{1,1}] := {{0,1/2},{0,1.2}} ;
@@ -516,6 +518,7 @@ tP = vanItersonTriplePointRight[{1,n}];
 
 
 
+
 (* ::Input:: *)
 (**)
 
@@ -523,10 +526,18 @@ tP = vanItersonTriplePointRight[{1,n}];
 (* ::Input::Initialization:: *)
 regionToPolygon[r_] := Module[{rb,g,cblines,x,y,xy,c},
 rb=RegionBoundary[r];
-cblines = MeshCells[rb,1] /. Line[{x_,y_}] -> UndirectedEdge[x,y];g = Graph[MeshCells[rb,0]/. Point[xy_]->xy,cblines,VertexCoordinates->MeshPrimitives[rb,0]/. Point[xy_]->xy];c = First@ConnectedGraphComponents[g];Polygon[AnnotationValue[{c,FindHamiltonianPath[c]},VertexCoordinates]]
+cblines = MeshCells[rb,1] /. Line[{x_,y_}] -> UndirectedEdge[x,y];
+g = Graph[MeshCells[rb,0]/. Point[xy_]->xy,cblines,
+VertexCoordinates->MeshPrimitives[rb,0]/. Point[xy_]->xy];
+c = First@ConnectedGraphComponents[g];
+Polygon[AnnotationValue[{c,FindHamiltonianPath[c]},VertexCoordinates]]
 ];
 
 
+
+
+(* ::Input:: *)
+(**)
 
 
 (* ::Input:: *)
@@ -541,8 +552,200 @@ cblines = MeshCells[rb,1] /. Line[{x_,y_}] -> UndirectedEdge[x,y];g = Graph[Mesh
 (*Using Region*)
 
 
+(* ::Input::Initialization:: *)
+(*Clear[vanItersonRegion];
+
+rpdr[region_] := regionToPolygon[DiscretizeRegion[region,MaxCellMeasure\[Rule]100,PrecisionGoal\[Rule]6]];
+
+
+(*vanItersonPolygon[mn_] := rpdr@vanItersonRegion[mn] ;*)
+vanItersonPolygon[mn_] := viTriangleDiscretized[mn] ;
+vanItersonPolygon[mn_,sign_] := rpdr@vanItersonRegion[mn,sign] ;
+
+
+vihmax=2;
+baseRegionStrip = Rectangle[{0,10^-4},{1/2,vihmax}];
+
+vanItersonRegion[{0,1}] :=RegionDifference[
+Rectangle[{-1/2,0},{1/2,vihmax}],
+Disk[{0,0},1]];
+
+vanItersonRegion[{m_,n_}] := Module[{interior,ix,regions,reg},
+interior = vanItersonLabelPoint[{m,n}];
+regions = vanItersonTriangle[{m,n}];
+isOutside[ix_] :=  If[RegionMember[regions\[LeftDoubleBracket]ix\[RightDoubleBracket],interior],Slot[ix],Not[Slot[ix]]]; 
+reg=BooleanRegion[(And@@ Array[isOutside,3])&,regions];
+Switch[{m,n},
+{1,0}, reg = RegionIntersection[reg,Rectangle[{-1/2,10^-4},{1/2,vihmax}] ],
+_, reg = RegionIntersection[reg,baseRegionStrip]
+];
+reg
+
+];
+
+
+vanItersonTriangle[{m_,n_}] := Map[Take[#/. Circle->Disk,2]&,Values[vanItersonTriangleCircles[{m,n}]]];
+
+vanItersonTriangle[{2,1}] := Module[{m=2,n=1},
+ {
+Disk[{1/3,0},1/3] (* one branch of the (1,2) disk *)
+,vanItersonTouchingCircleDisk[{n,n+m}]
+,Disk[{2/3,0},1/3] (* the other branch of the (1,2) disk *)
+}
+];
+vanItersonTriangle[{1,2}] := Module[{m=1,n=2},
+ {
+Disk[{1/3,0},1/3] (* one branch of the (1,2) disk *)
+,vanItersonTouchingCircleDisk[{n,n+m}]
+,Disk[{2/3,0},1/3] (* the other branch of the (1,2) disk *)
+}
+];
+vanItersonTriangle[{1,0}] := Module[{m=1,n=0},
+ {
+Disk[{0,0},1] 
+,Disk[{1,0},1]
+,Disk[{-1,0},1] 
+}
+];
+vanItersonTriangle[{1,1}] := Module[{m=1,n=1},
+ {
+Disk[{1,0},1] 
+,Disk[{1/3,0},1/3]
+,Disk[{2/3,0},1/3] 
+}
+];
+
+
+vanItersonTriangleCircles[{m_,n_}] := Module[{vitc},
+vitc[mn_] := Take[vanItersonTouchingCircleXX[mn],2]; (* whole circle *)
+vitc[{1,1}] := vanItersonTouchingCircleXX[{1,1}];
+<|"LeftToRight"-> vitc[{m,n}]
+,"RightToZero"-> vitc[{Abs[n-m],n}]
+,"ZeroToLeft" -> vitc[{n,n+m}]
+|>
+];
+vanItersonTriangleCircles[{1,2}] = 
+<|"LeftToRight"-> Circle[{2/3,0},1/3]
+,"RightToZero"-> Circle[{1/3,0},1/3]
+,"ZeroToLeft" -> Take[#,2]&@ vanItersonTouchingCircleXX[{2,3}]
+|>;
+
+
+createArc[mn_,type_] := Module[{arc,centre,radius,zeroRisePoint,arcEndPoint,arcEndPointAngle},
+{centre,radius} = List@@(vanItersonTriangleCircles[mn][type]);
+arc = 
+If[type != "LeftToRight",
+zeroRisePoint = vanItersonRegionPoints[mn]["ZeroRise"];
+arcEndPoint = vanItersonRegionPoints[mn][If[type=="RightToZero","RightTriplePoint","LeftTriplePoint"]];
+arcEndPointAngle =  ArcTan @@ ( arcEndPoint - centre);
+If[First[zeroRisePoint]< First[arcEndPoint],
+Circle[centre,radius,{arcEndPointAngle,\[Pi]}]
+,
+Circle[centre,radius,{0,arcEndPointAngle}]
+]
+, (* type = lefttoright *)
+arcEndPointAngle = 
+{ArcTan @@ ( vanItersonRegionPoints[mn]["RightTriplePoint"] - centre)
+,
+ArcTan @@ ( vanItersonRegionPoints[mn]["LeftTriplePoint"] - centre)
+};
+Circle[centre,radius,SortBy[arcEndPointAngle,N]]
+];
+arc
+];
+
+createArc[{2,1},"RightToZero"] = Line[{vanItersonRegionPoints[{2,1}]["RightTriplePoint"],vanItersonRegionPoints[{2,1}]["ZeroRise"]}];
+createArc[{1,1},"LeftToRight"] = 
+Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];
+
+jDiscretize[Circle[centre_,radius_,angles_]] := Module[{npts=20},
+N@Map[ centre + radius * {Cos[#],Sin[#]} &, Subdivide[angles\[LeftDoubleBracket]1\[RightDoubleBracket],angles\[LeftDoubleBracket]2\[RightDoubleBracket],npts]]
+];
+jDiscretize[Line[pts_]] := pts;
+
+
+makeArcs[mn_]  := Module[{arcs,p},
+arcs = Map[<|"Type"->#,"Arc"-> vanItersonTriangleArcs[mn][#]|>&,Keys[vanItersonTriangleArcs[mn]]];
+arcs = Map[Append[#,"Points"-> jDiscretize[#Arc]]&,arcs];
+arcs = Map[Append[#,"Points"->SortBy[#Points,First]]&,arcs];
+arcs = Map[Append[#,"First"->
+N@Switch[#Type,
+"LeftToRight",  vanItersonRegionPoints[mn]["LeftTriplePoint"]
+,"RightToZero",vanItersonRegionPoints[mn]["RightTriplePoint"]
+,"ZeroToLeft",vanItersonRegionPoints[mn]["ZeroRise"]
+]]&,arcs];
+
+arcs = Map[Append[#,"Orientation"->
+N@EuclideanDistance[#First,First[#Points]]<N@EuclideanDistance[#First,Last[#Points]]]&,arcs];
+arcs = Map[Append[#,"OrientationDistances"->
+{EuclideanDistance[#First,First[#Points]],N@EuclideanDistance[#First,Last[#Points]]}]&,arcs];
+arcs = Map[Append[#,"Points"->If[#Orientation,#Points,Reverse@#Points]]&,arcs];
+arcs
+];
+
+viTriangleDiscretized[mn_]  := Module[{arcs,p},
+arcs = makeArcs[mn];
+arcs = Association@Map[#Type-> #Points &,arcs];
+Polygon[Flatten[{arcs["ZeroToLeft"],arcs["LeftToRight"],arcs["RightToZero"]},1]]
+];
+
+
+
+vanItersonRegion[mn_,"Plus"] := 
+RegionDifference[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
+vanItersonRegion[mn_,"Minus"] := 
+RegionIntersection[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
+
+vanItersonSquareLatticeDisk[mn_] := Take[vanItersonSquareLattice[mn]/. Circle->Disk,2];
+vanItersonSquareLatticeDisk[{0,1}] := baseRegionStrip;
+vanItersonSquareLatticeDisk[{1,0}] := baseRegionStrip;
+
+vanItersonTouchingCircleDisk[mn_] := Take[vanItersonTouchingCircleXX[mn]/. Circle->Disk,2];
+
+*)
+
+
+(* ::Input::Initialization:: *)
+
+
+
+Clear[vanItersonRegionBounds]
+vanItersonRegionBounds[{0,1}] := {{-1/2,1/2},{0,1.2}};
+vanItersonRegionBounds[{1,0}] := vanItersonRegionBounds[{0,1}] ;
+vanItersonRegionBounds[{1,1}] := {{0,1/2},{0,1.2}} ;
+vanItersonRegionBounds[{1,2}] := {{0,1/2},{0,1/3}};
+vanItersonRegionBounds[mn_] := Module[{u,vn,vm,m,n,tcCentre,tcRadius},
+{m,n}=Sort[mn];
+ {u,vn}= euclideanWindingNumberPair[{m,n}];
+ {u,vm}= euclideanWindingNumberPair[Reverse@{m,n}];
+{tcCentre,tcRadius}= Take[List@@vanItersonTouchingCircleXX[{ n-m,n}],2];
+{Sort[{vn/n,vm/m}],{0,tcRadius}}
+];
+vanItersonRegionBounds[{1,n_}] := Module[{tP,tcCentre,tcRadius},
+tP = vanItersonTriplePointRight[{1,n}];
+{tcCentre,tcRadius}= Take[List@@vanItersonTouchingCircleXX[{ n-1,n}],2];
+{{0,First[tP]},{0,tcRadius}}
+]
+
+
+
+
+
 (* ::Input:: *)
 (**)
+
+
+(* ::Input::Initialization:: *)
+regionToPolygon[r_] := Module[{rb,g,cblines,x,y,xy,c},
+rb=RegionBoundary[r];
+cblines = MeshCells[rb,1] /. Line[{x_,y_}] -> UndirectedEdge[x,y];
+g = Graph[MeshCells[rb,0]/. Point[xy_]->xy,cblines,
+VertexCoordinates->MeshPrimitives[rb,0]/. Point[xy_]->xy];
+c = First@ConnectedGraphComponents[g];
+Polygon[AnnotationValue[{c,FindHamiltonianPath[c]},VertexCoordinates]]
+];
+
+
 
 
 (* ::Input:: *)
@@ -1119,9 +1322,13 @@ latticeCreateDH[latticeDHHexagonal[{m,n}],cylinderLU,3];
 
 (* ::Input::Initialization:: *)
 latticeDHNonOpposedTC[{m_,n_}]  := Module[{xy,r,angles,circle},
-circle =  vanItersonTouchingCirclePrimaryNonOpposed[{m,n}];If[circle==Nothing,Return[Nothing]];{xy,r,angles} = List @@ circle;angles = Mean[angles];xy + r * {Cos[angles],Sin[angles]}
+(*circle =  viiPrimaryNonOpposed[{m,n}];
+*)circle =  vanItersonTouchingCirclePrimaryNonOpposed[{m,n}];
+If[circle==Nothing,Return[Nothing]];
+{xy,r,angles} = List @@ circle;
+angles = Mean[angles];
+xy + r * {Cos[angles],Sin[angles]}
 ]
-
 latticeDHOpposedTC[{m_,n_}] := latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}];
 
 
