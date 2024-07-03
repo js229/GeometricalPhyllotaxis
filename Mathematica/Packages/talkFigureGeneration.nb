@@ -55,7 +55,7 @@ Cell[BoxData[{
  CellChangeTimes->{
   3.9284878691339645`*^9, {3.928551816444666*^9, 3.928551828881436*^9}},
  CellLabel->
-  "In[118]:=",ExpressionUUID->"a1242673-b71c-8d4c-aed3-78f670f31dd7"],
+  "In[245]:=",ExpressionUUID->"a1242673-b71c-8d4c-aed3-78f670f31dd7"],
 
 Cell[BoxData[{
  RowBox[{
@@ -132,7 +132,7 @@ paper\\\\Mathematica\\\\Esets\>\""}], "}"}], "]"}]}], ";"}],
   3.928475065755718*^9}, {3.928475131332029*^9, 3.92847513273381*^9}, {
   3.928487826153717*^9, 3.928487867269429*^9}},
  CellLabel->
-  "In[123]:=",ExpressionUUID->"303f0aa2-f24b-3648-940e-9b153d0952dd"],
+  "In[250]:=",ExpressionUUID->"303f0aa2-f24b-3648-940e-9b153d0952dd"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
@@ -204,9 +204,9 @@ Cell[BoxData[
         "fig"}]}], "\n", "]"}]}], ";"}]}]}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{
-  3.9285511025362015`*^9, {3.9285512515260773`*^9, 3.928551252834296*^9}, 
+  3.9285511025362015`*^9, {3.928551251526078*^9, 3.928551252834296*^9}, 
    3.928551826163044*^9},
- CellLabel->"In[128]:=",ExpressionUUID->"325f22b9-f673-49fc-be2e-f5e60abc5775"]
+ CellLabel->"In[255]:=",ExpressionUUID->"325f22b9-f673-49fc-be2e-f5e60abc5775"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -406,20 +406,20 @@ Cell[BoxData[
          RowBox[{"lattice", ",", "jParastichyColour"}], "]"}]}]}], 
       "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{"tlkONotO", " ", ":=", " ", 
-    RowBox[{"GraphicsColumn", "[", 
+    RowBox[{"GraphicsRow", "[", 
      RowBox[{"{", 
       RowBox[{"tlkOpposed", ",", "tlkNonOpposed"}], "}"}], "]"}]}], 
    "\[IndentingNewLine]", "\[IndentingNewLine]"}]}]], "Input",
  InitializationCell->True,
  CellLabel->
-  "In[135]:=",ExpressionUUID->"99075130-6031-4c1c-be0c-292b3e814e19"],
+  "In[266]:=",ExpressionUUID->"99075130-6031-4c1c-be0c-292b3e814e19"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"jExport", "[", "tlkONotO", "]"}]], "Input",
  CellLabel->
-  "In[139]:=",ExpressionUUID->"91b071fa-3a90-114b-975c-f65fdd41bdf8"],
+  "In[270]:=",ExpressionUUID->"91b071fa-3a90-114b-975c-f65fdd41bdf8"],
 
 Cell[BoxData[
  GraphicsBox[{{}, {InsetBox[
@@ -1048,7 +1048,8 @@ piW4zQ==
       ImagePadding->{{0., 0.}, {0., 0.}},
       PlotRange->NCache[{{
           Rational[-1, 2], 0.6}, {-0.05, 0.4}}, {{-0.5, 0.6}, {-0.05, 
-        0.4}}]], {189., -78.54545454545453}, ImageScaled[{0.5, 0.5}], {360, 147.27272727272725},
+        0.4}}]], {159.99999999999997, -64.43181818181817}, 
+     ImageScaled[{0.5, 0.5}], {299.99999999999994, 122.7272727272727},
      BaseStyle->{Graphics3DBoxOptions -> {SphericalRegion -> False}}], 
     InsetBox[
      GraphicsBox[{
@@ -1248,8 +1249,7 @@ piW4zQ==
            0.1119130647169764]], 
         DiskBox[{0.8078091290847615, -0.13406843976565097`}, NCache[
          Rational[
-           1, 2] (
-            Rational[
+           1, 2] (Rational[
               1, 441] (5 - 2 
                Cos[Rational[1, 2] (ArcTan[Rational[21, 11] 3^Rational[1, 2]] + 
                   ArcTan[Rational[1, 2] 21^Rational[1, 2]])])^2 + 
@@ -1644,14 +1644,15 @@ piW4zQ==
       ImagePadding->{{0., 0.}, {0., 0.}},
       PlotRange->NCache[{{
           Rational[-1, 2], 0.6}, {-0.05, 0.4}}, {{-0.5, 0.6}, {-0.05, 
-        0.4}}]], {189., -235.63636363636357}, ImageScaled[{0.5, 0.5}], {360, 147.27272727272725},
+        0.4}}]], {479.9999999999999, -64.43181818181817}, 
+     ImageScaled[{0.5, 0.5}], {299.99999999999994, 122.7272727272727},
      BaseStyle->{Graphics3DBoxOptions -> {SphericalRegion -> False}}]}, {}},
   ImageSize->{
-    UpTo[360], 
-    UpTo[295]},
-  PlotRange->{{0, 378.}, {-314.18181818181813`, 0}},
+    UpTo[600], 
+    UpTo[148]},
+  PlotRange->{{0, 639.9999999999999}, {-128.86363636363635`, 0}},
   PlotRangePadding->{6, 5}]], "Output",
- CellLabel->"Out[139]=",ExpressionUUID->"8a344fb4-8f09-2e40-96c6-0fbee3aec89e"]
+ CellLabel->"Out[270]=",ExpressionUUID->"5ed3ae41-d4fe-8c4a-9e32-aa0d1a930f9b"]
 }, Open  ]]
 }, Open  ]]
 },
