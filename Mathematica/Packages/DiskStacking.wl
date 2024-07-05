@@ -4,8 +4,11 @@ BeginPackage["DiskStacking`"];
 
 
 executeRun::usage = "Principal run code";
-(*restartRun::usage = "Restart run code"; should move here*)
-readyRunFromParameter::usage = "Prepare run arena";
+
+
+runFromLattice::usage = "Create run initial condition from a Lattice object";
+restartRunFromRun::usage = "Restart from previous run";
+
 pruneRun::usage = "Helper for display";
 pruneRunByDisks::usage = "Helper for display";
 pruneRunToTopChain::usage = "Helper for display";
@@ -15,11 +18,11 @@ bareNumberQ::usage = "False for left[] or right [] disks";
 bareNumber::usage = "Take off left[] or right []";
 getDiskFromRun::usage = "";
 diskAndVisibleCopies::usage = "";
+runDisksRadius::usage = "Association of radii of each disk";
+runDisksHeight::usage = "Association of height of each disk";
 diskR::usage = "better to provide an api for the functions that call this";
 diskZ::usage = "";
 diskXZ::usage = "";
-linearInterpolatorBySlope::usage = "";
-left::usage = "Used only as a tag, nb right is not here and makes no difference";
 postRunExtractNonOverlappingChains::usage = "";
 
 
@@ -71,48 +74,29 @@ graphFromTCLattice[lattice_] := Module[{m,n,r,disks,diskx,diskxy,disknxy,disksOn
 	<|"ContactGraph"->g,"DiskData"->diskData|>
 ];
 
-
-
-
-(* ::Input::Initialization:: *)
-readyRunFromParameter[experimentParameters_] := Module[{runParameters,lattice,run,arena},
-runParameters= <|"Capped"->False,"rScale"->10,"rSlope"->0.03`,"zMax"->Missing[],"runNumber"->1,"diskMax"->\[Infinity],"PostFixChains"->20,"Run"->"","Noise"->Missing[],"Lattice"->latticeOrthogonal[{0,1}]|>;runParameters= Append[runParameters,experimentParameters];(* find the initial disk/graph arrangement *)
-run = runFromLattice[runParameters["Lattice"]];
-(* create the r Function *)
-runParameters=Append[runParameters,"InitialRadius"-> smallestRadius[run]];runParameters=Append[runParameters,"rFixedBefore"->  highestCentre[run]];run["Arena"] = makeArena[runParameters];
-
-run
-];
-
-smallestRadius[run_] := Min@Map[diskR[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
-highestCentre[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
+restartRunFromRun[run_] := Module[{res,lastDisk},
+	res=pruneRunToTopChain[run];
+	res = KeyDrop[res,{"TopChain","RunChains","SpecifiedDiskMax"}];
+	res
+]
 
 
 (* ::Input::Initialization:: *)
-makeArena[runParameters_] := Module[{initialRadius,finalRadius,hBase,rOfH,arena,zMax},initialRadius= runParameters["InitialRadius"] ;
-
-hBase=runParameters["rFixedBefore"] ;
-finalRadius= initialRadius/runParameters["rScale"];zMax = hBase + hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]];rOfH =linearInterpolatorBySlope[{hBase,zMax},{initialRadius,-runParameters["rSlope"]}] ;
-
-arena=KeyDrop[runParameters,{"Lattice"}];
-arena["rFunction"]= rOfH;
-arena["rFixedAfter"]=zMax;
-
-zMax= zMax + runParameters["PostFixChains"]* 4* finalRadius;
-arena["zMax"]= zMax;
-arena["CylinderLU"]= {0,zMax};
-
-arena
-];
+runDisksRadius[run_] := Association@Map[#->diskR[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
+runDisksHeight[run_] := Association@Map[#->diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 
 
-linearInterpolatorBySlope[{hStart_,hEnd_},{r_,rSlope_}] := 
+(* ::Input::Initialization:: *)
+
+
+
+(*linearInterpolatorBySlope[{hStart_,hEnd_},{r_,rSlope_}] := 
 Function[{h}, r+ Piecewise[ {
 {0,h< hStart}
 ,{(h-hStart) * rSlope , h< hEnd}
 , { (hEnd-hStart) * rSlope ,True}
 }]];
-
+*)
 
 
 linearInterpolatorByEndPoints[{hStart_,hEnd_},{rStart_,rEnd_}] := Block[{rSlope},
@@ -126,31 +110,29 @@ Function[{h}, rStart+ Piecewise[ {
 
 
 
-hRangeNeeded[{rStart_,rEnd_},rSlope_] := Module[{hSlopeRange},
+(*hRangeNeeded[{rStart_,rEnd_},rSlope_] := Module[{hSlopeRange},
 hSlopeRange = -(rEnd-rStart)/rSlope ;
 hSlopeRange
-];
+];*)
 
 
 
 
 (* ::Input::Initialization:: *)
-makeExperimentParameters[rScaleRange_,rSlopeRange_,zMaxRange_] := Module[{experimentParameters},
+(*makeExperimentParameters[rScaleRange_,rSlopeRange_,zMaxRange_] := Module[{experimentParameters},
 experimentParameters = Flatten@Outer[<|"rScale"->#1,"rSlope"->#2,"zMax"-> #3,"diskMax"->\[Infinity]|>&,rScaleRange,rSlopeRange,zMaxRange];
 experimentParameters = MapIndexed[Append[#1,"runNumber"->First[#2]]&,experimentParameters];
 experimentParameters
-];
+];*)
 
 
-runParameterSets[experimentParameters_] := 
-Map[
-Monitor[Append[#,"Results"->CheckAbort[doRunFromParameter[#],Missing["Aborted run"]];[#]],#]&,experimentParameters]
+(*runParameterSets[experimentParameters_] := Map[
+	Monitor[
+		Append[#,"Results"->CheckAbort[doRunFromParameter[#],Missing["Aborted run"]];[#]],
+		#]&,experimentParameters]*)
 
 
-(* ::Input:: *)
 (*dPrint[x__] := If[debug, Print[x]];*)
-(**)
-(**)
 
 
 (* ::Section:: *)
@@ -162,44 +144,36 @@ Monitor[Append[#,"Results"->CheckAbort[doRunFromParameter[#],Missing["Aborted ru
 
 (* ::Input::Initialization:: *)
 nodesToPruneTo[run_,Zrange_] := Module[{g,nodes},
-g=run["ContactGraph"];
-nodes=Select[VertexList[g],IntervalMemberQ[Interval[Zrange],AnnotationValue[{g,#},VertexCoordinates][[2]]]&];
-nodes
+g=run["ContactGraph"];nodes=Select[VertexList[g],IntervalMemberQ[Interval[Zrange],AnnotationValue[{g,#},VertexCoordinates][[2]]]&];nodes
 ];
 
-useChainQ[chain_,nodes_] := IntersectingQ[VertexList[chain],nodes];
 
 pruneRun[run_,Zrange_] := Module[{res,nodes},
 res=run;
 nodes=leftAndRightNumbers@nodesToPruneTo[res,Zrange];
 pruneRunByNodes[run,nodes]
 ];
-pruneRunByNodes[run_,nodes_] := 
-Module[{res},
-res=run;
-res["ContactGraph"] = Subgraph[res["ContactGraph"] ,nodes];
-res["RunChains"]= Select[res["RunChains"],useChainQ[#Chain,nodes]&];
-res["DiskData"]= KeyTake[res["DiskData"],nodes];
-res["NodeStatistics"] = KeySelect[run["NodeStatistics"],MemberQ[nodes,#]&];
 
-
-res["Arena"]["CylinderLU"] = MinMax[diskZ[#Disk]&/@ res["DiskData"]];
+pruneRunByNodes[run_,nodes_] := Module[{res},
+res=run;res["ContactGraph"] = Subgraph[res["ContactGraph"] ,nodes];res["RunChains"]= Select[res["RunChains"],useChainQ[#Chain,nodes]&];res["DiskData"]= KeyTake[res["DiskData"],nodes];If[KeyMemberQ[res,"NodeStatistics"],
+res["NodeStatistics"] = KeySelect[run["NodeStatistics"],MemberQ[nodes,#]&]];res["Arena"]["CylinderLU"] = MinMax[diskZ[#Disk]&/@ res["DiskData"]];
 res
 ];
-pruneRunByDisks[run_,diskNumbers_] := 
-Module[{nodes,res},
+useChainQ[chain_,nodes_] := IntersectingQ[VertexList[chain],nodes];
+
+
+pruneRunByDisks[run_,diskNumbers_] := Module[{nodes,res},
 nodes=Flatten[leftAndRightNumbers/@Range[diskNumbers]]; 
 pruneRunByNodes[run,nodes]
 ];
+
 pruneRunToTopChain[run_] := Module[{res,chain,nodes},
-chain=Last[run["RunChains"]]["Chain"];
-nodes=Flatten[leftAndRightNumbers[VertexList[chain]]];
-pruneRunByNodes[run,nodes]
+chain=Last[run["RunChains"]]["Chain"];nodes=Flatten[leftAndRightNumbers[VertexList[chain]]];pruneRunByNodes[run,nodes]
 ];
 
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Chain code*)
 
 
@@ -265,7 +239,6 @@ diskHighestBottom[] :=
 Max@Map[diskBottomZ[getDisk[#]]&,Keys[globalRun["DiskData"]]];
 
 highestDiskZ[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
-(* used in RunCoinStacking as well for setup, so don't use the global *)
 
 nextRadius[] := Module[{highestZ},
 highestZ=highestDiskZ[globalRun];
@@ -279,34 +252,32 @@ nextDiskNumber[] := Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]]+1;
 
 
 executeRun[run_] := Module[{i,imax,res,diskTime},
-Off[SSSTriangle::tri];
-globalRun=run;
-globalRun["SpecifiedDiskMax"]= Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]];
+	Off[SSSTriangle::tri];
+	globalRun=run;
+	globalRun["SpecifiedDiskMax"]= Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]];
+	globalRun["TopChain"] = topChainInRun[globalRun,globalRun["ContactGraph"]];
+	globalRun["RunChains"]= Association[]; 
+	
+	If[!NumericQ[imax],imax=20000];
+		monitorFunction := For[i=1,i<= imax,i++,
+		If[runCompletesArena[],Break[]];
+		diskTime= First@Timing[addNextDisk[]];
+		];
 
+	monitorString := Module[{z},
+		z=diskHighestBottom[];
+		StringTemplate["Next disk: `disk`;\nZ left: `zToMax`;\nr: `radius`;\n per-disk time: `timing`"][<|
+			"disk"-> nextDiskNumber[]
+			,"zToMax"->run["Arena"]["zMax"]-z
+			,"radius"->diskR[Last[globalRun["DiskData"]]["Disk"]]
+			,"timing"->diskTime
+			|>]
+	];
 
-globalRun["TopChain"] = topChainInRun[globalRun,globalRun["ContactGraph"]];
-globalRun["RunChains"]= Association[]; 
-
-If[!NumericQ[imax],imax=20000];
-monitorFunction := For[i=1,i<= imax,i++,
-If[runCompletesArena[],Break[]];
-diskTime= First@Timing[addNextDisk[]];
-];
-monitorString := Module[{z},
-z=diskHighestBottom[];
-StringTemplate["next disk `disk`; Z `zToSwitch`,`zToMax`; r `radius`; per-disk time `timing`"][<|
-"disk"-> nextDiskNumber[]
-,"zToSwitch"-> run["Arena"]["rFixedAfter"]-z
-,"zToMax"->run["Arena"]["zMax"]-z
-,"radius"->diskR[Last[globalRun["DiskData"]]["Disk"]]
-,"timing"->diskTime
-|>]
-];
-
-If[False,monitorFunction,Monitor[monitorFunction,monitorString]];
-
-res= postRun[globalRun];
-res
+	If[False,monitorFunction,Monitor[monitorFunction,monitorString]];
+	
+	res= postRun[globalRun];
+	res
 ];
 
 
@@ -704,9 +675,11 @@ angle
 postRun[run_] := Module[{res,chains,nrchains},
 res = pretty[run];
 edgeCheck[res];
-res= postRunNodeStatistics[res];
+(*res= postRunNodeStatistics[res];
+*)
 res
 ];
+
 prettyGraph[run_,gp_] := Module[{g,setGraphXY,res,vc,es},
 g=gp;
 vc = Map[getDiskXZ[run,#]&,VertexList[g]];
@@ -738,7 +711,8 @@ edgeStyle[run_,upper_ \[DirectedEdge] lower_] := edgeStyle[run,upper \[Undirecte
 (* ::Input:: *)
 (* edgeCheck[run_] := Module[{g,res,edgeStyler,res2,nodesToCheck,lopsidedAllowedTo},g=run["ContactGraph"];res=Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];If[Or@@ Map[Length[#]!=2&,res],"Print some nodes without two supports"];*)
 (**)
-(*edgeStyler[edgeList_] := Map[edgeStyle,edgeList];lopsidedAllowedTo = run["SpecifiedDiskMax"];*)
+(*edgeStyler[edgeList_] := Map[edgeStyle,edgeList];*)
+(*lopsidedAllowedTo = run["SpecifiedDiskMax"];*)
 (**)
 (*nodesToCheck = Complement[Select[VertexList[g],bareNumberQ],Range[lopsidedAllowedTo]];res2= Map[lowerEdges[g,#]&,nodesToCheck];res2 =Association@Map[#->Sort@edgeStyler[#]&,res2];res2= Select[res2,# != {RGBColor[0, 0, 1],RGBColor[1, 0, 0]}&];*)
 (**)
@@ -843,17 +817,17 @@ chains
 ]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Post run statistics*)
 
 
 (* ::Input::Initialization:: *)
-postRunNodeStatistics[run_] := Module[{res,angles},
+(*postRunNodeStatistics[run_] := Module[{res,angles},
 res = run;
 angles= Map[<|"Angle"->#|>&,computeNodeLowerAngles[run]];
 res= Append[res,"NodeStatistics"-> angles];
 res 
-];
+];*)
 
 
 (* ::Section::Closed:: *)
@@ -884,7 +858,7 @@ Mean[e]/2
 
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Top down chains*)
 
 
@@ -1001,14 +975,14 @@ res
 
 
 (* ::Input::Initialization:: *)
-computeNodeLowerAngles[run_] := Module[{v,edges,edgePairAngle},
+(*computeNodeLowerAngles[run_] := Module[{v,edges,edgePairAngle},
 v=Select[VertexList[run["ContactGraph"]],bareNumberQ];
 edges=Select[Association@Map[#->lowerEdges[run["ContactGraph"], #]&,v],Length[#]==2&];
 edges= Association@KeyValueMap[#1->Values@KeyTake[vectorsFromNode[run,run["ContactGraph"],#1],#2]&,edges];
 edgePairAngle[{e1_,e2_}] := ArcCos[(e1 . e2)/(Norm[e1]*Norm[e2])];
 edges= Map[edgePairAngle,edges];
 edges
-]
+]*)
 
 
 (* ::Section::Closed:: *)
