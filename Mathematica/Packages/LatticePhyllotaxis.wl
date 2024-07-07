@@ -5,6 +5,7 @@ BeginPackage["LatticePhyllotaxis`"];
 
 latticeFromDivergenceRise::usage = "Generate a lattice object from divergence and rise";
 latticeDivergenceRiseForNonOpposedTC::usage = "Divergence and rise for a non-opposed touching-circle lattice";
+latticeDivergenceRiseForOpposedTC::usage = "Divergence and rise for an opposed touching-circle lattice";
 latticeLabel::usage = "Parastichy numbers for the lattice";
 latticeParastichyLines::usage = "Line[]s for the specified parastichy number";
 latticeGraphicsCylinder::usage = " Rectangle[] for the visible range of the lattice";
@@ -16,6 +17,7 @@ vanItersonTouchingCirclePrimaryOpposed::usage = "dh branch";
 vanItersonRegionPoints::usage = "";
 
 
+
 Begin["Private`"];
 
 
@@ -24,6 +26,7 @@ Begin["Private`"];
 
 
 latticeDivergenceRiseForNonOpposedTC[{d_,h_}] := latticeDHNonOpposedTC[{d,h}];
+latticeDivergenceRiseForOpposedTC[{d_,h_}] := latticeDHOpposedTC[{d,h}];
 latticeFromDivergenceRise[{d_,h_},cylinderLU_] := latticeCreateDH[{d,h},cylinderLU];
 
 
@@ -1327,6 +1330,7 @@ If[circle==Nothing,Return[Nothing]];
 angles = Mean[angles];
 xy + r * {Cos[angles],Sin[angles]}
 ]
+latticeDHOpposedTC[{m_,n_}] := latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}];
 
 
 latticeTriplePoint[{m_,n_}] := latticeDHHexagonal[{m,n}];latticeDHHexagonal[{m_,n_}]  := latticeMoebiusTransform[{m,n}][ { 1/2,Sqrt[3]/2}];
