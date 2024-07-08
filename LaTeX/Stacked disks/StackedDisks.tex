@@ -1,6 +1,6 @@
 
 \documentclass[a4paper,10pt]{amsart}
-
+\usepackage{fourier}
 \usepackage{biblatex}
 
 \addbibresource{Phyllotaxis.bib}
@@ -82,7 +82,7 @@ Although Schwendener's work was not influential on mainstream plant morphology, 
 
 Schwendener-type models are conceptually simple and fairly straightforward to implement (Figure~\ref{fig:scpDeterministicTransition}).
  We take a vertical cylinder with circumference fixed at 1. Apart from the initial conditions, the deterministic model is entirely defined by the function $r_i$ which gives the radius of the $i$th disk. For the models in this paper $r_i$ is a function only of $z_{i-1}$, the height of the centre of the most recently placed disk.
- For the tabulated results on parastichy counts, we take  $r(z)$ to be a piece-wise linear function of $z$ with $r(z)=r_L$ for $z<z_L$, $r(z)=r_U$ for $z>z_U$ and $r$ linearly interpolated between $r_L$ and  $r_U$ in the transition region from `Lower' to `Upper'. We use the slope of this linear interpolation, $r'= -(r_U-r_L)/(z_U-z_L)$, corresponding to the speed at which the disk size changes and chosen to be positive when the disk size is decreasing, as a control parameter in the simulations below, 
+ For the tabulated results on parastichy counts, we take  $r(z)$ to be a piece-wise linear function of $z$ with $r(z)=r_L$ for $z<z_L$, $r(z)=r_U$ for $z>z_U$ and $r$ linearly interpolated between $r_L$ and  $r_U$ in the transition region from `Lower' to `Upper'. We use the slope of this linear interpolation, $r'= -(r_U-r_L)/(z_U-z_L)$, corresponding to the speed at which the disk size changes and chosen to be positive when the disk size is decreasing, as a control parameter in the simulations below.
  %
 
 %
@@ -161,7 +161,7 @@ As expected from the van Iterson tree, this disk-stacking model can account for 
 \clearpage
 
 \subsection{Parastichy count distributions after multiple transitions can match empirical data}
-Figure~\ref{fig:scpAhaPair} illustrates the main result of this paper. It gives an example of the parastichy numbers observed with a single fixed $r'$ over the course of multiple stochastic replicates of a disk stacking model.    There are some qualitative differences at this particular example: the Fibonacci numbers are less overwhelmingly dominant than in the empirical dataset, while the Lucas numbers are more frequent, rather than less frequent, than the $F\pm1$ counts. Nevertheless the other hand, these capture the key observations drawn from  Figure~\ref{fig:scpMOSIHistogram}: the dominance of Fibonacci numbers, the  presence of Lucas and double Fibonacci numbers, and,  not previously demonstrated in models, the presence of Fibonacci numbers plus or minus 1. 
+Figure~\ref{fig:scpAhaPair} illustrates the main result of this paper. It gives an example of the parastichy numbers observed with a single fixed $r'$ over the course of multiple stochastic replicates of a disk stacking model.    There are some qualitative differences at this particular example: the Fibonacci numbers are less overwhelmingly dominant than in the empirical dataset, while the Lucas numbers are more frequent, rather than less frequent, than the $F\pm1$ counts. Nevertheless these capture the key observations drawn from  Figure~\ref{fig:scpMOSIHistogram}: the dominance of Fibonacci numbers, the  presence of Lucas and double Fibonacci numbers, and,  not previously demonstrated in models, the presence of Fibonacci numbers plus or minus 1. 
 The parameters $r'=0.03$ and noise $\sigma=0.05$ used to generate Figure~\ref{fig:scpAhaPair} were not specified \textit{a priori}. They were chosen after inspection of the wider grid of Figure~\ref{fig:scpTo55} but there was no further tuning of the model;  indeed the model has no further free parameters to tune.
 
 \pdffig{scpAhaPair}{Left, empirical parastichy counts redrawn from Figure~\ref{fig:scpMOSIHistogram} to emphasise non-Fibonacci observations. Right,  parastichy counts in a disk stacking model with $r'=0.03$ and noise $\sigma=0.05$. In each simulation the initial condition was a single disk of radius $r(0)=1/2$, with a disk size function $r(z)=1/2- r'z$, run until $r(z)$ changed by a factor of  60, corresponding in a lattice model to a change from a (0,1) lattice to a (34,55) one. 
