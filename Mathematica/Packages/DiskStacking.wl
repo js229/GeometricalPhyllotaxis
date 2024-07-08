@@ -267,8 +267,9 @@ executeRun[run_] := Module[{i,imax,res,diskTime},
 
 	monitorString := Module[{z},
 		z=diskHighestBottom[];
-		StringTemplate["Next disk: `disk`;\nZ left: `zToMax`;\nr: `radius`;\nper-disk time: `timing`"][<|
+		StringTemplate["Next disk: `disk`;\nParastichy: `parastichy`;\nZ left: `zToMax`;\nr: `radius`;\nper-disk time: `timing`"][<|
 			"disk"-> nextDiskNumber[]
+			,"parastichy"-> reportLatestParastichy[]
 			,"zToMax"->run["Arena"]["zMax"]-z
 			,"radius"->diskR[Last[globalRun["DiskData"]]["Disk"]]
 			,"timing"->diskTime
@@ -438,6 +439,12 @@ logSupportChain[n_] := Module[{res,chain},
 chain = globalRun["TopChain"];
 AppendTo[globalRun["RunChains"],
 n-> <|"Chain"->chain,"Parastichy"->chainParastichy[chain]|>];
+];
+reportLatestParastichy[] := Module[{chain},
+chain = Values[globalRun["RunChains"]];
+If[Length[chain]==0,Return[""]];
+chain = Last[chain]["Parastichy"];
+chain 
 ];
 
 
