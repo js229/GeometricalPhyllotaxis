@@ -259,14 +259,15 @@ executeRun[run_] := Module[{i,imax,res,diskTime},
 	globalRun["RunChains"]= Association[]; 
 	
 	If[!NumericQ[imax],imax=20000];
-		monitorFunction := For[i=1,i<= imax,i++,
+	
+	monitorFunction := For[i=1,i<= imax,i++,
 		If[runCompletesArena[],Break[]];
 		diskTime= First@Timing[addNextDisk[]];
-		];
+	];
 
 	monitorString := Module[{z},
 		z=diskHighestBottom[];
-		StringTemplate["Next disk: `disk`;\nZ left: `zToMax`;\nr: `radius`;\n per-disk time: `timing`"][<|
+		StringTemplate["Next disk: `disk`;\nZ left: `zToMax`;\nr: `radius`;\nper-disk time: `timing`"][<|
 			"disk"-> nextDiskNumber[]
 			,"zToMax"->run["Arena"]["zMax"]-z
 			,"radius"->diskR[Last[globalRun["DiskData"]]["Disk"]]
