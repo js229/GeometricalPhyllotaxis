@@ -20,6 +20,7 @@ getDiskFromRun::usage = "";
 diskAndVisibleCopies::usage = "";
 runDisksRadius::usage = "Association of radii of each disk";
 runDisksHeight::usage = "Association of height of each disk";
+runDisksDivergenceHeight::usage = "Association of xz of each disk";
 diskR::usage = "better to provide an api for the functions that call this";
 diskZ::usage = "";
 diskXZ::usage = "";
@@ -82,8 +83,9 @@ restartRunFromRun[run_] := Module[{res,lastDisk},
 
 
 (* ::Input::Initialization:: *)
-runDisksRadius[run_] := Association@Map[#->diskR[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
-runDisksHeight[run_] := Association@Map[#->diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
+runDisksRadius[run_] := Association@Map[#->diskR[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
+runDisksHeight[run_] := Association@Map[#->diskZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
+runDisksDivergenceHeight[run_] := Association@Map[#->diskXZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
 
 
 (* ::Input::Initialization:: *)
@@ -173,7 +175,7 @@ chain=Last[run["RunChains"]]["Chain"];nodes=Flatten[leftAndRightNumbers[VertexLi
 
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Chain code*)
 
 
@@ -993,7 +995,7 @@ edges
 ]*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Graphics  helpers*)
 
 
