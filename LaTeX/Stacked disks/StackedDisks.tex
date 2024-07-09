@@ -92,11 +92,7 @@ Schwendener-type models are conceptually simple and fairly straightforward to im
  
   In order to introduce noise with magnitude $\sigma$ we first compute the position of the $i$-th disk using the deterministic model, but then multiply its radius by a scaling drawn from a random distribution which is uniform on $[1-\sigma,1+\sigma]$. It is this randomly rescaled disk which is then used to compute the position of subsequent disks. Disks are treated as `touching' for the purposes of computing parastichies if the un-rescaled disks touch. 
   
-  
-  
-  \clearpage
-
-
+ 
 \subsection{Cylinder to capitulum mappings}
 
 The output from disk-stacking models can be mapped from cylinders to any surface of revolution, as in Figure~\ref{fig:scpConeTransformation} which shows how  results of disk-stacking models can be compared with empirical data on spirals at the outer sunflower seedhead rim. 
@@ -136,7 +132,8 @@ The reference dataset, and in particular Figure~\ref{fig:scpMOSIHistogram},  is 
 \end{enumerate}
 
 \pdffig{scpMOSIHistogram}{Counts of how often each parastichy number  was observed in the MOSI dataset. Redrawn from~\cite{swintonNovelFibonacciNonFibonacci2016}. An expanded view is shown in Figure~\ref{fig:scpAhaPair}.}{1}
-\clearpage
+
+
 \section{Results}
 
  
@@ -147,7 +144,7 @@ The reference dataset, and in particular Figure~\ref{fig:scpMOSIHistogram},  is 
 Solutions to stacked disk models showing large Fibonacci pair parastichy counts were exhibited by Bursill and colleagues in the 1980s~\cite{jeanBib41,jeanBib721}.  Previous explanations for consistent choice of the Fibonacci branch in the van Iterson tree have either assumed that non-opposed lattices can never occur~\cite{mitchisonPhyllotaxisFibonacciSeries1977} or that they can be rejected as less-well-packed than the corresponding opposed lattice near the hexagonal bifurcation~\cite{douadyCh21Phyllotactic1998}. Because disk-stacking models cannot generically generate non-opposed lattices, they ought to display a preference for Fibonacci structure, at least as long as $r'$, the rate of change of disk radius with stem height,  is not too large. This was demonstrated in  numerical calculations of Gol\'e and colleagues~\cite{goleFibonacciQuasisymmetricPhyllotaxis2016}. We can see that Figure~\ref{fig:scpDeterministicTransition} reproduces these results by showing a (5,8) to (8,13) transition.
 As $r$ continues to decrease, the process can be repeated, as illustrated in  Figure~\ref{fig:scpParastichyCountsTo89} which shows a series of transitions between adjacent Fibonacci pairs.  
 %
-\pdffig{scpParastichyCountsTo89}{Transitions between parastichy counts as a function of the slowly changing inverse radius of the disks. $y$ axis: Local chain parastichy counts for each successive chain in a single
+\pdffig{scpParastichyCountsTo89}{Transitions between parastichy counts as a function of the slowly changing inverse radius of the disks. $y$ axis: Local chain parastichy counts for the topmost chain through each successive disk in a single
 	deterministic run with a  $r'=0.03$ started from a single disk of radius 1/2. $x$ axis: inverse radius of the disk at the highest point of that chain.}{1}
 %
 
@@ -158,7 +155,7 @@ An understanding of the van Iterson tree adds further insight to these smooth, d
 
 As expected from the van Iterson tree, this disk-stacking model can account for the dominance of Fibonacci counts in the empirical data of Figure~\ref{fig:scpMOSIHistogram}.  What it does not by itself account for is the other peaks in that data, which is the main concern of this paper. 
 
-\clearpage
+
 
 \subsection{Parastichy count distributions after multiple transitions can match empirical data}
 Figure~\ref{fig:scpAhaPair} illustrates the main result of this paper. It gives an example of the parastichy numbers observed with a single fixed $r'$ over the course of multiple stochastic replicates of a disk stacking model.    There are some qualitative differences at this particular example: the Fibonacci numbers are less overwhelmingly dominant than in the empirical dataset, while the Lucas numbers are more frequent, rather than less frequent, than the $F\pm1$ counts. Nevertheless these capture the key observations drawn from  Figure~\ref{fig:scpMOSIHistogram}: the dominance of Fibonacci numbers, the  presence of Lucas and double Fibonacci numbers, and,  not previously demonstrated in models, the presence of Fibonacci numbers plus or minus 1. 
@@ -175,7 +172,7 @@ Comparison of the first row (with low disk change speed $r'=0.01$) and the first
 
 \pdffig{scpTo55}{Parastichy histograms depending on speed of disk size contraction $r'$ and magnitude of noise $\sigma$.  Runs and parastichy numbers colour-codings as in Figure~\ref{fig:scpAhaPair}. The histogram shown in Figure~\ref{fig:scpAhaPair} is highlighted. The vertical axis of each histogram is a relative frequency count; bars higher than 0.07 are truncated vertically.}{1}
 
- \clearpage
+
 \subsection{Deterministic transitions around criticality generate near-Fibonacci counts, but also introduce dynamic noise}
 
 This section explores how a pattern starting from an exact $(8,13)$ lattice evolves: Figure~\ref{fig:scpDet813} illustrates some example runs.
@@ -204,7 +201,7 @@ However there is an additional phenomenon which is not easily seen in the determ
 
 What is happening in this new transition is a loss of asymmetry:  Fibonacci type structure requires that the one of the families of parastichy lines is much flatter than the other. In terms of disk placement this means that say, the disk above and to the left (say) of any given disk must be in general lower than the disk above and to the right of that disk. However with random initial conditions, or run stochasticity, there is no enforcement of this property, and there appears no theoretical reason why the dynamics of the disk-stacking model should tend to return the asymmetry. As a consequence, a generic run of the model from arbitrary initial conditions should be expected to yield parastichy lines with nearly equal angles, and correspondingly nearly equal parastichy counts. If, as in these simulations, the disk radius at the end of the simulation is calculated to allow a (13,21) pair, then this argument shows that two nearly equal parastichy counts adding to 34, in other words (17,18) are also likely patterns. Similarly, if the geometry is such that a (21,34) pair is possible then a generic pattern will be close to a (27,28) pair. These columnar solutions to the disk stacking model were identified by Gol\'e and colleagues~\cite{goleFibonacciQuasisymmetricPhyllotaxis2016} as QSS or `quasi-symmetric scenarios'  and an example is shown in Figure~\ref{fig:scpColumn}.
 \pdffig{scpColumn}{Column-type patterns (and roughly equal parastichy pairs) emerge when noise is large enough to move away from Fibonacci structure. The resulting pattern contains patches in which the parastichy lines are each at $45^\circ$ and the disks are arranged in alternating vertical columns, which correspond to roughly equal parastichy numbers, here 16, 17 or 18. As Figure~\ref{fig:scpSch813} with $r'=0.1$ and $\sigma=0.1$, }{1}
-\clearpage
+
 \subsection{Double Fibonacci and Lucas numbers emerge at large $r$ near the critical $r'$ and are promoted by noise}
 The possibility of double-Fibonacci and Lucas numbers in disk-stacking models has already been demonstrated to occur near critical $r'$ values (e.g. Figure 15 of~\cite{goleFibonacciQuasisymmetricPhyllotaxis2016} or Figure 5 of ~\cite{yonekuraMathematicalModelStudies2019}.) However these results by themselves do not indicate at which point in pattern evolution these shifts from exact to more general Fibonacci structure occur. 
 
@@ -227,14 +224,14 @@ For rising phyllotaxis, the transition zones where parastichy number change are 
 \jpgfig{667nophoto}{Observed contact line patterns in sample 667 of the MOSI dataset, with no satisfying way to assign a spiral count to the family of red/yellow/green spirals reflecting a rotational asymmetry as modelled in Figure~\ref{fig:scpFalling}.}{.5}
 
 
-\clearpage
+
 \section{Discussion}
 It was the main motivation of this paper to take the implicit mathematical properties of stacked-disk models, notably those listed in~\cite{goleFibonacciQuasisymmetricPhyllotaxis2016} and make them explicit in a numerical example which could be compared with data, and to that end Figure~\ref{fig:scpAhaPair} is the main result. This Figure confirms that the dynamics of slowly changing stacked-disk models naturally generate well-ordered lattice-like patterns with Fibonacci structure, organised through the van Iterson tree, and provide a rationale for Turing's `hypothesis of geometrical phyllotaxis'~\cite{turingMorphogenTheoryPhyllotaxis2013,swintonMathematicalPhyllotaxis2023}. But it also shows that, for faster rates of disk change, different parastichy counts emerge in ways compatible with observed data.  Models built within this framework can generate plausible simulations of sunflower head patterns, as in Figure~\ref{fig:scpConeTransformation}, with  only one weak assumption, that the rate of geometric change is slow.  Even departures from rotational symmetry can be accounted for within the deterministic model behaviour rather than needing to invoke noise.
 Taken together, this is a compelling mathematical story, and while a handful of other mathematical explanations for Fibonacci structure persist~\cite{okabeUnifiedRulePhyllotaxis2019}, it is the only one that has any support in the contemporary molecular biology of stem development~\cite{swintonMathematicalPhyllotaxis2023}. Mathematical explanations for Fibonacci structure based on `optimal packing' or a molecular protractor capable of controlling mean divergence angles to multiple decimal places should now finally be retired.
 
 
 
-Intriguing mathematical questions abound about this rich class of models, although there are very few analytical results~\cite{goleConvergenceDiskStacking2020}. There is at present no theoretical guidance on the critical value $r'$ for the loss of Fibonacci structure, nor the interaction between this and the magnitude of the noise $\sigma$.  We have poor tools to understand  long-term behaviour, and it may well be that paradigms from, e.g., the statistical physics of dislocations will be helpful; in  particular it would be useful to understand the relaxation rate, if any, to asymptotic behaviour.  There is a deep connection between the structure of the van Iterson tree and the action of SL(2,Z) on the hyperbolic plane, and speculatively it is not impossible that this can be exploited for these more general models~\cite{swintonTextbookMathematicalPhyllotaxis2022}.  
+Intriguing mathematical questions abound about this rich class of models, although there are very few analytical results~\cite{goleConvergenceDiskStacking2020}. There is at present no theoretical guidance on the critical value $r'$ for the loss of Fibonacci structure, nor the interaction between this and the magnitude of the noise $\sigma$.  We have poor tools to understand  long-term behaviour, and it may well be that paradigms from, e.g., the statistical physics of dislocations will be helpful; in  particular it would be useful to understand the relaxation rate, if any, to asymptotic behaviour.  There is a deep connection between the structure of the van Iterson tree and the action of SL(2,Z) on the hyperbolic plane, and speculatively it is not impossible that this can be exploited for these more general models~\cite{swintonMathematicalPhyllotaxis2023}.  
 
 This paper has purposely not tried to fit individual seed positions to any model.  Disk-stacking models have already been shown to be capable of this in, for example, individual pine cone examples~\cite{douadyFibonacciQuasisymmetricPhyllotaxis2016} or sunflower examples~\cite{hottonPossibleActualPhyllotaxis2006}. These studies have been remarkably fruitful in identifying new pattern structures both in models and observation and lend strong support to the paradigm, but are limited by data availability.  Advances in automated image analysis are likely to change this in the near future, and this will introduce a further mathematical and statistical challenge in fitting this high dimensional but strongly correlated data, not least because of the non-isometric mapping between cylinder and stem surface. Pattern identification tools that go beyond parastichy counts will be particularly useful.
 
