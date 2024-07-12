@@ -18,6 +18,7 @@ bareNumberQ::usage = "False for left[] or right [] disks";
 bareNumber::usage = "Take off left[] or right []";
 getDiskFromRun::usage = "";
 diskAndVisibleCopies::usage = "";
+runDisks::usage = "Association of Disk[]s";
 runDisksRadius::usage = "Association of radii of each disk";
 runDisksHeight::usage = "Association of height of each disk";
 runDisksDivergenceHeight::usage = "Association of xz of each disk";
@@ -83,6 +84,7 @@ restartRunFromRun[run_] := Module[{res,lastDisk},
 
 
 (* ::Input::Initialization:: *)
+runDisks[run_] := Association@Map[#->getDiskFromRun[run,#]&,VertexList[run["ContactGraph"]]];
 runDisksRadius[run_] := Association@Map[#->diskR[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
 runDisksHeight[run_] := Association@Map[#->diskZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
 runDisksDivergenceHeight[run_] := Association@Map[#->diskXZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
@@ -157,8 +159,12 @@ pruneRunByNodes[run,nodes]
 ];
 
 pruneRunByNodes[run_,nodes_] := Module[{res},
-res=run;res["ContactGraph"] = Subgraph[res["ContactGraph"] ,nodes];res["RunChains"]= Select[res["RunChains"],useChainQ[#Chain,nodes]&];res["DiskData"]= KeyTake[res["DiskData"],nodes];If[KeyMemberQ[res,"NodeStatistics"],
-res["NodeStatistics"] = KeySelect[run["NodeStatistics"],MemberQ[nodes,#]&]];res["Arena"]["CylinderLU"] = MinMax[diskZ[#Disk]&/@ res["DiskData"]];
+	res=run;res["ContactGraph"] = Subgraph[res["ContactGraph"] ,nodes];
+	res["RunChains"]= Select[res["RunChains"],useChainQ[#Chain,nodes]&];
+	res["DiskData"]= KeyTake[res["DiskData"],nodes];
+	If[KeyMemberQ[res,"NodeStatistics"],
+		res["NodeStatistics"] = KeySelect[run["NodeStatistics"],MemberQ[nodes,#]&]];
+	res["Arena"]["CylinderLU"] = MinMax[diskZ[#Disk]&/@ res["DiskData"]];
 res
 ];
 useChainQ[chain_,nodes_] := IntersectingQ[VertexList[chain],nodes];
