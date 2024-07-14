@@ -13,12 +13,12 @@ pruneRun::usage = "Helper for display";
 pruneRunByDisks::usage = "Helper for display";
 pruneRunToTopChain::usage = "Helper for display";
 graphToContactLines::usage = "Helper for graphics";
-diskNumbersInRun::usage = "Numbered bare disks in run";
+diskNumbersInRun::usage = "Numbered (bare by default) disks in run";
 bareNumberQ::usage = "False for left[] or right [] disks";
 bareNumber::usage = "Take off left[] or right []";
 getDiskFromRun::usage = "";
 diskAndVisibleCopies::usage = "";
-runDisks::usage = "Association of Disk[]s";
+runDisks::usage = "Association of Disk[]s, by default ";
 runDisksRadius::usage = "Association of radii of each disk";
 runDisksHeight::usage = "Association of height of each disk";
 runDisksDivergenceHeight::usage = "Association of xz of each disk";
@@ -84,7 +84,7 @@ restartRunFromRun[run_] := Module[{res,lastDisk},
 
 
 (* ::Input::Initialization:: *)
-runDisks[run_] := Association@Map[#->getDiskFromRun[run,#]&,VertexList[run["ContactGraph"]]];
+runDisks[run_,bareOnly_:False] := Association@Map[#->getDiskFromRun[run,#]&,diskNumbersInRun[run]];
 runDisksRadius[run_] := Association@Map[#->diskR[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
 runDisksHeight[run_] := Association@Map[#->diskZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
 runDisksDivergenceHeight[run_] := Association@Map[#->diskXZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
@@ -148,14 +148,15 @@ experimentParameters
 
 (* ::Input::Initialization:: *)
 nodesToPruneTo[run_,Zrange_] := Module[{g,nodes},
-g=run["ContactGraph"];nodes=Select[VertexList[g],IntervalMemberQ[Interval[Zrange],AnnotationValue[{g,#},VertexCoordinates][[2]]]&];nodes
+g=run["ContactGraph"];nodes=Select[VertexList[g],IntervalMemberQ[Interval[Zrange],AnnotationValue[{g,#},VertexCoordinates][[2]]]&];
+nodes
 ];
 
 
 pruneRun[run_,Zrange_] := Module[{res,nodes},
-res=run;
-nodes=leftAndRightNumbers@nodesToPruneTo[res,Zrange];
-pruneRunByNodes[run,nodes]
+	res=run;
+	nodes=leftAndRightNumbers@nodesToPruneTo[res,Zrange];
+	pruneRunByNodes[run,nodes]
 ];
 
 pruneRunByNodes[run_,nodes_] := Module[{res},
@@ -226,7 +227,12 @@ moveNumberedDiskRight[n_->d_] := moveNumberRight[n]->moveDiskRight[d];
 moveNumberedDiskLeft[n_->d_] := moveNumberLeft[n]->moveDiskLeft[d];
 
 
-diskNumbersInRun[run_] := Keys[run["DiskData"]];
+diskNumbersInRun[run_,bareOnly_:True] := If[bareOnly,
+	Keys[run["DiskData"]]
+	,
+	VertexList[run["ContactGraph"]]
+	];
+
 getDisk[n_] := getDiskFromRun[globalRun,n];
 getDiskFromRun[run_,n_] := run["DiskData"][n]["Disk"] /; bareNumberQ[n];
 getDiskFromRun[run_,n_] :=  moveDiskRight[getDiskFromRun[run,bareNumber[n]]] /; rightNumberQ[n];
