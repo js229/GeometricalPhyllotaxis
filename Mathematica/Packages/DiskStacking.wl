@@ -12,7 +12,7 @@ restartRunFromRun::usage = "Restart from previous run";
 pruneRun::usage = "Helper for display";
 pruneRunByDisks::usage = "Helper for display";
 pruneRunToTopChain::usage = "Helper for display";
-graphToContactLines::usage = "Helper for graphics";
+(*graphToContactLines::usage = "Helper for graphics";*)
 diskNumbersInRun::usage = "Numbered (bare by default) disks in run";
 bareNumberQ::usage = "False for left[] or right [] disks";
 bareNumber::usage = "Take off left[] or right []";
@@ -1012,7 +1012,7 @@ edges
 
 
 (* ::Input::Initialization:: *)
-graphToContactLines[g_,run_,leftRightColours_] := Module[{dlines,fsort,res},
+(*graphToContactLines[g_,run_,leftRightColours_] := Module[{dlines,fsort,res},
 dlines = Line/@Map[diskXZ[getDiskFromRun[run,#]]&,List@@@EdgeList[g],{2}];fsort[Line[{p1_,p2_}]] := If[First[p1]<First[p2],Line[{p1,p2}],Line[{p2,p1}]];dlines=Map[fsort,dlines];res = lineCylinderIntersectionColoured[#,leftRightColours]& /@dlines;
 res
 ];
@@ -1034,7 +1034,7 @@ Line[{{-1/2, z2- slope * (x2-1-(-1/2))},{x2-1,z2}}], Line[{{x1,z1},{1/2,z1+slope
 ]];
 Return[{col,Line[{{x1,z1},{x2,z2}}]}] 
 ];
-
+*)
 diskAndVisibleCopies[Disk[{x_,z_},r_]] := {Disk[{x,z},r],If[x+r>1/2,moveDiskLeft[Disk[{x,z},r]],Nothing[]],If[x-r<-1/2,moveDiskRight[Disk[{x,z},r]],Nothing[]]};
 
 
