@@ -84,10 +84,14 @@ restartRunFromRun[run_] := Module[{res,lastDisk},
 
 
 (* ::Input::Initialization:: *)
-runDisks[run_,bareOnly_:False] := Association@Map[#->getDiskFromRun[run,#]&,diskNumbersInRun[run]];
-runDisksRadius[run_] := Association@Map[#->diskR[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
-runDisksHeight[run_] := Association@Map[#->diskZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
-runDisksDivergenceHeight[run_] := Association@Map[#->diskXZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
+
+runDisks[run_,bareOnly_:False] := Association@Map[#->getDiskFromRun[run,#]&,diskNumbersInRun[run,bareOnly]];
+runDisksRadius[run_,bareOnly_:False] := Map[diskR,runDisks[run,bareOnly]];(*MapAssociation@Map[#->diskR[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
+*)
+runDisksHeight[run_,bareOnly_:False] := Map[diskZ,runDisks[run,bareOnly]];
+(*runDisksHeight[run_] := Association@Map[#->diskZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
+*)
+runDisksDivergenceHeight[run_,bareOnly_:False] :=  Map[diskXZ,runDisks[run,bareOnly]];(*Association@Map[#->diskXZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];*)
 
 
 (* ::Input::Initialization:: *)
