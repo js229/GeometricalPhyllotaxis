@@ -15,7 +15,7 @@ latticeOrthogonal::usage = "A square lattice object";
 vanItersonTouchingCirclePrimaryNonOpposed::usage = "dh branch";
 vanItersonTouchingCirclePrimaryOpposed::usage = "dh branch";
 vanItersonRegionPoints::usage = "";
-
+vanItersonPolygon::usage="vanItersonPolygon[{m,n}]";
 
 
 Begin["Private`"];
