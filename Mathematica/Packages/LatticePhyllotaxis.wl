@@ -372,109 +372,101 @@ jDiscretize[Circle[{0,0},1,{\[Pi]/2,2 \[Pi]/3}]]
 
 
 viTriangleDiscretized[mn_,type_]  := Module[{arcs,p},
-arcs = makeArcs[mn];
-arcs = Association@Map[#Type-> #Points &,arcs];
-p = 
-Switch[type,
-"PlusMinus",
-Flatten[{arcs["ZeroToLeft"],arcs["LeftToRight"],arcs["RightToZero"]},1],
-"Plus",
-Flatten[{arcs["ZeroToSquare"],arcs["SquareToRight"],arcs["RightToZero"]},1],
-  "Minus",
-Flatten[{arcs["ZeroToLeft"],arcs["LeftToSquare"],Reverse@arcs["ZeroToSquare"]},1]
+	arcs = makeArcs[mn];
+	arcs = Association@Map[#Type-> #Points &,arcs];
+	p = Switch[type,
+		"PlusMinus",Flatten[{arcs["ZeroToLeft"],arcs["LeftToRight"],arcs["RightToZero"]},1],
+		"Plus",Flatten[{arcs["ZeroToSquare"],arcs["SquareToRight"],arcs["RightToZero"]},1],
+		"Minus",Flatten[{arcs["ZeroToLeft"],arcs["LeftToSquare"],Reverse@arcs["ZeroToSquare"]},1]
+		];
+	Polygon[p]
 ];
-Polygon[p]
-];
+
+
 
 makeArcs[mn_]  := Module[{arcs,p},
-arcs = Map[<|"Type"->#,"Arc"-> createArc[mn,#]|>&,
-{"ZeroToLeft","LeftToRight","RightToZero","ZeroToSquare","SquareToRight","LeftToSquare"}];
-arcs = Map[Append[#,"Points"-> jDiscretize[#Arc]]&,arcs];
-arcs = Map[Append[#,"First"->
-N@Switch[#Type,
-"LeftToRight",  vanItersonRegionPoints[mn]["LeftTriplePoint"]
-,"RightToZero",vanItersonRegionPoints[mn]["RightTriplePoint"]
-,"ZeroToLeft",vanItersonRegionPoints[mn]["ZeroRise"]
-,"ZeroToSquare",vanItersonRegionPoints[mn]["ZeroRise"]
-,"SquareToRight",vanItersonRegionPoints[mn]["Orthogonal"]
-,"LeftToSquare",vanItersonRegionPoints[mn]["LeftTriplePoint"]
-]]&,arcs];
-
-arcs = Map[Append[#,"Orientation"->
-N@EuclideanDistance[#First,First[#Points]]<N@EuclideanDistance[#First,Last[#Points]]]&,arcs];
-arcs = Map[Append[#,"Points"->If[#Orientation,#Points,Reverse@#Points]]&,arcs];
-arcs
+	arcs = Map[<|"Type"->#,"Arc"-> createArc[mn,#]|>&,
+		{"ZeroToLeft","LeftToRight","RightToZero","ZeroToSquare","SquareToRight","LeftToSquare"}];
+	arcs = Map[Append[#,"Points"-> jDiscretize[#Arc]]&,arcs];
+	arcs = Map[Append[#,
+		"First"->N@Switch[#Type,
+			"LeftToRight",  vanItersonRegionPoints[mn]["LeftTriplePoint"]
+			,"RightToZero",vanItersonRegionPoints[mn]["RightTriplePoint"]
+			,"ZeroToLeft",vanItersonRegionPoints[mn]["ZeroRise"]
+			,"ZeroToSquare",vanItersonRegionPoints[mn]["ZeroRise"]
+			,"SquareToRight",vanItersonRegionPoints[mn]["Orthogonal"]
+			,"LeftToSquare",vanItersonRegionPoints[mn]["LeftTriplePoint"]
+	]]&,arcs];
+	
+	arcs = Map[Append[#,"Orientation"->N@EuclideanDistance[#First,First[#Points]]<N@EuclideanDistance[#First,Last[#Points]]]&,arcs];
+	arcs = Map[Append[#,"Points"->If[#Orientation,#Points,Reverse@#Points]]&,arcs];
+	arcs
 ];
+
 
 createArc[mn_,type_] := Module[{arc,centre,radius,zeroRisePoint,arcEndPoint,arcEndPointAngle,pairCircle,zeroCircle},
-{centre,radius} = List@@(vanItersonTriangleCircles[mn][type]);
-zeroRisePoint = vanItersonRegionPoints[mn]["ZeroRise"];
-zeroCircle[pt_] := Module[{angle =  ArcTan @@ (  pt- centre)},
-Circle[centre,radius,If[First[zeroRisePoint]< First[pt],
-{angle,\[Pi]},{0,angle}]]];
-pairCircle[pt1_,pt2_] := Module[{angle1 =  ArcTan @@ (  pt1- centre),angle2 =  ArcTan @@ (  pt2- centre)},
-Circle[centre,radius,SortBy[{angle1,angle2},N]]
-];
-arc = 
-Switch[type,
-"RightToZero",
-zeroCircle[ vanItersonRegionPoints[mn]["RightTriplePoint"]]
-,"ZeroToLeft",
-zeroCircle[ vanItersonRegionPoints[mn]["LeftTriplePoint"]]
-,"ZeroToSquare",
-zeroCircle[vanItersonRegionPoints[mn]["Orthogonal"]]
-,"LeftToRight",
-pairCircle[vanItersonRegionPoints[mn]["LeftTriplePoint"],vanItersonRegionPoints[mn]["RightTriplePoint"]]
-,"SquareToRight",
-pairCircle[vanItersonRegionPoints[mn]["Orthogonal"],vanItersonRegionPoints[mn]["RightTriplePoint"]]
-,"LeftToSquare",
-pairCircle[vanItersonRegionPoints[mn]["Orthogonal"],vanItersonRegionPoints[mn]["LeftTriplePoint"]]
-];
-
+	{centre,radius} = List@@(vanItersonTriangleCircles[mn][type]);
+	zeroRisePoint = vanItersonRegionPoints[mn]["ZeroRise"];
+	zeroCircle[pt_] := Module[{angle =  ArcTan @@ (  pt- centre)},
+		Circle[centre,radius,If[First[zeroRisePoint]< First[pt],{angle,\[Pi]},{0,angle}]]
+		];
+	pairCircle[pt1_,pt2_] := Module[{angle1 =  ArcTan @@ (  pt1- centre),
+		angle2 =  ArcTan @@ (  pt2- centre)},Circle[centre,radius,SortBy[{angle1,angle2},N]]
+		];
+	arc = Switch[type,
+	"RightToZero",zeroCircle[ vanItersonRegionPoints[mn]["RightTriplePoint"]]
+	,"ZeroToLeft",zeroCircle[ vanItersonRegionPoints[mn]["LeftTriplePoint"]]
+	,"ZeroToSquare",zeroCircle[vanItersonRegionPoints[mn]["Orthogonal"]]
+	,"LeftToRight",pairCircle[vanItersonRegionPoints[mn]["LeftTriplePoint"],vanItersonRegionPoints[mn]["RightTriplePoint"]]
+	,"SquareToRight",pairCircle[vanItersonRegionPoints[mn]["Orthogonal"],vanItersonRegionPoints[mn]["RightTriplePoint"]]
+	,"LeftToSquare",pairCircle[vanItersonRegionPoints[mn]["Orthogonal"],vanItersonRegionPoints[mn]["LeftTriplePoint"]]
+	];
 arc
 ];
 
-createArc[{2,1},"RightToZero"] = Line[{vanItersonRegionPoints[{2,1}]["RightTriplePoint"],vanItersonRegionPoints[{2,1}]["ZeroRise"]}];
 
-createArc[{1,1},"LeftToRight"] = 
-Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];
-createArc[{1,1},"LeftToSquare"] = 
-Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["Orthogonal"]}];
-createArc[{1,1},"SquareToRight"] = 
-Line[{vanItersonRegionPoints[{1,1}]["Orthogonal"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];
-
-createArc[{1,1},"RightToZero"]= Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];
-createArc[{1,1},"ZeroToLeft"]= Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}];
-
-createArc[{1,0},"ZeroToLeft"]= Circle[{-1,0},1,{0,\[Pi]/3}];
-createArc[{1,0},"LeftToRight"]= Circle[{0,0},1,{\[Pi]/3,2\[Pi]/3}];
-createArc[{1,0},"RightToZero"]= Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];
-createArc[{1,0},"ZeroToSquare"]= Line[{{0,0},{0,1}}];
-createArc[{1,0},"LeftToSquare"]= Circle[{0,0},1,{\[Pi]/2,2\[Pi]/3}];
-createArc[{1,0},"SquareToRight"]= Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}];
+(* ::Input:: *)
+(*createArc[{2,1},"RightToZero"] = Line[{vanItersonRegionPoints[{2,1}]["RightTriplePoint"],vanItersonRegionPoints[{2,1}]["ZeroRise"]}];*)
+(**)
+(*createArc[{1,1},"LeftToRight"] = *)
+(*Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];*)
+(*createArc[{1,1},"LeftToSquare"] = *)
+(*Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["Orthogonal"]}];*)
+(*createArc[{1,1},"SquareToRight"] = *)
+(*Line[{vanItersonRegionPoints[{1,1}]["Orthogonal"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];*)
+(**)
+(*createArc[{1,1},"RightToZero"]= Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];*)
+(*createArc[{1,1},"ZeroToLeft"]= Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}];*)
+(**)
+(*createArc[{1,0},"ZeroToLeft"]= Circle[{-1,0},1,{0,\[Pi]/3}];*)
+(*createArc[{1,0},"LeftToRight"]= Circle[{0,0},1,{\[Pi]/3,2\[Pi]/3}];*)
+(*createArc[{1,0},"RightToZero"]= Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];*)
+(*createArc[{1,0},"ZeroToSquare"]= Line[{{0,0},{0,1}}];*)
+(*createArc[{1,0},"LeftToSquare"]= Circle[{0,0},1,{\[Pi]/2,2\[Pi]/3}];*)
+(*createArc[{1,0},"SquareToRight"]= Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}];*)
 
 
 (* thinking about it, l to r, l to sq and sq to right are always the same ...  *) 
 vanItersonTriangleCircles[{m_,n_}] := Module[{vitc,res},
-vitc[mn_] := vanItersonTouchingCircle[mn]; (* whole circle *)
-vitc[{1,1}] := vanItersonTouchingCircle[{1,1}];
-res = <|"LeftToRight"-> vitc[{m,n}]
-,"RightToZero"-> vitc[{Abs[n-m],n}]
-,"ZeroToLeft" -> vitc[{n,n+m}]
-,"ZeroToSquare" -> Take[vanItersonSquareLattice[{m,n}],2]
-|>;
-res = Append[res,<|
-"SquareToRight"-> res["LeftToRight"],"LeftToSquare"->res["LeftToRight"]
-|>];
-res
+	vitc[mn_] := vanItersonTouchingCircle[mn]; (* whole circle *)
+	vitc[{1,1}] := vanItersonTouchingCircle[{1,1}];
+	res = <|
+		"LeftToRight"-> vitc[{m,n}]
+		,"RightToZero"-> vitc[{Abs[n-m],n}]
+		,"ZeroToLeft" -> vitc[{n,n+m}]
+		,"ZeroToSquare" -> Take[vanItersonSquareLattice[{m,n}],2]
+		|>;
+	res = Append[res,<|"SquareToRight"-> res["LeftToRight"],"LeftToSquare"->res["LeftToRight"]|>];
+	res
 ];
-vanItersonTriangleCircles[{1,2}] = 
-<|"LeftToRight"-> Circle[{2/3,0},1/3]
-,"RightToZero"-> Circle[{1/3,0},1/3]
-,"ZeroToLeft" ->  vanItersonTouchingCircle[{2,3}]
-,"ZeroToSquare" -> Take[vanItersonSquareLattice[{1,2}],2]
-,"SquareToRight"->  Circle[{2/3,0},1/3],
-"LeftToSquare"->Circle[{2/3,0},1/3]
+
+vanItersonTriangleCircles[{1,2}] = <|
+	"LeftToRight"-> Circle[{2/3,0},1/3]
+	,"RightToZero"-> Circle[{1/3,0},1/3]
+	,"ZeroToLeft" ->  vanItersonTouchingCircle[{2,3}]
+	,"ZeroToSquare" -> Take[vanItersonSquareLattice[{1,2}],2]
+	,"SquareToRight"->  Circle[{2/3,0},1/3],
+	"LeftToSquare"->Circle[{2/3,0},1/3]
 |>;
 
 
