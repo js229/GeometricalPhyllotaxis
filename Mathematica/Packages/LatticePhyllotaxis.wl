@@ -17,6 +17,8 @@ vanItersonTouchingCirclePrimaryOpposed::usage = "dh branch";
 vanItersonRegionPoints::usage = "";
 vanItersonPolygon::usage="vanItersonPolygon[{m,n}]";
 
+circleBranch::usage="";
+
 
 Begin["Private`"];
 
@@ -150,12 +152,14 @@ interval
 (*gmn map*)
 
 
-(* ::Input::Initialization:: *)
-basisChangeMatrix[mn_] := Transpose[({
- {1, 0},
- {0, -1}
-}) . Transpose[ euclideanMatrixProductNew[mn]]];
+(* ::Code::Initialization:: *)
+basisChangeMatrix[mn_] := Transpose[(
+	{ {1, 0},
+	  {0, -1}
+	})  . Transpose[ euclideanMatrixProductNew[mn]]];
+
 basisInverseChangeMatrix[mn_] := Inverse[basisChangeMatrix[mn]];
+
 Clear[n,m,v,u];
 basisChangeMatrix[{n,m}] := ({
  {n, -v},
@@ -176,10 +180,10 @@ gmn[mn_][{d_,DirectedInfinity[_]}] :=
 latticeGMNinDHalfNew[{0,1}][dh_] := gmn[{0,1}][dh];
 latticeGMNinDHalfNew[{1,0}][dh_] := {1,-1} * gmn[{1,0}][dh];
 latticeGMNinDHalfNew[mn_][dh_] := Module[{res},
-res = gmn[mn][dh];
-If[euclideanDelta[mn]<0, res= {1,-1} * res];
-res
-];
+	res = gmn[mn][dh];
+	If[euclideanDelta[mn]<0, res= {1,-1} * res];
+	res
+	];
 
 
 (* ::Subsection:: *)
