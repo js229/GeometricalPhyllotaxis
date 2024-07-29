@@ -18,7 +18,7 @@ vanItersonRegionPoints::usage = "";
 vanItersonPolygon::usage="vanItersonPolygon[{m,n}]";
 
 
-Begin["Private`"];
+(*Begin["Private`"];*)
 
 
 (* ::Section:: *)
@@ -156,12 +156,12 @@ basisChangeMatrix[mn_] := Transpose[({
  {0, -1}
 }) . Transpose[ euclideanMatrixProductNew[mn]]];
 basisInverseChangeMatrix[mn_] := Inverse[basisChangeMatrix[mn]];
-Clear[n,m,v,u];
+(*Clear[n,m,v,u];
 basisChangeMatrix[{n,m}] := ({
  {n, -v},
  {m, -u}
 })
-
+*)
 matrixToMoebius[matrix_] := Function[z, Divide@@(matrix . {z,1})];
 Clear[gmn];
 reIm[x___] := ComplexExpand[ReIm[x]];
@@ -299,24 +299,25 @@ m < n - m
 vanItersonTouchingCirclePrimaryOpposed[mn_]  := circleBranch[mn,"Opposed"];
 vanItersonTouchingCirclePrimaryNonOpposed[mn_]  := circleBranch[mn,"NonOpposed"];
 
-circleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
-mn = Sort[{m,n}];
-branch = vanItersonTouchingCirclePrimary[mn];
-If[!viiPrimaryIsEverNonOpposed[mn],
-	If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
+circleBranch[{m_,n_},scalingFunction_] := Module[
+	{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
+	mn = Sort[{m,n}];
+	branch = vanItersonTouchingCirclePrimary[mn];
+	If[!viiPrimaryIsEverNonOpposed[mn],
+		If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
 
-angle =circleAngleAtLine[branch,viiOrthostichyD[mn]];
+	angle =circleAngleAtLine[branch,viiOrthostichyD[mn]];
 
-upperpt =  vanItersonTriplePointRight[mn];
-lowerpt = vanItersonTriplePointLeft[mn];
+	upperpt =  vanItersonTriplePointRight[mn];
+	lowerpt = vanItersonTriplePointLeft[mn];
 
-{centre,r,theta12} = Apply[List,branch];
-If[scalingFunction=="NonOpposed",
-res = Circle[centre,r,SortBy[{xyToArg[branch,upperpt],angle},N]]
-,
-res = Circle[centre,r,SortBy[{xyToArg[branch,lowerpt],angle},N]]
-];
-Return[res];
+	{centre,r,theta12} = Apply[List,branch];
+	If[scalingFunction=="NonOpposed",
+		res = Circle[centre,r,SortBy[{xyToArg[branch,upperpt],angle},N]]
+		,
+		res = Circle[centre,r,SortBy[{xyToArg[branch,lowerpt],angle},N]]
+	];
+	Return[res];
 ];
 viiOrthostichyD[{m_,n_}] := Module[{u,v,res},
 {u,v} = euclideanWindingNumberPair[{m,n}];
@@ -1695,7 +1696,7 @@ Select[pts, Last[#] <   lattice[spline3D][0,v][[3]]&]
 (**)
 
 
-End[];
+(*End[];*)
 
 
 EndPackage[];
