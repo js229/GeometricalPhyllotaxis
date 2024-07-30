@@ -54,15 +54,8 @@ euclideanQCoefficients[{m_,n_}] := Module[{r,q,i},
 	];
  Table[q[j],{j,0,i-1}]
 ];
-(* 
-euclideanQCoefficients[{0,1}] := {}; 
-euclideanQCoefficients[{1,0}] := {0}; 
-*)
 
-euclideanTreeDepth[mn_] := Module[{qValues,qCondition},
-qValues = euclideanQCoefficients[Sort[mn]];
-Total[qValues]
-];
+euclideanTreeDepth[mn_] :=Total@euclideanQCoefficients[Sort[mn]];
 
 
 
@@ -70,7 +63,8 @@ Total[qValues]
 eMatrix = ({
  {1, 1},
  {0, 1}
-});sMatrix=({
+});
+sMatrix=({
  {0, 1},
  {1, 0}
 });
@@ -155,7 +149,7 @@ basisChangeMatrix[mn_] := Transpose[
 ({
 	 {1, 0},
 	 {0, -1}}) . Transpose[ euclideanMatrixProductNew[mn]]];
-basisInverseChangeMatrix[mn_] := Inverse[basisChangeMatrix[mn]];
+basisInverseChangeMatrix[mn_] := basisInverseChangeMatrix[mn] = Inverse[basisChangeMatrix[mn]];
 
 matrixToMoebius[matrix_] := Function[z, Divide@@(matrix . {z,1})];
 
