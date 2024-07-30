@@ -18,7 +18,7 @@ vanItersonRegionPoints::usage = "";
 vanItersonPolygon::usage="vanItersonPolygon[{m,n}]";
 
 
-(*Begin["Private`"];*)
+Begin["Private`"];
 
 
 (* ::Section:: *)
@@ -426,25 +426,24 @@ arc
 ];
 
 
-(* ::Input:: *)
-(*createArc[{2,1},"RightToZero"] = Line[{vanItersonRegionPoints[{2,1}]["RightTriplePoint"],vanItersonRegionPoints[{2,1}]["ZeroRise"]}];*)
-(**)
-(*createArc[{1,1},"LeftToRight"] = *)
-(*Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];*)
-(*createArc[{1,1},"LeftToSquare"] = *)
-(*Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["Orthogonal"]}];*)
-(*createArc[{1,1},"SquareToRight"] = *)
-(*Line[{vanItersonRegionPoints[{1,1}]["Orthogonal"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];*)
-(**)
-(*createArc[{1,1},"RightToZero"]= Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];*)
-(*createArc[{1,1},"ZeroToLeft"]= Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}];*)
-(**)
-(*createArc[{1,0},"ZeroToLeft"]= Circle[{-1,0},1,{0,\[Pi]/3}];*)
-(*createArc[{1,0},"LeftToRight"]= Circle[{0,0},1,{\[Pi]/3,2\[Pi]/3}];*)
-(*createArc[{1,0},"RightToZero"]= Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];*)
-(*createArc[{1,0},"ZeroToSquare"]= Line[{{0,0},{0,1}}];*)
-(*createArc[{1,0},"LeftToSquare"]= Circle[{0,0},1,{\[Pi]/2,2\[Pi]/3}];*)
-(*createArc[{1,0},"SquareToRight"]= Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}];*)
+createArc[{2,1},"RightToZero"] = Line[{vanItersonRegionPoints[{2,1}]["RightTriplePoint"],vanItersonRegionPoints[{2,1}]["ZeroRise"]}];
+
+createArc[{1,1},"LeftToRight"] = 
+Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];
+createArc[{1,1},"LeftToSquare"] = 
+Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["Orthogonal"]}];
+createArc[{1,1},"SquareToRight"] = 
+Line[{vanItersonRegionPoints[{1,1}]["Orthogonal"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];
+
+createArc[{1,1},"RightToZero"]= Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];
+createArc[{1,1},"ZeroToLeft"]= Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}];
+
+createArc[{1,0},"ZeroToLeft"]= Circle[{-1,0},1,{0,\[Pi]/3}];
+createArc[{1,0},"LeftToRight"]= Circle[{0,0},1,{\[Pi]/3,2\[Pi]/3}];
+createArc[{1,0},"RightToZero"]= Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];
+createArc[{1,0},"ZeroToSquare"]= Line[{{0,0},{0,1}}];
+createArc[{1,0},"LeftToSquare"]= Circle[{0,0},1,{\[Pi]/2,2\[Pi]/3}];
+createArc[{1,0},"SquareToRight"]= Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}];
 
 
 (* thinking about it, l to r, l to sq and sq to right are always the same ...  *) 
@@ -1539,7 +1538,7 @@ Select[pts, Last[#] <   lattice[spline3D][0,v][[3]]&]
 (**)
 
 
-(*End[];*)
+End[];
 
 
 EndPackage[];
