@@ -151,34 +151,27 @@ interval
 
 
 (* ::Input::Initialization:: *)
-basisChangeMatrix[mn_] := Transpose[({
- {1, 0},
- {0, -1}
-}) . Transpose[ euclideanMatrixProductNew[mn]]];
+basisChangeMatrix[mn_] := Transpose[
+({
+	 {1, 0},
+	 {0, -1}}) . Transpose[ euclideanMatrixProductNew[mn]]];
 basisInverseChangeMatrix[mn_] := Inverse[basisChangeMatrix[mn]];
-(*Clear[n,m,v,u];
-basisChangeMatrix[{n,m}] := ({
- {n, -v},
- {m, -u}
-})
-*)
+
 matrixToMoebius[matrix_] := Function[z, Divide@@(matrix . {z,1})];
-Clear[gmn];
+
 reIm[x___] := ComplexExpand[ReIm[x]];
 conjugate[x___] := ComplexExpand[Conjugate[x]];
 
-Clear[gmn,m,n,z,u,v];
+
 gmn[mn_][z] := matrixToMoebius[basisInverseChangeMatrix[mn]][z]
 gmn[mn_][{d_,h_}] := reIm@matrixToMoebius[basisInverseChangeMatrix[mn]][d+ I h];
-gmn[mn_][{d_,DirectedInfinity[_]}] := 
-{Divide@@ basisInverseChangeMatrix[mn] . {1,0},0};(*gmn[{n_,m_}][{_,DirectedInfinity[_]}] :={u/m,0} 
-*)
+gmn[mn_][{d_,DirectedInfinity[_]}] := {Divide@@ basisInverseChangeMatrix[mn] . {1,0},0};
 latticeGMNinDHalfNew[{0,1}][dh_] := gmn[{0,1}][dh];
 latticeGMNinDHalfNew[{1,0}][dh_] := {1,-1} * gmn[{1,0}][dh];
 latticeGMNinDHalfNew[mn_][dh_] := Module[{res},
-res = gmn[mn][dh];
-If[euclideanDelta[mn]<0, res= {1,-1} * res];
-res
+	res = gmn[mn][dh];
+	If[euclideanDelta[mn]<0, res= {1,-1} * res];
+	res
 ];
 
 
