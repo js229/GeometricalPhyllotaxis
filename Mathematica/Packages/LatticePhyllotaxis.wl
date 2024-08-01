@@ -17,6 +17,8 @@ vanItersonTouchingCirclePrimaryOpposed::usage = "dh branch";
 vanItersonRegionPoints::usage = "";
 vanItersonPolygon::usage="vanItersonPolygon[{m,n}]";
 
+euclideanDelta::usage="euclideanDelta";
+
 
 Begin["Private`"];
 
