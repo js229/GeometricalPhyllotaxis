@@ -84,7 +84,6 @@ restartRunFromRun[run_] := Module[{res,lastDisk},
 
 
 (* ::Input::Initialization:: *)
-
 runDisks[run_,bareOnly_:False] := Association@Map[#->getDiskFromRun[run,#]&,diskNumbersInRun[run,bareOnly]];
 runDisksRadius[run_,bareOnly_:False] := Map[diskR,runDisks[run,bareOnly]];(*MapAssociation@Map[#->diskR[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
 *)
@@ -259,8 +258,8 @@ Max@Map[diskBottomZ[getDisk[#]]&,Keys[globalRun["DiskData"]]];
 highestDiskZ[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 
 nextRadius[] := Module[{highestZ},
-highestZ=highestDiskZ[globalRun];
-globalRun["Arena"]["rFunction"][highestZ]
+	highestZ=highestDiskZ[globalRun];
+	globalRun["Arena"]["rFunction"][highestZ]
 ];
 nextDiskNumber[] := Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]]+1;
 
@@ -856,7 +855,7 @@ res
 ];*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Chains by flattest*)
 
 
