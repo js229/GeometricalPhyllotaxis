@@ -303,7 +303,6 @@ functionClosure[f_] := Function[{z$},Evaluate[f[[2]]]]
 
 
 (* ::Input::Initialization:: *)
-
 scpShowParastichyLines[lattice_,lineColourFunction_]  :=  Module[{ll,llines,paraset,plines,numbers,rise,divergence,glines},
 ll =Take[Flatten[ LatticePhyllotaxis`latticeLabel[lattice]],2];
 llines = Map[LatticePhyllotaxis`latticeParastichyLines[lattice,#]&,ll];
@@ -349,7 +348,6 @@ Legended[scpShowParastichyLines[lattice,jParastichyColour],LineLegend[{jParastic
 
 
 (* ::Input::Initialization:: *)
-
 viSwatch = <| "TouchingCircle"->  jParastichyColour[1]
 ,"OpposedTouchingCircle"-> jParastichyColour[1]
 ,"NonOpposedTouchingCircle"->jStyle["CylinderColour"]
@@ -481,7 +479,6 @@ res=Flatten[Outer@@ Prepend[parameterLists,labelParameter]]
 
 
 (* ::Input::Initialization:: *)
-
 makescpParaTransitions55[] := (
 pto55= expandParameterSets[<|"Tag"->{"rcp-upto55-solo"},"rSlope"->{0.03},"rScale"->{60},"PostFixChains"->{2},
 "Noise"->Join[{0}],
@@ -514,7 +511,6 @@ doRunSets[pto55];
 
 
 (* ::Input::Initialization:: *)
-
 chainLines[run_,chainNumber_] := Module[{w},
 w=run;
 w["ContactGraph"]=run["RunChains"][chainNumber]["Chain"];
@@ -526,7 +522,6 @@ contactLineThickness= AbsoluteThickness[.5];
 
 
 (* ::Input::Initialization:: *)
-
 scpExplain[run_,zRange_,toShow_,chainNumbers_,stackedDiskNumber_,chain_] := Module[{diskNumbers,disks,ffs,cylinder,stackedDisks,stackedRun,nextDisk,contacts,cylinderLU,diskDisks,diskShow,ghainLines,chainBox,g},
 ffs= Directive[FaceForm[White],EdgeForm[Black]];
 diskNumbers = DiskStacking`diskNumbersInRun[run];
@@ -678,7 +673,6 @@ panelInset[panel_,label_] := Show[panel,Graphics[Inset[Style[label,jFont[Scaled[
 
 
 (* ::Input::Initialization:: *)
-
 chainStatistics[run_] := Module[{res,runChains,chainRadii,chainZ},
 res=run;
 runChains =res["RunChains"];
@@ -738,7 +732,6 @@ ListPlot[Map[KeyTake[#,{"MeanZ","MeanRadius"}]&,runChains]];*)
 
 
 (* ::Input:: *)
-(**)
 (*arena2= <|"runNumber"->1*)
 (*,"Tag"->"radius-34bis-crecrease"*)
 (*,"Run"->""*)
@@ -761,11 +754,9 @@ ListPlot[Map[KeyTake[#,{"MeanZ","MeanRadius"}]&,runChains]];*)
 
 (* ::Input:: *)
 (**)
-(**)
 
 
 (* ::Input:: *)
-(**)
 (**)
 
 
@@ -877,7 +868,6 @@ nvPoly
 
 
 (* ::Input::Initialization:: *)
-
 baseColour =  <|
 "cone"-> LightGray,
 "bract"-> jParastichyColour[3],
@@ -1126,6 +1116,7 @@ LabelStyle->Directive[FontFamily-> jStyle["FontFamily"],FontSize->fsize]];
 (* ::Input::Initialization:: *)
 
 
+
 makeUpto55wxy := Module[{},
 replicationCount=10;
 noises =Join[{0},Table[0.01,replicationCount],Table[0.02,replicationCount],Table[0.05,replicationCount],Table[0.1,replicationCount]];
@@ -1158,7 +1149,6 @@ Export[FileNameJoin[{eSetDirectory,"rcp-esetupto55-wxy.mx"}],groupedupto55Result
 
 (* ::Input:: *)
 (**)
-(**)
 
 
 (* ::Input:: *)
@@ -1166,7 +1156,6 @@ Export[FileNameJoin[{eSetDirectory,"rcp-esetupto55-wxy.mx"}],groupedupto55Result
 
 
 (* ::Input:: *)
-(**)
 (*groupedupto55Results=Import[FileNameJoin[{eSetDirectory,"rcp-esetupto55-wxy.mx"}]];*)
 (*upto55Show = KeySelect[groupedupto55Results,#rSlope< 0.15&];*)
 (**)
@@ -1218,7 +1207,6 @@ Graphics[{jParastichyColour[1]
 
 
 (* ::Input::Initialization:: *)
-
 panelEset[eset_] := Module[{noises,slopes,hpanel,titlerow,noiserow,changerow,panels},
 noises= Sort@DeleteDuplicates@Map[#Noise&,Keys[eset]];
 slopes = Sort@DeleteDuplicates@Map[#rSlope&,Keys[eset]];
@@ -1246,10 +1234,6 @@ Join[{titlerow,noiserow,changerow},Map[hpanel,slopes]]
 
 
 (* ::Input:: *)
-(**)
-(**)
-(**)
-(**)
 (**)
 
 
@@ -1344,7 +1328,6 @@ doRunSets[d813b];);
 
 
 (* ::Input:: *)
-(**)
 (*(*det813= Map[Import[#]["Run"]&,FileNames[FileNameJoin[{runDirectory,"rcp-d813-b*"}]]];*)
 (**)det813= Map[getRunByTag[#]["Run"]&,{"rcp-d813-b3","rcp-d813-b4"}];*)
 (*showZBar=True;*)
@@ -1355,7 +1338,6 @@ doRunSets[d813b];);
 
 
 (* ::Input:: *)
-(**)
 (*jExport[scpDet813]*)
 (**)
 
@@ -1428,7 +1410,6 @@ pQSS= expandParameterSets[<|"Tag"->{"rcp-QSS"},"rSlope"->{0.1},"rScale"->{1.6},"
 
 
 (* ::Input:: *)
-(**)
 (*scpColumn = grainColShow[runQSS,{12,22},{0,2}];*)
 (*jExport[scpColumn]*)
 (**)
@@ -1483,7 +1464,6 @@ pQSS= expandParameterSets[<|"Tag"->{"rcp-QSS"},"rSlope"->{0.1},"rScale"->{1.6},"
 
 
 (* ::Input:: *)
-(**)
 (*If[MemberQ[runsToGenerate,"rcp-e55c"],*)
 (*upto55=getRunByTag["rcp-upto55-solo1"]["Run"];*)
 (*run = DiskStacking`restartRunFromRun[upto55];*)
@@ -1496,7 +1476,6 @@ pQSS= expandParameterSets[<|"Tag"->{"rcp-QSS"},"rSlope"->{0.1},"rScale"->{1.6},"
 
 
 (* ::Input::Initialization:: *)
-
 debugGraph[g_] := Module[{res,nodes,edges,vc,es},
 nodes= VertexList[g];
 edges= EdgeList[g];
@@ -1577,7 +1556,7 @@ GraphicsColumn[{g123,g45}]
 
 
 (* ::Input::Initialization:: *)
-(*
+
 showDiskMeshFromNodes[g_] := Module[{gstyle,nodes,vx,mask},
 nodes=AnnotationValue[g,VertexCoordinates];
 v=VoronoiMesh[nodes];
@@ -1587,7 +1566,7 @@ mask=Region[Style[mask,White]];
 gstyle=Graph[g,VertexSize->Large,VertexStyle->Gray];
 Show[gstyle,v,mask,PlotRange->{{-1,1},{-1,1}}]
 ];
-*)
+
 
 
 

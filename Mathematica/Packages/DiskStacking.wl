@@ -26,6 +26,7 @@ diskR::usage = "better to provide an api for the functions that call this";
 diskZ::usage = "";
 diskXZ::usage = "";
 postRunExtractNonOverlappingChains::usage = "";
+deCycleChain::usage = "Used for parastichy counts and exposed as graphic helper"
 
 
 Begin["Private`"]
@@ -84,7 +85,6 @@ restartRunFromRun[run_] := Module[{res,lastDisk},
 
 
 (* ::Input::Initialization:: *)
-
 runDisks[run_,bareOnly_:False] := Association@Map[#->getDiskFromRun[run,#]&,diskNumbersInRun[run,bareOnly]];
 runDisksRadius[run_,bareOnly_:False] := Map[diskR,runDisks[run,bareOnly]];(*MapAssociation@Map[#->diskR[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
 *)
@@ -832,8 +832,9 @@ If[ Last[v1xy]>=Last[v2xy],Red,Blue]
 ];
 
 
-chainFromEdges[chainEdges_]:= Union@@(List@@@chainEdges)
 
+(* Obsolete *)
+(*
 flattestChains[g_] := Module[{d,chainEdges,chains},
 d=directedGraphRightwards[g];
 chainEdges= leftRightChainEdges[d];
@@ -841,6 +842,7 @@ chains= Map[<|"Chain"->Subgraph[g,#]|>&,chainEdges];
 chains = Map[Append[#,"Parastichy"->countbyPath[#Chain]]&,chains];
 chains
 ]
+*)
 
 
 (* ::Section:: *)
@@ -856,11 +858,13 @@ res
 ];*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Chains by flattest*)
 
 
 (* ::Input::Initialization:: *)
+(* Obsolete *)
+(*
 flattestChainData[graph_,chainsToDo_:100] := Module[{i,g,chainGraphSet,chains,chainSet},
 chains= flattestChains[graph];
 
@@ -869,18 +873,18 @@ chainSet= Map[Append[#,"MeanZ"->chainMeanZ[#Chain]]&,chainSet];
 chainSet= Map[Append[#,"MeanRadius"->chainMeanRadius[#Chain]]&,chainSet];
 chainSet
 ];
+*)
 
 
-
-chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
-
-chainMeanRadius[chain_] := Module[{e,gxy,norm},
+(*chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
+*)
+(*chainMeanRadius[chain_] := Module[{e,gxy,norm},
 gxy[n_] :=AnnotationValue[{chain,n},VertexCoordinates];
 norm[n1_,n2_] := Norm[gxy[n2]-gxy[n1]];
 e=EdgeList[chain];
 e=norm @@@ e;
 Mean[e]/2
-];
+];*)
 
 
 
@@ -893,6 +897,7 @@ Mean[e]/2
 
 
 (* ::Input::Initialization:: *)
+(*
 chainMeanLatticeAngle[run_,chain_] := Module[{res,v},
 v=Select[VertexList[chain],bareNumberQ];
 res= KeyTake[run["NodeStatistics"],v];
@@ -906,7 +911,8 @@ res= Map[#Angle&,res];
 If[Length[res]<2,Return[Missing["monoEdge"]]];
 StandardDeviation[res]
 ];
-
+*)
+(*
 chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
 
 chainMeanRadius[chain_] := Module[{e,gxy},
@@ -915,63 +921,92 @@ norm[n1_,n2_] := Norm[gxy[n2]-gxy[n1]];
 e=EdgeList[chain];
 e=norm @@@ e;
 Mean[e]/2
-];
+];*)
 
 
 
 (* ::Input::Initialization:: *)
-stripChain[g_,chain_]:= Module[{lrchain},
+(*stripChain[g_,chain_]:= Module[{lrchain},
 lrchain =leftAndRightNumbers[DeleteDuplicates[bareNumber/@chain]];
 
 lrchain= Intersection[lrchain,VertexList[g]];
 VertexDelete[g,lrchain]
 ];
-
+*)
 chainEncircles[chain_] := Module[{lrNode},
-lrNode=Select[VertexList[chain],!bareNumberQ[#]&];
-If[Length[lrNode]!=1,Return[False]];
-MemberQ[VertexList[chain],bareNumber[First[lrNode]]]
+lrNode=Select[VertexList[chain],!bareNumberQ[#]&];If[Length[lrNode]!=1,Return[False]];MemberQ[VertexList[chain],bareNumber[First[lrNode]]]
 ];
 
-chainParastichy[chain_]:=Module[{},
+chainParastichy[chain_]:=Module[{aChain},
 If[!chainEncircles[chain],Return[Missing["Not encircling"]]];
-If[AcyclicGraphQ[chain],
-acyclicChainParastichy[chain]
-,cyclicChainParastichy[chain]
-]
+
+aChain = If[AcyclicGraphQ[chain],chain,deCycleChain[chain]];
+If[MissingQ[aChain],Return[aChain]];
+acyclicChainParastichy[aChain]
+
 ];
 
-cyclicChainParastichy[chain_] := Module[{reducedchain,v,first,last,edges,res},
+oldDeCycleChain[chain_] := Module[{reducedchain,v,first,last,edges,res},v=VertexList[chain];v=SortBy[v,AnnotationValue[{chain,#},VertexCoordinates]&];first=First[v];last=Last[v];
+edges= Flatten[FindCycle[chain,Infinity,All],2];vInLoops=Complement[DeleteDuplicates[Flatten[List@@@edges]],{first,last}];vInLoops=Association@Map[#->EdgeCount[chain,# \[UndirectedEdge] _]&,vInLoops];vInLoops =Keys[Select[vInLoops,#==2 &]];reducedchain = VertexDelete[chain,vInLoops];If[AcyclicGraphQ[reducedchain],
+Return[reducedchain]];
 
+edges= Flatten[FindCycle[reducedchain,Infinity,All],2];res=Association@Map[#->EdgeDelete[reducedchain,#]&,edges];res=Select[res,gIsLinear];res=Select[res,gIsChain];If[Length[res]==0,Return[Missing["Can't decyclic"]]];
+(*If[Length[res]>1,w=res;Print["Multi decyclics",chain,res]];*)
+res=First[res];
+If[AcyclicGraphQ[res],Return[res]];
 
-v=VertexList[chain];
-v=SortBy[v,AnnotationValue[{chain,#},VertexCoordinates]&];
-first=First[v];last=Last[v];
+Print["Can't decycle",chain];
+Return[Missing[]];
 
+];
 
-edges= Flatten[FindCycle[chain,Infinity,All],2];
-vInLoops=Complement[DeleteDuplicates[Flatten[List@@@edges]],{first,last}];
-vInLoops=Association@Map[#->EdgeCount[chain,# \[UndirectedEdge] _]&,vInLoops];
-vInLoops =Keys[Select[vInLoops,#==2 &]];
-reducedchain = VertexDelete[chain,vInLoops];
+edgePairInLROrder[chain_,a_ \[UndirectedEdge] b_] := Module[{xz},
+xz = AnnotationValue[{chain,{a,b}},VertexCoordinates];
+If[First[xz[[1]]]<= First[xz[[2]]],{a ,b}, {b,a}]
+];
 
-If[AcyclicGraphQ[reducedchain],
+partnerNodesSortedByHeight[chain_,node_,partnerList_] := Module[{res},
+res= SortBy[partnerList,Last@AnnotationValue[{chain,#},VertexCoordinates]&];
+res = Map[# \[UndirectedEdge] node &,res];
+res
+];
+
+deletableLeftEdges[chain_,node_] := Module[{edgeList},
+edgeList= EdgeList[chain,node \[UndirectedEdge] _];
+edgeList = Map[edgePairInLROrder[chain,#]&,edgeList];
+edgeList = Select[edgeList,Last[#]==node&];
+edgeList = Complement[Flatten[edgeList],{node}];
+edgeList = partnerNodesSortedByHeight[chain,node,edgeList];
+edgeList= If[Length[edgeList]>0,Drop[edgeList,-1],{}];
+edgeList
+];
+deletableLeftEdges[chain_] := Flatten@Map[deletableLeftEdges[chain,#]&,VertexList[chain]]
+
+deCycleChain[chain_] := Module[{reducedchain,edges},
+edges= deletableLeftEdges[chain];
+reducedchain= EdgeDelete[chain,edges];
+
+If[AcyclicGraphQ[reducedchain] && chainEncircles[chain],
+Return[reducedchain]];
+
+Print["Calling old method for chain ", chain];
+oldDeCycleChain[chain]
+
+];
+
+(*
+cyclicChainParastichy[chain_] := Module[{reducedchain,v,first,last,edges,res},v=VertexList[chain];v=SortBy[v,AnnotationValue[{chain,#},VertexCoordinates]&];first=First[v];last=Last[v];
+edges= Flatten[FindCycle[chain,Infinity,All],2];vInLoops=Complement[DeleteDuplicates[Flatten[List@@@edges]],{first,last}];vInLoops=Association@Map[#->EdgeCount[chain,# \[UndirectedEdge] _]&,vInLoops];vInLoops =Keys[Select[vInLoops,#==2 &]];reducedchain = VertexDelete[chain,vInLoops];If[AcyclicGraphQ[reducedchain],
 Return[acyclicChainParastichy[reducedchain]]];
 
-
-
-edges= Flatten[FindCycle[reducedchain,Infinity,All],2];
-res=Association@Map[#->EdgeDelete[reducedchain,#]&,edges];
-res=Select[res,gIsLinear];
-res=Select[res,gIsChain];
-If[Length[res]==0,
-Return[Missing["Can't decyclic"]]];
+edges= Flatten[FindCycle[reducedchain,Infinity,All],2];res=Association@Map[#->EdgeDelete[reducedchain,#]&,edges];res=Select[res,gIsLinear];res=Select[res,gIsChain];If[Length[res]==0,Return[Missing["Can't decyclic"]]];
 (*If[Length[res]>1,w=res;Print["Multi decyclics",chain,res]];
-*)res=First[res];
+*)
+res=First[res];
 If[!AcyclicGraphQ[res],
 Print["Can't declyce",chain];Return[Missing[]]];
 acyclicChainParastichy[res]
-];
+];*)
 
 gIsLinear[g_] := Module[{res},
 res=Map[EdgeCount[g,#\[UndirectedEdge] _]&,VertexList[g]];
@@ -987,11 +1022,11 @@ ConnectedGraphQ[graph]
 
 
 acyclicChainParastichy[chain_]:=Module[{res},
-If[!AcyclicGraphQ[chain],Print["aCP"];Abort[]];
-res=KeySort@Counts[Map[AnnotationValue[{chain,#},EdgeStyle]&,EdgeList[chain]]
-];
-res = Append[<|RGBColor[0, 0, 1]->0,RGBColor[1, 0, 0]->0|>,res];
-res
+	If[!AcyclicGraphQ[chain],Print["aCP"];Abort[]];
+	res=KeySort@Counts[Map[AnnotationValue[{chain,#},EdgeStyle]&,EdgeList[chain]]];
+	(* in case left or right is missing *)
+	res = Append[<|RGBColor[0, 0, 1]->0,RGBColor[1, 0, 0]->0|>,res];
+	res
 ];
 
 
