@@ -259,8 +259,8 @@ Max@Map[diskBottomZ[getDisk[#]]&,Keys[globalRun["DiskData"]]];
 highestDiskZ[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 
 nextRadius[] := Module[{highestZ},
-highestZ=highestDiskZ[globalRun];
-globalRun["Arena"]["rFunction"][highestZ]
+	highestZ=highestDiskZ[globalRun];
+	globalRun["Arena"]["rFunction"][highestZ]
 ];
 nextDiskNumber[] := Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]]+1;
 

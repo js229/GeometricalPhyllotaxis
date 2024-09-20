@@ -1,5 +1,8 @@
+% arXiv change notes
+% 29/08/24 Minor clarification of r(z) function
 
 \documentclass[a4paper,10pt]{amsart}
+%\documentclass[referee,sn-basic]{sn-jnl}% referee option is meant for double line spacing
 \usepackage{fourier}
 \usepackage{biblatex}
 
@@ -8,6 +11,7 @@
 \usepackage{graphicx}%
 
 \usepackage{amsmath,amssymb,amsfonts}%
+\usepackage[foot]{amsaddr}
 
 \newlength{\jfigwidth}
 \setlength{\jfigwidth}{\textwidth}
@@ -23,6 +27,7 @@
 \author{Jonathan Swinton}
 \address{ORCID 0000-0002-3196-9653}
 \email{jonathan@swintons.net}
+
 
 
 
@@ -81,7 +86,8 @@ Although Schwendener's work was not influential on mainstream plant morphology, 
 	atelaGeometricDynamicEssence2011};  this paper was particularly strongly influenced by~\cite{goleFibonacciQuasisymmetricPhyllotaxis2016} and~\cite{goleConvergenceDiskStacking2020}. 	
 
 Schwendener-type models are conceptually simple and fairly straightforward to implement (Figure~\ref{fig:scpDeterministicTransition}).
- We take a vertical cylinder with circumference fixed at 1. Apart from the initial conditions, the deterministic model is entirely defined by the function $r_i$ which gives the radius of the $i$th disk. For the models in this paper $r_i$ is a function only of $z_{i-1}$, the height of the centre of the most recently placed disk.
+ We take a vertical cylinder with circumference fixed at 1. Apart from the initial conditions, the deterministic model is entirely defined by the function $r_i$ which gives the radius of the $i$th disk.
+ For the models in this paper, we take  $r_i=r(\max_{j<i} z_j)$ to be  a function only of the height of the centre of the highest (and usually the most recently placed) existing disk
  For the tabulated results on parastichy counts, we take  $r(z)$ to be a piece-wise linear function of $z$ with $r(z)=r_L$ for $z<z_L$, $r(z)=r_U$ for $z>z_U$ and $r$ linearly interpolated between $r_L$ and  $r_U$ in the transition region from `Lower' to `Upper'. We use the slope of this linear interpolation, $r'= -(r_U-r_L)/(z_U-z_L)$, corresponding to the speed at which the disk size changes and chosen to be positive when the disk size is decreasing, as a control parameter in the simulations below.
  %
 
@@ -170,7 +176,7 @@ Comparison of the first row (with low disk change speed $r'=0.01$) and the first
 \subsection{Deterministic transitions around criticality generate near-Fibonacci counts, but also introduce dynamic noise}
 
 This section explores how a pattern starting from an exact $(8,13)$ lattice evolves: Figure~\ref{fig:scpDet813} illustrates some example runs.
- \pdffig{scpDet813}{Deterministic dynamics starting from an (8,13) lattice at different transition rates $r'=$0.05, 0.1, 0.5, 1.0 respectively. In each case the disk size is fixed outside of the transition zone marked with a gray rectangle, and linearly changed by a ratio of 1.6 within that transition zone as defined in the Method section with slope $r'$.  Histograms are of $\log_{10} (1+x) $ where $x$ is the binned parastichy count at each disk evaluated using the chain method of Douady et al, and coloured as in Figure~\ref{fig:scpAhaPair}. Below each histogram is the corresponding set of parastichy lines; changes in parastichy counts are associated with $\gamma$ and $\lambda$ dislocations in these patterns.}{.9}
+ \pdffig{scpDet813}{Deterministic dynamics starting from an (8,13) square lattice at different transition rates $r'=$0.05, 0.1, 0.5, 1.0 respectively. In each case the disk size is fixed outside of the transition zone marked with a gray rectangle, and linearly changed by a ratio of 1.6 within that transition zone as defined in the Method section with slope $r'$.  Histograms are of $\log_{10} (1+x) $ where $x$ is the binned parastichy count at each disk evaluated using the chain method of Douady et al, and coloured as in Figure~\ref{fig:scpAhaPair}. Below each histogram is the corresponding set of parastichy lines; changes in parastichy counts are associated with $\gamma$ and $\lambda$ dislocations in these patterns.}{.9}
 %
  van Iterson lattice theory predicts that the gradient of what is initially the higher parastichy count lines, here the left-winding blue 13-parastichies, will gradually rotate through the transition zone. The gradient of the lower, 8-parastichy lines, which are the red, right-winding ones, also rotates slowly below the transition point, but then there is a sharp transition to the 13-parastichies. Moreover  van Iterson theory predicts that at that point the 8- and 13-lines are $120^{\circ}$ apart, and the new 21-lines bisect this angle and make an angle of $60^\circ$ with each of them, reflecting the hexagonal lattice underlying the bifurcation point. Before the transition the two angles each set of parastichy lines make with the vertical are asymmetric, with the blue lines steeper, while after they are also asymmetric but now it is the red lines which are steeper.
  
@@ -239,9 +245,9 @@ The significance of this paradigm goes well beyond the sunflower capitulum, or a
 
 \section*{Statements and Declarations} 
 I did not receive support from any organization for this work and have no relevant financial interests to disclose. 
-
-Figures in this paper were generated using \texttt{GeometricalPhyllotaxis}, a Mathematica package which is available on request. 
 \printbibliography
+\section{Document history}
+The first version of this document  uploaded to \url{https://arxiv.org/abs/2407.05857} was on 8 July 2024.  Mathematica code used to generate the Figures, along with a version-controlled copy of the source text, can be found at \url{https://github.com/js229/GeometricalPhyllotaxis/tree/radiusfunction}.
 \end{document}
 
 
