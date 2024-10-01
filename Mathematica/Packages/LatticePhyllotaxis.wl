@@ -1172,6 +1172,7 @@ latticeMoebiusTransform[{m,n}][{0.1,(Sqrt[3]/(2)-.25)}],cylinderLU];
 (* ::Input::Initialization:: *)
 latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];r= latticeDiskRadius[lattice];cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
 ];
+(* unlike latticeCircles, only gives primary disks *)
 latticeNamedCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];r= latticeDiskRadius[lattice];cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];
 latticep =  latticeNamedPoints[latticeMargin]; 
 Map[Circle[#,r]&,latticep]
