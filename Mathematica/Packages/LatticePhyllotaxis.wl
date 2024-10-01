@@ -9,7 +9,9 @@ latticeDivergenceRiseForOpposedTC::usage = "Divergence and rise for an opposed t
 latticeLabel::usage = "Parastichy numbers for the lattice";
 latticeParastichyLines::usage = "Line[]s for the specified parastichy number";
 latticeGraphicsCylinder::usage = " Rectangle[] for the visible range of the lattice";
+latticeNamedCircles::usage = "Named latticeCircles";
 latticeCircles::usage = "Circle[]s for each visible point of the lattice";
+latticeNamedPoints::usage = "Named latticePoints";
 latticePoints::usage = "xy coordinates for each visible point of the lattice";
 latticeOrthogonal::usage = "A square lattice object";
 vanItersonTouchingCirclePrimaryNonOpposed::usage = "dh branch";
@@ -699,11 +701,7 @@ lattice = Association [
 (* the region of the unscaled, Euclidean cylinder we display  nodes from; normally the same, but not if we are applying a scaling to it *)
 ,"nodeCylinder" -> { {-1/2,1/2},cylinderLU} 
 ,"parastichyVectors" ->  tgetThreeParastichyVectorsDH[{d,h}]/j
-,"scalings"-> <||>
-];
-lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];
-lattice = Append[lattice,
-{"namedLatticePoints"-> lNamedLatticePoints[lattice]}];
+,"scalings"-> <||>];lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];lattice = Append[lattice,{"namedLatticePoints"-> lNamedLatticePoints[lattice]}];
 lattice
 ];
 
@@ -1172,9 +1170,11 @@ latticeMoebiusTransform[{m,n}][{0.1,(Sqrt[3]/(2)-.25)}],cylinderLU];
 
 
 (* ::Input::Initialization:: *)
-latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];
-r= latticeDiskRadius[lattice];
-cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
+latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];r= latticeDiskRadius[lattice];cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
+];
+latticeNamedCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];r= latticeDiskRadius[lattice];cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];
+latticep =  latticeNamedPoints[latticeMargin]; 
+Map[Circle[#,r]&,latticep]
 ];
 
 latticeDiskRadius[lattice_] := Module[{pv1},
