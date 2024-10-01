@@ -6,6 +6,7 @@ BeginPackage["LatticePhyllotaxis`"];
 latticeFromDivergenceRise::usage = "Generate a lattice object from divergence and rise";
 latticeDivergenceRiseForNonOpposedTC::usage = "Divergence and rise for a non-opposed touching-circle lattice";
 latticeDivergenceRiseForOpposedTC::usage = "Divergence and rise for an opposed touching-circle lattice";
+latticeDiskRadius::usage = "Lattice disk radius";
 latticeLabel::usage = "Parastichy numbers for the lattice";
 latticeParastichyLines::usage = "Line[]s for the specified parastichy number";
 latticeGraphicsCylinder::usage = " Rectangle[] for the visible range of the lattice";
@@ -1172,7 +1173,7 @@ latticeMoebiusTransform[{m,n}][{0.1,(Sqrt[3]/(2)-.25)}],cylinderLU];
 (* ::Input::Initialization:: *)
 latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];r= latticeDiskRadius[lattice];cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
 ];
-(* unlike latticeCircles, only gives primary disks *)
+(* unlike latticeCircles, only gives visible *)
 latticeNamedCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];r= latticeDiskRadius[lattice];cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];
 latticep =  latticeNamedPoints[latticeMargin]; 
 Map[Circle[#,r]&,latticep]
