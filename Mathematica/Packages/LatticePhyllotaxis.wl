@@ -15,6 +15,32 @@ latticeCircles::usage = "Circle[]s for each visible point of the lattice";
 latticeNamedPoints::usage = "Named latticePoints";
 latticePoints::usage = "xy coordinates for each visible point of the lattice";
 latticeOrthogonal::usage = "A square lattice object";
+latticeCreateDH::usage = "Used by Ch 3";
+latticePoint::usage = "Used by Ch 3";
+latticeDivergence::usage = "Used by Ch 3";
+latticeRise::usage = "Used by Ch 3";
+latticePrincipal3ParastichyNumbers::usage = "Used by Ch 3";
+latticeGetCylinder::usage = "Used by Ch 3";
+latticeGraphicPoints::usage = "Used by Ch 3";
+latticeParastichyNumbers::usage = "Used by Ch 3";
+latticeGetCylinderLU::usage = "Used by Ch 3";
+latticeSetCylinderLU::usage = "Used by Ch 3";
+latticeParallelogram::usage = "Used by Ch 3";
+latticeLabelPosition::usage = "Used by Ch 3";
+latticeLabelText::usage = "Used by Ch 3";
+latticeGraphicsPlotRange::usage = "Used by Ch 3";
+latticeParastichyVectors::usage = "Used by Ch 3";
+latticePrincipalParastichyPair::usage = "Used by Ch 3";
+latticeVector::usage = "Used by Ch 3";
+latticeWithMN::usage = "Used by Ch 3";
+latticeHexagonal::usage = "Used by Ch 3";
+latticeTouchingCircle::usage = "Used by Ch 3";
+latticeCircles::usage = "Used by Ch 3";
+latticeDHNonOpposedTC::usage = "Used by Ch 3";
+latticePrincipal3ParastichyLines::usage = "Used by Ch 3";
+latticeGraphicsPoint::usage = "Used by Ch 3";
+generatingInterval::usage = "Used by Ch 3";
+generatingOpposedInterval::usage = "Used by Ch 3";
 vanItersonTouchingCirclePrimaryNonOpposed::usage = "dh branch";
 vanItersonTouchingCirclePrimaryOpposed::usage = "dh branch";
 vanItersonRegionPoints::usage = "";
@@ -23,7 +49,7 @@ vanItersonPolygon::usage="vanItersonPolygon[{m,n}]";
 euclideanDelta::usage="euclideanDelta";
 
 
-Begin["Private`"];
+Begin["Private`"]; (*End[];EndPackage[] *)
 
 
 (* ::Section:: *)
@@ -841,12 +867,17 @@ If[ jp . jp < jm . jm, jp,jm]
 ];
 
 
-latticePoint[lattice_,m_] := Module[{res},
-res= lpoint[{lattice["d"],lattice["h"]},m];
-If[!KeyMemberQ[lattice,"Jugacy"] || lattice["Jugacy"]==1,Return[res]];
-res = res * lattice["Jugacy"];
-res= reCylinderise[res];
-Return[res]
+latticePoint[lattice_,m_,isUnHatted_:True] := Module[{res,mval},
+(* the hat thing works poorly across the package namespaces...*)
+	If[isUnHatted,
+		res= lpoint[{lattice["d"],lattice["h"]},m]
+		,
+		res= lpoint[{lattice["d"],lattice["h"]},hat[m]]
+	];
+	If[!KeyMemberQ[lattice,"Jugacy"] || lattice["Jugacy"]==1,Return[res]];
+	res = res * lattice["Jugacy"];
+	res= reCylinderise[res];
+	Return[res]
 ];
 
 (* looks the wrong way round, but isnt. if there is j>1, we need the vector within the 1/j strip in order to work out parastichy lines
@@ -1160,7 +1191,7 @@ latticeTriplePoint[{m_,n_}] := latticeDHHexagonal[{m,n}];latticeDHHexagonal[{m_,
 
 
 latticeTouchingCircle[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
-latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}],cylinderLU,2];
+Simplify[latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}]],cylinderLU,2];
 
 latticeEquiLength[{m_,n_},cylinderLU_:{-0.2,3.2}] := (* ie p numbers are (m+n),m=n *)latticeCreateDH[latticeMoebiusTransform[{m,n}][ {Cos[\[Pi]/6],Sin[\[Pi]/6]}],cylinderLU];
 latticeOrthogonal[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[latticeMoebiusTransform[{m,n}][ { 0,1}],cylinderLU,2];
