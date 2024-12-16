@@ -41,12 +41,14 @@ latticePrincipal3ParastichyLines::usage = "Used by Ch 3";
 latticeGraphicsPoint::usage = "Used by Ch 3";
 generatingInterval::usage = "Used by Ch 3";
 generatingOpposedInterval::usage = "Used by Ch 3";
+vanItersonTouchingCirclePrimary::usage = "dh branch";
 vanItersonTouchingCirclePrimaryNonOpposed::usage = "dh branch";
 vanItersonTouchingCirclePrimaryOpposed::usage = "dh branch";
 vanItersonRegionPoints::usage = "";
 vanItersonPolygon::usage="vanItersonPolygon[{m,n}]";
 
 euclideanDelta::usage="euclideanDelta";
+euclideanWindingNumberPair::usage="euclideanDelta";
 
 
 Begin["Private`"]; (*End[];EndPackage[] *)
@@ -308,10 +310,12 @@ vanItersonTouchingCircleNonPrimary[{1,2}] ={
  Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}], Circle[{2/3,0},1/3,{5\[Pi]/6,\[Pi]}]};
 
 
+viiPrimaryIsEverNonOpposed[{0,1}] = False;
 viiPrimaryIsEverNonOpposed[mn_] := Module[{m,n},
 {m,n} = Sort[mn];
 m < n - m 
 ];
+
 
 
 vanItersonTouchingCirclePrimaryOpposed[mn_]  := circleBranch[mn,"Opposed"];
