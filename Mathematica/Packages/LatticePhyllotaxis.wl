@@ -15,7 +15,8 @@ latticeCircles::usage = "Circle[]s for each visible point of the lattice";
 latticeNamedPoints::usage = "Named latticePoints";
 latticePoints::usage = "xy coordinates for each visible point of the lattice";
 latticeOrthogonal::usage = "A square lattice object";
-latticeCreateDH::usage = "Used by Ch 3";
+latticeCreateDH::usage = "Used by Ch ";
+latticeCreateDHTXB::usage = "Used by Ch 4 should be merged";
 latticePoint::usage = "Used by Ch 3";
 latticeDivergence::usage = "Used by Ch 3";
 latticeRise::usage = "Used by Ch 3";
@@ -39,16 +40,21 @@ latticeCircles::usage = "Used by Ch 3";
 latticeDHNonOpposedTC::usage = "Used by Ch 3";
 latticePrincipal3ParastichyLines::usage = "Used by Ch 3";
 latticeGraphicsPoint::usage = "Used by Ch 3";
+latticeMoebiusTransform::usage = "";
 generatingInterval::usage = "Used by Ch 3";
 generatingOpposedInterval::usage = "Used by Ch 3";
 vanItersonTouchingCirclePrimary::usage = "dh branch";
+vanItersonLabelPoint::usage="Used by Ch5 Classifying";
+vanItersonTouchingCircleNonPrimary::usage="Used by Ch5 Classifying";
 vanItersonTouchingCirclePrimaryNonOpposed::usage = "dh branch";
 vanItersonTouchingCirclePrimaryOpposed::usage = "dh branch";
 vanItersonRegionPoints::usage = "";
+vanItersonRegionBounds::usage = "";
 vanItersonPolygon::usage="vanItersonPolygon[{m,n}]";
 
 euclideanDelta::usage="euclideanDelta";
 euclideanWindingNumberPair::usage="euclideanDelta";
+euclideanQCoefficients::usage="used for coefficient tree figure";
 
 
 Begin["Private`"]; (*End[];EndPackage[] *)
@@ -512,7 +518,6 @@ vanItersonTouchingCircleDisk[mn_] := Take[vanItersonTouchingCircleXX[mn]/. Circl
 
 
 
-Clear[vanItersonRegionBounds]
 vanItersonRegionBounds[{0,1}] := {{-1/2,1/2},{0,1.2}};
 vanItersonRegionBounds[{1,0}] := vanItersonRegionBounds[{0,1}] ;
 vanItersonRegionBounds[{1,1}] := {{0,1/2},{0,1.2}} ;
@@ -735,7 +740,21 @@ lattice = Association [
 ,"scalings"-> <||>];lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];lattice = Append[lattice,{"namedLatticePoints"-> lNamedLatticePoints[lattice]}];
 lattice
 ];
-
+(* this is used by Txb0416 etc. it can probably be merged into the function above but not tested *)
+latticeCreateDHTXB[{d_,h_,jugacy_},cylinderLU_:{-0.2,3.2},firstnEqual_:1]  :=  Module[{lattice,monolattice,monoParastichyNumbers,jugoParastichyNumbers,jugoParastichyVectors},
+lattice=latticeCreateDH[{d,h},cylinderLU *{1,1},firstnEqual]; (* makes a j=1 lattice  including its latticeNamedPoints *)
+lattice = latticeSetJugacy[lattice,jugacy];
+monolattice = latticeCreateDH[{d,jugacy *h}];
+monoParastichyNumbers = monolattice["parastichyVectors"];
+jugoParastichyNumbers =   Map[jugateParastichyNumber[#,jugacy]&,Keys[monoParastichyNumbers]];
+jugoParastichyVectors = AssociationMap[ latticeVector[lattice,#] &, jugoParastichyNumbers];
+lattice["parastichyVectors"] = jugoParastichyVectors;
+lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];
+lattice
+];
+latticeMonojugateQ[lattice_] := latticeJugacy[lattice] ==1;
+latticeJugacy[lattice_] := (Lookup["jugacy"][lattice] ) /. Missing[__]-> 1;
+latticeSetJugacy[lattice_,jugacy_] :=  Append[lattice,"jugacy"->jugacy];
 
 
 
@@ -1230,7 +1249,7 @@ latticeRhombusArea[lattice_]:= Module[{pv},
 
 (* ::Input::Initialization:: *)
 viiTouchingCircleLabelNonPrimary[{1,2}] = latticeGMNinDHalf[{1,2}][{Sqrt[3]/2,1/2}];
-
+(* xxxx check this might be wrong *)
 
 
 (* ::Subsection::Closed:: *)
