@@ -44,10 +44,12 @@ latticeMoebiusTransform::usage = "";
 
 (* scaling code used by Txb06 *)
 latticeSetScaling::usage = "";
+latticeScaling::usage = "";
 latticeSetDisplayCylinder::usage = "";
-latticeSetDisplayCylinderLU::usage = "";
+latticeSetDisplayCylinderLU::usage = "";\.a6
 latticeParastichyFunctions::usage = "";
 latticeGetNodeCylinder::usage = "";
+latticeGraphicRegion::usage = "";
 
 
 generatingInterval::usage = "Used by Ch 3";
