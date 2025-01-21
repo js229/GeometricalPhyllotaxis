@@ -41,8 +41,18 @@ latticeDHNonOpposedTC::usage = "Used by Ch 3";
 latticePrincipal3ParastichyLines::usage = "Used by Ch 3";
 latticeGraphicsPoint::usage = "Used by Ch 3";
 latticeMoebiusTransform::usage = "";
+
+(* scaling code used by Txb06 *)
+latticeSetScaling::usage = "";
+latticeSetDisplayCylinder::usage = "";
+latticeSetDisplayCylinderLU::usage = "";
+latticeParastichyFunctions::usage = "";
+latticeGetNodeCylinder::usage = "";
+
+
 generatingInterval::usage = "Used by Ch 3";
 generatingOpposedInterval::usage = "Used by Ch 3";
+vanItersonTouchingCircle::usage = "";
 vanItersonTouchingCirclePrimary::usage = "dh branch";
 vanItersonLabelPoint::usage="Used by Ch5 Classifying";
 vanItersonTouchingCircleNonPrimary::usage="Used by Ch5 Classifying";
