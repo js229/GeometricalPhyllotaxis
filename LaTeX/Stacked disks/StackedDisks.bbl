@@ -1,0 +1,1162 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global/global}
+    \entry{atelaGeometricDynamicEssence2011}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=07140d4a74e95a4125a3dbeb27ccd275}{%
+           family={Atela},
+           familyi={A\bibinitperiod},
+           given={Pau},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{07140d4a74e95a4125a3dbeb27ccd275}
+      \strng{fullhash}{07140d4a74e95a4125a3dbeb27ccd275}
+      \strng{fullhashraw}{07140d4a74e95a4125a3dbeb27ccd275}
+      \strng{bibnamehash}{07140d4a74e95a4125a3dbeb27ccd275}
+      \strng{authorbibnamehash}{07140d4a74e95a4125a3dbeb27ccd275}
+      \strng{authornamehash}{07140d4a74e95a4125a3dbeb27ccd275}
+      \strng{authorfullhash}{07140d4a74e95a4125a3dbeb27ccd275}
+      \strng{authorfullhashraw}{07140d4a74e95a4125a3dbeb27ccd275}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Mathematical Modelling of Natural Phenomena}
+      \field{number}{02}
+      \field{title}{The Geometric and Dynamic Essence of Phyllotaxis}
+      \field{volume}{6}
+      \field{year}{2011}
+      \field{pages}{173\bibrangedash 186}
+      \range{pages}{14}
+      \verb{doi}
+      \verb 10.1051/mmnp/20116207
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\EDF9XQCS\Atela - 2011 - The Geometric and Dynamic Essence of Phyllotaxis.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{atelaRhombicTilingsPrimordia2017}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=07140d4a74e95a4125a3dbeb27ccd275}{%
+           family={Atela},
+           familyi={A\bibinitperiod},
+           given={Pau},
+           giveni={P\bibinitperiod}}}%
+        {{hash=498c8e3a555cfd275a7a24edc4066616}{%
+           family={Golé},
+           familyi={G\bibinitperiod},
+           given={Christophe},
+           giveni={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{dbf777cc8bba903051f87f9e34aade3a}
+      \strng{fullhash}{dbf777cc8bba903051f87f9e34aade3a}
+      \strng{fullhashraw}{dbf777cc8bba903051f87f9e34aade3a}
+      \strng{bibnamehash}{dbf777cc8bba903051f87f9e34aade3a}
+      \strng{authorbibnamehash}{dbf777cc8bba903051f87f9e34aade3a}
+      \strng{authornamehash}{dbf777cc8bba903051f87f9e34aade3a}
+      \strng{authorfullhash}{dbf777cc8bba903051f87f9e34aade3a}
+      \strng{authorfullhashraw}{dbf777cc8bba903051f87f9e34aade3a}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{annotation}{Smith College preprint.}
+      \field{eprinttype}{arXiv}
+      \field{title}{Rhombic Tilings and Primordia Fronts of Phyllotaxis}
+      \field{urlday}{12}
+      \field{urlmonth}{3}
+      \field{urlyear}{2022}
+      \field{year}{2017}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.1701.01361
+      \endverb
+      \verb{eprint}
+      \verb 1701.01361
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\9W66KZPD\Atela and Gole - 2017 - Rhombic Tilings and Primordia Fronts of Phyllotaxi.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{atelaDynamicalSystemPlant2002}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=07140d4a74e95a4125a3dbeb27ccd275}{%
+           family={Atela},
+           familyi={A\bibinitperiod},
+           given={Pau},
+           giveni={P\bibinitperiod}}}%
+        {{hash=498c8e3a555cfd275a7a24edc4066616}{%
+           family={Golé},
+           familyi={G\bibinitperiod},
+           given={Christophe},
+           giveni={C\bibinitperiod}}}%
+        {{hash=6aaa3aeca77ae7638d789ce1baf1c04e}{%
+           family={Hotton},
+           familyi={H\bibinitperiod},
+           given={Scott},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{664e82918f999bdddff49cd00906c737}
+      \strng{fullhash}{664e82918f999bdddff49cd00906c737}
+      \strng{fullhashraw}{664e82918f999bdddff49cd00906c737}
+      \strng{bibnamehash}{664e82918f999bdddff49cd00906c737}
+      \strng{authorbibnamehash}{664e82918f999bdddff49cd00906c737}
+      \strng{authornamehash}{664e82918f999bdddff49cd00906c737}
+      \strng{authorfullhash}{664e82918f999bdddff49cd00906c737}
+      \strng{authorfullhashraw}{664e82918f999bdddff49cd00906c737}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Summary. We present a rigorous mathematical analysis of a discrete dynamical system modeling plant pattern formation. In this model, based on the work of physicists Douady and Couder, fixed points are the spiral or helical lattices often occurring in plants. The frequent occurrence of the Fibonacci sequence in the number of visible spirals is explained by the stability of the fixed points in this system, as well as by the structure of their bifurcation diagram. We provide a detailed study of this diagram.}
+      \field{journaltitle}{Journal of Nonlinear Science}
+      \field{number}{6}
+      \field{title}{A Dynamical System for Plant Pattern Formation: A Rigorous Analysis}
+      \field{volume}{12}
+      \field{year}{2002}
+      \field{pages}{641\bibrangedash 676}
+      \range{pages}{36}
+      \verb{doi}
+      \verb 10.1007/s00332-002-0513-1
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\CI4U62TX\Atela-2002-A Dynamical System for Plant Patter.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06,turing}
+    \endentry
+    \entry{jeanBib41}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=4aea66746ca33908eac2b389a6b32f5f}{%
+           family={Bursill},
+           familyi={B\bibinitperiod},
+           given={L.eslie\bibnamedelima A.},
+           giveni={L\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=d1d17c291e6f83a1a5b9bc01ad10f70e}{%
+           family={Ju\bibnamedelima Lin},
+           familyi={J\bibinitperiod\bibinitdelim L\bibinitperiod},
+           given={Peng},
+           giveni={P\bibinitperiod}}}%
+        {{hash=2c6bddb0635cb2f4df4743443318e178}{%
+           family={XuDong},
+           familyi={X\bibinitperiod},
+           given={Fan},
+           giveni={F\bibinitperiod}}}%
+      }
+      \strng{namehash}{51b5c6d78ab8d5bd304d251a3e89d151}
+      \strng{fullhash}{51b5c6d78ab8d5bd304d251a3e89d151}
+      \strng{fullhashraw}{51b5c6d78ab8d5bd304d251a3e89d151}
+      \strng{bibnamehash}{51b5c6d78ab8d5bd304d251a3e89d151}
+      \strng{authorbibnamehash}{51b5c6d78ab8d5bd304d251a3e89d151}
+      \strng{authornamehash}{51b5c6d78ab8d5bd304d251a3e89d151}
+      \strng{authorfullhash}{51b5c6d78ab8d5bd304d251a3e89d151}
+      \strng{authorfullhashraw}{51b5c6d78ab8d5bd304d251a3e89d151}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Modern Physics Letters B}
+      \field{number}{5-6}
+      \field{title}{Spiral Lattice Concepts.}
+      \field{volume}{1}
+      \field{year}{1987}
+      \field{pages}{195\bibrangedash 206}
+      \range{pages}{12}
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\KAJ7AKTT\Bursill, L. A. - 1987 - Spiral lattice concepts. Modern phys. Letters b . .pdf
+      \endverb
+      \keyw{SCP-06}
+    \endentry
+    \entry{couderInitialTransitionsOrder1998}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=4d7e5131b026c4806d5c35ceea9491ff}{%
+           family={Couder},
+           familyi={C\bibinitperiod},
+           given={Yves},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \strng{namehash}{4d7e5131b026c4806d5c35ceea9491ff}
+      \strng{fullhash}{4d7e5131b026c4806d5c35ceea9491ff}
+      \strng{fullhashraw}{4d7e5131b026c4806d5c35ceea9491ff}
+      \strng{bibnamehash}{4d7e5131b026c4806d5c35ceea9491ff}
+      \strng{authorbibnamehash}{4d7e5131b026c4806d5c35ceea9491ff}
+      \strng{authornamehash}{4d7e5131b026c4806d5c35ceea9491ff}
+      \strng{authorfullhash}{4d7e5131b026c4806d5c35ceea9491ff}
+      \strng{authorfullhashraw}{4d7e5131b026c4806d5c35ceea9491ff}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The variability of the phyllotactic organization of Helianthus annuus L. is investigated. Specimens exhibiting the various possible phyllotactic modes (Fibonacci spirals, Lucas spirals, bijugate spirals etc...) were selected. The transitions from the initial decussate growth to these organizations, were characterized and shown to correspond to only a few archetypes. The possible transients from a decussate mode were then investigated in the model of self organization introduced by Douady and Couder (1996a, b, c). They are shown to exhibit the same phenomenology as the observed ones. These various transients have a very different probability of ccurrence which explains the difference of their frequency in plants. Finally the imperfections of the observed dispositions, which affect mainly the plastochron, are also investigated. The model provides an interpretation of this apparent disorder: after a transition the system optimizes the regularity of the parastichies but in doing so it disturbs the plastochron and the divergence. It is only when very large external disturbances affect the system that a real disorder is generated. In these latter cases the parastichies themselves disappear.}
+      \field{journaltitle}{Acta Societatis Botanicorum Poloniae}
+      \field{number}{2}
+      \field{title}{Initial Transitions, Order and Disorder in Phyllotactic Patterns: The Ontogeny of {{{\emph{Helianthus}}}}{\emph{ Annuus}}: A Case Study}
+      \field{volume}{67}
+      \field{year}{1998}
+      \field{pages}{129\bibrangedash 150}
+      \range{pages}{22}
+      \verb{doi}
+      \verb 10.5586/asbp.1998.016
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\DBMRML9G\Couder - 1998 - Initial transitions, order and disorder in phyllotactic patterns the ontogeny of emph Helianthus annuus a case study.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{douadyCh21Phyllotactic1998}{incollection}{}{}
+      \name{author}{2}{}{%
+        {{hash=ee53a6c2733806835e419106d4158021}{%
+           family={Douady},
+           familyi={D\bibinitperiod},
+           given={Stéphane},
+           giveni={S\bibinitperiod}}}%
+        {{hash=4d7e5131b026c4806d5c35ceea9491ff}{%
+           family={Couder},
+           familyi={C\bibinitperiod},
+           given={Yves},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \name{editor}{2}{}{%
+        {{hash=4b973009a74ab5f14ad53709354418f8}{%
+           family={Jean},
+           familyi={J\bibinitperiod},
+           given={Roger\bibnamedelima V.},
+           giveni={R\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+        {{hash=3c2fad997e71757c87be61fad79d9ef4}{%
+           family={Barabé},
+           familyi={B\bibinitperiod},
+           given={Denis},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {World Scientific}%
+      }
+      \strng{namehash}{1ce23039626f1681523cd9b1295bc7e4}
+      \strng{fullhash}{1ce23039626f1681523cd9b1295bc7e4}
+      \strng{fullhashraw}{1ce23039626f1681523cd9b1295bc7e4}
+      \strng{bibnamehash}{1ce23039626f1681523cd9b1295bc7e4}
+      \strng{authorbibnamehash}{1ce23039626f1681523cd9b1295bc7e4}
+      \strng{authornamehash}{1ce23039626f1681523cd9b1295bc7e4}
+      \strng{authorfullhash}{1ce23039626f1681523cd9b1295bc7e4}
+      \strng{authorfullhashraw}{1ce23039626f1681523cd9b1295bc7e4}
+      \strng{editorbibnamehash}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{editornamehash}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{editorfullhash}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{editorfullhashraw}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Symmetry in {{Plants}}}
+      \field{isbn}{978-981-02-2621-3}
+      \field{title}{The Phyllotactic Patterns as Resulting from Self-Organization in an Iterative Process}
+      \field{year}{1998}
+      \field{pages}{539\bibrangedash 570}
+      \range{pages}{32}
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\5JDF2MY6\Douady, Couder - 1998 - The Phyllotactic Patterns As Resulting From Self-Organization In An Iterative Process.pdf
+      \endverb
+      \keyw{SCP-06,sip}
+    \endentry
+    \entry{douadyFibonacciQuasisymmetricPhyllotaxis2016}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=ee53a6c2733806835e419106d4158021}{%
+           family={Douady},
+           familyi={D\bibinitperiod},
+           given={Stéphane},
+           giveni={S\bibinitperiod}}}%
+        {{hash=498c8e3a555cfd275a7a24edc4066616}{%
+           family={Golé},
+           familyi={G\bibinitperiod},
+           given={Christophe},
+           giveni={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{6f4dbcfe85f83e59fc842b81c3d628d6}
+      \strng{fullhash}{6f4dbcfe85f83e59fc842b81c3d628d6}
+      \strng{fullhashraw}{6f4dbcfe85f83e59fc842b81c3d628d6}
+      \strng{bibnamehash}{6f4dbcfe85f83e59fc842b81c3d628d6}
+      \strng{authorbibnamehash}{6f4dbcfe85f83e59fc842b81c3d628d6}
+      \strng{authornamehash}{6f4dbcfe85f83e59fc842b81c3d628d6}
+      \strng{authorfullhash}{6f4dbcfe85f83e59fc842b81c3d628d6}
+      \strng{authorfullhashraw}{6f4dbcfe85f83e59fc842b81c3d628d6}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{Historically, the study of phyllotaxis was greatly helped by the simple description of botanical patterns by only two integer numbers, namely the number of helices (parastichies) in each direction tiling the plant stem. The use of parastichy numbers reduced the complexity of the study and created a proliferation of generalizations, among others the simple geometric model of lattices. Unfortunately, these simple descriptive method runs into difficulties when dealing with patterns presenting transitions or irregularities. Here, we propose several ways of addressing the imperfections of botanical reality. Using ontogenetic analysis, which follows the step-by-step genesis of the pattern, and crystallographic analysis, which reveal irregularity in its details, we show how to derive more information from a real botanical sample, in particular, about its irregularities and transitions. We present several examples, from the first explicit visualization of a normal Fibonacci parastichy number increase, to more exotic ones, including the quasi-symmetric patterns detected in simulations. We compare these observations qualitatively with the result of the disk-packing model, presenting evidence for the relevance of the model.}
+      \field{issn}{2083-9480}
+      \field{journaltitle}{Acta Societatis Botanicorum Poloniae}
+      \field{langid}{english}
+      \field{month}{12}
+      \field{number}{4}
+      \field{shorttitle}{Fibonacci or Quasi-Symmetric Phyllotaxis. {{Part II}}}
+      \field{title}{Fibonacci or Quasi-Symmetric Phyllotaxis. {{Part II}}: Botanical Observations}
+      \field{urlday}{15}
+      \field{urlmonth}{2}
+      \field{urlyear}{2019}
+      \field{volume}{85}
+      \field{year}{2016}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.5586/asbp.3534
+      \endverb
+      \verb{file}
+      \verb C\:\\Users\\jonat\\Zotero\\storage\\SDUQPMV2\\Douady and Golé - 2016 - Fibonacci or quasi-symmetric phyllotaxis. Part II.pdf;C\:\\Users\\jonat\\Zotero\\storage\\LARTW8W5\\asbp.html
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{godinPhyllotaxisGeometricCanalization2020}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=4568d489749c7997296195ea56602e59}{%
+           family={Godin},
+           familyi={G\bibinitperiod},
+           given={Christophe},
+           giveni={C\bibinitperiod}}}%
+        {{hash=498c8e3a555cfd275a7a24edc4066616}{%
+           family={Golé},
+           familyi={G\bibinitperiod},
+           given={Christophe},
+           giveni={C\bibinitperiod}}}%
+        {{hash=ee53a6c2733806835e419106d4158021}{%
+           family={Douady},
+           familyi={D\bibinitperiod},
+           given={Stéphane},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{c797e9734d584ddd116517fd0c427dc9}
+      \strng{fullhash}{c797e9734d584ddd116517fd0c427dc9}
+      \strng{fullhashraw}{c797e9734d584ddd116517fd0c427dc9}
+      \strng{bibnamehash}{c797e9734d584ddd116517fd0c427dc9}
+      \strng{authorbibnamehash}{c797e9734d584ddd116517fd0c427dc9}
+      \strng{authornamehash}{c797e9734d584ddd116517fd0c427dc9}
+      \strng{authorfullhash}{c797e9734d584ddd116517fd0c427dc9}
+      \strng{authorfullhashraw}{c797e9734d584ddd116517fd0c427dc9}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Why living forms develop in a relatively robust manner, despite various sources of internal or external variability, is a fundamental question in developmental biology. Part of the answer relies on the notion of developmental constraints: at any stage of ontogenesis, morphogenetic processes are constrained to operate within the context of the current organism being built. One such universal constraint is the shape of the organism itself, which progressively channels the development of the organism toward its final shape. Here, we illustrate this notion with plants, where strikingly symmetric patterns (phyllotaxis) are formed by lateral organs. This Hypothesis article aims first to provide an accessible overview of phyllotaxis, and second to argue that the spiral patterns in plants are progressively canalized from local interactions of nascent organs. The relative uniformity of the organogenesis process across all plants then explains the prevalence of certain patterns in plants, i.e. Fibonacci phyllotaxis.}
+      \field{issn}{1477-9129}
+      \field{journaltitle}{Development}
+      \field{langid}{english}
+      \field{month}{10}
+      \field{number}{19}
+      \field{title}{Phyllotaxis as Geometric Canalization during Plant Development}
+      \field{volume}{147}
+      \field{year}{2020}
+      \field{pages}{dev165878}
+      \range{pages}{-1}
+      \verb{doi}
+      \verb 10.1242/dev.165878
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\TEEIDET4\Godin et al. - 2020 - Phyllotaxis as geometric canalization during plant.pdf
+      \endverb
+      \keyw{Apical meristems,Canalization,Divergence angle,Fibonacci sequence,MPbookcitations,Phyllotaxis,Plant Development,Plant Leaves,Plant Shoots,Plants,SCP-06,Spiral patterns}
+    \endentry
+    \entry{goleConvergenceDiskStacking2020}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=498c8e3a555cfd275a7a24edc4066616}{%
+           family={Golé},
+           familyi={G\bibinitperiod},
+           given={Christophe},
+           giveni={C\bibinitperiod}}}%
+        {{hash=ee53a6c2733806835e419106d4158021}{%
+           family={Douady},
+           familyi={D\bibinitperiod},
+           given={Stéphane},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{80282027b1193a66a07204b0f4e905f4}
+      \strng{fullhash}{80282027b1193a66a07204b0f4e905f4}
+      \strng{fullhashraw}{80282027b1193a66a07204b0f4e905f4}
+      \strng{bibnamehash}{80282027b1193a66a07204b0f4e905f4}
+      \strng{authorbibnamehash}{80282027b1193a66a07204b0f4e905f4}
+      \strng{authornamehash}{80282027b1193a66a07204b0f4e905f4}
+      \strng{authorfullhash}{80282027b1193a66a07204b0f4e905f4}
+      \strng{authorfullhashraw}{80282027b1193a66a07204b0f4e905f4}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We study an iterative process modeling growth of phyllotactic patterns, wherein disks are added one by one on the surface of a cylinder, on top of an existing set of disks, as low as possible and without overlap. Numerical simulations show that the steady states of the system are spatially periodic, lattices-like structures called rhombic tilings. We present a rigorous analysis of the dynamics of all configurations starting with closed chains of 3 tangent, non-overlapping disks encircling the cylinder. We show that all these configurations indeed converge to rhombic tilings. Surprisingly, we show that convergence can occur in either finitely or infinitely many iterations. The infinite-time convergence is explained by a conserved quantity.}
+      \field{issn}{0167-2789}
+      \field{journaltitle}{Physica D: Nonlinear Phenomena}
+      \field{langid}{english}
+      \field{month}{2}
+      \field{title}{Convergence in a Disk Stacking Model on the Cylinder}
+      \field{urlday}{19}
+      \field{urlmonth}{1}
+      \field{urlyear}{2021}
+      \field{volume}{403}
+      \field{year}{2020}
+      \field{urldateera}{ce}
+      \field{pages}{132278}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1016/j.physd.2019.132278
+      \endverb
+      \verb{file}
+      \verb C\:\\Users\\jonat\\Zotero\\storage\\CWABXZ2S\\Golé and Douady - 2020 - Convergence in a disk stacking model on the cylind.pdf;C\:\\Users\\jonat\\Zotero\\storage\\ZB43ETUQ\\Golé and Douady - 2020 - Convergence in a disk stacking model on the cylind.pdf
+      \endverb
+      \keyw{Attractor,Disk packing,Dynamical system,MPbookcitations,Phyllotaxis,Rhombic tiling,SCP-06}
+    \endentry
+    \entry{goleFibonacciQuasisymmetricPhyllotaxis2016}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=498c8e3a555cfd275a7a24edc4066616}{%
+           family={Golé},
+           familyi={G\bibinitperiod},
+           given={Christophe},
+           giveni={C\bibinitperiod}}}%
+        {{hash=20ae4e0059f1389816b523c63f93fcbe}{%
+           family={Dumais},
+           familyi={D\bibinitperiod},
+           given={Jacques},
+           giveni={J\bibinitperiod}}}%
+        {{hash=ee53a6c2733806835e419106d4158021}{%
+           family={Douady},
+           familyi={D\bibinitperiod},
+           given={Stéphane},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{4a27f5defd9bfdba2b073bf7b3f559d3}
+      \strng{fullhash}{4a27f5defd9bfdba2b073bf7b3f559d3}
+      \strng{fullhashraw}{4a27f5defd9bfdba2b073bf7b3f559d3}
+      \strng{bibnamehash}{4a27f5defd9bfdba2b073bf7b3f559d3}
+      \strng{authorbibnamehash}{4a27f5defd9bfdba2b073bf7b3f559d3}
+      \strng{authornamehash}{4a27f5defd9bfdba2b073bf7b3f559d3}
+      \strng{authorfullhash}{4a27f5defd9bfdba2b073bf7b3f559d3}
+      \strng{authorfullhashraw}{4a27f5defd9bfdba2b073bf7b3f559d3}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{The study of phyllotaxis has focused on seeking explanations for the occurrence of consecutive Fibonacci numbers in the number of helices paving the stems of plants in the two opposite directions. Using the disk-accretion model, first introduced by Schwendener and justified by modern biological studies, we observe two distinct types of solutions: the classical Fibonacci-like ones, and also more irregular configurations exhibiting nearly equal number of helices in a quasi-square packing, the quasi-symmetric ones, which are a generalization of the whorled patterns. Defining new geometric tools allowing to work with irregular patterns and local transitions, we provide simple explanations for the emergence of these two states within the same elementary model. A companion paper will provide a wide array of plant data analyses that support our view.}
+      \field{issn}{2083-9480}
+      \field{journaltitle}{Acta Societatis Botanicorum Poloniae}
+      \field{month}{12}
+      \field{number}{4}
+      \field{shorttitle}{Fibonacci or Quasi-Symmetric Phyllotaxis. {{Part I}}}
+      \field{title}{Fibonacci or Quasi-Symmetric Phyllotaxis. {{Part I}}: Why?}
+      \field{urlday}{15}
+      \field{urlmonth}{2}
+      \field{urlyear}{2019}
+      \field{volume}{85}
+      \field{year}{2016}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.5586/asbp.3533
+      \endverb
+      \verb{file}
+      \verb C\:\\Users\\jonat\\Zotero\\storage\\3IRW3LZR\\Golé et al. - 2016 - Fibonacci or quasi-symmetric phyllotaxis. Part I .pdf;C\:\\Users\\jonat\\Zotero\\storage\\QWLJ4VSQ\\asbp.html
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{hottonPossibleActualPhyllotaxis2006}{article}{}{}
+      \name{author}{7}{}{%
+        {{hash=6aaa3aeca77ae7638d789ce1baf1c04e}{%
+           family={Hotton},
+           familyi={H\bibinitperiod},
+           given={Scott},
+           giveni={S\bibinitperiod}}}%
+        {{hash=e2ca2f6d5dbdd30770289d83bdfd884c}{%
+           family={Johnson},
+           familyi={J\bibinitperiod},
+           given={Valerie},
+           giveni={V\bibinitperiod}}}%
+        {{hash=61a1fe6feccacf40bb3d5c65a8c56a94}{%
+           family={Wilbarger},
+           familyi={W\bibinitperiod},
+           given={Jessica},
+           giveni={J\bibinitperiod}}}%
+        {{hash=a4e1142970f4f9cbdfe62f327d74d16e}{%
+           family={Zwieniecki},
+           familyi={Z\bibinitperiod},
+           given={Kajetan},
+           giveni={K\bibinitperiod}}}%
+        {{hash=07140d4a74e95a4125a3dbeb27ccd275}{%
+           family={Atela},
+           familyi={A\bibinitperiod},
+           given={Pau},
+           giveni={P\bibinitperiod}}}%
+        {{hash=498c8e3a555cfd275a7a24edc4066616}{%
+           family={Golé},
+           familyi={G\bibinitperiod},
+           given={Christophe},
+           giveni={C\bibinitperiod}}}%
+        {{hash=20ae4e0059f1389816b523c63f93fcbe}{%
+           family={Dumais},
+           familyi={D\bibinitperiod},
+           given={Jacques},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{cadaefb12d48fed5bab5a5bd396bf0f6}
+      \strng{fullhash}{91ba32af243e4bf6ad019ceb5eeb4bf2}
+      \strng{fullhashraw}{91ba32af243e4bf6ad019ceb5eeb4bf2}
+      \strng{bibnamehash}{cadaefb12d48fed5bab5a5bd396bf0f6}
+      \strng{authorbibnamehash}{cadaefb12d48fed5bab5a5bd396bf0f6}
+      \strng{authornamehash}{cadaefb12d48fed5bab5a5bd396bf0f6}
+      \strng{authorfullhash}{91ba32af243e4bf6ad019ceb5eeb4bf2}
+      \strng{authorfullhashraw}{91ba32af243e4bf6ad019ceb5eeb4bf2}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This article presents new methods for the geometrical analysis of phyllotactic patterns and their comparison with patterns produced by simple, discrete dynamical systems. We introduce the concept of ontogenetic graph as a parsimonious and mechanistically relevant representation of a pattern. The ontogenetic graph is extracted from the local geometry of the pattern and does not impose large-scale regularity on it as for the divergence angle and other classical descriptors. We exemplify our approach by analyzing the phyllotaxis of two asteraceae inflorescences in the light of a hard disk model. The simulated patterns offer a very good match to the observed patterns for over 150 iterations of the model.}
+      \field{journaltitle}{Journal of Plant Growth Regulation}
+      \field{number}{4}
+      \field{title}{The Possible and the Actual in Phyllotaxis: Bridging the Gap between Empirical Observations and Iterative Models}
+      \field{volume}{25}
+      \field{year}{2006}
+      \field{pages}{313\bibrangedash 323}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.1007/s00344-006-0067-9
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\XJJMLVD5\Hotton et al. - 2006 - The Possible and the Actual in Phyllotaxis Bridging the Gap between Empirical Observations and Iterative Models.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06,turing}
+    \endentry
+    \entry{jeanSymmetryPlants1998}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=4b973009a74ab5f14ad53709354418f8}{%
+           family={Jean},
+           familyi={J\bibinitperiod},
+           given={Roger\bibnamedelima V.},
+           giveni={R\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+        {{hash=3c2fad997e71757c87be61fad79d9ef4}{%
+           family={Barabé},
+           familyi={B\bibinitperiod},
+           given={Denis},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {World Scientific}%
+      }
+      \strng{namehash}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{fullhash}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{fullhashraw}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{bibnamehash}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{authorbibnamehash}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{authornamehash}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{authorfullhash}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \strng{authorfullhashraw}{8a7ed2654cc9d28b694ec5d7a0a81742}
+      \field{sortinit}{J}
+      \field{sortinithash}{b2f54a9081ace9966a7cb9413811edb4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Prologues - ok for background Part I observation Bursill/Rouse - use of Jean pattern determination table for rhodoendron Carr - terminal bud phyylotaxs and shoot architecture in Eucalyptus Charlton - Pendulum symmetry - good cites into botnaical phyllotaxis Gerrath et al phyllotaxis in vitacea Lynodn phyllotaxis in flowers esp change in plastchron ratio/primordium area - NEED TO READ Meicenheimer decussate to spiral transitions - COMPARE WITH DOUADY-COUDER Palmer - physiological basis of pattern generation in the sunflower KEY PAPER TAKE COPY Rutishauser - estimates of phyllotactic patterns from SEMa Vakarelov - frequency of Fib structure as a function of height. (Vieth biastrepsis - torsion; allomery - change of leaves/node in teasels) Part II Adler Minimum dist graph p259 UNDERSTAND THIS (AND WHAT EXACTLY IS HIS DYNAMICAL SYSTEM) B{\textbackslash}\&Prunsinkiwieicz}
+      \field{isbn}{978-981-02-2621-3}
+      \field{title}{Symmetry in {{Plants}}}
+      \field{year}{1998}
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{mitchisonPhyllotaxisFibonacciSeries1977}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=452726dc993596c9c673ab200c5a682b}{%
+           family={Mitchison},
+           familyi={M\bibinitperiod},
+           given={Graeme\bibnamedelima J.},
+           giveni={G\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \strng{namehash}{452726dc993596c9c673ab200c5a682b}
+      \strng{fullhash}{452726dc993596c9c673ab200c5a682b}
+      \strng{fullhashraw}{452726dc993596c9c673ab200c5a682b}
+      \strng{bibnamehash}{452726dc993596c9c673ab200c5a682b}
+      \strng{authorbibnamehash}{452726dc993596c9c673ab200c5a682b}
+      \strng{authornamehash}{452726dc993596c9c673ab200c5a682b}
+      \strng{authorfullhash}{452726dc993596c9c673ab200c5a682b}
+      \strng{authorfullhashraw}{452726dc993596c9c673ab200c5a682b}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The principal conclusion is that Fibonacci phyllotaxis follows as a mathematical necessity from the combination of an expanding apex and a suitable spacing mechanism for positioning new leaves. I have considered an inhibitory spacing mechanism at some length, as it is a plausible candidate. However, the same treatment would apply equally well to depletion of, or competition for, a compound by developing leaves, and could no doubt accommodate other ingredients.The mathematical principles involved are clear when it is assumed that only two leaves (the contacts) position a new leaf. There is some experimental evidence for this assumption. Nonetheless, it is not a precondition for Fibonacci phyllotaxis, since a computer model shows that this pattern is generated even when many leaves contribute to inhibition at a given point. Indeed, the Fibonacci pattern seems to be a robust and stable mathematical phenomenon, a finding which goes some way to explaining its widespread occurrence throughout the plant kingdom.}
+      \field{journaltitle}{Science}
+      \field{number}{4287}
+      \field{title}{Phyllotaxis and the {{Fibonacci Series}}}
+      \field{volume}{196}
+      \field{year}{1977}
+      \field{pages}{270\bibrangedash 275}
+      \range{pages}{6}
+      \verb{doi}
+      \verb 10.1126/science.196.4287.270
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\5HDYFNM6\Mitchison - 1977 - Phyllotaxis and the Fibonacci Series.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06,turing}
+    \endentry
+    \entry{naghilooUnderstandingUniqueFlowering2017}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=9fc2d7663dd079c0ef9927fecc614902}{%
+           family={Naghiloo},
+           familyi={N\bibinitperiod},
+           given={Somayeh},
+           giveni={S\bibinitperiod}}}%
+        {{hash=f1a12b6299dd7d29252cdb06c6c4d63f}{%
+           family={{Cla{ß}en-Bockhoff}},
+           familyi={C\bibinitperiod},
+           given={Regine},
+           giveni={R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Public Library of Science}%
+      }
+      \strng{namehash}{9b09a0fadc828a98b352d7df52fb5046}
+      \strng{fullhash}{9b09a0fadc828a98b352d7df52fb5046}
+      \strng{fullhashraw}{9b09a0fadc828a98b352d7df52fb5046}
+      \strng{bibnamehash}{9b09a0fadc828a98b352d7df52fb5046}
+      \strng{authorbibnamehash}{9b09a0fadc828a98b352d7df52fb5046}
+      \strng{authornamehash}{9b09a0fadc828a98b352d7df52fb5046}
+      \strng{authorfullhash}{9b09a0fadc828a98b352d7df52fb5046}
+      \strng{authorfullhashraw}{9b09a0fadc828a98b352d7df52fb5046}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{The genus Dipsacus is characterized by a remarkable bidirectional flowering sequence and a rare phyllotactic pattern. Considering that flower initiation and flowering sequence may be interconnected, we document the development of the head meristem in Dipsacus fullonum. Our results indicate a gradual change in the geometry of the head meristem beginning with a dome shaped stage, continuing with a remarkable widening in the middle part of the head meristem and ending in a spindle-like form. Quantitative data confirm that meristem expansion is higher in the middle part than at the base of the meristem. Likewise, the size of the flower primordia in the middle part of the young head is significantly larger than at the base soon after initiation. We conclude that the change in the geometry of the meristem and the availability of newly generated space result in the promotion of the middle flowers and the bidirectional flowering sequence at anthesis. Our investigation on phyllotactic patterns reveals a high tendency (30\%) of the head meristem to insert or lose parastichies. This finding can also be attributed to changes in the expansion rate of the meristem. Dependent on the spatio-temporal relation between meristem expansion and primordia initiation, either flower primordia are promoted or additional parastichies appear. Our results emphasize the important role of geometry in flower development and phyllotactic pattern formation.}
+      \field{issn}{1932-6203}
+      \field{journaltitle}{PLOS ONE}
+      \field{langid}{english}
+      \field{month}{3}
+      \field{number}{3}
+      \field{shorttitle}{Understanding the Unique Flowering Sequence in {{Dipsacus}} Fullonum}
+      \field{title}{Understanding the Unique Flowering Sequence in {{Dipsacus}} Fullonum: {{Evidence}} from Geometrical Changes during Head Development}
+      \field{urlday}{30}
+      \field{urlmonth}{1}
+      \field{urlyear}{2022}
+      \field{volume}{12}
+      \field{year}{2017}
+      \field{urldateera}{ce}
+      \field{pages}{e0174091}
+      \range{pages}{-1}
+      \verb{doi}
+      \verb 10.1371/journal.pone.0174091
+      \endverb
+      \verb{file}
+      \verb C\:\\Users\\jonat\\Zotero\\storage\\YA8TVAK4\\Naghiloo and Claßen-Bockhoff - 2017 - Understanding the unique flowering sequence in Dip.pdf;C\:\\Users\\jonat\\Zotero\\storage\\QGLI8NRG\\article.html
+      \endverb
+      \keyw{Floral development,Flowering plants,Flowers,Geometry,Inflorescences,Meristems,Scanning electron microscopy,Shoot apical meristem}
+    \endentry
+    \entry{newellFibonacciPatternsCommon2013}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=8922091143870b1752ad31be287f94d6}{%
+           family={Newell},
+           familyi={N\bibinitperiod},
+           given={Alan\bibnamedelima C.},
+           giveni={A\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+        {{hash=bd1a8aa116bb60b1f2e9e13e4aa9dd93}{%
+           family={Pennybacker},
+           familyi={P\bibinitperiod},
+           given={Matthew\bibnamedelima F.},
+           giveni={M\bibinitperiod\bibinitdelim F\bibinitperiod}}}%
+      }
+      \strng{namehash}{f71c8bc78eb840b22ad523238b9b21a7}
+      \strng{fullhash}{f71c8bc78eb840b22ad523238b9b21a7}
+      \strng{fullhashraw}{f71c8bc78eb840b22ad523238b9b21a7}
+      \strng{bibnamehash}{f71c8bc78eb840b22ad523238b9b21a7}
+      \strng{authorbibnamehash}{f71c8bc78eb840b22ad523238b9b21a7}
+      \strng{authornamehash}{f71c8bc78eb840b22ad523238b9b21a7}
+      \strng{authorfullhash}{f71c8bc78eb840b22ad523238b9b21a7}
+      \strng{authorfullhashraw}{f71c8bc78eb840b22ad523238b9b21a7}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Using a partial differential equation model derived from the ideas of the Meyerowitz and Traas groups on the role of the growth hormone auxin and those of Green and his group on the role compressive stresses can play in plants, we demonstrate how all features of spiral phyllotaxis can be recovered by the passage of a pushed pattern forming front. The front is generated primarily by a PIN1 mediated instability of a uniform auxin concentration and leaves in its wake an auxin fluctuation field at whose maxima new primordia are assumed to be initiated. Because it propagates through a slowly changing metric, the patterns have to make transitions between spirals enumerated by decreasing parastichy numbers. The point configurations of maxima coincide almost exactly with those configurations generated by the use of discrete algorithms based on optimal packing ideas which suggests that pushed pattern forming fronts may be a general mechanism by which natural organisms can follow optimal strategies.}
+      \field{journaltitle}{Procedia IUTAM}
+      \field{title}{Fibonacci Patterns: Common or Rare?}
+      \field{volume}{9}
+      \field{year}{2013}
+      \field{pages}{86\bibrangedash 109}
+      \range{pages}{24}
+      \verb{doi}
+      \verb 10.1016/j.piutam.2013.09.009
+      \endverb
+      \verb{file}
+      \verb C\:\\Users\\jonat\\Zotero\\storage\\CJ7WZR62\\Newell, Pennybacker - 2013 - Fibonacci Patterns Common or Rare.pdf;C\:\\Users\\jonat\\Zotero\\storage\\U9UQ2XHK\\Newell, Pennybacker - 2013 - Fibonacci Patterns Common or Rare.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{okabeUnifiedRulePhyllotaxis2019}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=334cdd7f05fbd889b2ee9e49951be38f}{%
+           family={Okabe},
+           familyi={O\bibinitperiod},
+           given={Takuya},
+           giveni={T\bibinitperiod}}}%
+        {{hash=7d402c1e2b13dfa82b6dc5e0d5f3d56f}{%
+           family={Ishida},
+           familyi={I\bibinitperiod},
+           given={Atsushi},
+           giveni={A\bibinitperiod}}}%
+        {{hash=49c9572bd7a57ed87a41a549e7e623af}{%
+           family={Yoshimura},
+           familyi={Y\bibinitperiod},
+           given={Jin},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{e0e6756c9bdc51e7ea84ec448b1161e3}
+      \strng{fullhash}{e0e6756c9bdc51e7ea84ec448b1161e3}
+      \strng{fullhashraw}{e0e6756c9bdc51e7ea84ec448b1161e3}
+      \strng{bibnamehash}{e0e6756c9bdc51e7ea84ec448b1161e3}
+      \strng{authorbibnamehash}{e0e6756c9bdc51e7ea84ec448b1161e3}
+      \strng{authornamehash}{e0e6756c9bdc51e7ea84ec448b1161e3}
+      \strng{authorfullhash}{e0e6756c9bdc51e7ea84ec448b1161e3}
+      \strng{authorfullhashraw}{e0e6756c9bdc51e7ea84ec448b1161e3}
+      \field{sortinit}{O}
+      \field{sortinithash}{2cd7140a07aea5341f9e2771efe90aae}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Leaf-like appendages of different plant groups are arranged in common phyllotaxis patterns categorized into two types: spiral and non-spiral arrangements. The adaptive reason for this morphological convergence is unknown. In the non-spiral arrangement, the divergence angle between successive leaves is a simple fraction of 360{$^\circ$}, e.g. distichy, decussate and whorled phyllotaxis. In the spiral arrangement, the divergence angle of nascent leaves at the shoot apex is fixed at the golden angle 137.5{$^\circ$}, whereas those of the developed leaves varies within a sequence of Fibonacci fractions, such as 1/3, 2/5, 3/8, 5/13, etc. The optimality of the golden angle has been shown recently by assuming that the pattern of developed leaves varies during growth in a manner depending on the divergence angle of nascent leaves. Here we propose a unified rule of phyllotaxis to explain both types of arrangement: the developed leaves form vertical rows along the stem. In the non-spiral arrangement, nascent to developed leaves always follow this rule, so that the number of leaf rows is kept constant irrespective of stem growth. In the spiral arrangement, developed leaves attain this rule by adjusting the divergence angle from the golden angle. The spiral arrangement is adaptive in that the number of leaf rows varies during growth depending on shoot thickness.}
+      \field{issn}{1742-5689}
+      \field{journaltitle}{Journal of the Royal Society Interface}
+      \field{month}{2}
+      \field{number}{151}
+      \field{title}{The Unified Rule of Phyllotaxis Explaining Both Spiral and Non-Spiral Arrangements}
+      \field{urlday}{24}
+      \field{urlmonth}{10}
+      \field{urlyear}{2023}
+      \field{volume}{16}
+      \field{year}{2019}
+      \field{urldateera}{ce}
+      \field{pages}{20180850}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1098/rsif.2018.0850
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\VFU2B52G\Okabe et al. - 2019 - The unified rule of phyllotaxis explaining both sp.pdf
+      \endverb
+      \keyw{SCP-06}
+    \endentry
+    \entry{schouteUberPseudokonchoiden1913}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=6656e135e837ad509c0b19e1ba38b709}{%
+           family={Schoute},
+           familyi={S\bibinitperiod},
+           given={J.\bibnamedelimi C.},
+           giveni={J\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+      }
+      \strng{namehash}{6656e135e837ad509c0b19e1ba38b709}
+      \strng{fullhash}{6656e135e837ad509c0b19e1ba38b709}
+      \strng{fullhashraw}{6656e135e837ad509c0b19e1ba38b709}
+      \strng{bibnamehash}{6656e135e837ad509c0b19e1ba38b709}
+      \strng{authorbibnamehash}{6656e135e837ad509c0b19e1ba38b709}
+      \strng{authornamehash}{6656e135e837ad509c0b19e1ba38b709}
+      \strng{authorfullhash}{6656e135e837ad509c0b19e1ba38b709}
+      \strng{authorfullhashraw}{6656e135e837ad509c0b19e1ba38b709}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Recueil des Travaux Botaniques Neerlandais}
+      \field{title}{Uber {{Pseudokonchoiden}}}
+      \field{volume}{10}
+      \field{year}{1913}
+      \field{pages}{326\bibrangedash 339}
+      \range{pages}{14}
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\4KFD8DUN\Schoute pseudi.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{schwendenerMechanischeTheorieBlattstellungen1878}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=a21b885a5defc29dd7034b686921f115}{%
+           family={Schwendener},
+           familyi={S\bibinitperiod},
+           given={Simon},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Engelmann}%
+      }
+      \strng{namehash}{a21b885a5defc29dd7034b686921f115}
+      \strng{fullhash}{a21b885a5defc29dd7034b686921f115}
+      \strng{fullhashraw}{a21b885a5defc29dd7034b686921f115}
+      \strng{bibnamehash}{a21b885a5defc29dd7034b686921f115}
+      \strng{authorbibnamehash}{a21b885a5defc29dd7034b686921f115}
+      \strng{authornamehash}{a21b885a5defc29dd7034b686921f115}
+      \strng{authorfullhash}{a21b885a5defc29dd7034b686921f115}
+      \strng{authorfullhashraw}{a21b885a5defc29dd7034b686921f115}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Mechanische {{Theorie}} Der {{Blattstellungen}}}
+      \field{year}{1878}
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\SBCAQU24\Schwendener - 1878 - Mechanische Theorie der Blattstellungen.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{swintonMathematicalPhyllotaxis2023}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=e763bbea0e39861dfd866f422e1be0b8}{%
+           family={Swinton},
+           familyi={S\bibinitperiod},
+           given={Jonathan},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Infang}%
+      }
+      \strng{namehash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{fullhash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{fullhashraw}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{bibnamehash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{authorbibnamehash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{authornamehash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{authorfullhash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{authorfullhashraw}{e763bbea0e39861dfd866f422e1be0b8}
+      \field{extraname}{1}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{978-0-9931789-6-2}
+      \field{title}{Mathematical {{Phyllotaxis}}}
+      \field{year}{2023}
+      \keyw{SCP-06}
+    \endentry
+    \entry{swintonTuringMorphogenesisFibonacci2013}{incollection}{}{}
+      \name{author}{1}{}{%
+        {{hash=e763bbea0e39861dfd866f422e1be0b8}{%
+           family={Swinton},
+           familyi={S\bibinitperiod},
+           given={Jonathan},
+           giveni={J\bibinitperiod}}}%
+      }
+      \name{editor}{2}{}{%
+        {{hash=990477a0c46246d934e087bf998a0796}{%
+           family={Cooper},
+           familyi={C\bibinitperiod},
+           given={S.\bibnamedelimi Barry},
+           giveni={S\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=9d8a75255510976d23b16c6e61fe43da}{%
+           family={{van Leeuwen}},
+           familyi={v\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{fullhash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{fullhashraw}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{bibnamehash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{authorbibnamehash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{authornamehash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{authorfullhash}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{authorfullhashraw}{e763bbea0e39861dfd866f422e1be0b8}
+      \strng{editorbibnamehash}{0c51eb6c1258f2e57973579fbef03b28}
+      \strng{editornamehash}{0c51eb6c1258f2e57973579fbef03b28}
+      \strng{editorfullhash}{0c51eb6c1258f2e57973579fbef03b28}
+      \strng{editorfullhashraw}{0c51eb6c1258f2e57973579fbef03b28}
+      \field{extraname}{2}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{After completing {\textbackslash}emph\{The Chemical Basis of Morphogenesis\}, and at some point in last three years of his life, Turing produced the pen-and-ink pictures reproduced as Figures throughout this article and published here for the first time. When his editors came to publish the morphogenesis volume of the Collected Works in 1992 they struggled with the fragmentary nature of {\textbackslash}emph\{The Morphogen Theory of Phyllotaxis\} and {\textbackslash}emph\{Outline of the Development of the Daisy\} and these images, without captions or a clear place, were not included. But in fact they tell a fascinating story of Turing's quest to explain, among much else, the appearance of Fibonacci numbers in the natural world. They have considerable historical interest as very early graphics of computational biology, but the work they represent remained in advance of published theory for decades. It is one goal of this article to represent these Figures and to explain their origin in the context of Turing's phyllotactic theory. The other goal is to provide a partial guide to those aspects of the surviving fragmentary works which can be understood from this perspective.}
+      \field{booktitle}{Alan {{Turing}}: {{His Work}} and {{Impact}}}
+      \field{title}{Turing, Morphogenesis, and {{Fibonacci}} Phyllotaxis: {{Life}} in {{Pictures}}}
+      \field{year}{2013}
+      \field{pages}{834\bibrangedash 848}
+      \range{pages}{15}
+      \verb{file}
+      \verb C\:\\Users\\jonat\\Zotero\\storage\\28P58JD9\\msol.pdf;C\:\\Users\\jonat\\Zotero\\storage\\94WBCSJ8\\Swinton - 2013 - Turing, morphogenesis, and Fibonacci phyllotaxis Life in Pictures(2).pdf;C\:\\Users\\jonat\\Zotero\\storage\\Y9JGCJQR\\Swinton - 2013 - Turing, morphogenesis, and Fibonacci phyllotaxis Life in Pictures.pdf
+      \endverb
+      \keyw{turing}
+    \endentry
+    \entry{swintonNovelFibonacciNonFibonacci2016}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=e763bbea0e39861dfd866f422e1be0b8}{%
+           family={Swinton},
+           familyi={S\bibinitperiod},
+           given={Jonathan},
+           giveni={J\bibinitperiod}}}%
+        {{hash=90621e4117032a948bd88b5865b71882}{%
+           family={Ochu},
+           familyi={O\bibinitperiod},
+           given={Erinma},
+           giveni={E\bibinitperiod}}}%
+        {{hash=0329d64f718f8d37a64f51c4f8c1dce5}{%
+           family={{Museum of Science {and} Industry Turing's Sunflowers Consortium}},
+           familyi={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{1cdfa41bcc1b214196c515beb57e5cd5}
+      \strng{fullhash}{1cdfa41bcc1b214196c515beb57e5cd5}
+      \strng{fullhashraw}{1cdfa41bcc1b214196c515beb57e5cd5}
+      \strng{bibnamehash}{1cdfa41bcc1b214196c515beb57e5cd5}
+      \strng{authorbibnamehash}{1cdfa41bcc1b214196c515beb57e5cd5}
+      \strng{authornamehash}{1cdfa41bcc1b214196c515beb57e5cd5}
+      \strng{authorfullhash}{1cdfa41bcc1b214196c515beb57e5cd5}
+      \strng{authorfullhashraw}{1cdfa41bcc1b214196c515beb57e5cd5}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Royal Society Open Science}
+      \field{number}{5}
+      \field{title}{Novel {{Fibonacci}} and Non-{{Fibonacci}} Structure in the Sunflower: Results of a Citizen Science Experiment}
+      \field{volume}{3}
+      \field{year}{2016}
+      \field{pages}{160091}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1098/rsos.160091
+      \endverb
+      \verb{file}
+      \verb C\:\\Users\\jonat\\Zotero\\storage\\5R5FMH2T\\Swinton, Ochu, Consortium - 2016 - Novel Fibonacci and non-Fibonacci structure in the sunflower results of a citizen science experime(3).pdf;C\:\\Users\\jonat\\Zotero\\storage\\82JLYFTV\\Swinton, Ochu, Consortium - 2016 - Novel Fibonacci and non-Fibonacci structure in the sunflower results of a citizen science experime(2).pdf;C\:\\Users\\jonat\\Zotero\\storage\\Y2D5QAUA\\Swinton, Ochu, Consortium - 2016 - Novel Fibonacci and non-Fibonacci structure in the sunflower results of a citizen science experiment.pdf
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{turingMorphogenTheoryPhyllotaxis2013}{incollection}{}{}
+      \name{author}{1}{}{%
+        {{hash=966565dbf93868b0dc56d372cc65019d}{%
+           family={Turing},
+           familyi={T\bibinitperiod},
+           given={Alan\bibnamedelima Matheson},
+           giveni={A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \name{editor}{2}{}{%
+        {{hash=990477a0c46246d934e087bf998a0796}{%
+           family={Cooper},
+           familyi={C\bibinitperiod},
+           given={S.\bibnamedelimi Barry},
+           giveni={S\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=c0860c56338201688b08437ae2eb25d0}{%
+           family={{van Leeuwen}},
+           familyi={v\bibinitperiod},
+           given={Jan},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{966565dbf93868b0dc56d372cc65019d}
+      \strng{fullhash}{966565dbf93868b0dc56d372cc65019d}
+      \strng{fullhashraw}{966565dbf93868b0dc56d372cc65019d}
+      \strng{bibnamehash}{966565dbf93868b0dc56d372cc65019d}
+      \strng{authorbibnamehash}{966565dbf93868b0dc56d372cc65019d}
+      \strng{authornamehash}{966565dbf93868b0dc56d372cc65019d}
+      \strng{authorfullhash}{966565dbf93868b0dc56d372cc65019d}
+      \strng{authorfullhashraw}{966565dbf93868b0dc56d372cc65019d}
+      \strng{editorbibnamehash}{b2b0f4cb7720edd182afa09a48b9888f}
+      \strng{editornamehash}{b2b0f4cb7720edd182afa09a48b9888f}
+      \strng{editorfullhash}{b2b0f4cb7720edd182afa09a48b9888f}
+      \strng{editorfullhashraw}{b2b0f4cb7720edd182afa09a48b9888f}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Alan {{Turing}}: {{His Work}} and {{Impact}}}
+      \field{title}{The Morphogen Theory of Phyllotaxis}
+      \field{year}{2013}
+      \field{pages}{773\bibrangedash 826}
+      \range{pages}{54}
+      \keyw{MPbookcitations,turing}
+    \endentry
+    \entry{vanitersonjrMathematischeUndMikroscopischAnatomische1907}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=428225fbccc622cd92289e34df660333}{%
+           family={{van Iterson Jr}},
+           familyi={v\bibinitperiod},
+           given={Gerrit},
+           giveni={G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Gustav-Fischer Verlag}%
+      }
+      \strng{namehash}{428225fbccc622cd92289e34df660333}
+      \strng{fullhash}{428225fbccc622cd92289e34df660333}
+      \strng{fullhashraw}{428225fbccc622cd92289e34df660333}
+      \strng{bibnamehash}{428225fbccc622cd92289e34df660333}
+      \strng{authorbibnamehash}{428225fbccc622cd92289e34df660333}
+      \strng{authornamehash}{428225fbccc622cd92289e34df660333}
+      \strng{authorfullhash}{428225fbccc622cd92289e34df660333}
+      \strng{authorfullhashraw}{428225fbccc622cd92289e34df660333}
+      \field{sortinit}{v}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Mathematische Und {{Mikroscopisch-Anatomische Studien Über Blattstellungen}}, Nebst {{Betraschung Über}} Den {{Schalebau}} Der {{Milionlinen}}}
+      \field{year}{1907}
+      \verb{file}
+      \verb C\:\\Users\\jonat\\Zotero\\storage\\57UQTITA\\van Iterson-1907-Mathematische und Mikroscopis.pdf;C\:\\Users\\jonat\\Zotero\\storage\\7JHZYSMF\\van Iterson to p21 -1907-Mathematische und Mikroscopis.txt;C\:\\Users\\jonat\\Zotero\\storage\\KS7T25EP\\van iterson 1907 english introduction.docx
+      \endverb
+      \keyw{MPbookcitations,SCP-06}
+    \endentry
+    \entry{jeanBib721}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=2c6bddb0635cb2f4df4743443318e178}{%
+           family={XuDong},
+           familyi={X\bibinitperiod},
+           given={Fan},
+           giveni={F\bibinitperiod}}}%
+        {{hash=4aea66746ca33908eac2b389a6b32f5f}{%
+           family={Bursill},
+           familyi={B\bibinitperiod},
+           given={Leslie\bibnamedelima A.},
+           giveni={L\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=d1d17c291e6f83a1a5b9bc01ad10f70e}{%
+           family={JuLin},
+           familyi={J\bibinitperiod},
+           given={Peng},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{0754fa6a3647a6d7c679909e47c7393c}
+      \strng{fullhash}{0754fa6a3647a6d7c679909e47c7393c}
+      \strng{fullhashraw}{0754fa6a3647a6d7c679909e47c7393c}
+      \strng{bibnamehash}{0754fa6a3647a6d7c679909e47c7393c}
+      \strng{authorbibnamehash}{0754fa6a3647a6d7c679909e47c7393c}
+      \strng{authornamehash}{0754fa6a3647a6d7c679909e47c7393c}
+      \strng{authorfullhash}{0754fa6a3647a6d7c679909e47c7393c}
+      \strng{authorfullhashraw}{0754fa6a3647a6d7c679909e47c7393c}
+      \field{sortinit}{X}
+      \field{sortinithash}{1965c258adceecf23ce3d67b05113442}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Modern Physics Letters B}
+      \field{number}{2}
+      \field{title}{Packing of Equal Discs on a Parabolic Spiral Lattice}
+      \field{volume}{3}
+      \field{year}{1989}
+      \field{pages}{119\bibrangedash 24}
+      \range{pages}{6}
+      \verb{doi}
+      \verb 10.1142/S0217984989000212
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\8H4T39D2\XuDong, F. - 1989 - Packing of equal discs on a parabolic spiral latti.pdf
+      \endverb
+      \keyw{SCP-06}
+    \endentry
+    \entry{yonekuraMathematicalModelStudies2019}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=33272a400a189ff7047222cb4a996318}{%
+           family={Yonekura},
+           familyi={Y\bibinitperiod},
+           given={Takaaki},
+           giveni={T\bibinitperiod}}}%
+        {{hash=a414604180eafa19823afc8cbc3bdd79}{%
+           family={Iwamoto},
+           familyi={I\bibinitperiod},
+           given={Akitoshi},
+           giveni={A\bibinitperiod}}}%
+        {{hash=4f8af28fc38a1a3c20ed4c5a38a6a56d}{%
+           family={Fujita},
+           familyi={F\bibinitperiod},
+           given={Hironori},
+           giveni={H\bibinitperiod}}}%
+        {{hash=e6f294fe713a19927272e5ad1c53ec49}{%
+           family={Sugiyama},
+           familyi={S\bibinitperiod},
+           given={Munetaka},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{2c55b3c3d76841751e7e203253b7cec7}
+      \strng{fullhash}{00221139086f2dcad46168d5530b6347}
+      \strng{fullhashraw}{00221139086f2dcad46168d5530b6347}
+      \strng{bibnamehash}{2c55b3c3d76841751e7e203253b7cec7}
+      \strng{authorbibnamehash}{2c55b3c3d76841751e7e203253b7cec7}
+      \strng{authornamehash}{2c55b3c3d76841751e7e203253b7cec7}
+      \strng{authorfullhash}{00221139086f2dcad46168d5530b6347}
+      \strng{authorfullhashraw}{00221139086f2dcad46168d5530b6347}
+      \field{sortinit}{Y}
+      \field{sortinithash}{fd67ad5a9ef0f7456bdd9aab10fe1495}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Plant leaves are arranged around the stem in a beautiful geometry that is called phyllotaxis. In the majority of plants, phyllotaxis exhibits a distichous, Fibonacci spiral, decussate, or tricussate pattern. To explain the regularity and limited variety of phyllotactic patterns, many theoretical models have been proposed, mostly based on the notion that a repulsive interaction between leaf primordia determines the position of primordium initiation. Among them, particularly notable are the two models of Douady and Couder (alternate-specific form, DC1; more generalized form, DC2), the key assumptions of which are that each leaf primordium emits a constant power that inhibits new primordium formation and that this inhibitory effect decreases with distance. It was previously demonstrated by computer simulations that any major type of phyllotaxis can occur as a self-organizing stable pattern in the framework of DC models. However, several phyllotactic types remain unaddressed. An interesting example is orixate phyllotaxis, which has a tetrastichous alternate pattern with periodic repetition of a sequence of different divergence angles: 180{$^\circ$}, 90{$^\circ$}, -180{$^\circ$}, and -90{$^\circ$}. Although the term orixate phyllotaxis was derived from Orixa japonica, this type is observed in several distant taxa, suggesting that it may reflect some aspects of a common mechanism of phyllotactic patterning. Here we examined DC models regarding the ability to produce orixate phyllotaxis and found that model expansion via the introduction of primordial age-dependent changes of the inhibitory power is absolutely necessary for the establishment of orixate phyllotaxis. The orixate patterns generated by the expanded version of DC2 (EDC2) were shown to share morphological details with real orixate phyllotaxis. Furthermore, the simulation results obtained using EDC2 fitted better the natural distribution of phyllotactic patterns than did those obtained using the previous models. Our findings imply that changing the inhibitory power is generally an important component of the phyllotactic patterning mechanism.}
+      \field{issn}{1553-7358}
+      \field{journaltitle}{PLOS Computational Biology}
+      \field{langid}{english}
+      \field{month}{6}
+      \field{number}{6}
+      \field{title}{Mathematical Model Studies of the Comprehensive Generation of Major and Minor Phyllotactic Patterns in Plants with a Predominant Focus on Orixate Phyllotaxis}
+      \field{urlday}{13}
+      \field{urlmonth}{10}
+      \field{urlyear}{2019}
+      \field{volume}{15}
+      \field{year}{2019}
+      \field{urldateera}{ce}
+      \field{pages}{e1007044}
+      \range{pages}{-1}
+      \verb{doi}
+      \verb 10.1371/journal.pcbi.1007044
+      \endverb
+      \verb{file}
+      \verb C\:\\Users\\jonat\\Zotero\\storage\\TA63EH8L\\Yonekura et al. - 2019 - Mathematical model studies of the comprehensive ge.pdf;C\:\\Users\\jonat\\Zotero\\storage\\9VKTTQPZ\\article.html
+      \endverb
+      \keyw{Auxins,Buds,Computer modeling,Computerized simulations,Flowering plants,Leaves,Mathematical models,Scanning electron microscopy,SCP-06}
+    \endentry
+    \entry{zagorska-marekPhyllotacticPatternsTransitions1985}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=bb1c9d30463487105959b3e0545a8654}{%
+           family={{Zagórska-Marek}},
+           familyi={Z\bibinitperiod},
+           given={Beata},
+           giveni={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{bb1c9d30463487105959b3e0545a8654}
+      \strng{fullhash}{bb1c9d30463487105959b3e0545a8654}
+      \strng{fullhashraw}{bb1c9d30463487105959b3e0545a8654}
+      \strng{bibnamehash}{bb1c9d30463487105959b3e0545a8654}
+      \strng{authorbibnamehash}{bb1c9d30463487105959b3e0545a8654}
+      \strng{authornamehash}{bb1c9d30463487105959b3e0545a8654}
+      \strng{authorfullhash}{bb1c9d30463487105959b3e0545a8654}
+      \strng{authorfullhashraw}{bb1c9d30463487105959b3e0545a8654}
+      \field{sortinit}{Z}
+      \field{sortinithash}{96892c0b0a36bb8557c40c49813d48b3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Phyllotactic patterns, as indicated by the number of helices in opposed parastichy pairs, were determined in elongated shoots. Twelve patterns were found, including very rare patterns such as tetrajugy and secondary bijugy. Typically, the same pattern was repeated each year along a particular axis. Changes in pattern occurred between annual growth increments, more rarely within one increment. Pattern changes were not random, rather they occurred in a manner that minimized the change in the number of helices in the opposed parastichy pairs. A reversal in the direction of the ontogenetic helix often accompanied a pattern change., Les dispositions phyllotaxiques dans les pousses dont la croissance en longueur est achevée, telles qu'indiquées par le nombre de spirales dans les paires de parastiques opposées, ont été déterminées. Douze dispositions ont été observées, y compris des modes très rares tels la tétrajugaison et la bijugaison secondaire. De façon typique, la même disposition était répétée chaque année sur un axe donné. Des variations de la disposition ont été observées entre les accroissements annuels, mais plus rarement à l'intérieur d'un même accroissement. Ces variations n'avaient pas lieu au hasard, mais se produisaient de façon à ce que le nombre de spirales dans les paires de parastiques opposées soit modifié le moins possible. Elles s'accompagnaient souvent d'une inversion de direction de la spirale ontogénique.}
+      \field{issn}{0008-4026}
+      \field{journaltitle}{Canadian Journal of Botany}
+      \field{month}{10}
+      \field{number}{10}
+      \field{title}{Phyllotactic Patterns and Transitions in {{Abies}} Balsamea}
+      \field{urlday}{5}
+      \field{urlmonth}{3}
+      \field{urlyear}{2019}
+      \field{volume}{63}
+      \field{year}{1985}
+      \field{urldateera}{ce}
+      \field{pages}{1844\bibrangedash 1854}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.1139/b85-259
+      \endverb
+      \verb{file}
+      \verb C:\Users\jonat\Zotero\storage\NSY5WFVZ\Zagórska-Marek - 1985 - Phyllotactic patterns and transitions in Abies bal.pdf
+      \endverb
+      \keyw{SCP-06,ul}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
