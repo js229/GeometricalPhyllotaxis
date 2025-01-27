@@ -4,23 +4,30 @@ BeginPackage["DiskStacking`"];
 
 
 executeRun::usage = "Principal run code";
-(*restartRun::usage = "Restart run code"; should move here*)
-readyRunFromParameter::usage = "Prepare run arena";
+
+
+runFromLattice::usage = "Create run initial condition from a Lattice object";
+restartRunFromRun::usage = "Restart from previous run";
+
 pruneRun::usage = "Helper for display";
 pruneRunByDisks::usage = "Helper for display";
 pruneRunToTopChain::usage = "Helper for display";
-graphToContactLines::usage = "Helper for graphics";
-diskNumbersInRun::usage = "Numbered bare disks in run";
+(*graphToContactLines::usage = "Helper for graphics";*)
+diskNumbersInRun::usage = "Numbered (bare by default) disks in run";
 bareNumberQ::usage = "False for left[] or right [] disks";
 bareNumber::usage = "Take off left[] or right []";
 getDiskFromRun::usage = "";
 diskAndVisibleCopies::usage = "";
+runDisks::usage = "Association of Disk[]s, by default ";
+runDisksRadius::usage = "Association of radii of each disk";
+runDisksHeight::usage = "Association of height of each disk";
+runDisksDivergenceHeight::usage = "Association of xz of each disk";
 diskR::usage = "better to provide an api for the functions that call this";
 diskZ::usage = "";
 diskXZ::usage = "";
-linearInterpolatorBySlope::usage = "";
-left::usage = "Used only as a tag, nb right is not here and makes no difference";
 postRunExtractNonOverlappingChains::usage = "";
+deCycleChain::usage = "Used for parastichy counts and exposed as graphic helper"
+
 
 
 Begin["Private`"]
@@ -71,48 +78,34 @@ graphFromTCLattice[lattice_] := Module[{m,n,r,disks,diskx,diskxy,disknxy,disksOn
 	<|"ContactGraph"->g,"DiskData"->diskData|>
 ];
 
-
-
-
-(* ::Input::Initialization:: *)
-readyRunFromParameter[experimentParameters_] := Module[{runParameters,lattice,run,arena},
-runParameters= <|"Capped"->False,"rScale"->10,"rSlope"->0.03`,"zMax"->Missing[],"runNumber"->1,"diskMax"->\[Infinity],"PostFixChains"->20,"Run"->"","Noise"->Missing[],"Lattice"->latticeOrthogonal[{0,1}]|>;runParameters= Append[runParameters,experimentParameters];(* find the initial disk/graph arrangement *)
-run = runFromLattice[runParameters["Lattice"]];
-(* create the r Function *)
-runParameters=Append[runParameters,"InitialRadius"-> smallestRadius[run]];runParameters=Append[runParameters,"rFixedBefore"->  highestCentre[run]];run["Arena"] = makeArena[runParameters];
-
-run
-];
-
-smallestRadius[run_] := Min@Map[diskR[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
-highestCentre[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
+restartRunFromRun[run_] := Module[{res,lastDisk},
+	res=pruneRunToTopChain[run];
+	res = KeyDrop[res,{"TopChain","RunChains","SpecifiedDiskMax"}];
+	res
+]
 
 
 (* ::Input::Initialization:: *)
-makeArena[runParameters_] := Module[{initialRadius,finalRadius,hBase,rOfH,arena,zMax},initialRadius= runParameters["InitialRadius"] ;
-
-hBase=runParameters["rFixedBefore"] ;
-finalRadius= initialRadius/runParameters["rScale"];zMax = hBase + hRangeNeeded[{initialRadius,finalRadius},runParameters["rSlope"]];rOfH =linearInterpolatorBySlope[{hBase,zMax},{initialRadius,-runParameters["rSlope"]}] ;
-
-arena=KeyDrop[runParameters,{"Lattice"}];
-arena["rFunction"]= rOfH;
-arena["rFixedAfter"]=zMax;
-
-zMax= zMax + runParameters["PostFixChains"]* 4* finalRadius;
-arena["zMax"]= zMax;
-arena["CylinderLU"]= {0,zMax};
-
-arena
-];
+runDisks[run_,bareOnly_:False] := Association@Map[#->getDiskFromRun[run,#]&,diskNumbersInRun[run,bareOnly]];
+runDisksRadius[run_,bareOnly_:False] := Map[diskR,runDisks[run,bareOnly]];(*MapAssociation@Map[#->diskR[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
+*)
+runDisksHeight[run_,bareOnly_:False] := Map[diskZ,runDisks[run,bareOnly]];
+(*runDisksHeight[run_] := Association@Map[#->diskZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
+*)
+runDisksDivergenceHeight[run_,bareOnly_:False] :=  Map[diskXZ,runDisks[run,bareOnly]];(*Association@Map[#->diskXZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];*)
 
 
-linearInterpolatorBySlope[{hStart_,hEnd_},{r_,rSlope_}] := 
+(* ::Input::Initialization:: *)
+
+
+
+(*linearInterpolatorBySlope[{hStart_,hEnd_},{r_,rSlope_}] := 
 Function[{h}, r+ Piecewise[ {
 {0,h< hStart}
 ,{(h-hStart) * rSlope , h< hEnd}
 , { (hEnd-hStart) * rSlope ,True}
 }]];
-
+*)
 
 
 linearInterpolatorByEndPoints[{hStart_,hEnd_},{rStart_,rEnd_}] := Block[{rSlope},
@@ -126,31 +119,29 @@ Function[{h}, rStart+ Piecewise[ {
 
 
 
-hRangeNeeded[{rStart_,rEnd_},rSlope_] := Module[{hSlopeRange},
+(*hRangeNeeded[{rStart_,rEnd_},rSlope_] := Module[{hSlopeRange},
 hSlopeRange = -(rEnd-rStart)/rSlope ;
 hSlopeRange
-];
+];*)
 
 
 
 
 (* ::Input::Initialization:: *)
-makeExperimentParameters[rScaleRange_,rSlopeRange_,zMaxRange_] := Module[{experimentParameters},
+(*makeExperimentParameters[rScaleRange_,rSlopeRange_,zMaxRange_] := Module[{experimentParameters},
 experimentParameters = Flatten@Outer[<|"rScale"->#1,"rSlope"->#2,"zMax"-> #3,"diskMax"->\[Infinity]|>&,rScaleRange,rSlopeRange,zMaxRange];
 experimentParameters = MapIndexed[Append[#1,"runNumber"->First[#2]]&,experimentParameters];
 experimentParameters
-];
+];*)
 
 
-runParameterSets[experimentParameters_] := 
-Map[
-Monitor[Append[#,"Results"->CheckAbort[doRunFromParameter[#],Missing["Aborted run"]];[#]],#]&,experimentParameters]
+(*runParameterSets[experimentParameters_] := Map[
+	Monitor[
+		Append[#,"Results"->CheckAbort[doRunFromParameter[#],Missing["Aborted run"]];[#]],
+		#]&,experimentParameters]*)
 
 
-(* ::Input:: *)
 (*dPrint[x__] := If[debug, Print[x]];*)
-(**)
-(**)
 
 
 (* ::Section:: *)
@@ -162,39 +153,36 @@ Monitor[Append[#,"Results"->CheckAbort[doRunFromParameter[#],Missing["Aborted ru
 
 (* ::Input::Initialization:: *)
 nodesToPruneTo[run_,Zrange_] := Module[{g,nodes},
-g=run["ContactGraph"];
-nodes=Select[VertexList[g],IntervalMemberQ[Interval[Zrange],AnnotationValue[{g,#},VertexCoordinates][[2]]]&];
+g=run["ContactGraph"];nodes=Select[VertexList[g],IntervalMemberQ[Interval[Zrange],AnnotationValue[{g,#},VertexCoordinates][[2]]]&];
 nodes
 ];
 
-useChainQ[chain_,nodes_] := IntersectingQ[VertexList[chain],nodes];
 
 pruneRun[run_,Zrange_] := Module[{res,nodes},
-res=run;
-nodes=leftAndRightNumbers@nodesToPruneTo[res,Zrange];
-pruneRunByNodes[run,nodes]
+	res=run;
+	nodes=leftAndRightNumbers@nodesToPruneTo[res,Zrange];
+	pruneRunByNodes[run,nodes]
 ];
-pruneRunByNodes[run_,nodes_] := 
-Module[{res},
-res=run;
-res["ContactGraph"] = Subgraph[res["ContactGraph"] ,nodes];
-res["RunChains"]= Select[res["RunChains"],useChainQ[#Chain,nodes]&];
-res["DiskData"]= KeyTake[res["DiskData"],nodes];
-res["NodeStatistics"] = KeySelect[run["NodeStatistics"],MemberQ[nodes,#]&];
 
-
-res["Arena"]["CylinderLU"] = MinMax[diskZ[#Disk]&/@ res["DiskData"]];
+pruneRunByNodes[run_,nodes_] := Module[{res},
+	res=run;res["ContactGraph"] = Subgraph[res["ContactGraph"] ,nodes];
+	res["RunChains"]= Select[res["RunChains"],useChainQ[#Chain,nodes]&];
+	res["DiskData"]= KeyTake[res["DiskData"],nodes];
+	If[KeyMemberQ[res,"NodeStatistics"],
+		res["NodeStatistics"] = KeySelect[run["NodeStatistics"],MemberQ[nodes,#]&]];
+	res["Arena"]["CylinderLU"] = MinMax[diskZ[#Disk]&/@ res["DiskData"]];
 res
 ];
-pruneRunByDisks[run_,diskNumbers_] := 
-Module[{nodes,res},
+useChainQ[chain_,nodes_] := IntersectingQ[VertexList[chain],nodes];
+
+
+pruneRunByDisks[run_,diskNumbers_] := Module[{nodes,res},
 nodes=Flatten[leftAndRightNumbers/@Range[diskNumbers]]; 
 pruneRunByNodes[run,nodes]
 ];
+
 pruneRunToTopChain[run_] := Module[{res,chain,nodes},
-chain=Last[run["RunChains"]]["Chain"];
-nodes=Flatten[leftAndRightNumbers[VertexList[chain]]];
-pruneRunByNodes[run,nodes]
+chain=Last[run["RunChains"]]["Chain"];nodes=Flatten[leftAndRightNumbers[VertexList[chain]]];pruneRunByNodes[run,nodes]
 ];
 
 
@@ -244,7 +232,12 @@ moveNumberedDiskRight[n_->d_] := moveNumberRight[n]->moveDiskRight[d];
 moveNumberedDiskLeft[n_->d_] := moveNumberLeft[n]->moveDiskLeft[d];
 
 
-diskNumbersInRun[run_] := Keys[run["DiskData"]];
+diskNumbersInRun[run_,bareOnly_:True] := If[bareOnly,
+	Keys[run["DiskData"]]
+	,
+	VertexList[run["ContactGraph"]]
+	];
+
 getDisk[n_] := getDiskFromRun[globalRun,n];
 getDiskFromRun[run_,n_] := run["DiskData"][n]["Disk"] /; bareNumberQ[n];
 getDiskFromRun[run_,n_] :=  moveDiskRight[getDiskFromRun[run,bareNumber[n]]] /; rightNumberQ[n];
@@ -265,11 +258,10 @@ diskHighestBottom[] :=
 Max@Map[diskBottomZ[getDisk[#]]&,Keys[globalRun["DiskData"]]];
 
 highestDiskZ[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
-(* used in RunCoinStacking as well for setup, so don't use the global *)
 
 nextRadius[] := Module[{highestZ},
-highestZ=highestDiskZ[globalRun];
-globalRun["Arena"]["rFunction"][highestZ]
+	highestZ=highestDiskZ[globalRun];
+	globalRun["Arena"]["rFunction"][highestZ]
 ];
 nextDiskNumber[] := Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]]+1;
 
@@ -279,34 +271,34 @@ nextDiskNumber[] := Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]]+1;
 
 
 executeRun[run_] := Module[{i,imax,res,diskTime},
-Off[SSSTriangle::tri];
-globalRun=run;
-globalRun["SpecifiedDiskMax"]= Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]];
+	Off[SSSTriangle::tri];
+	globalRun=run;
+	globalRun["SpecifiedDiskMax"]= Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]];
+	globalRun["TopChain"] = topChainInRun[globalRun,globalRun["ContactGraph"]];
+	globalRun["RunChains"]= Association[]; 
+	
+	If[!NumericQ[imax],imax=20000];
+	
+	monitorFunction := For[i=1,i<= imax,i++,
+		If[runCompletesArena[],Break[]];
+		diskTime= First@Timing[addNextDisk[]];
+	];
 
+	monitorString := Module[{z},
+		z=diskHighestBottom[];
+		StringTemplate["Next disk: `disk`;\nParastichy: `parastichy`;\nZ left: `zToMax`;\nr: `radius`;\nper-disk time: `timing`"][<|
+			"disk"-> nextDiskNumber[]
+			,"parastichy"-> reportLatestParastichy[]
+			,"zToMax"->run["Arena"]["zMax"]-z
+			,"radius"->diskR[Last[globalRun["DiskData"]]["Disk"]]
+			,"timing"->diskTime
+			|>]
+	];
 
-globalRun["TopChain"] = topChainInRun[globalRun,globalRun["ContactGraph"]];
-globalRun["RunChains"]= Association[]; 
-
-If[!NumericQ[imax],imax=20000];
-monitorFunction := For[i=1,i<= imax,i++,
-If[runCompletesArena[],Break[]];
-diskTime= First@Timing[addNextDisk[]];
-];
-monitorString := Module[{z},
-z=diskHighestBottom[];
-StringTemplate["next disk `disk`; Z `zToSwitch`,`zToMax`; r `radius`; per-disk time `timing`"][<|
-"disk"-> nextDiskNumber[]
-,"zToSwitch"-> run["Arena"]["rFixedAfter"]-z
-,"zToMax"->run["Arena"]["zMax"]-z
-,"radius"->diskR[Last[globalRun["DiskData"]]["Disk"]]
-,"timing"->diskTime
-|>]
-];
-
-If[False,monitorFunction,Monitor[monitorFunction,monitorString]];
-
-res= postRun[globalRun];
-res
+	If[False,monitorFunction,Monitor[monitorFunction,monitorString]];
+	
+	res= postRun[globalRun];
+	res
 ];
 
 
@@ -466,6 +458,12 @@ logSupportChain[n_] := Module[{res,chain},
 chain = globalRun["TopChain"];
 AppendTo[globalRun["RunChains"],
 n-> <|"Chain"->chain,"Parastichy"->chainParastichy[chain]|>];
+];
+reportLatestParastichy[] := Module[{chain},
+chain = Values[globalRun["RunChains"]];
+If[Length[chain]==0,Return[""]];
+chain = Last[chain]["Parastichy"];
+chain 
 ];
 
 
@@ -704,9 +702,11 @@ angle
 postRun[run_] := Module[{res,chains,nrchains},
 res = pretty[run];
 edgeCheck[res];
-res= postRunNodeStatistics[res];
+(*res= postRunNodeStatistics[res];
+*)
 res
 ];
+
 prettyGraph[run_,gp_] := Module[{g,setGraphXY,res,vc,es},
 g=gp;
 vc = Map[getDiskXZ[run,#]&,VertexList[g]];
@@ -738,7 +738,8 @@ edgeStyle[run_,upper_ \[DirectedEdge] lower_] := edgeStyle[run,upper \[Undirecte
 (* ::Input:: *)
 (* edgeCheck[run_] := Module[{g,res,edgeStyler,res2,nodesToCheck,lopsidedAllowedTo},g=run["ContactGraph"];res=Map[lowerEdges[g,#]&,Complement[Select[VertexList[g],bareNumberQ],{1}]];If[Or@@ Map[Length[#]!=2&,res],"Print some nodes without two supports"];*)
 (**)
-(*edgeStyler[edgeList_] := Map[edgeStyle,edgeList];lopsidedAllowedTo = run["SpecifiedDiskMax"];*)
+(*edgeStyler[edgeList_] := Map[edgeStyle,edgeList];*)
+(*lopsidedAllowedTo = run["SpecifiedDiskMax"];*)
 (**)
 (*nodesToCheck = Complement[Select[VertexList[g],bareNumberQ],Range[lopsidedAllowedTo]];res2= Map[lowerEdges[g,#]&,nodesToCheck];res2 =Association@Map[#->Sort@edgeStyler[#]&,res2];res2= Select[res2,# != {RGBColor[0, 0, 1],RGBColor[1, 0, 0]}&];*)
 (**)
@@ -832,8 +833,9 @@ If[ Last[v1xy]>=Last[v2xy],Red,Blue]
 ];
 
 
-chainFromEdges[chainEdges_]:= Union@@(List@@@chainEdges)
 
+(* Obsolete *)
+(*
 flattestChains[g_] := Module[{d,chainEdges,chains},
 d=directedGraphRightwards[g];
 chainEdges= leftRightChainEdges[d];
@@ -841,26 +843,29 @@ chains= Map[<|"Chain"->Subgraph[g,#]|>&,chainEdges];
 chains = Map[Append[#,"Parastichy"->countbyPath[#Chain]]&,chains];
 chains
 ]
+*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Post run statistics*)
 
 
 (* ::Input::Initialization:: *)
-postRunNodeStatistics[run_] := Module[{res,angles},
+(*postRunNodeStatistics[run_] := Module[{res,angles},
 res = run;
 angles= Map[<|"Angle"->#|>&,computeNodeLowerAngles[run]];
 res= Append[res,"NodeStatistics"-> angles];
 res 
-];
+];*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Chains by flattest*)
 
 
 (* ::Input::Initialization:: *)
+(* Obsolete *)
+(*
 flattestChainData[graph_,chainsToDo_:100] := Module[{i,g,chainGraphSet,chains,chainSet},
 chains= flattestChains[graph];
 
@@ -869,22 +874,22 @@ chainSet= Map[Append[#,"MeanZ"->chainMeanZ[#Chain]]&,chainSet];
 chainSet= Map[Append[#,"MeanRadius"->chainMeanRadius[#Chain]]&,chainSet];
 chainSet
 ];
+*)
 
 
-
-chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
-
-chainMeanRadius[chain_] := Module[{e,gxy,norm},
+(*chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
+*)
+(*chainMeanRadius[chain_] := Module[{e,gxy,norm},
 gxy[n_] :=AnnotationValue[{chain,n},VertexCoordinates];
 norm[n1_,n2_] := Norm[gxy[n2]-gxy[n1]];
 e=EdgeList[chain];
 e=norm @@@ e;
 Mean[e]/2
-];
+];*)
 
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Top down chains*)
 
 
@@ -893,6 +898,7 @@ Mean[e]/2
 
 
 (* ::Input::Initialization:: *)
+(*
 chainMeanLatticeAngle[run_,chain_] := Module[{res,v},
 v=Select[VertexList[chain],bareNumberQ];
 res= KeyTake[run["NodeStatistics"],v];
@@ -906,7 +912,8 @@ res= Map[#Angle&,res];
 If[Length[res]<2,Return[Missing["monoEdge"]]];
 StandardDeviation[res]
 ];
-
+*)
+(*
 chainMeanZ[chain_] := Last@Mean@Map[AnnotationValue[{chain,#},VertexCoordinates]&,Drop[VertexList[chain],-1]];
 
 chainMeanRadius[chain_] := Module[{e,gxy},
@@ -915,63 +922,92 @@ norm[n1_,n2_] := Norm[gxy[n2]-gxy[n1]];
 e=EdgeList[chain];
 e=norm @@@ e;
 Mean[e]/2
-];
+];*)
 
 
 
 (* ::Input::Initialization:: *)
-stripChain[g_,chain_]:= Module[{lrchain},
+(*stripChain[g_,chain_]:= Module[{lrchain},
 lrchain =leftAndRightNumbers[DeleteDuplicates[bareNumber/@chain]];
 
 lrchain= Intersection[lrchain,VertexList[g]];
 VertexDelete[g,lrchain]
 ];
-
+*)
 chainEncircles[chain_] := Module[{lrNode},
-lrNode=Select[VertexList[chain],!bareNumberQ[#]&];
-If[Length[lrNode]!=1,Return[False]];
-MemberQ[VertexList[chain],bareNumber[First[lrNode]]]
+lrNode=Select[VertexList[chain],!bareNumberQ[#]&];If[Length[lrNode]!=1,Return[False]];MemberQ[VertexList[chain],bareNumber[First[lrNode]]]
 ];
 
-chainParastichy[chain_]:=Module[{},
+chainParastichy[chain_]:=Module[{aChain},
 If[!chainEncircles[chain],Return[Missing["Not encircling"]]];
-If[AcyclicGraphQ[chain],
-acyclicChainParastichy[chain]
-,cyclicChainParastichy[chain]
-]
+
+aChain = If[AcyclicGraphQ[chain],chain,deCycleChain[chain]];
+If[MissingQ[aChain],Return[aChain]];
+acyclicChainParastichy[aChain]
+
 ];
 
-cyclicChainParastichy[chain_] := Module[{reducedchain,v,first,last,edges,res},
+oldDeCycleChain[chain_] := Module[{reducedchain,v,first,last,edges,res},v=VertexList[chain];v=SortBy[v,AnnotationValue[{chain,#},VertexCoordinates]&];first=First[v];last=Last[v];
+edges= Flatten[FindCycle[chain,Infinity,All],2];vInLoops=Complement[DeleteDuplicates[Flatten[List@@@edges]],{first,last}];vInLoops=Association@Map[#->EdgeCount[chain,# \[UndirectedEdge] _]&,vInLoops];vInLoops =Keys[Select[vInLoops,#==2 &]];reducedchain = VertexDelete[chain,vInLoops];If[AcyclicGraphQ[reducedchain],
+Return[reducedchain]];
 
+edges= Flatten[FindCycle[reducedchain,Infinity,All],2];res=Association@Map[#->EdgeDelete[reducedchain,#]&,edges];res=Select[res,gIsLinear];res=Select[res,gIsChain];If[Length[res]==0,Return[Missing["Can't decyclic"]]];
+(*If[Length[res]>1,w=res;Print["Multi decyclics",chain,res]];*)
+res=First[res];
+If[AcyclicGraphQ[res],Return[res]];
 
-v=VertexList[chain];
-v=SortBy[v,AnnotationValue[{chain,#},VertexCoordinates]&];
-first=First[v];last=Last[v];
+Print["Can't decycle",chain];
+Return[Missing[]];
 
+];
 
-edges= Flatten[FindCycle[chain,Infinity,All],2];
-vInLoops=Complement[DeleteDuplicates[Flatten[List@@@edges]],{first,last}];
-vInLoops=Association@Map[#->EdgeCount[chain,# \[UndirectedEdge] _]&,vInLoops];
-vInLoops =Keys[Select[vInLoops,#==2 &]];
-reducedchain = VertexDelete[chain,vInLoops];
+edgePairInLROrder[chain_,a_ \[UndirectedEdge] b_] := Module[{xz},
+xz = AnnotationValue[{chain,{a,b}},VertexCoordinates];
+If[First[xz[[1]]]<= First[xz[[2]]],{a ,b}, {b,a}]
+];
 
-If[AcyclicGraphQ[reducedchain],
+partnerNodesSortedByHeight[chain_,node_,partnerList_] := Module[{res},
+res= SortBy[partnerList,Last@AnnotationValue[{chain,#},VertexCoordinates]&];
+res = Map[# \[UndirectedEdge] node &,res];
+res
+];
+
+deletableLeftEdges[chain_,node_] := Module[{edgeList},
+edgeList= EdgeList[chain,node \[UndirectedEdge] _];
+edgeList = Map[edgePairInLROrder[chain,#]&,edgeList];
+edgeList = Select[edgeList,Last[#]==node&];
+edgeList = Complement[Flatten[edgeList],{node}];
+edgeList = partnerNodesSortedByHeight[chain,node,edgeList];
+edgeList= If[Length[edgeList]>0,Drop[edgeList,-1],{}];
+edgeList
+];
+deletableLeftEdges[chain_] := Flatten@Map[deletableLeftEdges[chain,#]&,VertexList[chain]]
+
+deCycleChain[chain_] := Module[{reducedchain,edges},
+edges= deletableLeftEdges[chain];
+reducedchain= EdgeDelete[chain,edges];
+
+If[AcyclicGraphQ[reducedchain] && chainEncircles[chain],
+Return[reducedchain]];
+
+Print["Calling old method for chain ", chain];
+oldDeCycleChain[chain]
+
+];
+
+(*
+cyclicChainParastichy[chain_] := Module[{reducedchain,v,first,last,edges,res},v=VertexList[chain];v=SortBy[v,AnnotationValue[{chain,#},VertexCoordinates]&];first=First[v];last=Last[v];
+edges= Flatten[FindCycle[chain,Infinity,All],2];vInLoops=Complement[DeleteDuplicates[Flatten[List@@@edges]],{first,last}];vInLoops=Association@Map[#->EdgeCount[chain,# \[UndirectedEdge] _]&,vInLoops];vInLoops =Keys[Select[vInLoops,#==2 &]];reducedchain = VertexDelete[chain,vInLoops];If[AcyclicGraphQ[reducedchain],
 Return[acyclicChainParastichy[reducedchain]]];
 
-
-
-edges= Flatten[FindCycle[reducedchain,Infinity,All],2];
-res=Association@Map[#->EdgeDelete[reducedchain,#]&,edges];
-res=Select[res,gIsLinear];
-res=Select[res,gIsChain];
-If[Length[res]==0,
-Return[Missing["Can't decyclic"]]];
+edges= Flatten[FindCycle[reducedchain,Infinity,All],2];res=Association@Map[#->EdgeDelete[reducedchain,#]&,edges];res=Select[res,gIsLinear];res=Select[res,gIsChain];If[Length[res]==0,Return[Missing["Can't decyclic"]]];
 (*If[Length[res]>1,w=res;Print["Multi decyclics",chain,res]];
-*)res=First[res];
+*)
+res=First[res];
 If[!AcyclicGraphQ[res],
 Print["Can't declyce",chain];Return[Missing[]]];
 acyclicChainParastichy[res]
-];
+];*)
 
 gIsLinear[g_] := Module[{res},
 res=Map[EdgeCount[g,#\[UndirectedEdge] _]&,VertexList[g]];
@@ -987,11 +1023,11 @@ ConnectedGraphQ[graph]
 
 
 acyclicChainParastichy[chain_]:=Module[{res},
-If[!AcyclicGraphQ[chain],Print["aCP"];Abort[]];
-res=KeySort@Counts[Map[AnnotationValue[{chain,#},EdgeStyle]&,EdgeList[chain]]
-];
-res = Append[<|RGBColor[0, 0, 1]->0,RGBColor[1, 0, 0]->0|>,res];
-res
+	If[!AcyclicGraphQ[chain],Print["aCP"];Abort[]];
+	res=KeySort@Counts[Map[AnnotationValue[{chain,#},EdgeStyle]&,EdgeList[chain]]];
+	(* in case left or right is missing *)
+	res = Append[<|RGBColor[0, 0, 1]->0,RGBColor[1, 0, 0]->0|>,res];
+	res
 ];
 
 
@@ -1001,22 +1037,22 @@ res
 
 
 (* ::Input::Initialization:: *)
-computeNodeLowerAngles[run_] := Module[{v,edges,edgePairAngle},
+(*computeNodeLowerAngles[run_] := Module[{v,edges,edgePairAngle},
 v=Select[VertexList[run["ContactGraph"]],bareNumberQ];
 edges=Select[Association@Map[#->lowerEdges[run["ContactGraph"], #]&,v],Length[#]==2&];
 edges= Association@KeyValueMap[#1->Values@KeyTake[vectorsFromNode[run,run["ContactGraph"],#1],#2]&,edges];
 edgePairAngle[{e1_,e2_}] := ArcCos[(e1 . e2)/(Norm[e1]*Norm[e2])];
 edges= Map[edgePairAngle,edges];
 edges
-]
+]*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Graphics  helpers*)
 
 
 (* ::Input::Initialization:: *)
-graphToContactLines[g_,run_,leftRightColours_] := Module[{dlines,fsort,res},
+(*graphToContactLines[g_,run_,leftRightColours_] := Module[{dlines,fsort,res},
 dlines = Line/@Map[diskXZ[getDiskFromRun[run,#]]&,List@@@EdgeList[g],{2}];fsort[Line[{p1_,p2_}]] := If[First[p1]<First[p2],Line[{p1,p2}],Line[{p2,p1}]];dlines=Map[fsort,dlines];res = lineCylinderIntersectionColoured[#,leftRightColours]& /@dlines;
 res
 ];
@@ -1038,7 +1074,7 @@ Line[{{-1/2, z2- slope * (x2-1-(-1/2))},{x2-1,z2}}], Line[{{x1,z1},{1/2,z1+slope
 ]];
 Return[{col,Line[{{x1,z1},{x2,z2}}]}] 
 ];
-
+*)
 diskAndVisibleCopies[Disk[{x_,z_},r_]] := {Disk[{x,z},r],If[x+r>1/2,moveDiskLeft[Disk[{x,z},r]],Nothing[]],If[x-r<-1/2,moveDiskRight[Disk[{x,z},r]],Nothing[]]};
 
 
