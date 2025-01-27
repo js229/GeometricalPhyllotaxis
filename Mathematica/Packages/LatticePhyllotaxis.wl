@@ -5,18 +5,71 @@ BeginPackage["LatticePhyllotaxis`"];
 
 latticeFromDivergenceRise::usage = "Generate a lattice object from divergence and rise";
 latticeDivergenceRiseForNonOpposedTC::usage = "Divergence and rise for a non-opposed touching-circle lattice";
+latticeDivergenceRiseForOpposedTC::usage = "Divergence and rise for an opposed touching-circle lattice";
+latticeDiskRadius::usage = "Lattice disk radius";
 latticeLabel::usage = "Parastichy numbers for the lattice";
 latticeParastichyLines::usage = "Line[]s for the specified parastichy number";
 latticeGraphicsCylinder::usage = " Rectangle[] for the visible range of the lattice";
+latticeNamedCircles::usage = "Named latticeCircles";
 latticeCircles::usage = "Circle[]s for each visible point of the lattice";
+latticeNamedPoints::usage = "Named latticePoints";
 latticePoints::usage = "xy coordinates for each visible point of the lattice";
 latticeOrthogonal::usage = "A square lattice object";
+latticeCreateDH::usage = "Used by Ch ";
+latticeCreateDHTXB::usage = "Used by Ch 4 should be merged";
+latticePoint::usage = "Used by Ch 3";
+latticeDivergence::usage = "Used by Ch 3";
+latticeRise::usage = "Used by Ch 3";
+latticePrincipal3ParastichyNumbers::usage = "Used by Ch 3";
+latticeGetCylinder::usage = "Used by Ch 3";
+latticeGraphicPoints::usage = "Used by Ch 3";
+latticeParastichyNumbers::usage = "Used by Ch 3";
+latticeGetCylinderLU::usage = "Used by Ch 3";
+latticeSetCylinderLU::usage = "Used by Ch 3";
+latticeParallelogram::usage = "Used by Ch 3";
+latticeLabelPosition::usage = "Used by Ch 3";
+latticeLabelText::usage = "Used by Ch 3";
+latticeGraphicsPlotRange::usage = "Used by Ch 3";
+latticeParastichyVectors::usage = "Used by Ch 3";
+latticePrincipalParastichyPair::usage = "Used by Ch 3";
+latticeVector::usage = "Used by Ch 3";
+latticeWithMN::usage = "Used by Ch 3";
+latticeHexagonal::usage = "Used by Ch 3";
+latticeTouchingCircle::usage = "Used by Ch 3";
+latticeCircles::usage = "Used by Ch 3";
+latticeDHNonOpposedTC::usage = "Used by Ch 3";
+latticePrincipal3ParastichyLines::usage = "Used by Ch 3";
+latticeGraphicsPoint::usage = "Used by Ch 3";
+latticeMoebiusTransform::usage = "";
+
+(* scaling code used by Txb06 *)
+latticeSetScaling::usage = "";
+latticeScaling::usage = "";
+latticeSetDisplayCylinder::usage = "";
+latticeSetDisplayCylinderLU::usage = "";\.a6
+latticeParastichyFunctions::usage = "";
+latticeGetNodeCylinder::usage = "";
+latticeGraphicRegion::usage = "";
+
+
+generatingInterval::usage = "Used by Ch 3";
+generatingOpposedInterval::usage = "Used by Ch 3";
+vanItersonTouchingCircle::usage = "";
+vanItersonTouchingCirclePrimary::usage = "dh branch";
+vanItersonLabelPoint::usage="Used by Ch5 Classifying";
+vanItersonTouchingCircleNonPrimary::usage="Used by Ch5 Classifying";
 vanItersonTouchingCirclePrimaryNonOpposed::usage = "dh branch";
 vanItersonTouchingCirclePrimaryOpposed::usage = "dh branch";
 vanItersonRegionPoints::usage = "";
+vanItersonRegionBounds::usage = "";
+vanItersonPolygon::usage="vanItersonPolygon[{m,n}]";
+
+euclideanDelta::usage="euclideanDelta";
+euclideanWindingNumberPair::usage="euclideanDelta";
+euclideanQCoefficients::usage="used for coefficient tree figure";
 
 
-Begin["Private`"];
+Begin["Private`"]; (*End[];EndPackage[] *)
 
 
 (* ::Section:: *)
@@ -24,6 +77,7 @@ Begin["Private`"];
 
 
 latticeDivergenceRiseForNonOpposedTC[{d_,h_}] := latticeDHNonOpposedTC[{d,h}];
+latticeDivergenceRiseForOpposedTC[{d_,h_}] := latticeDHOpposedTC[{d,h}];
 latticeFromDivergenceRise[{d_,h_},cylinderLU_] := latticeCreateDH[{d,h},cylinderLU];
 
 
@@ -51,15 +105,8 @@ euclideanQCoefficients[{m_,n_}] := Module[{r,q,i},
 	];
  Table[q[j],{j,0,i-1}]
 ];
-(* 
-euclideanQCoefficients[{0,1}] := {}; 
-euclideanQCoefficients[{1,0}] := {0}; 
-*)
 
-euclideanTreeDepth[mn_] := Module[{qValues,qCondition},
-qValues = euclideanQCoefficients[Sort[mn]];
-Total[qValues]
-];
+euclideanTreeDepth[mn_] :=Total@euclideanQCoefficients[Sort[mn]];
 
 
 
@@ -67,7 +114,8 @@ Total[qValues]
 eMatrix = ({
  {1, 1},
  {0, 1}
-});sMatrix=({
+});
+sMatrix=({
  {0, 1},
  {1, 0}
 });
@@ -148,34 +196,27 @@ interval
 
 
 (* ::Input::Initialization:: *)
-basisChangeMatrix[mn_] := Transpose[({
- {1, 0},
- {0, -1}
-}) . Transpose[ euclideanMatrixProductNew[mn]]];
-basisInverseChangeMatrix[mn_] := Inverse[basisChangeMatrix[mn]];
-Clear[n,m,v,u];
-basisChangeMatrix[{n,m}] := ({
- {n, -v},
- {m, -u}
-})
+basisChangeMatrix[mn_] := Transpose[
+({
+	 {1, 0},
+	 {0, -1}}) . Transpose[ euclideanMatrixProductNew[mn]]];
+basisInverseChangeMatrix[mn_] := basisInverseChangeMatrix[mn] = Inverse[basisChangeMatrix[mn]];
 
 matrixToMoebius[matrix_] := Function[z, Divide@@(matrix . {z,1})];
-Clear[gmn];
+
 reIm[x___] := ComplexExpand[ReIm[x]];
 conjugate[x___] := ComplexExpand[Conjugate[x]];
 
-Clear[gmn,m,n,z,u,v];
+
 gmn[mn_][z] := matrixToMoebius[basisInverseChangeMatrix[mn]][z]
 gmn[mn_][{d_,h_}] := reIm@matrixToMoebius[basisInverseChangeMatrix[mn]][d+ I h];
-gmn[mn_][{d_,DirectedInfinity[_]}] := 
-{Divide@@ basisInverseChangeMatrix[mn] . {1,0},0};(*gmn[{n_,m_}][{_,DirectedInfinity[_]}] :={u/m,0} 
-*)
+gmn[mn_][{d_,DirectedInfinity[_]}] := {Divide@@ basisInverseChangeMatrix[mn] . {1,0},0};
 latticeGMNinDHalfNew[{0,1}][dh_] := gmn[{0,1}][dh];
 latticeGMNinDHalfNew[{1,0}][dh_] := {1,-1} * gmn[{1,0}][dh];
 latticeGMNinDHalfNew[mn_][dh_] := Module[{res},
-res = gmn[mn][dh];
-If[euclideanDelta[mn]<0, res= {1,-1} * res];
-res
+	res = gmn[mn][dh];
+	If[euclideanDelta[mn]<0, res= {1,-1} * res];
+	res
 ];
 
 
@@ -287,33 +328,36 @@ vanItersonTouchingCircleNonPrimary[{1,2}] ={
  Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}], Circle[{2/3,0},1/3,{5\[Pi]/6,\[Pi]}]};
 
 
+viiPrimaryIsEverNonOpposed[{0,1}] = False;
 viiPrimaryIsEverNonOpposed[mn_] := Module[{m,n},
 {m,n} = Sort[mn];
 m < n - m 
 ];
 
 
+
 vanItersonTouchingCirclePrimaryOpposed[mn_]  := circleBranch[mn,"Opposed"];
 vanItersonTouchingCirclePrimaryNonOpposed[mn_]  := circleBranch[mn,"NonOpposed"];
 
-circleBranch[{m_,n_},scalingFunction_] := Module[{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
-mn = Sort[{m,n}];
-branch = vanItersonTouchingCirclePrimary[mn];
-If[!viiPrimaryIsEverNonOpposed[mn],
-	If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
+circleBranch[{m_,n_},scalingFunction_] := Module[
+	{mn,angle,upperpt,lowerpt,res,centre,r,theta12,branch},
+	mn = Sort[{m,n}];
+	branch = vanItersonTouchingCirclePrimary[mn];
+	If[!viiPrimaryIsEverNonOpposed[mn],
+		If[scalingFunction=="Opposed", Return[branch],Return[Nothing[]]]];
 
-angle =circleAngleAtLine[branch,viiOrthostichyD[mn]];
+	angle =circleAngleAtLine[branch,viiOrthostichyD[mn]];
 
-upperpt =  vanItersonTriplePointRight[mn];
-lowerpt = vanItersonTriplePointLeft[mn];
+	upperpt =  vanItersonTriplePointRight[mn];
+	lowerpt = vanItersonTriplePointLeft[mn];
 
-{centre,r,theta12} = Apply[List,branch];
-If[scalingFunction=="NonOpposed",
-res = Circle[centre,r,SortBy[{xyToArg[branch,upperpt],angle},N]]
-,
-res = Circle[centre,r,SortBy[{xyToArg[branch,lowerpt],angle},N]]
-];
-Return[res];
+	{centre,r,theta12} = Apply[List,branch];
+	If[scalingFunction=="NonOpposed",
+		res = Circle[centre,r,SortBy[{xyToArg[branch,upperpt],angle},N]]
+		,
+		res = Circle[centre,r,SortBy[{xyToArg[branch,lowerpt],angle},N]]
+	];
+	Return[res];
 ];
 viiOrthostichyD[{m_,n_}] := Module[{u,v,res},
 {u,v} = euclideanWindingNumberPair[{m,n}];
@@ -369,67 +413,58 @@ jDiscretize[Circle[{0,0},1,{\[Pi]/2,2 \[Pi]/3}]]
 
 
 viTriangleDiscretized[mn_,type_]  := Module[{arcs,p},
-arcs = makeArcs[mn];
-arcs = Association@Map[#Type-> #Points &,arcs];
-p = 
-Switch[type,
-"PlusMinus",
-Flatten[{arcs["ZeroToLeft"],arcs["LeftToRight"],arcs["RightToZero"]},1],
-"Plus",
-Flatten[{arcs["ZeroToSquare"],arcs["SquareToRight"],arcs["RightToZero"]},1],
-  "Minus",
-Flatten[{arcs["ZeroToLeft"],arcs["LeftToSquare"],Reverse@arcs["ZeroToSquare"]},1]
+	arcs = makeArcs[mn];
+	arcs = Association@Map[#Type-> #Points &,arcs];
+	p = Switch[type,
+		"PlusMinus",Flatten[{arcs["ZeroToLeft"],arcs["LeftToRight"],arcs["RightToZero"]},1],
+		"Plus",Flatten[{arcs["ZeroToSquare"],arcs["SquareToRight"],arcs["RightToZero"]},1],
+		"Minus",Flatten[{arcs["ZeroToLeft"],arcs["LeftToSquare"],Reverse@arcs["ZeroToSquare"]},1]
+		];
+	Polygon[p]
 ];
-Polygon[p]
-];
+
+
 
 makeArcs[mn_]  := Module[{arcs,p},
-arcs = Map[<|"Type"->#,"Arc"-> createArc[mn,#]|>&,
-{"ZeroToLeft","LeftToRight","RightToZero","ZeroToSquare","SquareToRight","LeftToSquare"}];
-arcs = Map[Append[#,"Points"-> jDiscretize[#Arc]]&,arcs];
-arcs = Map[Append[#,"First"->
-N@Switch[#Type,
-"LeftToRight",  vanItersonRegionPoints[mn]["LeftTriplePoint"]
-,"RightToZero",vanItersonRegionPoints[mn]["RightTriplePoint"]
-,"ZeroToLeft",vanItersonRegionPoints[mn]["ZeroRise"]
-,"ZeroToSquare",vanItersonRegionPoints[mn]["ZeroRise"]
-,"SquareToRight",vanItersonRegionPoints[mn]["Orthogonal"]
-,"LeftToSquare",vanItersonRegionPoints[mn]["LeftTriplePoint"]
-]]&,arcs];
-
-arcs = Map[Append[#,"Orientation"->
-N@EuclideanDistance[#First,First[#Points]]<N@EuclideanDistance[#First,Last[#Points]]]&,arcs];
-arcs = Map[Append[#,"Points"->If[#Orientation,#Points,Reverse@#Points]]&,arcs];
-arcs
+	arcs = Map[<|"Type"->#,"Arc"-> createArc[mn,#]|>&,
+		{"ZeroToLeft","LeftToRight","RightToZero","ZeroToSquare","SquareToRight","LeftToSquare"}];
+	arcs = Map[Append[#,"Points"-> jDiscretize[#Arc]]&,arcs];
+	arcs = Map[Append[#,
+		"First"->N@Switch[#Type,
+			"LeftToRight",  vanItersonRegionPoints[mn]["LeftTriplePoint"]
+			,"RightToZero",vanItersonRegionPoints[mn]["RightTriplePoint"]
+			,"ZeroToLeft",vanItersonRegionPoints[mn]["ZeroRise"]
+			,"ZeroToSquare",vanItersonRegionPoints[mn]["ZeroRise"]
+			,"SquareToRight",vanItersonRegionPoints[mn]["Orthogonal"]
+			,"LeftToSquare",vanItersonRegionPoints[mn]["LeftTriplePoint"]
+	]]&,arcs];
+	
+	arcs = Map[Append[#,"Orientation"->N@EuclideanDistance[#First,First[#Points]]<N@EuclideanDistance[#First,Last[#Points]]]&,arcs];
+	arcs = Map[Append[#,"Points"->If[#Orientation,#Points,Reverse@#Points]]&,arcs];
+	arcs
 ];
+
 
 createArc[mn_,type_] := Module[{arc,centre,radius,zeroRisePoint,arcEndPoint,arcEndPointAngle,pairCircle,zeroCircle},
-{centre,radius} = List@@(vanItersonTriangleCircles[mn][type]);
-zeroRisePoint = vanItersonRegionPoints[mn]["ZeroRise"];
-zeroCircle[pt_] := Module[{angle =  ArcTan @@ (  pt- centre)},
-Circle[centre,radius,If[First[zeroRisePoint]< First[pt],
-{angle,\[Pi]},{0,angle}]]];
-pairCircle[pt1_,pt2_] := Module[{angle1 =  ArcTan @@ (  pt1- centre),angle2 =  ArcTan @@ (  pt2- centre)},
-Circle[centre,radius,SortBy[{angle1,angle2},N]]
-];
-arc = 
-Switch[type,
-"RightToZero",
-zeroCircle[ vanItersonRegionPoints[mn]["RightTriplePoint"]]
-,"ZeroToLeft",
-zeroCircle[ vanItersonRegionPoints[mn]["LeftTriplePoint"]]
-,"ZeroToSquare",
-zeroCircle[vanItersonRegionPoints[mn]["Orthogonal"]]
-,"LeftToRight",
-pairCircle[vanItersonRegionPoints[mn]["LeftTriplePoint"],vanItersonRegionPoints[mn]["RightTriplePoint"]]
-,"SquareToRight",
-pairCircle[vanItersonRegionPoints[mn]["Orthogonal"],vanItersonRegionPoints[mn]["RightTriplePoint"]]
-,"LeftToSquare",
-pairCircle[vanItersonRegionPoints[mn]["Orthogonal"],vanItersonRegionPoints[mn]["LeftTriplePoint"]]
-];
-
+	{centre,radius} = List@@(vanItersonTriangleCircles[mn][type]);
+	zeroRisePoint = vanItersonRegionPoints[mn]["ZeroRise"];
+	zeroCircle[pt_] := Module[{angle =  ArcTan @@ (  pt- centre)},
+		Circle[centre,radius,If[First[zeroRisePoint]< First[pt],{angle,\[Pi]},{0,angle}]]
+		];
+	pairCircle[pt1_,pt2_] := Module[{angle1 =  ArcTan @@ (  pt1- centre),
+		angle2 =  ArcTan @@ (  pt2- centre)},Circle[centre,radius,SortBy[{angle1,angle2},N]]
+		];
+	arc = Switch[type,
+	"RightToZero",zeroCircle[ vanItersonRegionPoints[mn]["RightTriplePoint"]]
+	,"ZeroToLeft",zeroCircle[ vanItersonRegionPoints[mn]["LeftTriplePoint"]]
+	,"ZeroToSquare",zeroCircle[vanItersonRegionPoints[mn]["Orthogonal"]]
+	,"LeftToRight",pairCircle[vanItersonRegionPoints[mn]["LeftTriplePoint"],vanItersonRegionPoints[mn]["RightTriplePoint"]]
+	,"SquareToRight",pairCircle[vanItersonRegionPoints[mn]["Orthogonal"],vanItersonRegionPoints[mn]["RightTriplePoint"]]
+	,"LeftToSquare",pairCircle[vanItersonRegionPoints[mn]["Orthogonal"],vanItersonRegionPoints[mn]["LeftTriplePoint"]]
+	];
 arc
 ];
+
 
 createArc[{2,1},"RightToZero"] = Line[{vanItersonRegionPoints[{2,1}]["RightTriplePoint"],vanItersonRegionPoints[{2,1}]["ZeroRise"]}];
 
@@ -453,25 +488,25 @@ createArc[{1,0},"SquareToRight"]= Circle[{0,0},1,{\[Pi]/3,\[Pi]/2}];
 
 (* thinking about it, l to r, l to sq and sq to right are always the same ...  *) 
 vanItersonTriangleCircles[{m_,n_}] := Module[{vitc,res},
-vitc[mn_] := vanItersonTouchingCircle[mn]; (* whole circle *)
-vitc[{1,1}] := vanItersonTouchingCircle[{1,1}];
-res = <|"LeftToRight"-> vitc[{m,n}]
-,"RightToZero"-> vitc[{Abs[n-m],n}]
-,"ZeroToLeft" -> vitc[{n,n+m}]
-,"ZeroToSquare" -> Take[vanItersonSquareLattice[{m,n}],2]
-|>;
-res = Append[res,<|
-"SquareToRight"-> res["LeftToRight"],"LeftToSquare"->res["LeftToRight"]
-|>];
-res
+	vitc[mn_] := vanItersonTouchingCircle[mn]; (* whole circle *)
+	vitc[{1,1}] := vanItersonTouchingCircle[{1,1}];
+	res = <|
+		"LeftToRight"-> vitc[{m,n}]
+		,"RightToZero"-> vitc[{Abs[n-m],n}]
+		,"ZeroToLeft" -> vitc[{n,n+m}]
+		,"ZeroToSquare" -> Take[vanItersonSquareLattice[{m,n}],2]
+		|>;
+	res = Append[res,<|"SquareToRight"-> res["LeftToRight"],"LeftToSquare"->res["LeftToRight"]|>];
+	res
 ];
-vanItersonTriangleCircles[{1,2}] = 
-<|"LeftToRight"-> Circle[{2/3,0},1/3]
-,"RightToZero"-> Circle[{1/3,0},1/3]
-,"ZeroToLeft" ->  vanItersonTouchingCircle[{2,3}]
-,"ZeroToSquare" -> Take[vanItersonSquareLattice[{1,2}],2]
-,"SquareToRight"->  Circle[{2/3,0},1/3],
-"LeftToSquare"->Circle[{2/3,0},1/3]
+
+vanItersonTriangleCircles[{1,2}] = <|
+	"LeftToRight"-> Circle[{2/3,0},1/3]
+	,"RightToZero"-> Circle[{1/3,0},1/3]
+	,"ZeroToLeft" ->  vanItersonTouchingCircle[{2,3}]
+	,"ZeroToSquare" -> Take[vanItersonSquareLattice[{1,2}],2]
+	,"SquareToRight"->  Circle[{2/3,0},1/3],
+	"LeftToSquare"->Circle[{2/3,0},1/3]
 |>;
 
 
@@ -495,7 +530,6 @@ vanItersonTouchingCircleDisk[mn_] := Take[vanItersonTouchingCircleXX[mn]/. Circl
 
 
 
-Clear[vanItersonRegionBounds]
 vanItersonRegionBounds[{0,1}] := {{-1/2,1/2},{0,1.2}};
 vanItersonRegionBounds[{1,0}] := vanItersonRegionBounds[{0,1}] ;
 vanItersonRegionBounds[{1,1}] := {{0,1/2},{0,1.2}} ;
@@ -548,163 +582,6 @@ Polygon[AnnotationValue[{c,FindHamiltonianPath[c]},VertexCoordinates]]
 
 (* ::Subsection:: *)
 (*Using Region*)
-
-
-(* ::Input::Initialization:: *)
-(*Clear[vanItersonRegion];
-
-rpdr[region_] := regionToPolygon[DiscretizeRegion[region,MaxCellMeasure\[Rule]100,PrecisionGoal\[Rule]6]];
-
-
-(*vanItersonPolygon[mn_] := rpdr@vanItersonRegion[mn] ;*)
-vanItersonPolygon[mn_] := viTriangleDiscretized[mn] ;
-vanItersonPolygon[mn_,sign_] := rpdr@vanItersonRegion[mn,sign] ;
-
-
-vihmax=2;
-baseRegionStrip = Rectangle[{0,10^-4},{1/2,vihmax}];
-
-vanItersonRegion[{0,1}] :=RegionDifference[
-Rectangle[{-1/2,0},{1/2,vihmax}],
-Disk[{0,0},1]];
-
-vanItersonRegion[{m_,n_}] := Module[{interior,ix,regions,reg},
-interior = vanItersonLabelPoint[{m,n}];
-regions = vanItersonTriangle[{m,n}];
-isOutside[ix_] :=  If[RegionMember[regions\[LeftDoubleBracket]ix\[RightDoubleBracket],interior],Slot[ix],Not[Slot[ix]]]; 
-reg=BooleanRegion[(And@@ Array[isOutside,3])&,regions];
-Switch[{m,n},
-{1,0}, reg = RegionIntersection[reg,Rectangle[{-1/2,10^-4},{1/2,vihmax}] ],
-_, reg = RegionIntersection[reg,baseRegionStrip]
-];
-reg
-
-];
-
-
-vanItersonTriangle[{m_,n_}] := Map[Take[#/. Circle->Disk,2]&,Values[vanItersonTriangleCircles[{m,n}]]];
-
-vanItersonTriangle[{2,1}] := Module[{m=2,n=1},
- {
-Disk[{1/3,0},1/3] (* one branch of the (1,2) disk *)
-,vanItersonTouchingCircleDisk[{n,n+m}]
-,Disk[{2/3,0},1/3] (* the other branch of the (1,2) disk *)
-}
-];
-vanItersonTriangle[{1,2}] := Module[{m=1,n=2},
- {
-Disk[{1/3,0},1/3] (* one branch of the (1,2) disk *)
-,vanItersonTouchingCircleDisk[{n,n+m}]
-,Disk[{2/3,0},1/3] (* the other branch of the (1,2) disk *)
-}
-];
-vanItersonTriangle[{1,0}] := Module[{m=1,n=0},
- {
-Disk[{0,0},1] 
-,Disk[{1,0},1]
-,Disk[{-1,0},1] 
-}
-];
-vanItersonTriangle[{1,1}] := Module[{m=1,n=1},
- {
-Disk[{1,0},1] 
-,Disk[{1/3,0},1/3]
-,Disk[{2/3,0},1/3] 
-}
-];
-
-
-vanItersonTriangleCircles[{m_,n_}] := Module[{vitc},
-vitc[mn_] := Take[vanItersonTouchingCircleXX[mn],2]; (* whole circle *)
-vitc[{1,1}] := vanItersonTouchingCircleXX[{1,1}];
-<|"LeftToRight"-> vitc[{m,n}]
-,"RightToZero"-> vitc[{Abs[n-m],n}]
-,"ZeroToLeft" -> vitc[{n,n+m}]
-|>
-];
-vanItersonTriangleCircles[{1,2}] = 
-<|"LeftToRight"-> Circle[{2/3,0},1/3]
-,"RightToZero"-> Circle[{1/3,0},1/3]
-,"ZeroToLeft" -> Take[#,2]&@ vanItersonTouchingCircleXX[{2,3}]
-|>;
-
-
-createArc[mn_,type_] := Module[{arc,centre,radius,zeroRisePoint,arcEndPoint,arcEndPointAngle},
-{centre,radius} = List@@(vanItersonTriangleCircles[mn][type]);
-arc = 
-If[type != "LeftToRight",
-zeroRisePoint = vanItersonRegionPoints[mn]["ZeroRise"];
-arcEndPoint = vanItersonRegionPoints[mn][If[type=="RightToZero","RightTriplePoint","LeftTriplePoint"]];
-arcEndPointAngle =  ArcTan @@ ( arcEndPoint - centre);
-If[First[zeroRisePoint]< First[arcEndPoint],
-Circle[centre,radius,{arcEndPointAngle,\[Pi]}]
-,
-Circle[centre,radius,{0,arcEndPointAngle}]
-]
-, (* type = lefttoright *)
-arcEndPointAngle = 
-{ArcTan @@ ( vanItersonRegionPoints[mn]["RightTriplePoint"] - centre)
-,
-ArcTan @@ ( vanItersonRegionPoints[mn]["LeftTriplePoint"] - centre)
-};
-Circle[centre,radius,SortBy[arcEndPointAngle,N]]
-];
-arc
-];
-
-createArc[{2,1},"RightToZero"] = Line[{vanItersonRegionPoints[{2,1}]["RightTriplePoint"],vanItersonRegionPoints[{2,1}]["ZeroRise"]}];
-createArc[{1,1},"LeftToRight"] = 
-Line[{vanItersonRegionPoints[{1,1}]["LeftTriplePoint"],vanItersonRegionPoints[{1,1}]["RightTriplePoint"]}];
-
-jDiscretize[Circle[centre_,radius_,angles_]] := Module[{npts=20},
-N@Map[ centre + radius * {Cos[#],Sin[#]} &, Subdivide[angles\[LeftDoubleBracket]1\[RightDoubleBracket],angles\[LeftDoubleBracket]2\[RightDoubleBracket],npts]]
-];
-jDiscretize[Line[pts_]] := pts;
-
-
-makeArcs[mn_]  := Module[{arcs,p},
-arcs = Map[<|"Type"->#,"Arc"-> vanItersonTriangleArcs[mn][#]|>&,Keys[vanItersonTriangleArcs[mn]]];
-arcs = Map[Append[#,"Points"-> jDiscretize[#Arc]]&,arcs];
-arcs = Map[Append[#,"Points"->SortBy[#Points,First]]&,arcs];
-arcs = Map[Append[#,"First"->
-N@Switch[#Type,
-"LeftToRight",  vanItersonRegionPoints[mn]["LeftTriplePoint"]
-,"RightToZero",vanItersonRegionPoints[mn]["RightTriplePoint"]
-,"ZeroToLeft",vanItersonRegionPoints[mn]["ZeroRise"]
-]]&,arcs];
-
-arcs = Map[Append[#,"Orientation"->
-N@EuclideanDistance[#First,First[#Points]]<N@EuclideanDistance[#First,Last[#Points]]]&,arcs];
-arcs = Map[Append[#,"OrientationDistances"->
-{EuclideanDistance[#First,First[#Points]],N@EuclideanDistance[#First,Last[#Points]]}]&,arcs];
-arcs = Map[Append[#,"Points"->If[#Orientation,#Points,Reverse@#Points]]&,arcs];
-arcs
-];
-
-viTriangleDiscretized[mn_]  := Module[{arcs,p},
-arcs = makeArcs[mn];
-arcs = Association@Map[#Type-> #Points &,arcs];
-Polygon[Flatten[{arcs["ZeroToLeft"],arcs["LeftToRight"],arcs["RightToZero"]},1]]
-];
-
-
-
-vanItersonRegion[mn_,"Plus"] := 
-RegionDifference[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
-vanItersonRegion[mn_,"Minus"] := 
-RegionIntersection[vanItersonRegion[mn],vanItersonSquareLatticeDisk[mn]];
-
-vanItersonSquareLatticeDisk[mn_] := Take[vanItersonSquareLattice[mn]/. Circle->Disk,2];
-vanItersonSquareLatticeDisk[{0,1}] := baseRegionStrip;
-vanItersonSquareLatticeDisk[{1,0}] := baseRegionStrip;
-
-vanItersonTouchingCircleDisk[mn_] := Take[vanItersonTouchingCircleXX[mn]/. Circle->Disk,2];
-
-*)
-
-
-(* ::Input::Initialization:: *)
-
 
 
 Clear[vanItersonRegionBounds]
@@ -872,14 +749,24 @@ lattice = Association [
 (* the region of the unscaled, Euclidean cylinder we display  nodes from; normally the same, but not if we are applying a scaling to it *)
 ,"nodeCylinder" -> { {-1/2,1/2},cylinderLU} 
 ,"parastichyVectors" ->  tgetThreeParastichyVectorsDH[{d,h}]/j
-,"scalings"-> <||>
-];
-lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];
-lattice = Append[lattice,
-{"namedLatticePoints"-> lNamedLatticePoints[lattice]}];
+,"scalings"-> <||>];lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];lattice = Append[lattice,{"namedLatticePoints"-> lNamedLatticePoints[lattice]}];
 lattice
 ];
-
+(* this is used by Txb0416 etc. it can probably be merged into the function above but not tested *)
+latticeCreateDHTXB[{d_,h_,jugacy_},cylinderLU_:{-0.2,3.2},firstnEqual_:1]  :=  Module[{lattice,monolattice,monoParastichyNumbers,jugoParastichyNumbers,jugoParastichyVectors},
+lattice=latticeCreateDH[{d,h},cylinderLU *{1,1},firstnEqual]; (* makes a j=1 lattice  including its latticeNamedPoints *)
+lattice = latticeSetJugacy[lattice,jugacy];
+monolattice = latticeCreateDH[{d,jugacy *h}];
+monoParastichyNumbers = monolattice["parastichyVectors"];
+jugoParastichyNumbers =   Map[jugateParastichyNumber[#,jugacy]&,Keys[monoParastichyNumbers]];
+jugoParastichyVectors = AssociationMap[ latticeVector[lattice,#] &, jugoParastichyNumbers];
+lattice["parastichyVectors"] = jugoParastichyVectors;
+lattice =Prepend[lattice,{ "parastichyNumbers"-> tgetParastichyNumbersGroupedByLength[lattice,firstnEqual]}];
+lattice
+];
+latticeMonojugateQ[lattice_] := latticeJugacy[lattice] ==1;
+latticeJugacy[lattice_] := (Lookup["jugacy"][lattice] ) /. Missing[__]-> 1;
+latticeSetJugacy[lattice_,jugacy_] :=  Append[lattice,"jugacy"->jugacy];
 
 
 
@@ -1015,12 +902,17 @@ If[ jp . jp < jm . jm, jp,jm]
 ];
 
 
-latticePoint[lattice_,m_] := Module[{res},
-res= lpoint[{lattice["d"],lattice["h"]},m];
-If[!KeyMemberQ[lattice,"Jugacy"] || lattice["Jugacy"]==1,Return[res]];
-res = res * lattice["Jugacy"];
-res= reCylinderise[res];
-Return[res]
+latticePoint[lattice_,m_,isUnHatted_:True] := Module[{res,mval},
+(* the hat thing works poorly across the package namespaces...*)
+	If[isUnHatted,
+		res= lpoint[{lattice["d"],lattice["h"]},m]
+		,
+		res= lpoint[{lattice["d"],lattice["h"]},hat[m]]
+	];
+	If[!KeyMemberQ[lattice,"Jugacy"] || lattice["Jugacy"]==1,Return[res]];
+	res = res * lattice["Jugacy"];
+	res= reCylinderise[res];
+	Return[res]
 ];
 
 (* looks the wrong way round, but isnt. if there is j>1, we need the vector within the 1/j strip in order to work out parastichy lines
@@ -1327,13 +1219,14 @@ If[circle==Nothing,Return[Nothing]];
 angles = Mean[angles];
 xy + r * {Cos[angles],Sin[angles]}
 ]
+latticeDHOpposedTC[{m_,n_}] := latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}];
 
 
 latticeTriplePoint[{m_,n_}] := latticeDHHexagonal[{m,n}];latticeDHHexagonal[{m_,n_}]  := latticeMoebiusTransform[{m,n}][ { 1/2,Sqrt[3]/2}];
 
 
 latticeTouchingCircle[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[
-latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}],cylinderLU,2];
+Simplify[latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}]],cylinderLU,2];
 
 latticeEquiLength[{m_,n_},cylinderLU_:{-0.2,3.2}] := (* ie p numbers are (m+n),m=n *)latticeCreateDH[latticeMoebiusTransform[{m,n}][ {Cos[\[Pi]/6],Sin[\[Pi]/6]}],cylinderLU];
 latticeOrthogonal[{m_,n_},cylinderLU_:{-0.2,3.2}] := latticeCreateDH[latticeMoebiusTransform[{m,n}][ { 0,1}],cylinderLU,2];
@@ -1344,9 +1237,12 @@ latticeMoebiusTransform[{m,n}][{0.1,(Sqrt[3]/(2)-.25)}],cylinderLU];
 
 
 (* ::Input::Initialization:: *)
-latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];
-r= latticeDiskRadius[lattice];
-cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
+latticeCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];r= latticeDiskRadius[lattice];cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];latticep =  latticePoints[latticeMargin] ;lplus = latticep+ Table[{1,0},Length[latticep]];lminus =  latticep + Table[{-1,0},Length[latticep]];r =latticeDiskRadius[latticeMargin];Map[Circle[#,r]&,Join[ latticep,lplus,lminus]]
+];
+(* unlike latticeCircles, only gives visible *)
+latticeNamedCircles[lattice_] := Module[{latticeMargin,lplus,lminus,r,cylinderLU,latticep},cylinderLU = latticeGetNodeCylinder[lattice][[2]];r= latticeDiskRadius[lattice];cylinderLU = cylinderLU + {-r,r};latticeMargin = latticeSetCylinderLU[lattice,cylinderLU];
+latticep =  latticeNamedPoints[latticeMargin]; 
+Map[Circle[#,r]&,latticep]
 ];
 
 latticeDiskRadius[lattice_] := Module[{pv1},
@@ -1365,7 +1261,7 @@ latticeRhombusArea[lattice_]:= Module[{pv},
 
 (* ::Input::Initialization:: *)
 viiTouchingCircleLabelNonPrimary[{1,2}] = latticeGMNinDHalf[{1,2}][{Sqrt[3]/2,1/2}];
-
+(* xxxx check this might be wrong *)
 
 
 (* ::Subsection::Closed:: *)
