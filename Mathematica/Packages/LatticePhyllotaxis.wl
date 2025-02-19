@@ -324,8 +324,10 @@ subSegment[InfiniteLine[_],p1_,p2_] := Line[{p1,p2}];
 
 vanItersonTouchingCircleNonPrimary[{0,1}] = Circle[{1,0},1,{2\[Pi]/3,\[Pi]}];
 vanItersonTouchingCircleNonPrimary[{1,1}] = {Line[{{1/2,0},{1/2,1/(2 \[Sqrt]3)}}],HalfLine[{{1/2,(\[Sqrt]3)/2},{1/2,2}}]}; (* 1.2 = \[Infinity] *) 
+(* special case this as there are two different branches in [0,1/2] *)
 vanItersonTouchingCircleNonPrimary[{1,2}] ={
- Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}], Circle[{2/3,0},1/3,{5\[Pi]/6,\[Pi]}]};
+ Circle[{1/3,0},1/3,{\[Pi]/3,\[Pi]}], Circle[{2/3,0},1/3,
+ {\[Pi]-ArcTan[(3 Sqrt[3])/13],\[Pi]}]};
 
 
 viiPrimaryIsEverNonOpposed[{0,1}] = False;
