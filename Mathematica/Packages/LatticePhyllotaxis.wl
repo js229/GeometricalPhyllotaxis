@@ -76,8 +76,8 @@ Begin["Private`"]; (*End[];EndPackage[] *)
 (*Interface  names*)
 
 
-latticeDivergenceRiseForNonOpposedTC[{d_,h_}] := latticeDHNonOpposedTC[{d,h}];
-latticeDivergenceRiseForOpposedTC[{d_,h_}] := latticeDHOpposedTC[{d,h}];
+latticeDivergenceRiseForNonOpposedTC[{m_,n_}] := latticeDHNonOpposedTC[{m,n}];
+latticeDivergenceRiseForOpposedTC[{m_,n_}] := latticeDHOpposedTC[{m,n}];
 latticeFromDivergenceRise[{d_,h_},cylinderLU_] := latticeCreateDH[{d,h},cylinderLU];
 
 
