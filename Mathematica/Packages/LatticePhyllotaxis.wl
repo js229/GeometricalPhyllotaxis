@@ -78,6 +78,7 @@ Begin["Private`"]; (*End[];EndPackage[] *)
 
 latticeDivergenceRiseForNonOpposedTC[{m_,n_}] := latticeDHNonOpposedTC[{m,n}];
 latticeDivergenceRiseForOpposedTC[{m_,n_}] := latticeDHOpposedTC[{m,n}];
+latticeDivergenceRise[{m_,n_},angle_]:=  latticeDHTouchingCircle[{m,n},angle];
 latticeFromDivergenceRise[{d_,h_},cylinderLU_] := latticeCreateDH[{d,h},cylinderLU];
 
 
@@ -1222,6 +1223,7 @@ angles = Mean[angles];
 xy + r * {Cos[angles],Sin[angles]}
 ]
 latticeDHOpposedTC[{m_,n_}] := latticeMoebiusTransform[{m,n}][ {Cos[5\[Pi]/12],Sin[5\[Pi]/12]}];
+latticeDHTouchingCircle[{m_,n_},angle_] := latticeMoebiusTransform[{m,n}][ {Cos[angle],Sin[angle]}];
 
 
 latticeTriplePoint[{m_,n_}] := latticeDHHexagonal[{m,n}];latticeDHHexagonal[{m_,n_}]  := latticeMoebiusTransform[{m,n}][ { 1/2,Sqrt[3]/2}];
