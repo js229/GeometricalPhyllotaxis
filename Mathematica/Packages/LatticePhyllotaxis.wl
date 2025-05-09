@@ -84,6 +84,7 @@ latticeDivergenceRiseForOpposedTC[{m_,n_}] := latticeDHOpposedTC[{m,n}];
 latticeDivergenceRiseForNonOpposedTC[{m_,n_}] := latticeDHNonOpposedTC[{m,n}];
 latticeDivergenceRiseForOpposedTC[{m_,n_}] := latticeDHOpposedTC[{m,n}];
 latticeDivergenceRiseTouchingCircle[{m_,n_},angle_]:=  latticeDHTouchingCircle[{m,n},angle];
+>>>>>>> bab895514b2d338e808ad0ccae77dcc08557b6b5
 latticeFromDivergenceRise[{d_,h_},cylinderLU_] := latticeCreateDH[{d,h},cylinderLU];
 
 
