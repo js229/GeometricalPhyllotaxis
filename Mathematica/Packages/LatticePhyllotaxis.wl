@@ -76,8 +76,9 @@ Begin["Private`"]; (*End[];EndPackage[] *)
 (*Interface  names*)
 
 
+(* call with parastichy numbers! *)
 latticeDivergenceRiseForNonOpposedTC[{d_,h_}] := latticeDHNonOpposedTC[{d,h}];
-latticeDivergenceRiseForOpposedTC[{d_,h_}] := latticeDHOpposedTC[{d,h}];
+latticeDivergenceRiseForOpposedTC[{m_,n_}] := latticeDHOpposedTC[{m,n}];
 latticeFromDivergenceRise[{d_,h_},cylinderLU_] := latticeCreateDH[{d,h},cylinderLU];
 
 
