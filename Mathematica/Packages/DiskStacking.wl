@@ -28,6 +28,7 @@ diskXZ::usage = "";
 postRunExtractNonOverlappingChains::usage = "";
 deCycleChain::usage = "Used for parastichy counts and exposed as graphic helper"
 
+globalRun::usage = "global _in this package_; made visible for debugging"; 
 
 
 Begin["Private`"]
@@ -374,7 +375,8 @@ supportTable=supportPairsFromSupportChainNumbers[chainNumbers,nextR];
 
 
 supportTable= SortBy[supportTable,diskZ[#NextDisk]&];
-If[Length[supportTable]==0,Print["No valid supports looking for ", nextDiskNumber[]];Abort[]];
+If[Length[supportTable]==0,Print["No valid supports looking for ", nextDiskNumber[]];
+Abort[]];
 res=First[supportTable];
 res
 ];
