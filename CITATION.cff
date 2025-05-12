@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Swinton"
+  given-names: "Jonathan"
+  orcid: "https://orcid.org/0000-0000-0000-0000"
+title: "Geometrical Phyllotaxis"
+version: 1.0.0
+doi: UNSET
+date-released: 2024-07-17
+url: "https://github.com/js229/GeometricalPhyllotaxis"
