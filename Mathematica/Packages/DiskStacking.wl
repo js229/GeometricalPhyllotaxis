@@ -28,6 +28,8 @@ diskXZ::usage = "";
 postRunExtractNonOverlappingChains::usage = "";
 deCycleChain::usage = "Used for parastichy counts and exposed as graphic helper"
 
+(* debugging *)
+influenceIntervals;
 globalRun::usage = "global _in this package_; made visible for debugging"; 
 
 
@@ -42,13 +44,13 @@ Begin["Private`"]
 (*runmaking*)
 
 
-runFromRun[run_] :=  Module[{g,d,chain},
+(*runFromRun[run_] :=  Module[{g,d,chain},
 	chain = Last[run["RunChains"]];
 	g= chain["Chain"];
 	d = Map[ <|#->run["DiskData"][#]|>&,Select[VertexList[g],bareNumberQ]];
 	<|"Arena"->run["Arena"],"ContactGraph"->g,"DiskData"->d|>
 ];
-
+*)
 runFromLattice[lattice_] :=  Module[{g,d},
 	If[!(lattice["d"]==0 && lattice["h"] == 1),
 	Return[graphFromTCLattice[lattice]]];
@@ -88,25 +90,13 @@ restartRunFromRun[run_] := Module[{res,lastDisk},
 
 (* ::Input::Initialization:: *)
 runDisks[run_,bareOnly_:False] := Association@Map[#->getDiskFromRun[run,#]&,diskNumbersInRun[run,bareOnly]];
-runDisksRadius[run_,bareOnly_:False] := Map[diskR,runDisks[run,bareOnly]];(*MapAssociation@Map[#->diskR[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
-*)
+runDisksRadius[run_,bareOnly_:False] := Map[diskR,runDisks[run,bareOnly]];
 runDisksHeight[run_,bareOnly_:False] := Map[diskZ,runDisks[run,bareOnly]];
-(*runDisksHeight[run_] := Association@Map[#->diskZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];
-*)
-runDisksDivergenceHeight[run_,bareOnly_:False] :=  Map[diskXZ,runDisks[run,bareOnly]];(*Association@Map[#->diskXZ[getDiskFromRun[run,#]]&,VertexList[run["ContactGraph"]]];*)
+runDisksDivergenceHeight[run_,bareOnly_:False] :=  Map[diskXZ,runDisks[run,bareOnly]];
 
 
 (* ::Input::Initialization:: *)
 
-
-
-(*linearInterpolatorBySlope[{hStart_,hEnd_},{r_,rSlope_}] := 
-Function[{h}, r+ Piecewise[ {
-{0,h< hStart}
-,{(h-hStart) * rSlope , h< hEnd}
-, { (hEnd-hStart) * rSlope ,True}
-}]];
-*)
 
 
 linearInterpolatorByEndPoints[{hStart_,hEnd_},{rStart_,rEnd_}] := Block[{rSlope},
@@ -120,31 +110,6 @@ Function[{h}, rStart+ Piecewise[ {
 
 
 
-(*hRangeNeeded[{rStart_,rEnd_},rSlope_] := Module[{hSlopeRange},
-hSlopeRange = -(rEnd-rStart)/rSlope ;
-hSlopeRange
-];*)
-
-
-
-
-(* ::Input::Initialization:: *)
-(*makeExperimentParameters[rScaleRange_,rSlopeRange_,zMaxRange_] := Module[{experimentParameters},
-experimentParameters = Flatten@Outer[<|"rScale"->#1,"rSlope"->#2,"zMax"-> #3,"diskMax"->\[Infinity]|>&,rScaleRange,rSlopeRange,zMaxRange];
-experimentParameters = MapIndexed[Append[#1,"runNumber"->First[#2]]&,experimentParameters];
-experimentParameters
-];*)
-
-
-(*runParameterSets[experimentParameters_] := Map[
-	Monitor[
-		Append[#,"Results"->CheckAbort[doRunFromParameter[#],Missing["Aborted run"]];[#]],
-		#]&,experimentParameters]*)
-
-
-(*dPrint[x__] := If[debug, Print[x]];*)
-
-
 (* ::Section:: *)
 (*Run  pruning*)
 
@@ -152,11 +117,7 @@ experimentParameters
 (* for display convenience *)
 
 
-(* ::Input::Initialization:: *)
-nodesToPruneTo[run_,Zrange_] := Module[{g,nodes},
-g=run["ContactGraph"];nodes=Select[VertexList[g],IntervalMemberQ[Interval[Zrange],AnnotationValue[{g,#},VertexCoordinates][[2]]]&];
-nodes
-];
+
 
 
 pruneRun[run_,Zrange_] := Module[{res,nodes},
@@ -164,7 +125,11 @@ pruneRun[run_,Zrange_] := Module[{res,nodes},
 	nodes=leftAndRightNumbers@nodesToPruneTo[res,Zrange];
 	pruneRunByNodes[run,nodes]
 ];
-
+nodesToPruneTo[run_,Zrange_] := Module[{g,nodes},
+	g=run["ContactGraph"];
+	nodes=Select[VertexList[g],IntervalMemberQ[Interval[Zrange],AnnotationValue[{g,#},VertexCoordinates][[2]]]&];
+	nodes
+];
 pruneRunByNodes[run_,nodes_] := Module[{res},
 	res=run;res["ContactGraph"] = Subgraph[res["ContactGraph"] ,nodes];
 	res["RunChains"]= Select[res["RunChains"],useChainQ[#Chain,nodes]&];
@@ -213,8 +178,6 @@ moveNumberLeft[n_] := left[n];
 moveNumberLeft[right[n_]] := n;
 leftAndRightNumbers[n_List] := Join@@{n,moveNumberRight/@n,moveNumberLeft/@n};
 
-(*
-bareNumber[left[n_]]  := n;  this interacts badly with the Package context *) 
 
 
 
@@ -327,10 +290,7 @@ node-><|"DiskNumber"->node,"Disk"->disk|>
 
 addNextDisk[]:=Module[{nextR,row,n,timing,disk,tw,twc,xnextChain},
 	nextR=nextRadius[];
-(*	row=findNextDiskFromChain[nextR];
-	nextDiskRow=findNextDiskFromDiskChain[nextR];
-	Print[row["NextDisk"],nextDiskRow["NextDisk"]];
-*)	row=findNextDiskFromDiskChain[nextR];
+	row=findNextDiskFromDiskChain[nextR];
 	
 	disk = row["NextDisk"];
 	disk= jiggleDisk[globalRun,disk];
@@ -338,20 +298,10 @@ addNextDisk[]:=Module[{nextR,row,n,timing,disk,tw,twc,xnextChain},
 	updateContactGraph[n,row["NextDiskRestsOn"]];
 	AppendTo[globalRun["DiskData"],diskListRowFromDisk[n,disk]];
 	methods=globalRun["Arena"]["Methods"];
-(*	If[MissingQ[method],
-		nextChain=tw;
-		tw=globalRun["TopChain"];
-		tw= updateGraphXY[tw,n,row["NextDiskRestsOn"],First[disk]];
-		nextChain=topChainInRun[globalRun,nextChain];
-		nextChain=prettyGraph[globalRun,nextChain];
-		globalRun["TopChain"]=nextChain;
-		,
-*)		
+	
 	nextdiskChain=modifyDiskChain[globalRun["CurrentDiskChain"],n,row]; 
 	globalRun["CurrentDiskChain"]=nextdiskChain;
-	(*nextChain=nextChainOld;
-		];
-*)
+	
 	logSupportChain[n];
 
 	monitorZ= diskHighestBottom[];
@@ -600,110 +550,12 @@ chain
 
 
 
-(* ::Input::Initialization:: *)
-(*
-includeLRNodes[chain_,{nl_,nr_}] := Module[{res},
-If[MemberQ[VertexList[chain],nl] && MemberQ[VertexList[chain],nr],Return[chain]];
-If[!MemberQ[VertexList[chain],nl ]&&!MemberQ[VertexList[chain],nr],
-Print["nrlr Error iLRN"];Abort[]];
-If[!MemberQ[VertexList[chain],nr],
-Return[moveChainRightUntil[chain,nr]]];
-If[!MemberQ[VertexList[chain],nl],
-Return[moveChainLeft[chain,nl]]];
-Print["rlr Error iLRN"];Abort[];
-];
-
-graphNeighbour[g_,n_] := Complement[VertexList[NeighborhoodGraph[g,n ]],{n}];
-
-leftmostNodes[chain_] := Module[{lNode1,edges},lNode1= First@SortBy[VertexList[chain],AnnotationValue[{chain,#},VertexCoordinates][[1]]&];
-lNode2=graphNeighbour[chain,lNode1];
-{lNode1,lNode2}
-];
-rightmostNode[chain_] := Last@SortBy[VertexList[chain],AnnotationValue[{chain,#},VertexCoordinates][[1]]&];
-*)
-
-
-
-
-
-
-(*
-moveChainRightUntil[chain_,nr_] := Module[{res},
-res=moveChainRight[chain];
-Print["mcr tried ",nr,"\n",res];
-If[MemberQ[VertexList[res],nr],Return[res]];
-Print["retry chain", res];
-res=moveChainRight[res];
-];
-
-moveChainRight[chain_]:=Module[{res,lNode,edgeNodes},
-res=chain;
-{lNode1,lNode2}=leftmostNodes[chain];
-If[!bareNumberQ[lNode2],Print[chain,"mCR"];Abort[]];
-If[!bareNumberQ[lNode1],
-rNode1=bareNumber[lNode1];
-res=VertexDelete[lNode1];
-rNode1=If[bareNumberQ[lNode1],right[lNode1]];
-rNode2=right[lNode2];
-If[bareNumberQ[lNode1],
-res=VertexAdd[res,rNode1],res=VertexDelete[lNode1]];
-If[bareNumberQ[lNode2],
-res=VertexAdd[res,rNode2]];
-
-
-Print[chain,{lNode1,lNode2}];Abort[];
-rNode=rightmostNode[chain];
-
-edgeNodes=Map[Complement[#,{lNode}]&,List@@@EdgeList[chain,lNode \[UndirectedEdge] _]];
-edgeNodes =Map[If[Length[#]==0,Print["first",chain];Abort[],First[#]]&,edgeNodes];
-Print["mcr",edgeNodes];
-res=VertexAdd[res,right[First@edgeNodes]];
-res=EdgeAdd[res,bareNumber[lNode]\[UndirectedEdge] right[First@edgeNodes]];
-AnnotationValue[{res,right[First@edgeNodes]},VertexCoordinates]=AnnotationValue[{res,First@edgeNodes},VertexCoordinates]+{1,0};
-res=VertexDelete[res,lNode];
-res
-];
-moveChainLeft[chain_,nl_] := Module[{res,rNode,edgeNodes},
-res=chain;
-rNode=rightmostNode[chain];
-edgeNodes=Map[First@Complement[#,{rNode}]&,List@@@EdgeList[chain,rNode \[UndirectedEdge] _]];
-Print["mcl","\n",rNode,"\n",chain,edgeNodes];res=VertexAdd[res,left[First@edgeNodes]];
-res=EdgeAdd[res,bareNumber[rNode]\[UndirectedEdge] left[First@edgeNodes]];
-AnnotationValue[{res,left[First@edgeNodes]},VertexCoordinates]=AnnotationValue[{res,First@edgeNodes},VertexCoordinates]-{1,0};
-res=VertexDelete[res,rNode];
-res
-];
-
-deletePathsFromChain[chain_,nextDiskRow_] :=Module[{nextDiskOn,pathNodes,pathEdges,path,nl,nr,res},
-{nl,nr}=nextDiskRow["NextDiskRestsOn"];pathNodes=FindPath[chain,nl,nr];
-If[Length[pathNodes]==0,Print["Can't find path ", nextDiskRow,"\n", chain];
-
-globalChain=chain;
-Abort[]];
-pathNodes=First[pathNodes];
-pathEdges=UndirectedEdge @@@ Partition[pathNodes,2,1];
-pathNodes=Complement[pathNodes,{nl,nr}];
-res=chain;
-res=EdgeDelete[res,pathEdges];
-res=VertexDelete[res,pathNodes];
-res
-];
-*)
-
-
-
-
-
 (* ::Input:: *)
 (**)
 
 
 (* ::Subsection:: *)
 (*supportPairsFromTopChain*)
-
-
-(* ::Input::Initialization:: *)
-
 
 
 reportLatestParastichy[] := Module[{chain},
@@ -831,7 +683,7 @@ If[MissingQ[res],Return[res]]; (* no overlap *)
 Disk[res,r]
 ];
 
-diskdiskIntersectionQ[Disk[xy1_,r1_],Disk[xy2_,r2_]]:= Norm[xy1-xy2,2] < (r1+ r2);
+diskdiskIntersectionQ[Disk[xy1_,r1_,z___],Disk[xy2_,r2_,z___]]:= Norm[xy1-xy2,2] < (r1+ r2);
 
 
 
@@ -857,21 +709,293 @@ g= EdgeAdd[g,
 {n \[UndirectedEdge] n1,n \[UndirectedEdge] n2}];
 g
 ];
-SetAttributes[updateGraphXY,HoldFirst];
-updateGraphXY[g_,n_,{n1_,n2_},xy_] := Module[{},
-g=updateGraph[g,n,{n1,n2}] ;
-AnnotationValue[{g,n},VertexCoordinates]= xy;
-If[Head[n1]===left,
-AnnotationValue[{g,n1},VertexCoordinates]= AnnotationValue[{g,bareNumber[n1]},VertexCoordinates]-{1,0}];
-If[Head[n1]===right,
-AnnotationValue[{g,n1},VertexCoordinates]= AnnotationValue[{g,bareNumber[n1]},VertexCoordinates]+{1,0}];
-If[Head[n2]===left,
-AnnotationValue[{g,n2},VertexCoordinates]= AnnotationValue[{g,bareNumber[n2]},VertexCoordinates]-{1,0}];
-If[Head[n2]===right,
-AnnotationValue[{g,n2},VertexCoordinates]= AnnotationValue[{g,bareNumber[n2]},VertexCoordinates]+{1,0}];
 
-g
+
+
+(* ::Section:: *)
+(*Interval calculations*)
+
+
+chainToIntervals[diskChain_,r_]  := Module[{inhibitionData},
+	inhibitionData=KeyValueMap[
+		<|
+		"Interval"->Interval[{diskLeftX[#2]-r,diskRightX[#2]+r}],
+		"Form"-><|#1->Disk[diskXZ[#2],r+diskR[#2]]|>
+		|>&,diskChain];
+	inhibitionData
 ];
+
+
+influenceIntervals[diskChain_,r_,n_:All]:= Module[{inhibitionData,intervalList,res,minZ},
+	inhibitionData=chainToIntervals[diskChain,r];
+	
+	forms=Map[First[Values[#Form]]&,inhibitionData];
+	minZ=Min@Map[diskBottomZ,forms];
+	intervalList= {
+	<|"Interval"->Interval[{-1/2,1/2}],
+	"Form"-><|-\[Infinity]->Line[{{-1/2,minZ},{1/2,minZ}}]|>|>
+	};
+	intervalList=Fold[addResolvedInfluences,intervalList,
+		Take[inhibitionData,n]];
+	intervalList=Map[KeySort,intervalList];
+	intervalList
+];
+
+addResolvedInfluences[intervalList_,influence_] := Module[{res},
+
+	multiFormIntervals=addInfluencesToIntervals[intervalList,influence];
+	res= Flatten@Map[resolveFormsToForm,multiFormIntervals];
+	
+	res 
+	];
+
+frontDisplayer[intervalList_] := (ix=0;Graphics[Map[formDisplayer,intervalList]]);
+formDisplayer[interval_] := Module[{},
+forms=interval["Form"];
+{
+ColorData[17][ix++],
+Line[Map[{#,0}&,MinMax[interval["Interval"]]]],
+Select[Values[forms],Head[#]=!= Line &]/. Disk->Circle
+}
+];
+
+emptyIntervalQ[Interval[interval_]]:= False;
+emptyIntervalQ[Interval[interval___]]:= True;
+	
+addInfluencesToIntervals[intervals_,influence_]:= Module[{res},
+	res=Flatten@Map[addInfluenceToInterval[#,influence]&,intervals];
+	res
+];
+
+
+addInfluenceToInterval[interval_,influence_]:= Module[
+	{intervalLeft,intervalRight,influenceLeft,influenceRight,leftInterval,middleInterval,rightInterval,intervals},
+	If[emptyIntervalQ[IntervalIntersection[interval["Interval"],influence["Interval"]]],
+		Return[interval]];
+	{intervalLeft,intervalRight}=MinMax[interval["Interval"]];
+	{influenceLeft,influenceRight}=MinMax[influence["Interval"]];
+	leftInterval =If[influenceLeft<intervalLeft,
+		Missing[]
+		,
+		<|"Form"-><|interval["Form"]|>,"Interval"->Interval[{intervalLeft,influenceLeft}]|>
+		];
+	middleInterval=
+		<|"Form"->Join[interval["Form"],influence["Form"]],"Interval"->Interval[{Max[intervalLeft,influenceLeft],
+	Min[intervalRight,influenceRight]}]|>;
+	rightInterval= If[influenceRight>intervalRight,
+		Missing[]
+		,
+		<|"Form"-><|interval["Form"]|>,"Interval"->Interval[{influenceRight,intervalRight}]|>
+		];
+	intervals=DeleteMissing[{leftInterval,middleInterval,rightInterval}];
+
+	intervals
+];
+
+
+resolveFormsToForm[interval_] := Module[{forms,res},
+	
+	If[Length[interval["Form"]]==1,
+			Return[interval]
+	];
+	If[Length[interval["Form"]]>2, Print["Multiform abort"];Abort[]];
+
+	res=resolveTwoForms[interval];
+	res
+	]
+
+
+resolveTwoForms[interval_] := Module[{res,disk1,disk2,nonIntersectingIntervals,intersectionX,intersectionXZ},
+	(* intervals on which two disks don't intersect are separated by where they do intersect *)
+	{disk1,disk2}=Values[interval["Form"]];
+	
+	If[Head[disk1]===Line,
+		res=interval;
+		res["Form"]=KeyDrop[interval["Form"],{Key[-\[Infinity]]}];
+		Return[res];
+		];
+	intersectionXZ=diskDiskIntersection[disk1,disk2,interval];
+	intersectionX=First/@intersectionXZ;
+	intersectionX= Join[{
+		Min[interval["Interval"]]},
+		intersectionX,
+		{Max[interval["Interval"]]}
+	];
+	nonIntersectingIntervals=Interval/@Partition[intersectionX,2,1];
+	nonIntersectingIntervals=Map[<|"Interval"->#,"Form"->interval["Form"]|>&,nonIntersectingIntervals];
+	nonIntersectingIntervals=Map[resolveNonIntersectingForms,nonIntersectingIntervals];
+
+	Return[nonIntersectingIntervals];
+	
+	]
+
+
+resolveNonIntersectingForms[interval_] := Module[{xl,xr,xmid,res,activeDiskNumber,numberedFormsZnumberedFormsZ},
+	{xl,xr}=MinMax[interval["Interval"]];
+	xmid=Mean[{xl,xr}];
+	numberedFormsZ=Map[diskZAtX[#,xmid]&,interval["Form"]];
+	numberedFormsZ=Reverse@Sort[numberedFormsZ];
+	activeDiskNumber=First[Keys[numberedFormsZ]];
+res=interval;
+	res["Form"]=KeyTake[res["Form"],{activeDiskNumber}];
+	Print["Resolving interval ",interval,numberedFormsZ, " with activeDiskNumber", activeDiskNumber, "to ",res];
+		
+	res
+	];
+
+
+intervalDisplay[intervals_] := Module[{},
+	Print[intervals]
+];
+
+diskZAtX[Disk[{x1_,z1_},r1_],x_]:= Sqrt[r1^2-(x-x1)^2];
+
+diskDiskIntersection[Disk[{x1_,y1_},r1_],Disk[{x2_,y2_},r2_],interval_]:= Module[{},
+	If[Norm[{x1,y1}-{x2,y2},2] > (r1+ r2),
+		Return[{}]
+	];
+	ix=circleCircleIntersection[Circle[{x1,y1},r1],Circle[{x2,y2},r2]];
+	ix=Select[ix,IntervalMemberQ[(interval["Interval"]),First[#]]&];
+	ix  
+	
+	]
+
+
+circleCircleIntersection[Circle[{x1_,y1_},r1_],Circle[{x2_,y2_},r2_]] := Module[{sols,x,y},
+	sols =
+		{{x->(r2^2 (x1-x2)+r1^2 (-x1+x2)+(x1+x2) ((x1-x2)^2+(y1-y2)^2)-\[Sqrt](-(((r1-r2)^2-(x1-x2)^2-(y1-y2)^2) ((r1+r2)^2-(x1-x2)^2-(y1-y2)^2) (y1-y2)^2)))/(2 ((x1-x2)^2+(y1-y2)^2)),y->(-r1^2 (y1-y2)^2+x1 \[Sqrt](-((r1^4+(-r2^2+(x1-x2)^2+(y1-y2)^2)^2-2 r1^2 (r2^2+(x1-x2)^2+(y1-y2)^2)) (y1-y2)^2))-x2 \[Sqrt](-((r1^4+(-r2^2+(x1-x2)^2+(y1-y2)^2)^2-2 r1^2 (r2^2+(x1-x2)^2+(y1-y2)^2)) (y1-y2)^2))+(y1-y2) (r2^2 (y1-y2)+((x1-x2)^2+(y1-y2)^2) (y1+y2)))/(2 ((x1-x2)^2+(y1-y2)^2) (y1-y2))},{x->(r2^2 (x1-x2)+r1^2 (-x1+x2)+(x1+x2) ((x1-x2)^2+(y1-y2)^2)+\[Sqrt](-(((r1-r2)^2-(x1-x2)^2-(y1-y2)^2) ((r1+r2)^2-(x1-x2)^2-(y1-y2)^2) (y1-y2)^2)))/(2 ((x1-x2)^2+(y1-y2)^2)),y->(-r1^2 (y1-y2)^2-x1 \[Sqrt](-((r1^4+(-r2^2+(x1-x2)^2+(y1-y2)^2)^2-2 r1^2 (r2^2+(x1-x2)^2+(y1-y2)^2)) (y1-y2)^2))+x2 \[Sqrt](-((r1^4+(-r2^2+(x1-x2)^2+(y1-y2)^2)^2-2 r1^2 (r2^2+(x1-x2)^2+(y1-y2)^2)) (y1-y2)^2))+(y1-y2) (r2^2 (y1-y2)+((x1-x2)^2+(y1-y2)^2) (y1+y2)))/(2 ((x1-x2)^2+(y1-y2)^2) (y1-y2))}};
+	SortBy[{x,y} /. sols ,Last]
+];
+
+
+
+
+
+(*iComplement=ResourceFunction["IntervalComplement"];
+
+addInfluenceToIntervalType[interval_,disk_,{Line,Disk}] :=Module[{},
+	unchangedIntervals=iComplement[
+		interval["Interval"]
+		,Interval[{diskLeftX[disk],diskRightX[disk]}]
+	];
+	unchangedIntervalSets= Interval/@ (List@@unchangedIntervals);
+	unchangedIntervalSets=Map[<|"LeftZ"->interval["LeftZ"],
+	"RightZ"->interval["RightZ"],"Interval"->#,"Form"->Line[{{Min[#],interval["LeftZ"]},{Max[#],interval["RightZ"]}}]|>&,unchangedIntervalSets];
+	changedInterval=IntervalIntersection[
+		interval["Interval"]
+		,Interval[{diskLeftX[disk],diskRightX[disk]}]];
+	If[diskLeftX[disk]<Min[changedInterval],
+		diskIntervalLeftZ=diskEvaluate[disk,Min[changedInterval]];
+		angleLeft=diskAngle[disk,{Min[changedInterval],diskIntervalLeftZ}]
+	,
+		diskIntervalLeftZ=diskZ[disk];
+		angleLeft=\[Pi]
+	];
+	If[diskRightX[disk]>Max[changedInterval],
+		diskIntervalRightZ=diskEvaluate[disk,Max[changedInterval]];
+		angleRight=diskAngle[disk,{Max[changedInterval],diskIntervalRightZ}]
+	,
+		diskIntervalRightZ=diskZ[disk];
+		angleRight=0
+	];
+	(* angleLeft etc only for display *)
+	
+	changedIntervalData={<|
+	"LeftZ"->diskIntervalLeftZ,
+	"RightZ"->diskIntervalRightZ,
+	"Interval"->changedInterval,
+	"Form"->Disk[diskXZ[disk],diskR[disk],{0,angleLeft}]
+	|>};
+	res=Join[unchangedIntervalSets,changedIntervalData];
+	
+		res
+	];
+	
+showIntervals[intervals_] := Module[{zMin},
+	zMin=Min@Map[KeyTake[#,{"LeftZ","RightZ"}]&,intervals];
+	{LightGray,Line[{{-1/2,zMin},{1/2,zMin}}]
+	,Map[#Form&,intervals]
+	}
+];*)
+
+	
+
+
+(*addInfluenceToIntervalType[interval_,disk_,{Disk,Disk}] :=Module[{unchangedIntervals},
+	unchangedIntervals=iComplement[
+		interval["Interval"]
+		,Interval[{diskLeftX[disk],diskRightX[disk]}]
+	];
+	Print[unchangedIntervals];
+	unchangedIntervalSets= Interval/@ (List@@unchangedIntervals);
+	unchangedIntervalSets=Map[<|"LeftZ"->interval["LeftZ"],
+	"RightZ"->interval["RightZ"],"Interval"->#,"Form"->Line[{{Min[#],interval["LeftZ"]},{Max[#],interval["RightZ"]}}]|>&,unchangedIntervalSets];
+	
+	
+	changedInterval=IntervalIntersection[
+		interval["Interval"]
+		,Interval[{diskLeftX[disk],diskRightX[disk]}]];
+	returnIntervalList ={
+		interval;
+	}	
+		
+	diskIntervalLeftZ=diskEvaluate[disk,Min[changedInterval]];
+	diskIntervalRightZ=diskEvaluate[disk,Max[changedInterval]];
+	
+	
+	If[diskIntervalLeftZ < interval["LeftZ"] && diskIntervalRightZ < interval["RightZ"],
+		Print["New disk has no effect"]
+		];
+
+	If[diskLeftX[disk]<Min[changedInterval],
+		diskIntervalLeftZ=diskEvaluate[disk,Min[changedInterval]];
+		angleLeft=diskAngle[disk,{Min[changedInterval],diskIntervalLeftZ}]
+	,
+		diskIntervalLeftZ=diskZ[disk];
+		angleLeft=\[Pi]
+	];
+	If[diskRightX[disk]>Max[changedInterval],
+		diskIntervalRightZ=diskEvaluate[disk,Max[changedInterval]];
+		angleRight=diskAngle[disk,{Max[changedInterval],diskIntervalRightZ}]
+	,
+		diskIntervalRightZ=diskZ[disk];
+		angleRight=0
+	];
+	(* angleLeft etc only for display *)
+	
+	changedIntervalData= {<|
+		"LeftZ"->diskIntervalLeftZ,
+		"RightZ"->diskIntervalRightZ,
+		"Interval"->changedInterval,
+		"Form"->Disk[diskXZ[disk],diskR[disk],{0,angleLeft}]
+	|>};
+	Join[unchangedIntervalSets,changedIntervalData]
+	];
+		*)
+
+
+(*addInfluenceToIntervalType[interval_,influence_,type_] := Module[{},
+	Print[" type ", type, "unimplemented"];
+	Print[interval,influence];
+	Abort[]
+	];
+	
+diskEvaluate[Disk[{x_,z_},r_,___],atX_] := Module[{},
+	xDistance= Abs[x-atX];
+	z+Sqrt[r^2-xDistance^2]
+];
+
+diskAngle[Disk[{x_,z_},r_,___],{atX_,atZ_}]  :=
+ Module[{},
+	xDistance= atX-x;
+	zDistance=atZ-z;
+	ArcTan[xDistance,zDistance]
+]
+
+	*)
+
+
+
 
 
 
@@ -910,14 +1034,14 @@ If[MissingQ[angle],Return[angle]];
 vector=(r1+r)*Cos[angle]*interdiskVectorNorm;
 normal = (r1+r)*Sin[angle]* interdiskNormal;
 {c1+vector+normal,c1+vector-normal}
-
 ]
+
 sssTriangleInteriorAngle[a_,b_,c_] := Module[{tri,angle},
-tri =SSSTriangle[a,b,c];
-If[Head[tri]==SSSTriangle,
-Return[Missing["Not a triangle"]]];
-angle = TriangleMeasurement[tri,{"InteriorAngle",1}];
-angle
+	tri =SSSTriangle[a,b,c];
+	If[Head[tri]==SSSTriangle,
+	Return[Missing["Not a triangle"]]];
+	angle = TriangleMeasurement[tri,{"InteriorAngle",1}];
+	angle
 ];
 
 
