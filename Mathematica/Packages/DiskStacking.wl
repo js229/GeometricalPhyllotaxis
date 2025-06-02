@@ -30,6 +30,7 @@ deCycleChain::usage = "Used for parastichy counts and exposed as graphic helper"
 
 (* debugging *)
 influenceIntervals;
+lowestByIntervals;
 globalRun::usage = "global _in this package_; made visible for debugging"; 
 
 
@@ -726,6 +727,24 @@ chainToIntervals[diskChain_,r_]  := Module[{inhibitionData},
 ];
 
 
+lowestByIntervals[diskChain_,r_]:= Module[{intervalList},
+	intervalList=influenceIntervals[diskChain,r];
+	
+	lowest=First@SortBy[intervalList,#RightZ&];
+	lowestLeftPosition=First@First@Position[intervalList,lowest];
+	lowestLeftDiskNumber=First@Keys[intervalList[[lowestLeftPosition]]["Form"]];
+	If[lowestLeftPosition==Length[intervalList],
+		lowestRightPosition=1
+		,
+		lowestRightPosition=lowestLeftPosition+1
+		];
+	lowestRightDiskNumber=First@Keys[intervalList[[lowestRightPosition]]["Form"]];
+	{lowestLeftDiskNumber,lowestRightDiskNumber}
+		
+];
+
+
+
 influenceIntervals[diskChain_,r_,n_:All]:= Module[{inhibitionData,intervalList,res,minZ},
 	inhibitionData=chainToIntervals[diskChain,r];
 	
@@ -738,8 +757,31 @@ influenceIntervals[diskChain_,r_,n_:All]:= Module[{inhibitionData,intervalList,r
 	intervalList=Fold[addResolvedInfluences,intervalList,
 		Take[inhibitionData,n]];
 	intervalList=Map[KeySort,intervalList];
+	intervalList=mergeIntervalList[intervalList];
+	intervalList=Map[Append[#,
+	<|"RightZ"->formAtIntervalEnd[#]	|>]&,intervalList];
+	Print[frontDisplayer[diskChain,intervalList]];
+
 	intervalList
 ];
+formAtIntervalEnd[interval_] := Module[{x,z,disk},
+	disk=First@Values@interval["Form"];
+	x= Max[interval["Interval"]];
+	If[x==1/2 && !(diskX[disk]+diskR[disk]==1/2),
+		Return[\[Infinity]]];
+	z= diskZAtX[disk,x];
+	z
+];
+
+
+adjacentFormQ[<|___,"Form"->form1_,___|>,<|___,"Form"->form2_,___|>] := Module[{},First[Keys[form1[]]]==First[Keys[form2[]]]];
+mergeAdjacentForms[<|___,"Form"->form1_,"Interval"->interval1_|>,<|___,"Form"->form2_,"Interval"->interval2_|>] := 
+	<|"Form"->form1,"Interval"->Interval[{Min[interval1],Max[interval2]}]|>;
+mergeIntervalList[intervalList_] := Module[{res},
+	res=intervalList//. ({b___,f1_,f2_,c___}:>{b,mergeAdjacentForms[f1,f2],c} /; adjacentFormQ[f1,f2]);
+	res
+];
+
 
 addResolvedInfluences[intervalList_,influence_] := Module[{res},
 
@@ -749,14 +791,19 @@ addResolvedInfluences[intervalList_,influence_] := Module[{res},
 	res 
 	];
 
-frontDisplayer[intervalList_] := (ix=0;Graphics[Map[formDisplayer,intervalList]]);
+frontDisplayer[diskChain_,intervalList_] := (ix=0;Graphics[
+	{
+	{FaceForm[LightGray],Values[diskChain],
+	{FaceForm[Red],diskChain[49],diskChain[55]},
+	InfiniteLine[{-1/2,0},{0,1}],InfiniteLine[{1/2,0},{0,1}]},
+	Map[formDisplayer,intervalList]}]);
 formDisplayer[interval_] := Module[{},
-forms=interval["Form"];
-{
-ColorData[17][ix++],
-Line[Map[{#,0}&,MinMax[interval["Interval"]]]],
-Select[Values[forms],Head[#]=!= Line &]/. Disk->Circle
-}
+		{
+		ColorData[17][ix++],PointSize[Large],
+		Point[{Max[interval["Interval"]],interval["RightZ"]}],
+	InfiniteLine[{Max[interval["Interval"]],0},{0,1}],
+	Select[Values[interval["Form"]],Head[#]=!= Line &]/. Disk->Circle
+	}
 ];
 
 emptyIntervalQ[Interval[interval_]]:= False;
@@ -836,10 +883,8 @@ resolveNonIntersectingForms[interval_] := Module[{xl,xr,xmid,res,activeDiskNumbe
 	numberedFormsZ=Map[diskZAtX[#,xmid]&,interval["Form"]];
 	numberedFormsZ=Reverse@Sort[numberedFormsZ];
 	activeDiskNumber=First[Keys[numberedFormsZ]];
-res=interval;
+	res=interval;
 	res["Form"]=KeyTake[res["Form"],{activeDiskNumber}];
-	Print["Resolving interval ",interval,numberedFormsZ, " with activeDiskNumber", activeDiskNumber, "to ",res];
-		
 	res
 	];
 
@@ -848,7 +893,7 @@ intervalDisplay[intervals_] := Module[{},
 	Print[intervals]
 ];
 
-diskZAtX[Disk[{x1_,z1_},r1_],x_]:= Sqrt[r1^2-(x-x1)^2];
+diskZAtX[Disk[{x1_,z1_},r1_],x_]:= z1+Sqrt[r1^2-(x-x1)^2];
 
 diskDiskIntersection[Disk[{x1_,y1_},r1_],Disk[{x2_,y2_},r2_],interval_]:= Module[{},
 	If[Norm[{x1,y1}-{x2,y2},2] > (r1+ r2),
