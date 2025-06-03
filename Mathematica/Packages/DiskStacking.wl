@@ -31,6 +31,8 @@ deCycleChain::usage = "Used for parastichy counts and exposed as graphic helper"
 (* debugging *)
 influenceIntervals;
 lowestByIntervals;
+diskDiskIntersection;
+diskdiskIntersectionQ;
 globalRun::usage = "global _in this package_; made visible for debugging"; 
 
 
@@ -727,9 +729,10 @@ chainToIntervals[diskChain_,r_]  := Module[{inhibitionData},
 ];
 
 
-lowestByIntervals[diskChain_,r_]:= Module[{intervalList},
-	intervalList=influenceIntervals[diskChain,r];
-	
+lowestByIntervals[diskChain_,r_,n_:All]:= Module[{intervalList,lowest,lowestLeftPosition,lowestLeftDiskNumber,lowestRightPosition,lowestRightDiskNumber},
+	intervalList=influenceIntervals[diskChain,r,n];
+	(*Print@frontDisplayer[diskChain,intervalList];
+*)
 	lowest=First@SortBy[intervalList,#RightZ&];
 	lowestLeftPosition=First@First@Position[intervalList,lowest];
 	lowestLeftDiskNumber=First@Keys[intervalList[[lowestLeftPosition]]["Form"]];
@@ -739,7 +742,7 @@ lowestByIntervals[diskChain_,r_]:= Module[{intervalList},
 		lowestRightPosition=lowestLeftPosition+1
 		];
 	lowestRightDiskNumber=First@Keys[intervalList[[lowestRightPosition]]["Form"]];
-	{lowestLeftDiskNumber,lowestRightDiskNumber}
+	<|"SupportPair"->{lowestLeftDiskNumber,lowestRightDiskNumber}|>
 		
 ];
 
@@ -754,14 +757,15 @@ influenceIntervals[diskChain_,r_,n_:All]:= Module[{inhibitionData,intervalList,r
 	<|"Interval"->Interval[{-1/2,1/2}],
 	"Form"-><|-\[Infinity]->Line[{{-1/2,minZ},{1/2,minZ}}]|>|>
 	};
+	
+	
 	intervalList=Fold[addResolvedInfluences,intervalList,
 		Take[inhibitionData,n]];
 	intervalList=Map[KeySort,intervalList];
+	
 	intervalList=mergeIntervalList[intervalList];
 	intervalList=Map[Append[#,
 	<|"RightZ"->formAtIntervalEnd[#]	|>]&,intervalList];
-	Print[frontDisplayer[diskChain,intervalList]];
-
 	intervalList
 ];
 formAtIntervalEnd[interval_] := Module[{x,z,disk},
@@ -794,9 +798,11 @@ addResolvedInfluences[intervalList_,influence_] := Module[{res},
 frontDisplayer[diskChain_,intervalList_] := (ix=0;Graphics[
 	{
 	{FaceForm[LightGray],Values[diskChain],
-	{FaceForm[Red],diskChain[49],diskChain[55]},
+	KeyValueMap[Text[#1,#2]&,diskXZ/@diskChain],
 	InfiniteLine[{-1/2,0},{0,1}],InfiniteLine[{1/2,0},{0,1}]},
-	Map[formDisplayer,intervalList]}]);
+	Map[formDisplayer,intervalList]},
+	Axes->True,PlotRange->All]);
+	
 formDisplayer[interval_] := Module[{},
 		{
 		ColorData[17][ix++],PointSize[Large],
@@ -817,7 +823,9 @@ addInfluencesToIntervals[intervals_,influence_]:= Module[{res},
 
 addInfluenceToInterval[interval_,influence_]:= Module[
 	{intervalLeft,intervalRight,influenceLeft,influenceRight,leftInterval,middleInterval,rightInterval,intervals},
-	If[emptyIntervalQ[IntervalIntersection[interval["Interval"],influence["Interval"]]],
+	debug=First@Keys@influence["Form"]==56;debug=False;
+	If[debug,Print["\n\nInterval: ",interval,"\nInfluence: ",influence]];
+	If[emptyIntervalQ[IntervalIntersection[interval["Interval"],influence["Interval"]]],If[debug,Print["Empty"]];
 		Return[interval]];
 	{intervalLeft,intervalRight}=MinMax[interval["Interval"]];
 	{influenceLeft,influenceRight}=MinMax[influence["Interval"]];
@@ -827,13 +835,14 @@ addInfluenceToInterval[interval_,influence_]:= Module[
 		<|"Form"-><|interval["Form"]|>,"Interval"->Interval[{intervalLeft,influenceLeft}]|>
 		];
 	middleInterval=
-		<|"Form"->Join[interval["Form"],influence["Form"]],"Interval"->Interval[{Max[intervalLeft,influenceLeft],
-	Min[intervalRight,influenceRight]}]|>;
+		<|"Form"->Join[interval["Form"],influence["Form"]],
+		"Interval"->Interval[{Max[intervalLeft,influenceLeft],Min[intervalRight,influenceRight]}]|>;
 	rightInterval= If[influenceRight>intervalRight,
 		Missing[]
 		,
 		<|"Form"-><|interval["Form"]|>,"Interval"->Interval[{influenceRight,intervalRight}]|>
 		];
+	If[debug,Print["InfluenceIntervals:",{leftInterval,middleInterval,rightInterval}]];
 	intervals=DeleteMissing[{leftInterval,middleInterval,rightInterval}];
 
 	intervals
@@ -855,7 +864,8 @@ resolveFormsToForm[interval_] := Module[{forms,res},
 resolveTwoForms[interval_] := Module[{res,disk1,disk2,nonIntersectingIntervals,intersectionX,intersectionXZ},
 	(* intervals on which two disks don't intersect are separated by where they do intersect *)
 	{disk1,disk2}=Values[interval["Form"]];
-	
+	debug=Keys@interval["Form"]=={46,56};debug=False;
+	If[debug,Print["Resolving ",interval]];
 	If[Head[disk1]===Line,
 		res=interval;
 		res["Form"]=KeyDrop[interval["Form"],{Key[-\[Infinity]]}];
@@ -863,15 +873,16 @@ resolveTwoForms[interval_] := Module[{res,disk1,disk2,nonIntersectingIntervals,i
 		];
 	intersectionXZ=diskDiskIntersection[disk1,disk2,interval];
 	intersectionX=First/@intersectionXZ;
-	intersectionX= Join[{
+	intersectionX= Sort@Join[{
 		Min[interval["Interval"]]},
 		intersectionX,
 		{Max[interval["Interval"]]}
 	];
+	If[debug,Print["iXZ",intersectionXZ,intersectionX]];
 	nonIntersectingIntervals=Interval/@Partition[intersectionX,2,1];
 	nonIntersectingIntervals=Map[<|"Interval"->#,"Form"->interval["Form"]|>&,nonIntersectingIntervals];
 	nonIntersectingIntervals=Map[resolveNonIntersectingForms,nonIntersectingIntervals];
-
+	If[debug,Print[" to ",nonIntersectingIntervals]];
 	Return[nonIntersectingIntervals];
 	
 	]
@@ -893,8 +904,13 @@ intervalDisplay[intervals_] := Module[{},
 	Print[intervals]
 ];
 
-diskZAtX[Disk[{x1_,z1_},r1_],x_]:= z1+Sqrt[r1^2-(x-x1)^2];
-
+diskZAtX[Disk[{x1_,z1_},r1_],x_]:= Module[{det},
+	det = Chop[r1^2-(x-x1)^2];
+	res = z1+Sqrt[det];
+	res
+	];
+diskZAtX[Line[{{a_,b_},{c_,d_}}],x_]:=b;
+	
 diskDiskIntersection[Disk[{x1_,y1_},r1_],Disk[{x2_,y2_},r2_],interval_]:= Module[{},
 	If[Norm[{x1,y1}-{x2,y2},2] > (r1+ r2),
 		Return[{}]
