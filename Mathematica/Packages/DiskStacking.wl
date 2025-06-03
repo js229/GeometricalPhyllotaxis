@@ -424,12 +424,29 @@ Abort[]];
 	res
 ];
 
-findNextDiskFromDiskChain[nextR_]:= Module[{supportTable,res},
-	supportTable=supportPairsFromDiskChain[globalRun,nextR];
-
-	supportTable= SortBy[supportTable,diskZ[#NextDisk]&];
-	If[Length[supportTable]==0,Print["No valid supports looking for ", nextDiskNumber[]];Abort[]];
-	res=First[supportTable];
+findNextDiskFromDiskChain[nextR_]:= Module[{method,supportTable,res},
+	method=globalRun["Arena"]["Methods"]["NextChain"];
+	If[MemberQ[{"Old","Both"},method],
+		supportTable=supportPairsFromDiskChain[globalRun,nextR];
+		supportTable= SortBy[supportTable,diskZ[#NextDisk]&];
+		If[Length[supportTable]==0,Print["No valid supports looking for ", nextDiskNumber[]];Abort[]];
+		res=First[supportTable];
+	];
+	If[MemberQ[{"Interval","Both"}],
+		diskChain=globalRun["CurrentDiskChain"];
+		resIntervalMethod=lowestByIntervals[diskChain,nextR];
+	];
+	If[method=="Both",
+	If[res["NextDiskRestsOn"]!=resIntervalMethod["NextDiskRestsOn"],
+		Print["Found: ",res];
+		Print["Interval: ",resIntervalMethod];
+		intervalList=influenceIntervals[diskChain,nextR];
+		Print@frontDisplayer[diskChain,intervalList];
+		Print[intervalList];
+		Abort[];
+		]
+	];
+	If[method=="Interval",res=resIntervalMethod];
 	res
 ];
 
@@ -719,12 +736,20 @@ g
 (*Interval calculations*)
 
 
-chainToIntervals[diskChain_,r_]  := Module[{inhibitionData},
+chainToIntervals[diskChain_,r_]  := Module[{inhibitionData,chain},
+	chain=diskChain;
+	lefts=Select[chain,diskX[#]+diskR[#]+r>1/2&];
+	lefts=Association@KeyValueMap[left[#1]->moveDiskLeft[#2]&,lefts];
+	rights=Select[chain,diskX[#]-diskR[#]-r<-1/2&];
+	rights=Association@KeyValueMap[right[#1]->moveDiskRight[#2]&,rights];
+	chain=Join[chain,lefts,rights];
+	chain=SortBy[chain,diskX];
+	
 	inhibitionData=KeyValueMap[
 		<|
 		"Interval"->Interval[{diskLeftX[#2]-r,diskRightX[#2]+r}],
 		"Form"-><|#1->Disk[diskXZ[#2],r+diskR[#2]]|>
-		|>&,diskChain];
+		|>&,chain];
 	inhibitionData
 ];
 
@@ -742,7 +767,10 @@ lowestByIntervals[diskChain_,r_,n_:All]:= Module[{intervalList,lowest,lowestLeft
 		lowestRightPosition=lowestLeftPosition+1
 		];
 	lowestRightDiskNumber=First@Keys[intervalList[[lowestRightPosition]]["Form"]];
-	<|"SupportPair"->{lowestLeftDiskNumber,lowestRightDiskNumber}|>
+	res=<|"NextDiskRestsOn"->{lowestLeftDiskNumber,lowestRightDiskNumber},
+	"Disk"->Disk[{Max@lowest["Interval"],lowest["RightZ"]},r]
+	|>;
+	res
 		
 ];
 
@@ -795,9 +823,12 @@ addResolvedInfluences[intervalList_,influence_] := Module[{res},
 	res 
 	];
 
-frontDisplayer[diskChain_,intervalList_] := (ix=0;Graphics[
+frontDisplayer[diskChain_,intervalList_] := (ix=0;
+	zRange=MinMax[diskZ/@diskChain];
+	Graphics[
 	{
 	{FaceForm[LightGray],Values[diskChain],
+	{FaceForm[None],EdgeForm[{Thick,Black}],Rectangle[{-1/2,zRange[[1]]-0.06},{1/2,zRange[[2]]+0.06}]},
 	KeyValueMap[Text[#1,#2]&,diskXZ/@diskChain],
 	InfiniteLine[{-1/2,0},{0,1}],InfiniteLine[{1/2,0},{0,1}]},
 	Map[formDisplayer,intervalList]},
