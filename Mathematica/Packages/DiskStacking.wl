@@ -47,7 +47,6 @@ Begin["Private`"]
 (*runmaking*)
 
 
-
 runFromLattice[lattice_] :=  Module[{g,d},
 	If[!(lattice["d"]==0 && lattice["h"] == 1),
 	Return[graphFromTCLattice[lattice]]];
@@ -432,7 +431,7 @@ findNextDiskFromDiskChain[nextR_]:= Module[{method,supportTable,res,resIntervalM
 		diskChain=globalRun["CurrentDiskChain"];
 		resIntervalMethod=lowestByIntervals[diskChain,nextR];
 	];
-	If[method=="Both",
+(*	If[method=="Both",
 		If[res["NextDiskRestsOn"]!=resIntervalMethod["NextDiskRestsOn"],
 		Print["diskchain:",diskChain];
 		Print["Found: ",res];
@@ -443,7 +442,7 @@ findNextDiskFromDiskChain[nextR_]:= Module[{method,supportTable,res,resIntervalM
 		Abort[]
 		]
 	];
-	If[method=="Interval",res=resIntervalMethod];
+*)	If[method=="Interval",res=resIntervalMethod];
 	res
 ];
 
