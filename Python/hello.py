@@ -1,1 +1,5 @@
-print("Hello, world!")
+def shout():
+    print("Hello, world!")
+
+def show(message):
+    return(message.upper())
