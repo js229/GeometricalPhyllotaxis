@@ -29,6 +29,7 @@ postRunExtractNonOverlappingChains::usage = "";
 deCycleChain::usage = "Used for parastichy counts and exposed as graphic helper"
 
 (* debugging *)
+findNextDiskFromDiskChain;nextRadius;highestDiskZ
 globalRun::usage = "global _in this package_; made visible for debugging"; 
 
 
@@ -215,9 +216,9 @@ Max@Map[diskBottomZ[getDisk[#]]&,Keys[globalRun["DiskData"]]];
 
 highestDiskZ[run_] := Max@Map[diskZ[getDiskFromRun[run,#]]&,Keys[run["DiskData"]]];
 
-nextRadius[] := Module[{highestZ},
-	highestZ=highestDiskZ[globalRun];
-	globalRun["Arena"]["rFunction"][highestZ]
+nextRadius[run_] := Module[{highestZ},
+	highestZ=highestDiskZ[run];
+	run["Arena"]["rFunction"][highestZ]
 ];
 nextDiskNumber[] := Max[bareNumber/@ VertexList[globalRun["ContactGraph"]]]+1;
 
@@ -281,8 +282,8 @@ node-><|"DiskNumber"->node,"Disk"->disk|>
 ];
 
 addNextDisk[]:=Module[{nextR,row,n,timing,disk,tw,twc,xnextChain},
-	nextR=nextRadius[];
-	row=findNextDiskFromDiskChain[nextR];
+	nextR=nextRadius[globalRun];
+	row=findNextDiskFromDiskChain[globalRun,nextR];
 	
 	disk = row["NextDisk"];
 	disk= jiggleDisk[globalRun,disk];
@@ -413,18 +414,19 @@ Abort[]];
 	res
 ];
 
-findNextDiskFromDiskChain[nextR_]:= Module[{method,supportTable,res,resIntervalMethod},
-	method=globalRun["Arena"]["Methods"]["NextChain"];
+findNextDiskFromDiskChain[run_,nextR_]:= Module[{method,supportTable,res,resIntervalMethod},
+	If[MissingQ[run["Arena"]["Methods"]],method="Old",
+	method=run["Arena"]["Methods"]["NextChain"]];
 	
 	If[MemberQ[{"Old","Both"},method],
-		supportTable=supportPairsFromDiskChain[globalRun,nextR];
+		supportTable=supportPairsFromDiskChain[run,nextR];
 		supportTable= SortBy[supportTable,diskZ[#NextDisk]&];
 		If[Length[supportTable]==0,Print["No valid supports looking for ", nextDiskNumber[]];Abort[]];
 		res=First[supportTable];
 		
 	];
 	If[MemberQ[{"Interval","Both"},method],
-		diskChain=globalRun["CurrentDiskChain"];
+		diskChain=run["CurrentDiskChain"];
 		resIntervalMethod=lowestByIntervals[diskChain,nextR];
 	];
 (*	If[method=="Both",
