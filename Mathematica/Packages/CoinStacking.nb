@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[    118196,       2981]
-NotebookOptionsPosition[    113312,       2888]
-NotebookOutlinePosition[    113748,       2905]
-CellTagsIndexPosition[    113705,       2902]
+NotebookDataLength[    122371,       3026]
+NotebookOptionsPosition[    117983,       2942]
+NotebookOutlinePosition[    118419,       2959]
+CellTagsIndexPosition[    118376,       2956]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -206,7 +206,7 @@ Cell[BoxData[{
          RowBox[{"arena", ",", " ", 
           RowBox[{"initializeCylinderDisks", "[", "arena", "]"}]}], "]"}]}], 
        "\n", "\t\t", "]"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], "\n", 
-  "\n"}], "\n", 
+  "\n", "\n"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{
@@ -215,8 +215,8 @@ Cell[BoxData[{
     RowBox[{"Module", "[", 
      RowBox[{
       RowBox[{"{", 
-       RowBox[{"initialDisks", ",", "d"}], "}"}], ",", "\[IndentingNewLine]", 
-      "\t", 
+       RowBox[{"initialDisk", ",", "initialDisks", ",", "d"}], "}"}], ",", 
+      "\[IndentingNewLine]", "\t", 
       RowBox[{
        RowBox[{"d", "=", 
         RowBox[{"N", "[", 
@@ -225,40 +225,38 @@ Cell[BoxData[{
           RowBox[{"Sin", "[", 
            RowBox[{"arena", "[", "\"\<ConeSemiAngle\>\"", "]"}], "]"}]}], 
          "]"}]}], ";", "\[IndentingNewLine]", "\t", 
+       RowBox[{"initialDisk", "=", 
+        RowBox[{"<|", 
+         RowBox[{
+          RowBox[{"\"\<ID\>\"", "->", "1"}], "\n", "\t", ",", 
+          RowBox[{"\"\<Disk\>\"", "->", 
+           RowBox[{"Disk", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{"0", ",", "d"}], "}"}], ",", 
+             RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}]}], "]"}]}], 
+          "\[IndentingNewLine]", "\t", ",", 
+          RowBox[{"\"\<Supporters\>\"", "->", 
+           RowBox[{"Missing", "[", "]"}]}], "\[IndentingNewLine]", "\t", ",", 
+          
+          RowBox[{"\"\<EdgeDisk\>\"", "->", 
+           RowBox[{"<|", 
+            RowBox[{
+             RowBox[{"\"\<Left\>\"", "->", "True"}], ",", 
+             RowBox[{"\"\<Right\>\"", "->", "True"}]}], "|>"}]}], 
+          "\[IndentingNewLine]", "\t", ",", 
+          RowBox[{"\"\<CanSupportDisk\>\"", "->", 
+           RowBox[{"<|", 
+            RowBox[{
+             RowBox[{"\"\<Left\>\"", "->", "True"}], ",", 
+             RowBox[{"\"\<Right\>\"", "->", "True"}]}], "|>"}]}]}], 
+         "\[IndentingNewLine]", "\t", "|>"}]}], ";", "\n", "\t", 
+       RowBox[{"initialDisk", "=", 
+        RowBox[{"addSurfaceCoordinatesCone", "[", 
+         RowBox[{"arena", ",", "initialDisk"}], "]"}]}], ";", "\n", "\t", 
        RowBox[{"initialDisks", "=", 
         RowBox[{"<|", 
-         RowBox[{"1", "->", 
-          RowBox[{"<|", 
-           RowBox[{
-            RowBox[{"\"\<ID\>\"", "->", "1"}], ",", 
-            RowBox[{"\"\<Disk\>\"", "->", 
-             RowBox[{"Disk", "[", 
-              RowBox[{
-               RowBox[{"{", 
-                RowBox[{"0", ",", "d"}], "}"}], ",", 
-               RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}]}], "]"}]}], 
-            "\[IndentingNewLine]", "\t", ",", 
-            RowBox[{"\"\<Polar\>\"", "->", 
-             RowBox[{"<|", 
-              RowBox[{
-               RowBox[{"\"\<r\>\"", "->", "d"}], ",", 
-               RowBox[{"\"\<\[Theta]\>\"", "->", 
-                RowBox[{"\[Pi]", "/", "2"}]}]}], "|>"}]}], 
-            "\[IndentingNewLine]", "\t", ",", 
-            RowBox[{"\"\<Supporters\>\"", "->", 
-             RowBox[{"Missing", "[", "]"}]}], "\[IndentingNewLine]", "\t", ",", 
-            RowBox[{"\"\<EdgeDisk\>\"", "->", 
-             RowBox[{"<|", 
-              RowBox[{
-               RowBox[{"\"\<Left\>\"", "->", "True"}], ",", 
-               RowBox[{"\"\<Right\>\"", "->", "True"}]}], "|>"}]}], 
-            "\[IndentingNewLine]", "\t", ",", 
-            RowBox[{"\"\<CanSupportDisk\>\"", "->", 
-             RowBox[{"<|", 
-              RowBox[{
-               RowBox[{"\"\<Left\>\"", "->", "True"}], ",", 
-               RowBox[{"\"\<Right\>\"", "->", "True"}]}], "|>"}]}]}], 
-           "\[IndentingNewLine]", "\t", "|>"}]}], "|>"}]}], ";", "\n", "\t", 
+         RowBox[{"1", "->", "initialDisk"}], "|>"}]}], ";", "\n", "\t", 
        RowBox[{"initialDisks", "=", 
         RowBox[{"addLRDisk", "[", 
          RowBox[{"arena", ",", "initialDisks", ",", 
@@ -277,140 +275,135 @@ Cell[BoxData[{
            RowBox[{
             RowBox[{"left", "[", "1", "]"}], ",", "1", ",", 
             RowBox[{"right", "[", "1", "]"}]}], "}"}]}]}], "|>"}]}]}], "\n", 
-     "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
-  "\[IndentingNewLine]"}], "\n", 
+     "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"initializeCylinderDisks", "[", "arena_", "]"}], " ", ":=", " ", 
-   RowBox[{"Module", "[", "\n", "\t", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"initialDisks", ",", "nDisks", ",", "centres"}], "}"}], ",", 
-     "\n", "\t", 
+   RowBox[{
+    RowBox[{"initializeCylinderDisks", "[", "arena_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", "\n", "\t", 
      RowBox[{
-      RowBox[{"nDisks", "=", 
-       RowBox[{"Floor", "[", 
-        RowBox[{
-         RowBox[{"arena", "[", "\"\<CylinderCircumference\>\"", "]"}], "/", 
-         RowBox[{"(", 
-          RowBox[{"2", " ", 
-           RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}]}], ")"}]}], 
-        "]"}]}], ";", "\n", "\t", 
-      RowBox[{"centres", "=", 
-       RowBox[{"Association", "[", 
-        RowBox[{"Table", "[", 
+      RowBox[{"{", 
+       RowBox[{"initialDisks", ",", "nDisks", ",", "centres"}], "}"}], ",", 
+      "\n", "\t", 
+      RowBox[{
+       RowBox[{"nDisks", "=", 
+        RowBox[{"Floor", "[", 
          RowBox[{
-          RowBox[{"id", "->", 
-           RowBox[{"<|", 
-            RowBox[{
-             RowBox[{"\"\<ID\>\"", "->", "id"}], ",", 
-             RowBox[{"\"\<Centre\>\"", "->", 
-              RowBox[{"{", 
-               RowBox[{
-                RowBox[{
-                 RowBox[{"2", " ", 
-                  RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}], "*", 
-                  RowBox[{"(", 
-                   RowBox[{"id", "-", "1"}], ")"}]}], "-", 
-                 RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}]}], " ", ",",
-                 "0"}], "}"}]}]}], "|>"}]}], ",", 
-          RowBox[{"{", 
-           RowBox[{"id", ",", "1", ",", "nDisks"}], "}"}]}], "]"}], "]"}]}], ";",
-       "\[IndentingNewLine]", "\t", 
-      RowBox[{"initializeCylinderDiskCentres", "[", 
-       RowBox[{"arena", ",", "centres"}], "]"}]}]}], " ", "\n", "\t", 
-    "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"initializeCylinderDiskCentres", "[", 
-    RowBox[{"arena_", ",", "centres_"}], "]"}], " ", ":=", " ", 
-   RowBox[{"Module", "[", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"initialDisks", ",", "nDisks"}], "}"}], ",", "\n", "\t", 
-     RowBox[{
-      RowBox[{"nDisks", "=", 
-       RowBox[{"Max", "[", 
-        RowBox[{
-         RowBox[{"#ID", "&"}], "/@", "centres"}], "]"}]}], ";", 
-      "\[IndentingNewLine]", "\t", 
-      RowBox[{"initialDisks", "=", 
-       RowBox[{"Map", "[", "\n", "\t\t", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"Append", "[", 
-           RowBox[{"#", ",", "\n", "\t\t", 
-            RowBox[{"<|", "\n", "\t\t", 
-             RowBox[{
-              RowBox[{"\"\<Disk\>\"", "->", 
-               RowBox[{"Disk", "[", 
-                RowBox[{"#Centre", ",", 
-                 RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}]}], "]"}]}],
-               "\[IndentingNewLine]", "\t\t", ",", 
-              RowBox[{"\"\<Polar\>\"", "->", 
-               RowBox[{"Missing", "[", "]"}]}], "\[IndentingNewLine]", "\t\t",
-               ",", 
-              RowBox[{"\"\<Supporters\>\"", "->", 
-               RowBox[{"Missing", "[", "]"}]}], "\[IndentingNewLine]", "\t\t",
-               ",", 
-              RowBox[{"\"\<EdgeDisk\>\"", "->", 
-               RowBox[{"<|", 
-                RowBox[{
-                 RowBox[{"\"\<Left\>\"", "->", "True"}], ",", 
-                 RowBox[{"\"\<Right\>\"", "->", "True"}]}], "|>"}]}], 
-              "\[IndentingNewLine]", "\t\t", ",", 
-              RowBox[{"\"\<CanSupportDisk\>\"", "->", 
-               RowBox[{"<|", 
-                RowBox[{
-                 RowBox[{"\"\<Left\>\"", "->", "True"}], ",", 
-                 RowBox[{"\"\<Right\>\"", "->", "True"}]}], "|>"}]}]}], 
-             "\[IndentingNewLine]", "\t\t", "|>"}]}], "]"}], "&"}], ",", "\n",
-          "\t\t", "centres"}], "]"}]}], ";", "\n", "\t", 
-      RowBox[{"initialDisks", "=", 
-       RowBox[{"addLRDisk", "[", 
-        RowBox[{"arena", ",", "initialDisks", ",", 
-         RowBox[{"left", "[", "nDisks", "]"}]}], "]"}]}], ";", "\n", "\t", 
-      RowBox[{"initialDisks", "=", 
-       RowBox[{"addLRDisk", "[", 
-        RowBox[{"arena", ",", "initialDisks", ",", 
-         RowBox[{"right", "[", "1", "]"}]}], "]"}]}], ";", 
-      "\[IndentingNewLine]", "\t", 
-      RowBox[{"initialDisks", "=", 
-       RowBox[{"Map", "[", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"computeEdgeProperties", "[", 
-           RowBox[{"arena", ",", "#"}], "]"}], "&"}], ",", "initialDisks"}], 
-        "]"}]}], ";", "\n", "\t", 
-      RowBox[{"initialDisks", "=", 
-       RowBox[{"Map", "[", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"KeyDrop", "[", 
-           RowBox[{"#", ",", 
-            RowBox[{"{", "\"\<Centre\>\"", "}"}]}], "]"}], "&"}], ",", 
-         "initialDisks"}], "]"}]}], ";", "\n", "\t", 
-      RowBox[{"<|", 
-       RowBox[{
-        RowBox[{"\"\<InitialDisks\>\"", "->", "initialDisks"}], ",", 
-        RowBox[{"\"\<InitialChain\>\"", "->", 
-         RowBox[{"{", 
+          RowBox[{"arena", "[", "\"\<CylinderCircumference\>\"", "]"}], "/", 
+          RowBox[{"(", 
+           RowBox[{"2", " ", 
+            RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}]}], ")"}]}], 
+         "]"}]}], ";", "\n", "\t", 
+       RowBox[{"centres", "=", 
+        RowBox[{"Association", "[", 
+         RowBox[{"Table", "[", 
           RowBox[{
-           RowBox[{"left", "[", "1", "]"}], ",", 
-           RowBox[{"Splice", "[", 
-            RowBox[{"Range", "[", "nDisks", "]"}], "]"}], ",", 
-           RowBox[{"right", "[", "1", "]"}]}], "}"}]}]}], "|>"}]}]}], 
-    "\[IndentingNewLine]", "\t", "\n", "]"}]}], 
-  ";"}], "\[IndentingNewLine]"}], "Code",
- InitializationCell->True,
- CellLabel->"In[1]:=",ExpressionUUID->"c2924e34-f199-8248-abd3-eb73c1ffd8f4"],
-
-Cell[BoxData[
- RowBox[{"\n", "\[IndentingNewLine]", "\[IndentingNewLine]"}]], "Code",
- InitializationCell->True,
- CellLabel->"In[9]:=",ExpressionUUID->"09025947-2cdc-b140-bab5-df79c3f3fb17"],
-
-Cell[BoxData[
+           RowBox[{"id", "->", 
+            RowBox[{"<|", 
+             RowBox[{
+              RowBox[{"\"\<ID\>\"", "->", "id"}], ",", 
+              RowBox[{"\"\<Centre\>\"", "->", 
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"2", " ", 
+                   RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}], "*", 
+                   RowBox[{"(", 
+                    RowBox[{"id", "-", "1"}], ")"}]}], "-", 
+                  RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}]}], " ", ",",
+                  "0"}], "}"}]}]}], "|>"}]}], ",", 
+           RowBox[{"{", 
+            RowBox[{"id", ",", "1", ",", "nDisks"}], "}"}]}], "]"}], "]"}]}], 
+       ";", "\[IndentingNewLine]", "\t", 
+       RowBox[{"initializeCylinderDiskCentres", "[", 
+        RowBox[{"arena", ",", "centres"}], "]"}]}]}], " ", "\n", "\t", 
+     "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"initializeCylinderDiskCentres", "[", 
+     RowBox[{"arena_", ",", "centres_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"initialDisks", ",", "nDisks"}], "}"}], ",", "\n", "\t", 
+      RowBox[{
+       RowBox[{"nDisks", "=", 
+        RowBox[{"Max", "[", 
+         RowBox[{
+          RowBox[{"#ID", "&"}], "/@", "centres"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", "\t", 
+       RowBox[{"initialDisks", "=", 
+        RowBox[{"Map", "[", "\n", "\t\t", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Append", "[", 
+            RowBox[{"#", ",", "\n", "\t\t", 
+             RowBox[{"<|", "\n", "\t\t", 
+              RowBox[{
+               RowBox[{"\"\<Disk\>\"", "->", 
+                RowBox[{"Disk", "[", 
+                 RowBox[{"#Centre", ",", 
+                  RowBox[{"arena", "[", "\"\<DiskRadius\>\"", "]"}]}], 
+                 "]"}]}], "\[IndentingNewLine]", "\t\t", ",", 
+               RowBox[{"\"\<Supporters\>\"", "->", 
+                RowBox[{"Missing", "[", "]"}]}], "\[IndentingNewLine]", 
+               "\t\t", ",", 
+               RowBox[{"\"\<EdgeDisk\>\"", "->", 
+                RowBox[{"<|", 
+                 RowBox[{
+                  RowBox[{"\"\<Left\>\"", "->", "True"}], ",", 
+                  RowBox[{"\"\<Right\>\"", "->", "True"}]}], "|>"}]}], 
+               "\[IndentingNewLine]", "\t\t", ",", 
+               RowBox[{"\"\<CanSupportDisk\>\"", "->", 
+                RowBox[{"<|", 
+                 RowBox[{
+                  RowBox[{"\"\<Left\>\"", "->", "True"}], ",", 
+                  RowBox[{"\"\<Right\>\"", "->", "True"}]}], "|>"}]}]}], 
+              "\[IndentingNewLine]", "\t\t", "|>"}]}], "]"}], "&"}], ",", 
+          "\n", "\t\t", "centres"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"initialDisks", "=", 
+        RowBox[{"Map", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"addSurfaceCoordinatesCylinder", "[", 
+            RowBox[{"arena", ",", "#"}], "]"}], "&"}], ",", "initialDisks"}], 
+         "]"}]}], ";", "\n", "\t", 
+       RowBox[{"initialDisks", "=", 
+        RowBox[{"addLRDisk", "[", 
+         RowBox[{"arena", ",", "initialDisks", ",", 
+          RowBox[{"left", "[", "nDisks", "]"}]}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"initialDisks", "=", 
+        RowBox[{"addLRDisk", "[", 
+         RowBox[{"arena", ",", "initialDisks", ",", 
+          RowBox[{"right", "[", "1", "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", "\t", 
+       RowBox[{"initialDisks", "=", 
+        RowBox[{"Map", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"computeEdgeProperties", "[", 
+            RowBox[{"arena", ",", "#"}], "]"}], "&"}], ",", "initialDisks"}], 
+         "]"}]}], ";", "\n", "\t", 
+       RowBox[{"initialDisks", "=", 
+        RowBox[{"Map", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"KeyDrop", "[", 
+            RowBox[{"#", ",", 
+             RowBox[{"{", "\"\<Centre\>\"", "}"}]}], "]"}], "&"}], ",", 
+          "initialDisks"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"<|", 
+        RowBox[{
+         RowBox[{"\"\<InitialDisks\>\"", "->", "initialDisks"}], ",", 
+         RowBox[{"\"\<InitialChain\>\"", "->", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"left", "[", "1", "]"}], ",", 
+            RowBox[{"Splice", "[", 
+             RowBox[{"Range", "[", "nDisks", "]"}], "]"}], ",", 
+            RowBox[{"right", "[", "1", "]"}]}], "}"}]}]}], "|>"}]}]}], 
+     "\[IndentingNewLine]", "\t", "\n", "]"}]}], ";"}], "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"jiggleDisk", "[", 
    RowBox[{"diskData_", ",", "noiseMagnitude_"}], "]"}], " ", ":=", " ", 
@@ -418,7 +411,7 @@ Cell[BoxData[
    RowBox[{
     RowBox[{"{", 
      RowBox[{"noise", ",", "jiggledCentre", ",", "res"}], "}"}], ",", 
-    "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\t", 
     RowBox[{
      RowBox[{"noise", "=", 
       RowBox[{"RandomReal", "[", 
@@ -426,23 +419,30 @@ Cell[BoxData[
         RowBox[{"{", 
          RowBox[{
           RowBox[{"-", "noiseMagnitude"}], ",", "noiseMagnitude"}], "}"}], ",", 
-        RowBox[{"{", "2", "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"{", "2", "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", "\t", 
+     
      RowBox[{"jiggledCentre", "=", 
       RowBox[{
        RowBox[{"diskCentre", "[", 
         RowBox[{"diskData", "[", "\"\<Disk\>\"", "]"}], "]"}], "+", " ", 
-       "noise"}]}], ";", "\[IndentingNewLine]", 
-     RowBox[{"res", "=", "diskData"}], ";", "\[IndentingNewLine]", 
+       "noise"}]}], ";", "\[IndentingNewLine]", "\t", 
+     RowBox[{"res", "=", "diskData"}], ";", "\[IndentingNewLine]", "\t", 
      RowBox[{
       RowBox[{"res", "[", "\"\<Disk\>\"", "]"}], "=", 
       RowBox[{"Disk", "[", 
-       RowBox[{"jiggledCentre", ",", 
-        RowBox[{"diskRadius", "[", 
-         RowBox[{"diskData", "[", "\"\<Disk\>\"", "]"}], "]"}]}], "]"}]}], ";",
-      "\[IndentingNewLine]", "res"}]}], "\[IndentingNewLine]", 
-   "]"}]}]], "Input",
+       RowBox[{"jiggledCentre", ",", "1"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", "\t", "res"}]}], "\[IndentingNewLine]", 
+   "]"}]}]}], "Code",
  InitializationCell->True,
- CellLabel->"In[10]:=",ExpressionUUID->"51c2f976-d3c0-e346-a86b-96b9ac1c8007"],
+ CellChangeTimes->{{3.984208080899788*^9, 3.9842081081790924`*^9}, 
+   3.9843825081869583`*^9, 3.984384350318283*^9, {3.9843843850323772`*^9, 
+   3.9843845097964306`*^9}, {3.9843849083165264`*^9, 
+   3.9843849441365128`*^9}, {3.984387185528557*^9, 3.9843871994951305`*^9}, 
+   3.9843875340290985`*^9, {3.984395893278084*^9, 3.984395940111229*^9}, {
+   3.984395984758211*^9, 3.984395986676737*^9}, {3.9843960276683197`*^9, 
+   3.984396034311388*^9}},
+ CellLabel->
+  "In[226]:=",ExpressionUUID->"c2924e34-f199-8248-abd3-eb73c1ffd8f4"],
 
 Cell[BoxData[
  RowBox[{
@@ -499,12 +499,16 @@ Cell[BoxData[
      RowBox[{"globalTime", "=", "Now"}], ";", "\[IndentingNewLine]", "\t", 
      RowBox[{"run", "=", 
       RowBox[{"logStep", "[", 
-       RowBox[{"run", ",", "0"}], "]"}]}], ";", "\[IndentingNewLine]", "\t", 
+       RowBox[{"run", ",", "0"}], "]"}]}], ";", "\n", "\t", 
+     "\[IndentingNewLine]", "\t", 
      RowBox[{"run", "=", 
       RowBox[{"restartRun", "[", "run", "]"}]}], ";", "\[IndentingNewLine]", 
      "\t", "run"}]}], "\[IndentingNewLine]", "]"}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[11]:=",ExpressionUUID->"48ef3d46-2241-794c-8678-8b2b746f3bb8"],
+ CellChangeTimes->{{3.9843957988258343`*^9, 3.9843958319414062`*^9}, 
+   3.9843959629422626`*^9},
+ CellLabel->
+  "In[210]:=",ExpressionUUID->"48ef3d46-2241-794c-8678-8b2b746f3bb8"],
 
 Cell[BoxData[{
  RowBox[{
@@ -561,7 +565,7 @@ Cell[BoxData[{
      ";", "\n", "\t", "run"}]}], "\n", "\t", "]"}]}], "\[IndentingNewLine]", 
  RowBox[{"\t"}]}], "Code",
  InitializationCell->True,
- CellLabel->"In[12]:=",ExpressionUUID->"6cbb375f-8238-fc43-a5de-aefa76c888fa"],
+ CellLabel->"In[10]:=",ExpressionUUID->"6cbb375f-8238-fc43-a5de-aefa76c888fa"],
 
 Cell[BoxData[
  RowBox[{
@@ -603,7 +607,7 @@ Cell[BoxData[
       RowBox[{"Return", "[", "True", "]"}]}]}], "\[IndentingNewLine]", 
     "]"}]}], ";"}]], "Code",
  InitializationCell->True,
- CellLabel->"In[13]:=",ExpressionUUID->"2d51a01a-326d-8544-ae42-7b83a78e7524"],
+ CellLabel->"In[11]:=",ExpressionUUID->"2d51a01a-326d-8544-ae42-7b83a78e7524"],
 
 Cell[BoxData[
  RowBox[{
@@ -683,45 +687,24 @@ Cell[BoxData[
      "\[IndentingNewLine]", "\t", "res"}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[14]:=",ExpressionUUID->"3cd83d5a-791d-f549-aa81-645a46caeafc"],
+ CellLabel->"In[12]:=",ExpressionUUID->"3cd83d5a-791d-f549-aa81-645a46caeafc"],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{
-   RowBox[{"runHeight", "[", "run_", "]"}], " ", ":=", " ", 
-   RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"runHeight", "[", "run_", "]"}], " ", ":=", " ", 
     RowBox[{
-     RowBox[{"{", 
-      RowBox[{"mrd", ",", "res"}], "}"}], ",", "\n", "\t", 
      RowBox[{
-      RowBox[{"mrd", "=", 
-       RowBox[{
-        RowBox[{"run", "[", "\"\<Disks\>\"", "]"}], "[", 
-        RowBox[{"run", "[", "\"\<ID\>\"", "]"}], "]"}]}], ";", "\n", "\t\t", 
-      RowBox[{"If", "[", 
-       RowBox[{
-        RowBox[{"MissingQ", "[", "mrd", "]"}], ",", 
-        RowBox[{
-         RowBox[{"Print", "[", 
-          RowBox[{"\"\<rH \>\"", ",", "mrd"}], "]"}], ";", 
-         RowBox[{"runBug", "=", "run"}], ";", 
-         RowBox[{"Abort", "[", "]"}]}]}], "]"}], ";", "\n", "\t", 
-      RowBox[{"res", "=", 
-       RowBox[{"If", "[", 
-        RowBox[{
-         RowBox[{"arenaConeQ", "[", 
-          RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "]"}], ",", "\n", 
-         "\t\t", 
-         RowBox[{
-          RowBox[{"mrd", "[", "\"\<Polar\>\"", "]"}], "[", "\"\<r\>\"", "]"}],
-          "\n", "\t\t", ",", "\n", "\t\t", 
-         RowBox[{
-          RowBox[{"diskCentre", "[", 
-           RowBox[{"mrd", "[", "\"\<Disk\>\"", "]"}], "]"}], "[", 
-          RowBox[{"[", "2", "]"}], "]"}]}], "\n", "\t\t", "]"}]}], ";", "\n", 
-      "\t", "res"}]}], "\n", "\t", "]"}]}], ";"}]], "Code",
+      RowBox[{
+       RowBox[{"run", "[", "\"\<Disks\>\"", "]"}], "[", 
+       RowBox[{"run", "[", "\"\<ID\>\"", "]"}], "]"}], 
+      "[", "\"\<SurfaceCoordinates\>\"", "]"}], "[", "\"\<Meridian\>\"", 
+     "]"}]}], ";"}], "\n", "\n"}]], "Code",
  InitializationCell->True,
- CellLabel->"In[15]:=",ExpressionUUID->"5e7a636c-27b8-c747-81d9-a62bc0dc95ff"],
+ CellChangeTimes->{{3.9843849934685*^9, 3.9843850214391346`*^9}, {
+  3.9843872166861534`*^9, 3.984387247373663*^9}},
+ CellLabel->"In[13]:=",ExpressionUUID->"5e7a636c-27b8-c747-81d9-a62bc0dc95ff"],
 
 Cell[BoxData[
  RowBox[{
@@ -753,7 +736,7 @@ Cell[BoxData[
             RowBox[{"run", "[", "\"\<Chain\>\"", "]"}], "]"}]}]}], "|>"}]}], 
        "]"}], "]"}]}], "\[IndentingNewLine]", "]"}]}], ";"}]], "Code",
  InitializationCell->True,
- CellLabel->"In[16]:=",ExpressionUUID->"fee42ca2-0c9d-5a4a-99d1-fb8bcec06431"],
+ CellLabel->"In[14]:=",ExpressionUUID->"fee42ca2-0c9d-5a4a-99d1-fb8bcec06431"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -790,16 +773,10 @@ Cell[BoxData[
           RowBox[{
            RowBox[{"res", "[", "\"\<Arena\>\"", "]"}], ",", 
            RowBox[{"res", "[", "\"\<Disks\>\"", "]"}], ",", "diskData", ",", 
-           "ID"}], "]"}]}], ";", "\n", "\t", "\n", "\t", 
+           "ID"}], "]"}]}], ";", "\n", "\t", 
         RowBox[{
          RowBox[{"res", "[", "\"\<Height\>\"", "]"}], "=", 
-         RowBox[{"runHeight", "[", "res", "]"}]}], ";", "\n", 
-        RowBox[{"(*", "\t", 
-         RowBox[{
-          RowBox[{"Print", "[", 
-           RowBox[{"\"\<aL \>\"", ",", "ID", ",", " ", "\"\<->\>\"", ",", " ", 
-            RowBox[{"diskData", "[", "\"\<Supporters\>\"", "]"}]}], "]"}], 
-          ";"}], "\[IndentingNewLine]", "*)"}], "\n", "\t", 
+         RowBox[{"runHeight", "[", "res", "]"}]}], ";", "\n", "\t", 
         RowBox[{
          RowBox[{"res", "[", "\"\<Chain\>\"", "]"}], "=", " ", 
          RowBox[{"updateChain", "[", 
@@ -818,14 +795,17 @@ Cell[BoxData[
            "Disks", " ", "before"}], ",", " ", 
           RowBox[{
           "because", " ", "it", " ", "was", " ", "only", " ", "there", " ", 
-           "as", " ", "n"}]}], "   ", "*)"}], "\[IndentingNewLine]", "\t", 
+           "as", " ", 
+           RowBox[{"n", ".", " ", "\n", "\t", "probaby"}], " ", "matters", " ",
+            "but", " ", "not", " ", "quite", " ", "sure"}]}], " \t    ", 
+         "*)"}], "\n", "\t", "\[IndentingNewLine]", "\t", 
         RowBox[{"ids", "=", 
          RowBox[{"Complement", "[", 
           RowBox[{
            RowBox[{"res", "[", "\"\<Chain\>\"", "]"}], ",", 
            RowBox[{"Keys", "[", 
             RowBox[{"res", "[", "\"\<Disks\>\"", "]"}], "]"}]}], "]"}]}], ";",
-         "\n", "\n", "\t", 
+         "\n", "\t", 
         RowBox[{
          RowBox[{"res", "[", "\"\<Disks\>\"", "]"}], "=", 
          RowBox[{"Fold", "[", 
@@ -864,38 +844,86 @@ Cell[BoxData[
       "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}]}], ";"}], 
    "\[IndentingNewLine]"}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[17]:=",ExpressionUUID->"f2c38ad1-940d-7545-9f35-d50ded8a03f0"],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"initalizeDisks", "[", "arena_", "]"}], " ", ":=", " ", 
-    RowBox[{"Module", "[", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{"initialDisks", ",", "d"}], "}"}], ",", "\n", "\t", 
-      RowBox[{"Switch", "[", 
-       RowBox[{
-        RowBox[{"arena", "[", "\"\<Type\>\"", "]"}], ",", "\n", 
-        "\t\t", "\"\<Cone\>\"", ",", 
-        RowBox[{"initalizeConeDisks", "[", "arena", "]"}], ",", "\n", 
-        "\t\t", "\"\<Cylinder\>\"", ",", 
-        RowBox[{"initalizeCylinderDisks", "[", "arena", "]"}], "\n", "\t\t", ",",
-         "_", ",", 
-        RowBox[{
-         RowBox[{"Print", "[", 
-          RowBox[{"\"\<Arena type \>\"", ",", 
-           RowBox[{"arena", "[", "\"\<Type\>\"", "]"}], 
-           ",", "\"\< not implemented\>\""}], "]"}], ";", "\n", "\t\t", 
-         RowBox[{"Abort", "[", "]"}]}]}], "\n", "\t", "]"}]}], "\n", "]"}]}], 
-   ";"}], "\n", "\t", "\[IndentingNewLine]"}]], "Code",
- InitializationCell->True,
- CellLabel->"In[18]:=",ExpressionUUID->"c4e40b84-a7d6-f747-84af-1049b88bd88c"],
+ CellChangeTimes->{{3.9843872586990604`*^9, 3.9843872789955635`*^9}, {
+  3.984387375764002*^9, 3.984387376257395*^9}, {3.984387620398815*^9, 
+  3.9843876711100388`*^9}, {3.984394458139906*^9, 3.984394463056778*^9}, {
+  3.9843944979691105`*^9, 3.984394527962406*^9}},
+ CellLabel->"In[15]:=",ExpressionUUID->"f2c38ad1-940d-7545-9f35-d50ded8a03f0"],
 
 Cell[CellGroupData[{
 
-Cell["Periodicity", "Section",ExpressionUUID->"b55d3ca1-6dd7-ad4b-b5bc-171cfdd423bf"],
+Cell["Disk handling", "Section",ExpressionUUID->"441e1301-3d01-a740-b681-c52b4c4449fa"],
+
+Cell[BoxData[
+ RowBox[{"\n", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"diskCentre", "[", 
+      RowBox[{"Disk", "[", 
+       RowBox[{"centre_", ",", "radius_"}], "]"}], "]"}], ":=", "centre"}], 
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"runDiskCentre", "[", 
+      RowBox[{"run_", ",", "id_"}], "]"}], " ", ":=", "  ", 
+     RowBox[{"diskCentre", "@", 
+      RowBox[{
+       RowBox[{"Lookup", "[", 
+        RowBox[{
+         RowBox[{"run", "[", "\"\<Disks\>\"", "]"}], ",", "id"}], "]"}], 
+       "[", "\"\<Disk\>\"", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"runDiskCentre", "[", 
+      RowBox[{"run_", ",", 
+       RowBox[{"left", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
+     RowBox[{"leftShift", "[", 
+      RowBox[{
+       RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
+       RowBox[{"runDiskCentre", "[", 
+        RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"runDiskCentre", "[", 
+      RowBox[{"run_", ",", 
+       RowBox[{"right", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
+     RowBox[{"rightShift", "[", 
+      RowBox[{
+       RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
+       RowBox[{"runDiskCentre", "[", 
+        RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"diskIDRadialHeight", "[", 
+      RowBox[{"run_", ",", "id_"}], "]"}], " ", ":=", "  ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Lookup", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"run", "[", "\"\<Logging\>\"", "]"}], "[", "\"\<Disks\>\"", 
+          "]"}], ",", "id"}], "]"}], "[", "\"\<Polar\>\"", "]"}], 
+      "[", "\"\<r\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"fom", "[", "x_", "]"}], ":=", " ", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Length", "[", "x", "]"}], ">", "0"}], ",", 
+       RowBox[{"First", "[", "x", "]"}], ",", 
+       RowBox[{"Missing", "[", "x", "]"}]}], "]"}]}], ";"}]}]}]], "Code",
+ InitializationCell->True,
+ CellChangeTimes->{{3.984222087089329*^9, 3.984222118936901*^9}, {
+   3.984222161353529*^9, 3.984222166443079*^9}, {3.9843829446248646`*^9, 
+   3.984382998924919*^9}, 3.984385640333452*^9, {3.984386779416315*^9, 
+   3.984386786543827*^9}, {3.984386834838047*^9, 3.9843868483438168`*^9}, {
+   3.9843875478029957`*^9, 3.984387558758217*^9}, 
+   3.984395392455803*^9},ExpressionUUID->"49c23bd1-387a-124e-b7ed-\
+ed21ed53ce28"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -936,10 +964,10 @@ Cell[BoxData[
           RowBox[{"disks", ",", "ID"}], "]"}]}], "]"}]}]}], 
      "]"}]}]}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[19]:=",ExpressionUUID->"ad4755cd-cce9-9242-a8a4-3d34cbcafb93"],
+ CellLabel->"In[28]:=",ExpressionUUID->"ad4755cd-cce9-9242-a8a4-3d34cbcafb93"],
 
 Cell[BoxData[""], "Code",
- CellLabel->"In[22]:=",ExpressionUUID->"39533de3-b076-4544-9e45-9bd8a977e739"],
+ CellLabel->"In[31]:=",ExpressionUUID->"39533de3-b076-4544-9e45-9bd8a977e739"],
 
 Cell[BoxData[{
  RowBox[{
@@ -1016,7 +1044,7 @@ Cell[BoxData[{
    RowBox[{"rightShift", "[", "n_Integer", "]"}], " ", ":=", " ", 
    RowBox[{"shiftNumberRight", "[", "n", "]"}]}], ";"}]}], "Code",
  InitializationCell->True,
- CellLabel->"In[23]:=",ExpressionUUID->"6f7eb93d-e56a-3647-8197-f08180876587"],
+ CellLabel->"In[32]:=",ExpressionUUID->"6f7eb93d-e56a-3647-8197-f08180876587"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -1046,32 +1074,32 @@ Cell[BoxData[
     RowBox[{
      RowBox[{"leftShift", "[", 
       RowBox[{"arena_", ",", "data_Association"}], "]"}], " ", ":=", " ", 
-     RowBox[{"<|", "\[IndentingNewLine]", 
+     RowBox[{"<|", "\[IndentingNewLine]", "\t", 
       RowBox[{
        RowBox[{"\"\<ID\>\"", "->", 
         RowBox[{"shiftNumberLeft", "[", 
          RowBox[{"data", "[", "\"\<ID\>\"", "]"}], "]"}]}], 
-       "\[IndentingNewLine]", ",", 
+       "\[IndentingNewLine]", "\t", ",", 
        RowBox[{"\"\<Disk\>\"", "->", 
         RowBox[{"leftShift", "[", 
          RowBox[{"arena", ",", 
           RowBox[{"data", "[", "\"\<Disk\>\"", "]"}]}], "]"}]}], 
-       "\[IndentingNewLine]", ",", 
-       RowBox[{"\"\<Polar\>\"", "->", 
-        RowBox[{"leftPolar", "[", 
+       "\[IndentingNewLine]", "\t", ",", 
+       RowBox[{"\"\<SurfaceCoordinates\>\"", "->", 
+        RowBox[{"periodicCopy", "[", 
          RowBox[{"arena", ",", 
-          RowBox[{"data", "[", "\"\<Polar\>\"", "]"}]}], "]"}]}], 
-       "\[IndentingNewLine]", ",", 
+          RowBox[{"data", "[", "\"\<SurfaceCoordinates\>\"", "]"}], 
+          ",", "\"\<Left\>\""}], "]"}]}], "\[IndentingNewLine]", "\t", ",", 
        RowBox[{"\"\<Supporters\>\"", "->", 
         RowBox[{"shiftNumberLeft", "/@", 
          RowBox[{"data", "[", "\"\<Supporters\>\"", "]"}]}]}], 
-       "\[IndentingNewLine]", ",", 
+       "\[IndentingNewLine]", "\t", ",", 
        RowBox[{"\"\<EdgeDisk\>\"", "->", " ", 
         RowBox[{"\[LeftAssociation]", 
          RowBox[{
           RowBox[{"\"\<Left\>\"", "\[Rule]", "False"}], ",", 
           RowBox[{"\"\<Right\>\"", "\[Rule]", "False"}]}], 
-         "\[RightAssociation]"}]}], "\[IndentingNewLine]", ",", 
+         "\[RightAssociation]"}]}], "\[IndentingNewLine]", "\t", ",", 
        RowBox[{"\"\<CanSupportDisk\>\"", "\[Rule]", 
         RowBox[{"\[LeftAssociation]", 
          RowBox[{
@@ -1083,32 +1111,32 @@ Cell[BoxData[
     RowBox[{
      RowBox[{"rightShift", "[", 
       RowBox[{"arena_", ",", "data_Association"}], "]"}], " ", ":=", " ", 
-     RowBox[{"<|", "\[IndentingNewLine]", 
+     RowBox[{"<|", "\[IndentingNewLine]", "\t", 
       RowBox[{
        RowBox[{"\"\<ID\>\"", "->", 
         RowBox[{"shiftNumberRight", "[", 
          RowBox[{"data", "[", "\"\<ID\>\"", "]"}], "]"}]}], ",", 
-       "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\t", 
        RowBox[{"\"\<Disk\>\"", "->", 
         RowBox[{"rightShift", "[", 
          RowBox[{"arena", ",", 
           RowBox[{"data", "[", "\"\<Disk\>\"", "]"}]}], "]"}]}], 
-       "\[IndentingNewLine]", ",", 
-       RowBox[{"\"\<Polar\>\"", "->", 
-        RowBox[{"rightPolar", "[", 
+       "\[IndentingNewLine]", "\t", ",", 
+       RowBox[{"\"\<SurfaceCoordinates\>\"", "->", 
+        RowBox[{"periodicCopy", "[", 
          RowBox[{"arena", ",", 
-          RowBox[{"data", "[", "\"\<Polar\>\"", "]"}]}], "]"}]}], 
-       "\[IndentingNewLine]", ",", 
+          RowBox[{"data", "[", "\"\<SurfaceCoordinates\>\"", "]"}], 
+          ",", "\"\<Right\>\""}], "]"}]}], "\[IndentingNewLine]", "\t", ",", 
        RowBox[{"\"\<Supporters\>\"", "->", 
         RowBox[{"shiftNumberRight", "/@", 
          RowBox[{"data", "[", "\"\<Supporters\>\"", "]"}]}]}], 
-       "\[IndentingNewLine]", ",", 
+       "\[IndentingNewLine]", "\t", ",", 
        RowBox[{"\"\<EdgeDisk\>\"", "->", " ", 
         RowBox[{"\[LeftAssociation]", 
          RowBox[{
           RowBox[{"\"\<Left\>\"", "\[Rule]", "False"}], ",", 
           RowBox[{"\"\<Right\>\"", "\[Rule]", "False"}]}], 
-         "\[RightAssociation]"}]}], "\[IndentingNewLine]", ",", 
+         "\[RightAssociation]"}]}], "\[IndentingNewLine]", "\t", ",", 
        RowBox[{"\"\<CanSupportDisk\>\"", "\[Rule]", 
         RowBox[{"\[LeftAssociation]", 
          RowBox[{
@@ -1117,40 +1145,183 @@ Cell[BoxData[
          "\[RightAssociation]"}]}]}], "\[IndentingNewLine]", "|>"}]}], ";"}], 
    "\n", "\[IndentingNewLine]", 
    RowBox[{
-    RowBox[{"leftPolar", "[", 
-     RowBox[{"arena_", ",", "polar_Association"}], "]"}], " ", ":=", " ", 
-    RowBox[{"Append", "[", 
-     RowBox[{"polar", ",", 
-      RowBox[{"\"\<\[Theta]\>\"", "->", 
-       RowBox[{
-        RowBox[{"polar", "[", "\"\<\[Theta]\>\"", "]"}], "+", 
-        RowBox[{"2", " ", 
-         RowBox[{"arena", "[", "\"\<ConeSemiAngle\>\"", "]"}]}]}]}]}], 
-     "]"}]}], "\[IndentingNewLine]", 
+    RowBox[{"periodicCopy", "[", 
+     RowBox[{
+      RowBox[{"arena_", " ", "/;", " ", 
+       RowBox[{"arenaConeQ", "[", "arena", "]"}]}], ",", "polar_Association", 
+      ",", "leftRight_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"If", "[", "\n", "\t", 
+     RowBox[{
+      RowBox[{"leftRight", "==", "\"\<Left\>\""}], ",", "\n", "\t\t", 
+      RowBox[{"Append", "[", 
+       RowBox[{"polar", ",", 
+        RowBox[{"\"\<Azimuth\>\"", "->", 
+         RowBox[{
+          RowBox[{"polar", "[", "\"\<Azimuth\>\"", "]"}], "+", 
+          RowBox[{"2", " ", 
+           RowBox[{"arena", "[", "\"\<ConeSemiAngle\>\"", "]"}]}]}]}]}], 
+       "]"}], ",", "\n", "\t\t", 
+      RowBox[{"Append", "[", 
+       RowBox[{"polar", ",", 
+        RowBox[{"\"\<Azimuth\>\"", "->", 
+         RowBox[{
+          RowBox[{"polar", "[", "\"\<Azimuth\>\"", "]"}], "-", 
+          RowBox[{"2", " ", 
+           RowBox[{"arena", "[", "\"\<ConeSemiAngle\>\"", "]"}]}]}]}]}], 
+       "]"}]}], "\n", "\t\t", "]"}]}], "\t\t", "\n", "\t", "\n", 
    RowBox[{
     RowBox[{
+     RowBox[{"periodicCopy", "[", 
+      RowBox[{
+       RowBox[{"arena_", "/;", " ", 
+        RowBox[{"arenaCylinderQ", "[", "arena", "]"}]}], ",", 
+       "polar_Association", ",", "leftRight_"}], "]"}], " ", ":=", " ", 
+     RowBox[{"If", "[", "\n", "\t", 
+      RowBox[{
+       RowBox[{"leftRight", "==", "\"\<Left\>\""}], ",", "\n", "\t", 
+       RowBox[{"Append", "[", 
+        RowBox[{"polar", ",", 
+         RowBox[{"\"\<Azimuth\>\"", "->", 
+          RowBox[{
+           RowBox[{"polar", "[", "\"\<Azimuth\>\"", "]"}], "-", " ", 
+           RowBox[{"arena", "[", "\"\<CylinderCircumference\>\"", "]"}]}]}]}],
+         "]"}], "\n", "\t", ",", "\n", "\t", 
+       RowBox[{"Append", "[", 
+        RowBox[{"polar", ",", 
+         RowBox[{"\"\<Azimuth\>\"", "->", 
+          RowBox[{
+           RowBox[{"polar", "[", "\"\<Azimuth\>\"", "]"}], "+", " ", 
+           RowBox[{"arena", "[", "\"\<CylinderCircumference\>\"", "]"}]}]}]}],
+         "]"}]}], "\n", "\t", "]"}]}], ";"}], "\n", "\n", "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"diskSurfaceCoordinates", "[", 
+      RowBox[{"run_", ",", "id_", ",", 
+       RowBox[{"lookup_", ":", 
+        RowBox[{"Missing", "[", "]"}]}]}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"disk", ",", "lookupDisks"}], "}"}], ",", "\n", "\t", 
+       RowBox[{
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"MissingQ", "[", "lookup", "]"}], ",", "\n", "\t\t", 
+          RowBox[{"disk", "=", 
+           RowBox[{"Lookup", "[", 
+            RowBox[{
+             RowBox[{"run", "[", "\"\<Disks\>\"", "]"}], ",", "id"}], "]"}]}],
+           ",", "\n", "\t\t", 
+          RowBox[{"disk", "=", 
+           RowBox[{"Lookup", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"run", "[", "\"\<Logging\>\"", "]"}], 
+              "[", "\"\<Disks\>\"", "]"}], ",", "id"}], "]"}]}]}], "\n", "\t",
+          "]"}], ";", "\n", "\t", 
+        RowBox[{"disk", "[", "\"\<SurfaceCoordinates\>\"", "]"}]}]}], "\n", 
+      "\t", "]"}]}], ";"}], "\n", "\n", "\t\t\t", "\n", 
+   RowBox[{
+    RowBox[{"diskSurfaceCoordinates", "[", 
+     RowBox[{"run_", ",", 
+      RowBox[{"left", "[", "id_", "]"}], ",", 
+      RowBox[{"lookup_", ":", 
+       RowBox[{"Missing", "[", "]"}]}]}], "]"}], " ", ":=", " ", "\n", "\t", 
+    RowBox[{"periodicCopy", "[", 
+     RowBox[{
+      RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
+      RowBox[{"diskSurfaceCoordinates", "[", 
+       RowBox[{"run", ",", "id", ",", "lookup"}], "]"}], 
+      ",", "\"\<Left\>\""}], "]"}]}], "\n", 
+   RowBox[{
+    RowBox[{"diskSurfaceCoordinates", "[", 
+     RowBox[{"run_", ",", 
+      RowBox[{"right", "[", "id_", "]"}], ",", 
+      RowBox[{"lookup_", ":", 
+       RowBox[{"Missing", "[", "]"}]}]}], "]"}], " ", ":=", " ", "\n", "\t", 
+    RowBox[{"periodicCopy", "[", 
+     RowBox[{
+      RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
+      RowBox[{"diskSurfaceCoordinates", "[", 
+       RowBox[{"run", ",", "id", ",", "lookup"}], "]"}], 
+      ",", "\"\<Right\>\""}], "]"}]}], "\n", "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+     "only", " ", "used", " ", "for", " ", "parastichy", " ", "and", " ", 
+      "display"}], ",", " ", 
+     RowBox[{"not", " ", "algorithm"}]}], " ", "*)"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"loggedDiskSurfaceCoordinates", "[", 
+      RowBox[{"run_", ",", "id_"}], "]"}], " ", ":=", " ", 
+     RowBox[{
+      RowBox[{"Lookup", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"run", "[", "\"\<Logging\>\"", "]"}], "[", "\"\<Disks\>\"", 
+         "]"}], ",", "id"}], "]"}], "[", "\"\<SurfaceCoordinates\>\"", 
+      "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"loggedDiskSurfaceCoordinates", "[", 
+      RowBox[{"run_", ",", 
+       RowBox[{"left", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
      RowBox[{"leftPolar", "[", 
-      RowBox[{"arena_", ",", "polar_Missing"}], "]"}], " ", ":=", " ", 
-     RowBox[{"Missing", "[", "]"}]}], ";"}], "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"rightPolar", "[", 
-     RowBox[{"arena_", ",", "polar_Association"}], "]"}], " ", ":=", " ", 
-    RowBox[{"Append", "[", 
-     RowBox[{"polar", ",", 
-      RowBox[{"\"\<\[Theta]\>\"", "->", 
-       RowBox[{
-        RowBox[{"polar", "[", "\"\<\[Theta]\>\"", "]"}], "-", 
-        RowBox[{"2", " ", 
-         RowBox[{"arena", "[", "\"\<ConeSemiAngle\>\"", "]"}]}]}]}]}], 
-     "]"}]}], "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
+       RowBox[{"loggedDiskSurfaceCoordinates", "[", 
+        RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
+     RowBox[{"loggedDiskSurfaceCoordinates", "[", 
+      RowBox[{"run_", ",", 
+       RowBox[{"right", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
      RowBox[{"rightPolar", "[", 
-      RowBox[{"arena_", ",", "polar_Missing"}], "]"}], " ", ":=", " ", 
-     RowBox[{"Missing", "[", "]"}]}], ";"}], 
+      RowBox[{
+       RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
+       RowBox[{"loggedDiskSurfaceCoordinates", "[", 
+        RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"loggedDiskCentre", "[", 
+      RowBox[{"run_", ",", "id_"}], "]"}], " ", ":=", "  ", 
+     RowBox[{"diskCentre", "@", 
+      RowBox[{
+       RowBox[{"Lookup", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"run", "[", "\"\<Logging\>\"", "]"}], "[", "\"\<Disks\>\"", 
+          "]"}], ",", "id"}], "]"}], "[", "\"\<Disk\>\"", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"loggedDiskCentre", "[", 
+      RowBox[{"run_", ",", 
+       RowBox[{"left", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
+     RowBox[{"leftShift", "[", 
+      RowBox[{
+       RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
+       RowBox[{"loggedDiskCentre", "[", 
+        RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"loggedDiskCentre", "[", 
+      RowBox[{"run_", ",", 
+       RowBox[{"right", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
+     RowBox[{"rightShift", "[", 
+      RowBox[{
+       RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
+       RowBox[{"loggedDiskCentre", "[", 
+        RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\n", 
    "\[IndentingNewLine]"}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[38]:=",ExpressionUUID->"dcc84c71-1f18-f74a-ae3a-547f8e814428"]
+ CellChangeTimes->{{3.984385106420252*^9, 3.9843854848519382`*^9}, {
+   3.9843858763951225`*^9, 3.984385972370596*^9}, {3.98438600375486*^9, 
+   3.9843860425294247`*^9}, {3.9843946470581646`*^9, 3.984394690764921*^9}, {
+   3.984394758380493*^9, 3.9843948611342793`*^9}, {3.9843949027717075`*^9, 
+   3.984395036063471*^9}, {3.98439523068355*^9, 3.984395325652088*^9}, 
+   3.98439539685252*^9},ExpressionUUID->"dcc84c71-1f18-f74a-ae3a-\
+547f8e814428"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1214,7 +1385,7 @@ Cell[BoxData[{
      RowBox[{"arena", "[", "\"\<CylinderCircumference\>\"", "]"}], ",", "0"}],
      "}"}]}]}]}], "Code",
  InitializationCell->True,
- CellLabel->"In[46]:=",ExpressionUUID->"afd7221f-042d-8349-9e4b-996708aed26a"],
+ CellLabel->"In[56]:=",ExpressionUUID->"afd7221f-042d-8349-9e4b-996708aed26a"],
 
 Cell[BoxData[
  RowBox[{
@@ -1235,16 +1406,16 @@ Cell[BoxData[
      RowBox[{
       RowBox[{
        RowBox[{
-        RowBox[{"diskData", "[", "\"\<Polar\>\"", "]"}], 
-        "[", "\"\<\[Theta]\>\"", "]"}], " ", "<", " ", 
+        RowBox[{"diskData", "[", "\"\<SurfaceCoordinates\>\"", "]"}], 
+        "[", "\"\<Azimuth\>\"", "]"}], " ", "<", " ", 
        RowBox[{
         RowBox[{"\[Pi]", "/", "2"}], " ", "-", "  ", 
         RowBox[{"arena", "[", "\"\<ConeSemiAngle\>\"", "]"}]}]}], " ", 
       ",", "\"\<Right\>\"", ",", "\[IndentingNewLine]", "\t", 
       RowBox[{
        RowBox[{
-        RowBox[{"diskData", "[", "\"\<Polar\>\"", "]"}], 
-        "[", "\"\<\[Theta]\>\"", "]"}], " ", ">", " ", 
+        RowBox[{"diskData", "[", "\"\<SurfaceCoordinates\>\"", "]"}], 
+        "[", "\"\<Azimuth\>\"", "]"}], " ", ">", " ", 
        RowBox[{
         RowBox[{"\[Pi]", "/", "2"}], " ", "+", "  ", 
         RowBox[{"arena", "[", "\"\<ConeSemiAngle\>\"", "]"}]}]}], " ", 
@@ -1260,18 +1431,17 @@ Cell[BoxData[
      RowBox[{
       RowBox[{
        RowBox[{
-        RowBox[{"diskCentre", "[", 
-         RowBox[{"diskData", "[", "\"\<Disk\>\"", "]"}], "]"}], "[", 
-        RowBox[{"[", "1", "]"}], "]"}], "  ", ">", "  ", 
+        RowBox[{
+         RowBox[{"diskData", "[", "\"\<SurfaceCoordinates\>\"", "]"}], 
+         "[", "\"\<Azimuth\>\"", "]"}], " "}], ">", "  ", 
        RowBox[{
         RowBox[{"arena", "[", "\"\<CylinderCircumference\>\"", "]"}], "/", 
         "2"}]}], " ", ",", "\"\<Right\>\"", ",", "\[IndentingNewLine]", "\t", 
       
       RowBox[{
        RowBox[{
-        RowBox[{"diskCentre", "[", 
-         RowBox[{"diskData", "[", "\"\<Disk\>\"", "]"}], "]"}], "[", 
-        RowBox[{"[", "1", "]"}], "]"}], "  ", "<", " ", 
+        RowBox[{"diskData", "[", "\"\<SurfaceCoordinates\>\"", "]"}], 
+        "[", "\"\<Azimuth\>\"", "]"}], "  ", "<", " ", 
        RowBox[{
         RowBox[{"-", " ", 
          RowBox[{"arena", "[", "\"\<CylinderCircumference\>\"", "]"}]}], "/", 
@@ -1279,7 +1449,8 @@ Cell[BoxData[
       "True", ",", "\"\<Centre\>\""}], "\n", "]"}]}], 
    "\[IndentingNewLine]"}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[52]:=",ExpressionUUID->"27f5a35c-f38c-c84b-ba3e-b7dc0ef060f2"]
+ CellChangeTimes->{{3.984385531676363*^9, 3.9843855730066814`*^9}},
+ CellLabel->"In[62]:=",ExpressionUUID->"27f5a35c-f38c-c84b-ba3e-b7dc0ef060f2"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1287,58 +1458,115 @@ Cell[CellGroupData[{
 Cell["Generate disks and select lowest", "Section",ExpressionUUID->"f2789abb-ff7a-f840-97ce-145481b3ee3c"],
 
 Cell[BoxData[
- RowBox[{
+ RowBox[{"\n", "\n", 
   RowBox[{
-   RowBox[{"sortDiskAssociationListByHeight", "[", 
-    RowBox[{"run_", ",", "choices_"}], "]"}], " ", ":=", " ", 
-   RowBox[{"Module", "[", 
+   RowBox[{
     RowBox[{
-     RowBox[{"{", 
-      RowBox[{"res", "=", "choices"}], "}"}], ",", "\n", "\t", 
-     RowBox[{
-      RowBox[{"If", "[", 
-       RowBox[{
+     RowBox[{"addSurfaceCoordinates", "[", 
+      RowBox[{
+       RowBox[{"run_", " ", "/;", "  ", 
         RowBox[{"arenaConeQ", "[", 
-         RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "]"}], ",", "\n", "\t\t", 
-        RowBox[{
-         RowBox[{"res", "=", 
-          RowBox[{"Map", "[", 
-           RowBox[{
-            RowBox[{
-             RowBox[{"Append", "[", 
-              RowBox[{"#", ",", 
-               RowBox[{"\"\<Polar\>\"", "->", 
-                RowBox[{"disk2Polar", "[", "#Disk", "]"}]}]}], "]"}], "&"}], ",",
-             "res"}], "]"}]}], ";", "\[IndentingNewLine]", "\t\t", 
-         RowBox[{"res", "=", 
-          RowBox[{"SortBy", "[", 
-           RowBox[{"res", ",", 
-            RowBox[{
-             RowBox[{
-              RowBox[{"#", "[", "\"\<Polar\>\"", "]"}], "[", "\"\<r\>\"", 
-              "]"}], "&"}]}], "]"}]}], ";", "\n", "\t\t", 
-         RowBox[{"Return", "[", "res", "]"}]}]}], "\n", "\t", "]"}], ";", 
-      "\n", "\t", 
-      RowBox[{"If", "[", 
-       RowBox[{
+         RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "]"}]}], ",", 
+       "diskAssociation_"}], "]"}], " ", ":=", " ", "\n", "\t", 
+     RowBox[{"addSurfaceCoordinatesCone", "[", 
+      RowBox[{
+       RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", "diskAssociation"}], 
+      "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"addSurfaceCoordinates", "[", 
+      RowBox[{
+       RowBox[{"run_", " ", "/;", "  ", 
         RowBox[{"arenaCylinderQ", "[", 
-         RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "]"}], ",", "\n", "\t\t", 
+         RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "]"}]}], ",", 
+       "diskAssociation_"}], "]"}], " ", ":=", " ", "\n", "\t", 
+     RowBox[{"addSurfaceCoordinatesCylinder", "[", 
+      RowBox[{
+       RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", "diskAssociation"}], 
+      "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"xy2Polar", "[", 
+      RowBox[{"{", 
+       RowBox[{"x_", ",", "y_"}], "}"}], "]"}], " ", ":=", " ", 
+     RowBox[{"<|", 
+      RowBox[{
+       RowBox[{"\"\<r\>\"", "->", 
+        RowBox[{"Norm", "[", 
+         RowBox[{"{", 
+          RowBox[{"x", ",", "y"}], "}"}], "]"}]}], ",", 
+       RowBox[{"\"\<\[Theta]\>\"", "->", 
+        RowBox[{"ArcTan", "[", 
+         RowBox[{"x", ",", "y"}], "]"}]}]}], "|>"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"addSurfaceCoordinatesCone", "[", 
+      RowBox[{"arena_", ",", "diskAssociation_"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"res", ",", "x", ",", "y", ",", "sc", ",", "polar"}], "}"}], ",",
+        "\n", "\t", 
+       RowBox[{
         RowBox[{
-         RowBox[{"res", "=", 
-          RowBox[{"SortBy", "[", 
-           RowBox[{"res", ",", 
-            RowBox[{
-             RowBox[{
-              RowBox[{"diskCentre", "[", 
-               RowBox[{"#", "[", "\"\<Disk\>\"", "]"}], "]"}], "[", 
-              RowBox[{"[", "2", "]"}], "]"}], "&"}]}], "]"}]}], ";", "\n", 
-         "\t\t", 
-         RowBox[{"Return", "[", "res", "]"}]}]}], "\n", "\t\t", "]"}], ";", 
-      "\n", "\t", 
-      RowBox[{"Print", "[", "\"\<Type not set\>\"", "]"}], ";", 
-      RowBox[{"Abort", "[", "]"}], ";"}]}], "\n", "]"}]}], ";"}]], "Code",
+         RowBox[{"{", 
+          RowBox[{"x", ",", "y"}], "}"}], "=", 
+         RowBox[{"diskCentre", "[", 
+          RowBox[{"diskAssociation", "[", "\"\<Disk\>\"", "]"}], "]"}]}], ";",
+         "\n", "\t", 
+        RowBox[{"polar", "=", " ", 
+         RowBox[{"xy2Polar", "[", 
+          RowBox[{"{", 
+           RowBox[{"x", ",", "y"}], "}"}], "]"}]}], ";", "\n", "\t", 
+        RowBox[{"sc", "=", " ", 
+         RowBox[{"<|", 
+          RowBox[{
+           RowBox[{"\"\<Meridian\>\"", "->", " ", 
+            RowBox[{"polar", "[", "\"\<r\>\"", "]"}]}], ",", 
+           RowBox[{"\"\<Azimuth\>\"", "->", " ", 
+            RowBox[{"polar", "[", "\"\<\[Theta]\>\"", "]"}]}]}], "|>"}]}], ";",
+         "\n", "\t", 
+        RowBox[{"Append", "[", 
+         RowBox[{"diskAssociation", ",", 
+          RowBox[{"\"\<SurfaceCoordinates\>\"", "->", "sc"}]}], "]"}]}]}], 
+      "\n", "]"}]}], ";"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"addSurfaceCoordinatesCylinder", "[", 
+      RowBox[{"arena_", ",", "diskAssociation_"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"res", ",", "x", ",", "y", ",", "sc"}], "}"}], ",", "\n", 
+       "\t", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"x", ",", "y"}], "}"}], "=", 
+         RowBox[{"diskCentre", "[", 
+          RowBox[{"diskAssociation", "[", "\"\<Disk\>\"", "]"}], "]"}]}], ";",
+         "\n", "\t", 
+        RowBox[{"sc", "=", " ", 
+         RowBox[{"<|", 
+          RowBox[{
+           RowBox[{"\"\<Meridian\>\"", "->", "y"}], ",", 
+           RowBox[{"\"\<Azimuth\>\"", "->", "x"}]}], "|>"}]}], ";", "\n", 
+        "\t", 
+        RowBox[{"Append", "[", 
+         RowBox[{"diskAssociation", ",", 
+          RowBox[{"\"\<SurfaceCoordinates\>\"", "->", "sc"}]}], "]"}]}]}], 
+      "\n", "]"}]}], ";"}]}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[54]:=",ExpressionUUID->"f65641d4-0e9e-cd49-8458-9dffaae8d563"],
+ CellChangeTimes->{{3.984382677392874*^9, 3.984382769258932*^9}, {
+  3.984382812525223*^9, 3.9843828189581623`*^9}, {3.984382849880932*^9, 
+  3.984382904671753*^9}, {3.9843830358358536`*^9, 3.9843831055679226`*^9}, {
+  3.984383153474268*^9, 3.984383158874861*^9}, {3.9843832778261566`*^9, 
+  3.984383518762764*^9}, {3.9843835566963997`*^9, 3.9843835606190014`*^9}, {
+  3.984383606169079*^9, 3.984383687330826*^9}, {3.9843838109992085`*^9, 
+  3.984383812445812*^9}, {3.9843839309349194`*^9, 3.9843839524563103`*^9}, {
+  3.9843845565737305`*^9, 3.9843848119744873`*^9}, {3.9843950878066635`*^9, 
+  3.9843951469199734`*^9}},
+ CellLabel->"In[76]:=",ExpressionUUID->"f65641d4-0e9e-cd49-8458-9dffaae8d563"],
 
 Cell[BoxData[{
  RowBox[{
@@ -1347,7 +1575,8 @@ Cell[BoxData[{
     RowBox[{"Directive", "[", 
      RowBox[{
       RowBox[{"FaceForm", "[", "None", "]"}], ",", 
-      RowBox[{"EdgeForm", "[", "Red", "]"}]}], "]"}]}], ";"}], "\n"}], "\n", 
+      RowBox[{"EdgeForm", "[", "Red", "]"}]}], "]"}]}], ";"}], "\n", "\n", 
+  "\n"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{
@@ -1375,7 +1604,7 @@ Cell[BoxData[{
         RowBox[{"(", 
          RowBox[{
           RowBox[{"run", "[", "\"\<ID\>\"", "]"}], "==", "debugID"}], ")"}]}],
-        ";", "\[IndentingNewLine]", "\t", 
+        ";", "\[IndentingNewLine]", "\n", "\t", 
        RowBox[{"allChoices", "=", " ", 
         RowBox[{"Map", "[", 
          RowBox[{
@@ -1393,6 +1622,20 @@ Cell[BoxData[{
           RowBox[{
            RowBox[{"!", 
             RowBox[{"MissingQ", "[", "#Disk", "]"}]}], "&"}]}], "]"}]}], ";", 
+       "\n", "\t", 
+       RowBox[{"stackableChoices", "=", 
+        RowBox[{"Map", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"addSurfaceCoordinates", "[", 
+            RowBox[{"run", ",", "#"}], "]"}], "&"}], ",", 
+          "stackableChoices"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"stackableChoices", "=", 
+        RowBox[{"Select", "[", 
+         RowBox[{"stackableChoices", ",", 
+          RowBox[{
+           RowBox[{"diskIsBetweenSupportersQ", "[", 
+            RowBox[{"run", ",", "#"}], "]"}], "&"}]}], "]"}]}], ";", 
        "\[IndentingNewLine]", "\t", 
        RowBox[{"stackableChoices", "=", 
         RowBox[{"computeOverlapping", "[", 
@@ -1404,7 +1647,8 @@ Cell[BoxData[{
         RowBox[{"Select", "[", 
          RowBox[{"stackableChoices", ",", 
           RowBox[{
-           RowBox[{"!", "#Overlapping"}], "&"}]}], "]"}]}], ";", "\n", "\t", 
+           RowBox[{"!", "#Overlapping"}], "&"}]}], "]"}]}], ";", "\n", "\n", 
+       "\t\t", 
        RowBox[{"If", "[", 
         RowBox[{
          RowBox[{
@@ -1428,14 +1672,17 @@ Cell[BoxData[{
             RowBox[{"run", "[", "\"\<Chain\>\"", "]"}], ",", "\"\<\\n\>\"", ",",
              "ixPairs"}], "]"}], ";", 
           RowBox[{"choices2092", "=", "stackableChoices"}]}]}], "]"}], ";", 
-       "\[IndentingNewLine]", "\t", "\n", "\t", 
-       RowBox[{"choices", "=", 
-        RowBox[{"sortDiskAssociationListByHeight", "[", 
-         RowBox[{"run", ",", "validChoices"}], "]"}]}], ";", "\n", "\t", 
+       "\[IndentingNewLine]", "\n", "\t", 
        RowBox[{"choices", "=", 
         RowBox[{"filterByRunHeight", "[", 
-         RowBox[{"run", ",", "choices"}], "]"}]}], ";", "\[IndentingNewLine]",
-        "\t", 
+         RowBox[{"run", ",", "validChoices"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"choices", "=", 
+        RowBox[{"SortBy", "[", 
+         RowBox[{"choices", ",", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"#", "[", "\"\<SurfaceCoordinates\>\"", "]"}], 
+            "[", "\"\<Meridian\>\"", "]"}], "&"}]}], "]"}]}], ";", "\n", "\t", 
        RowBox[{"If", "[", 
         RowBox[{"debug", ",", 
          RowBox[{"Print", "[", 
@@ -1459,7 +1706,7 @@ Cell[BoxData[{
         RowBox[{"inConeType", "[", 
          RowBox[{
           RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", "lowest"}], 
-         "]"}]}], ";", "\[IndentingNewLine]", "\n", "\t", 
+         "]"}]}], ";", "\n", "\[IndentingNewLine]", "\t", 
        RowBox[{"If", "[", 
         RowBox[{
          RowBox[{"ict", "==", "\"\<Left\>\""}], ",", "\[IndentingNewLine]", 
@@ -1490,7 +1737,31 @@ Cell[BoxData[{
          RowBox[{
           RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", "lowest"}], 
          "]"}]}], ";", "\[IndentingNewLine]", "\t", "lowest"}]}], 
-     "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]"}], "\n", 
+     "\[IndentingNewLine]", "]"}]}], ";"}], "\n", "\n", "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"diskIsBetweenSupportersQ", "[", 
+     RowBox[{"run_", ",", "disk_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", "\n", "\t", 
+      RowBox[{"IntervalMemberQ", "[", "\n", "\t\t", 
+       RowBox[{
+        RowBox[{"Interval", "[", 
+         RowBox[{"Map", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"diskSurfaceCoordinates", "[", 
+              RowBox[{"run", ",", "#"}], "]"}], "[", "\"\<Azimuth\>\"", "]"}],
+             "&"}], ",", 
+           RowBox[{"disk", "[", "\"\<Supporters\>\"", "]"}]}], "]"}], "]"}], 
+        "\n", "\t\t", ",", 
+        RowBox[{
+         RowBox[{"disk", "[", "\"\<SurfaceCoordinates\>\"", "]"}], 
+         "[", "\"\<Azimuth\>\"", "]"}]}], "]"}]}], "\n", "\t", "\n", "]"}]}], 
+   ";"}], "\n", "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{
@@ -1512,8 +1783,9 @@ Cell[BoxData[{
              RowBox[{"<|", 
               RowBox[{
                RowBox[{"\"\<DiskHeight\>\"", "->", 
-                RowBox[{"diskHeight", "[", 
-                 RowBox[{"run", ",", "#"}], "]"}]}], ",", 
+                RowBox[{
+                 RowBox[{"#", "[", "\"\<SurfaceCoordinates\>\"", "]"}], 
+                 "[", "\"\<Meridian\>\"", "]"}]}], ",", 
                RowBox[{"\"\<RunHeight\>\"", "->", "rh"}]}], "|>"}]}], "]"}], 
            "&"}], ",", "choices"}], "]"}]}], ";", "\n", "\t", 
        RowBox[{"res", "=", 
@@ -1521,24 +1793,8 @@ Cell[BoxData[{
          RowBox[{"res", ",", 
           RowBox[{
            RowBox[{"#DiskHeight", ">=", " ", "rh"}], "&"}]}], "]"}]}], ";", 
-       "\n", "\t", "res"}]}], "\n", "\t", "]"}]}], ";"}], "\n", "\t"}], "\n", 
-
- RowBox[{
-  RowBox[{
-   RowBox[{"diskHeight", "[", 
-    RowBox[{"run_", ",", "diskAssociation_"}], "]"}], " ", ":=", " ", "\n", 
-   "\t", 
-   RowBox[{"If", "[", 
-    RowBox[{
-     RowBox[{"arenaConeQ", "[", 
-      RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "]"}], ",", 
-     RowBox[{
-      RowBox[{"diskAssociation", "[", "\"\<Polar\>\"", "]"}], "[", "\"\<r\>\"",
-       "]"}], ",", "\n", "\t", 
-     RowBox[{
-      RowBox[{"diskCentre", "[", 
-       RowBox[{"diskAssociation", "[", "\"\<Disk\>\"", "]"}], "]"}], "[", 
-      RowBox[{"[", "2", "]"}], "]"}]}], "]"}]}], "\n"}], "\[IndentingNewLine]", 
+       "\n", "\t", "res"}]}], "\n", "\t", "]"}]}], ";"}], "\n", "\t", 
+  "\[IndentingNewLine]"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{
@@ -1623,7 +1879,21 @@ Cell[BoxData[{
      "\[IndentingNewLine]", "]"}]}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Code",
  InitializationCell->True,
- CellLabel->"In[55]:=",ExpressionUUID->"75aae70b-7f19-844b-9ca0-823847eda001"],
+ CellChangeTimes->{{3.984220719135601*^9, 3.984220720202688*^9}, {
+   3.9842208313221455`*^9, 3.98422093194396*^9}, {3.9842209941358223`*^9, 
+   3.9842209961216125`*^9}, {3.984221540124733*^9, 3.9842218064484997`*^9}, {
+   3.9842220102959824`*^9, 3.984222075127531*^9}, 3.9843819659088974`*^9, {
+   3.984382022726679*^9, 3.984382061489977*^9}, {3.984382096375553*^9, 
+   3.9843820974156055`*^9}, {3.9843824576032867`*^9, 3.984382492397999*^9}, {
+   3.9843825724889545`*^9, 3.984382636633438*^9}, 3.9843826716425743`*^9, {
+   3.9843837183275795`*^9, 3.984383736818186*^9}, {3.9843840374909554`*^9, 
+   3.984384047753151*^9}, {3.984384104666891*^9, 3.9843841150965767`*^9}, {
+   3.984384817943331*^9, 3.984384876311512*^9}, 3.984385615983036*^9, {
+   3.984385699016981*^9, 3.984385804902895*^9}, {3.984385835393442*^9, 
+   3.984385868294901*^9}, {3.9843861927907543`*^9, 3.9843862212918873`*^9}, {
+   3.9843862557613792`*^9, 3.984386306571684*^9}, {3.984386372979582*^9, 
+   3.9843864412618923`*^9}},
+ CellLabel->"In[68]:=",ExpressionUUID->"75aae70b-7f19-844b-9ca0-823847eda001"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -1741,7 +2011,7 @@ Cell[BoxData[
         ";"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]",
     "\[IndentingNewLine]"}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[61]:=",ExpressionUUID->"90309d80-bb2a-ec47-85ed-c52adcfe1214"],
+ CellLabel->"In[74]:=",ExpressionUUID->"90309d80-bb2a-ec47-85ed-c52adcfe1214"],
 
 Cell[BoxData[
  RowBox[{
@@ -1840,7 +2110,7 @@ Cell[BoxData[
         RowBox[{"Last", "[", "centres", "]"}], ",", "R"}], "]"}]}]}], 
     "\[IndentingNewLine]", "]"}]}], ";"}]], "Code",
  InitializationCell->True,
- CellLabel->"In[64]:=",ExpressionUUID->"5a8d92fc-f8c4-f04f-ab30-7cb66ee5a761"],
+ CellLabel->"In[77]:=",ExpressionUUID->"5a8d92fc-f8c4-f04f-ab30-7cb66ee5a761"],
 
 Cell[BoxData[
  RowBox[{
@@ -1901,7 +2171,7 @@ Cell[BoxData[
        ";", "\[IndentingNewLine]", "\n", "\t", "res"}]}], 
      "\[IndentingNewLine]", "]"}]}], ";"}], "\n"}]], "Code",
  InitializationCell->True,
- CellLabel->"In[65]:=",ExpressionUUID->"06445620-e128-154e-bbc8-aad09eb90e8f"],
+ CellLabel->"In[78]:=",ExpressionUUID->"06445620-e128-154e-bbc8-aad09eb90e8f"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -1995,7 +2265,7 @@ Cell[BoxData[
          RowBox[{"Abort", "[", "]"}], ";"}], "\n", "*)"}], "\t", 
        "diskToChain"}]}], "\[IndentingNewLine]", "]"}]}], ";"}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[66]:=",ExpressionUUID->"f6a76e64-192e-604a-ae68-f87dbba99331"],
+ CellLabel->"In[79]:=",ExpressionUUID->"f6a76e64-192e-604a-ae68-f87dbba99331"],
 
 Cell[BoxData[
  RowBox[{"\[IndentingNewLine]", 
@@ -2065,7 +2335,8 @@ Cell[BoxData[
          "\n", "\t", "ixPairs"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
    "\[IndentingNewLine]"}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[67]:=",ExpressionUUID->"3e7e3507-6602-0f41-ae08-82deb79025af"],
+ CellChangeTimes->{{3.984220793288933*^9, 3.984220794142069*^9}},
+ CellLabel->"In[80]:=",ExpressionUUID->"3e7e3507-6602-0f41-ae08-82deb79025af"],
 
 Cell[BoxData[{
  RowBox[{
@@ -2364,9 +2635,8 @@ Cell[BoxData[{
   3.984121327488325*^9}, {3.9841213797048416`*^9, 3.9841213887283897`*^9}, {
   3.9841215144149685`*^9, 3.984121779071911*^9}, {3.984121815247179*^9, 
   3.9841220389109325`*^9}, {3.9841222805328712`*^9, 3.9841222835306377`*^9}, {
-  3.9841228891983986`*^9, 
-  3.9841228980202904`*^9}},ExpressionUUID->"ac8ba86a-013b-2544-b620-\
-52680da6f414"],
+  3.9841228891983986`*^9, 3.9841228980202904`*^9}},
+ CellLabel->"In[81]:=",ExpressionUUID->"ac8ba86a-013b-2544-b620-52680da6f414"],
 
 Cell[BoxData[
  RowBox[{
@@ -2395,7 +2665,7 @@ Cell[BoxData[
        "res"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
   "\[IndentingNewLine]"}]], "Code",
  InitializationCell->True,
- CellLabel->"In[71]:=",ExpressionUUID->"db78fc56-8770-d448-b1d6-19a4fe996bff"],
+ CellLabel->"In[84]:=",ExpressionUUID->"db78fc56-8770-d448-b1d6-19a4fe996bff"],
 
 Cell[BoxData[
  RowBox[{
@@ -2415,186 +2685,7 @@ Cell[BoxData[
        ")"}]}]}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
   "\[IndentingNewLine]"}]], "Code",
  InitializationCell->True,
- CellLabel->"In[72]:=",ExpressionUUID->"2dd0a901-0470-1641-9582-543152ca5384"]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell["Disk handling", "Section",ExpressionUUID->"441e1301-3d01-a740-b681-c52b4c4449fa"],
-
-Cell[BoxData[{
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"disk2Polar", "[", 
-     RowBox[{"Disk", "[", 
-      RowBox[{
-       RowBox[{"{", 
-        RowBox[{"x_", ",", "y_"}], "}"}], ",", "_"}], "]"}], "]"}], ":=", " ", 
-    RowBox[{"<|", 
-     RowBox[{
-      RowBox[{"\"\<r\>\"", "->", 
-       RowBox[{"Norm", "[", 
-        RowBox[{"{", 
-         RowBox[{"x", ",", "y"}], "}"}], "]"}]}], ",", 
-      RowBox[{"\"\<\[Theta]\>\"", "->", 
-       RowBox[{"ArcTan", "[", 
-        RowBox[{"x", ",", "y"}], "]"}]}]}], "|>"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"diskCentre", "[", 
-    RowBox[{"Disk", "[", 
-     RowBox[{"centre_", ",", "radius_"}], "]"}], "]"}], ":=", "centre"}], 
-  ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"diskRadius", "[", 
-    RowBox[{"Disk", "[", 
-     RowBox[{"centre_", ",", "radius_"}], "]"}], "]"}], ":=", "radius"}], 
-  ";"}], "\n", 
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"diskTop", "[", 
-     RowBox[{"Disk", "[", 
-      RowBox[{"centre_", ",", "radius_"}], "]"}], "]"}], ":=", 
-    RowBox[{"centre", "+", "radius"}]}], ";"}], "\[IndentingNewLine]", 
-  RowBox[{"(*", 
-   RowBox[{
-    RowBox[{
-     RowBox[{"diskIDCentre", "[", 
-      RowBox[{"arena_", ",", "disks_", ",", "id_"}], "]"}], " ", ":=", " ", 
-     RowBox[{"diskCentre", "@", 
-      RowBox[{
-       RowBox[{"Lookup", "[", 
-        RowBox[{"disks", ",", "id"}], "]"}], "[", "\"\<Disk\>\"", "]"}]}]}], 
-    ";"}], "\[IndentingNewLine]", "*)"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"runDiskCentre", "[", 
-    RowBox[{"run_", ",", "id_"}], "]"}], " ", ":=", "  ", 
-   RowBox[{"diskCentre", "@", 
-    RowBox[{
-     RowBox[{"Lookup", "[", 
-      RowBox[{
-       RowBox[{"run", "[", "\"\<Disks\>\"", "]"}], ",", "id"}], "]"}], 
-     "[", "\"\<Disk\>\"", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"runDiskCentre", "[", 
-    RowBox[{"run_", ",", 
-     RowBox[{"left", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
-   RowBox[{"leftShift", "[", 
-    RowBox[{
-     RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
-     RowBox[{"runDiskCentre", "[", 
-      RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"runDiskCentre", "[", 
-     RowBox[{"run_", ",", 
-      RowBox[{"right", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
-    RowBox[{"rightShift", "[", 
-     RowBox[{
-      RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
-      RowBox[{"runDiskCentre", "[", 
-       RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\n", 
-  "\[IndentingNewLine]", 
-  RowBox[{"(*", " ", 
-   RowBox[{
-    RowBox[{
-    "only", " ", "used", " ", "for", " ", "parastichy", " ", "and", " ", 
-     "display"}], ",", " ", 
-    RowBox[{"not", " ", "algorithm"}]}], " ", "*)"}]}], "\n", 
- RowBox[{
-  RowBox[{
-   RowBox[{"loggedDiskPolar", "[", 
-    RowBox[{"run_", ",", "id_"}], "]"}], " ", ":=", " ", 
-   RowBox[{
-    RowBox[{"Lookup", "[", 
-     RowBox[{
-      RowBox[{
-       RowBox[{"run", "[", "\"\<Logging\>\"", "]"}], "[", "\"\<Disks\>\"", 
-       "]"}], ",", "id"}], "]"}], "[", "\"\<Polar\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"loggedDiskPolar", "[", 
-    RowBox[{"run_", ",", 
-     RowBox[{"left", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
-   RowBox[{"leftPolar", "[", 
-    RowBox[{
-     RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
-     RowBox[{"loggedDiskPolar", "[", 
-      RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"loggedDiskPolar", "[", 
-    RowBox[{"run_", ",", 
-     RowBox[{"right", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
-   RowBox[{"rightPolar", "[", 
-    RowBox[{
-     RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
-     RowBox[{"loggedDiskPolar", "[", 
-      RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\n", 
- RowBox[{
-  RowBox[{
-   RowBox[{"loggedDiskCentre", "[", 
-    RowBox[{"run_", ",", "id_"}], "]"}], " ", ":=", "  ", 
-   RowBox[{"diskCentre", "@", 
-    RowBox[{
-     RowBox[{"Lookup", "[", 
-      RowBox[{
-       RowBox[{
-        RowBox[{"run", "[", "\"\<Logging\>\"", "]"}], "[", "\"\<Disks\>\"", 
-        "]"}], ",", "id"}], "]"}], "[", "\"\<Disk\>\"", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"loggedDiskCentre", "[", 
-    RowBox[{"run_", ",", 
-     RowBox[{"left", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
-   RowBox[{"leftShift", "[", 
-    RowBox[{
-     RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
-     RowBox[{"loggedDiskCentre", "[", 
-      RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"loggedDiskCentre", "[", 
-     RowBox[{"run_", ",", 
-      RowBox[{"right", "[", "id_", "]"}]}], " ", "]"}], " ", ":=", " ", 
-    RowBox[{"rightShift", "[", 
-     RowBox[{
-      RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], ",", 
-      RowBox[{"loggedDiskCentre", "[", 
-       RowBox[{"run", ",", "id"}], "]"}]}], "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"diskIDRadialHeight", "[", 
-     RowBox[{"run_", ",", "id_"}], "]"}], " ", ":=", "  ", 
-    RowBox[{
-     RowBox[{
-      RowBox[{"Lookup", "[", 
-       RowBox[{
-        RowBox[{
-         RowBox[{"run", "[", "\"\<Logging\>\"", "]"}], "[", "\"\<Disks\>\"", 
-         "]"}], ",", "id"}], "]"}], "[", "\"\<Polar\>\"", "]"}], 
-     "[", "\"\<r\>\"", "]"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"fom", "[", "x_", "]"}], ":=", " ", 
-   RowBox[{"If", "[", 
-    RowBox[{
-     RowBox[{
-      RowBox[{"Length", "[", "x", "]"}], ">", "0"}], ",", 
-     RowBox[{"First", "[", "x", "]"}], ",", 
-     RowBox[{"Missing", "[", "x", "]"}]}], "]"}]}], ";"}]}], "Code",
- InitializationCell->True,
- CellLabel->"In[73]:=",ExpressionUUID->"d0a0fb31-b4fc-9f4c-aa4e-a876e3f3e1d0"]
+ CellLabel->"In[85]:=",ExpressionUUID->"2dd0a901-0470-1641-9582-543152ca5384"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2624,7 +2715,7 @@ Cell[BoxData[
       "\[IndentingNewLine]", "\[IndentingNewLine]", "res"}]}], 
     "\[IndentingNewLine]", "]"}]}], ";"}]], "Code",
  InitializationCell->True,
- CellLabel->"In[88]:=",ExpressionUUID->"4e8ac3d9-79eb-2f42-b562-dd2a2efa4e85"],
+ CellLabel->"In[86]:=",ExpressionUUID->"4e8ac3d9-79eb-2f42-b562-dd2a2efa4e85"],
 
 Cell[BoxData[{
  RowBox[{
@@ -2636,19 +2727,19 @@ Cell[BoxData[{
      RowBox[{
       RowBox[{"{", 
        RowBox[{"edges", ",", "graph", ",", "pairs", ",", "nodes"}], "}"}], ",",
-       "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\t", 
       RowBox[{
        RowBox[{"pairs", "=", 
         RowBox[{"Partition", "[", 
          RowBox[{"chain", ",", "2", ",", "1"}], "]"}]}], ";", 
-       "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\t", 
        RowBox[{"edges", "=", 
         RowBox[{"Map", "[", 
          RowBox[{
           RowBox[{
            RowBox[{"Apply", "[", 
             RowBox[{"UndirectedEdge", ",", "#"}], "]"}], "&"}], ",", 
-          "pairs"}], "]"}]}], ";", "\[IndentingNewLine]", 
+          "pairs"}], "]"}]}], ";", "\[IndentingNewLine]", "\t", 
        RowBox[{"edges", "=", 
         RowBox[{"Association", "@", 
          RowBox[{"Map", "[", 
@@ -2657,82 +2748,42 @@ Cell[BoxData[{
             RowBox[{"#", "->", 
              RowBox[{"orientation", "[", 
               RowBox[{"run", ",", "#"}], "]"}]}], "&"}], ",", "edges"}], 
-          "]"}]}]}]}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"orientation", "[", 
-   RowBox[{
-    RowBox[{"run_", " ", "/;", " ", 
-     RowBox[{"arenaConeQ", "[", 
-      RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "]"}]}], ",", 
-    RowBox[{"a_", " ", "\[UndirectedEdge]", " ", "b_"}]}], "]"}], " ", ":=", 
-  " ", 
-  RowBox[{"Module", "[", 
-   RowBox[{
-    RowBox[{"{", "polar", "}"}], ",", "\n", "\t", 
-    RowBox[{
-     RowBox[{"polar", "=", 
-      RowBox[{"Map", "[", 
-       RowBox[{
-        RowBox[{
-         RowBox[{"loggedDiskPolar", "[", 
-          RowBox[{"run", ",", "#"}], "]"}], "&"}], ",", 
-        RowBox[{"{", 
-         RowBox[{"a", ",", "b"}], "}"}]}], "]"}]}], ";", "\n", "\t", 
-     RowBox[{"polar", "=", 
-      RowBox[{"SortBy", "[", 
-       RowBox[{"polar", ",", 
-        RowBox[{
-         RowBox[{"-", 
-          RowBox[{"#", "[", "\"\<\[Theta]\>\"", "]"}]}], "&"}]}], "]"}]}], ";",
-      "\[IndentingNewLine]", "\t", 
-     RowBox[{"If", "[", 
-      RowBox[{
-       RowBox[{
-        RowBox[{
-         RowBox[{"polar", "[", 
-          RowBox[{"[", "1", "]"}], "]"}], "[", "\"\<r\>\"", "]"}], "<", 
-        RowBox[{
-         RowBox[{"polar", "[", 
-          RowBox[{"[", "2", "]"}], "]"}], "[", "\"\<r\>\"", "]"}]}], 
-       ",", "\"\<Up\>\"", ",", "\"\<Down\>\""}], "]"}]}]}], 
-   "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+          "]"}]}]}]}]}], "\[IndentingNewLine]", "]"}]}], ";"}], "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"orientation", "[", 
-    RowBox[{
-     RowBox[{"run_", " ", "/;", " ", 
-      RowBox[{"arenaCylinderQ", "[", 
-       RowBox[{"run", "[", "\"\<Arena\>\"", "]"}], "]"}]}], ",", 
-     RowBox[{"a_", " ", "\[UndirectedEdge]", " ", "b_"}]}], "]"}], " ", ":=", 
-   " ", 
-   RowBox[{"Module", "[", 
-    RowBox[{
-     RowBox[{"{", "cartesian", "}"}], ",", "\n", "\t", 
+   RowBox[{
+    RowBox[{"orientation", "[", 
+     RowBox[{"run_", ",", 
+      RowBox[{"a_", " ", "\[UndirectedEdge]", " ", "b_"}]}], "]"}], " ", ":=",
+     " ", 
+    RowBox[{"Module", "[", 
      RowBox[{
-      RowBox[{"cartesian", "=", 
-       RowBox[{"Map", "[", 
+      RowBox[{"{", 
+       RowBox[{"sca", ",", "scb"}], "}"}], ",", "\n", "\t", 
+      RowBox[{
+       RowBox[{"sca", "=", 
+        RowBox[{"diskSurfaceCoordinates", "[", 
+         RowBox[{"run", ",", "a", ",", "\"\<UseLogged\>\""}], "]"}]}], ";", 
+       "\n", "\t", 
+       RowBox[{"scb", "=", 
+        RowBox[{"diskSurfaceCoordinates", "[", 
+         RowBox[{"run", ",", "b", ",", "\"\<UseLogged\>\""}], "]"}]}], ";", 
+       "\n", "\t", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"sca", ",", "scb"}], "}"}], "=", 
+        RowBox[{"SortBy", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"sca", ",", "scb"}], "}"}], ",", 
+          RowBox[{"#Azimuth", "&"}]}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"If", "[", 
         RowBox[{
          RowBox[{
-          RowBox[{"loggedDiskCentre", "[", 
-           RowBox[{"run", ",", "#"}], "]"}], "&"}], ",", 
-         RowBox[{"{", 
-          RowBox[{"a", ",", "b"}], "}"}]}], "]"}]}], ";", "\n", "\t", 
-      RowBox[{"cartesian", "=", 
-       RowBox[{"SortBy", "[", 
-        RowBox[{"cartesian", ",", "First"}], "]"}]}], ";", 
-      "\[IndentingNewLine]", "\t", 
-      RowBox[{"If", "[", 
-       RowBox[{
-        RowBox[{
-         RowBox[{"cartesian", "[", 
-          RowBox[{"[", 
-           RowBox[{"1", ",", "2"}], "]"}], "]"}], "<", 
-         RowBox[{"cartesian", "[", 
-          RowBox[{"[", 
-           RowBox[{"2", ",", "2"}], "]"}], "]"}]}], ",", "\"\<Up\>\"", 
-        ",", "\"\<Down\>\""}], "]"}]}]}], "\[IndentingNewLine]", "]"}]}], 
-  "\n"}], "\[IndentingNewLine]", 
+          RowBox[{"sca", "[", "\"\<Meridian\>\"", "]"}], ">", 
+          RowBox[{"scb", "[", "\"\<Meridian\>\"", "]"}]}], ",", "\"\<Up\>\"", 
+         ",", "\"\<Down\>\""}], "]"}]}]}], "\n", "\t", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\n", 
  RowBox[{
   RowBox[{
    RowBox[{"orientationStyle", "[", "\"\<Up\>\"", "]"}], ":=", " ", 
@@ -2753,18 +2804,21 @@ Cell[BoxData[{
   RowBox[{"parastichyCount", "[", "updowns_", "]"}], " ", ":=", " ", 
   RowBox[{"Module", "[", 
    RowBox[{
-    RowBox[{"{", "res", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", "res", "}"}], ",", "\[IndentingNewLine]", "\t", 
     RowBox[{
-     RowBox[{"res", "=", " ", "updowns"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"res", "=", " ", "updowns"}], ";", "\[IndentingNewLine]", "\t", 
      RowBox[{"res", "=", 
       RowBox[{"Counts", "[", 
        RowBox[{"updowns", ",", 
         RowBox[{"{", 
          RowBox[{"\"\<Up\>\"", ",", "\"\<Down\>\""}], "}"}]}], "]"}]}], ";", 
-     "\[IndentingNewLine]", "res"}]}], "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", "\t", "res"}]}], "\[IndentingNewLine]", 
    "]"}]}], "\[IndentingNewLine]"}], "Code",
  InitializationCell->True,
- CellLabel->"In[89]:=",ExpressionUUID->"5d76d568-a332-1446-a49a-f4d834b5ff7b"]
+ CellChangeTimes->{{3.9842206874404564`*^9, 3.9842206904094334`*^9}, {
+  3.98439543029636*^9, 3.984395541627201*^9}, {3.9843955732891846`*^9, 
+  3.9843957234487915`*^9}},ExpressionUUID->"5d76d568-a332-1446-a49a-\
+f4d834b5ff7b"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2883,7 +2937,7 @@ Cell[BoxData[
         RowBox[{"h", "*", "unitPerp"}]}]}], "}"}]}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Code",
  InitializationCell->True,
- CellLabel->"In[96]:=",ExpressionUUID->"367c735a-29ec-a740-b1de-f29038a37faa"]
+ CellLabel->"In[94]:=",ExpressionUUID->"367c735a-29ec-a740-b1de-f29038a37faa"]
 }, Open  ]]
 },
 WindowSize->{538.5, 646.875},
@@ -2904,83 +2958,74 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 16203, 385, 1594, "Code",ExpressionUUID->"c2924e34-f199-8248-abd3-eb73c1ffd8f4",
+Cell[554, 20, 17964, 424, 1768, "Code",ExpressionUUID->"c2924e34-f199-8248-abd3-eb73c1ffd8f4",
  InitializationCell->True],
-Cell[16760, 407, 190, 3, 92, "Code",ExpressionUUID->"09025947-2cdc-b140-bab5-df79c3f3fb17",
+Cell[18521, 446, 2937, 64, 424, "Code",ExpressionUUID->"48ef3d46-2241-794c-8678-8b2b746f3bb8",
  InitializationCell->True],
-Cell[16953, 412, 1287, 32, 176, "Input",ExpressionUUID->"51c2f976-d3c0-e346-a86b-96b9ac1c8007",
+Cell[21461, 512, 2529, 55, 424, "Code",ExpressionUUID->"6cbb375f-8238-fc43-a5de-aefa76c888fa",
  InitializationCell->True],
-Cell[18243, 446, 2817, 60, 408, "Code",ExpressionUUID->"48ef3d46-2241-794c-8678-8b2b746f3bb8",
+Cell[23993, 569, 1577, 40, 203, "Code",ExpressionUUID->"2d51a01a-326d-8544-ae42-7b83a78e7524",
  InitializationCell->True],
-Cell[21063, 508, 2529, 55, 424, "Code",ExpressionUUID->"6cbb375f-8238-fc43-a5de-aefa76c888fa",
+Cell[25573, 611, 3349, 78, 376, "Code",ExpressionUUID->"3cd83d5a-791d-f549-aa81-645a46caeafc",
  InitializationCell->True],
-Cell[23595, 565, 1577, 40, 203, "Code",ExpressionUUID->"2d51a01a-326d-8544-ae42-7b83a78e7524",
+Cell[28925, 691, 604, 15, 76, "Code",ExpressionUUID->"5e7a636c-27b8-c747-81d9-a62bc0dc95ff",
  InitializationCell->True],
-Cell[25175, 607, 3349, 78, 376, "Code",ExpressionUUID->"3cd83d5a-791d-f549-aa81-645a46caeafc",
+Cell[29532, 708, 1287, 30, 108, "Code",ExpressionUUID->"fee42ca2-0c9d-5a4a-99d1-fb8bcec06431",
  InitializationCell->True],
-Cell[28527, 687, 1433, 36, 187, "Code",ExpressionUUID->"5e7a636c-27b8-c747-81d9-a62bc0dc95ff",
- InitializationCell->True],
-Cell[29963, 725, 1287, 30, 108, "Code",ExpressionUUID->"fee42ca2-0c9d-5a4a-99d1-fb8bcec06431",
- InitializationCell->True],
-Cell[31253, 757, 4959, 109, 566, "Code",ExpressionUUID->"f2c38ad1-940d-7545-9f35-d50ded8a03f0",
- InitializationCell->True],
-Cell[36215, 868, 1076, 25, 187, "Code",ExpressionUUID->"c4e40b84-a7d6-f747-84af-1049b88bd88c",
+Cell[30822, 740, 5077, 110, 535, "Code",ExpressionUUID->"f2c38ad1-940d-7545-9f35-d50ded8a03f0",
  InitializationCell->True],
 Cell[CellGroupData[{
-Cell[37316, 897, 85, 0, 59, "Section",ExpressionUUID->"b55d3ca1-6dd7-ad4b-b5bc-171cfdd423bf"],
-Cell[37404, 899, 1413, 39, 92, "Code",ExpressionUUID->"ad4755cd-cce9-9242-a8a4-3d34cbcafb93",
+Cell[35924, 854, 87, 0, 59, "Section",ExpressionUUID->"441e1301-3d01-a740-b681-c52b4c4449fa"],
+Cell[36014, 856, 2750, 69, 266, "Code",ExpressionUUID->"49c23bd1-387a-124e-b7ed-ed21ed53ce28",
  InitializationCell->True],
-Cell[38820, 940, 104, 1, 45, "Code",ExpressionUUID->"39533de3-b076-4544-9e45-9bd8a977e739"],
-Cell[38927, 943, 2779, 75, 313, "Code",ExpressionUUID->"6f7eb93d-e56a-3647-8197-f08180876587",
+Cell[38767, 927, 1413, 39, 92, "Code",ExpressionUUID->"ad4755cd-cce9-9242-a8a4-3d34cbcafb93",
  InitializationCell->True],
-Cell[41709, 1020, 5391, 132, 456, "Code",ExpressionUUID->"dcc84c71-1f18-f74a-ae3a-547f8e814428",
+Cell[40183, 968, 104, 1, 45, "Code",ExpressionUUID->"39533de3-b076-4544-9e45-9bd8a977e739"],
+Cell[40290, 971, 2779, 75, 313, "Code",ExpressionUUID->"6f7eb93d-e56a-3647-8197-f08180876587",
+ InitializationCell->True],
+Cell[43072, 1048, 11498, 275, 993, "Code",ExpressionUUID->"dcc84c71-1f18-f74a-ae3a-547f8e814428",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[47137, 1157, 93, 0, 59, "Section",ExpressionUUID->"114434c2-faab-e948-8b98-ecd1e74df7ff"],
-Cell[47233, 1159, 1885, 57, 124, "Code",ExpressionUUID->"afd7221f-042d-8349-9e4b-996708aed26a",
+Cell[54607, 1328, 93, 0, 59, "Section",ExpressionUUID->"114434c2-faab-e948-8b98-ecd1e74df7ff"],
+Cell[54703, 1330, 1885, 57, 124, "Code",ExpressionUUID->"afd7221f-042d-8349-9e4b-996708aed26a",
  InitializationCell->True],
-Cell[49121, 1218, 2573, 63, 234, "Code",ExpressionUUID->"27f5a35c-f38c-c84b-ba3e-b7dc0ef060f2",
+Cell[56591, 1389, 2613, 63, 234, "Code",ExpressionUUID->"27f5a35c-f38c-c84b-ba3e-b7dc0ef060f2",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[51731, 1286, 106, 0, 59, "Section",ExpressionUUID->"f2789abb-ff7a-f840-97ce-145481b3ee3c"],
-Cell[51840, 1288, 2062, 52, 218, "Code",ExpressionUUID->"f65641d4-0e9e-cd49-8458-9dffaae8d563",
+Cell[59241, 1457, 106, 0, 59, "Section",ExpressionUUID->"f2789abb-ff7a-f840-97ce-145481b3ee3c"],
+Cell[59350, 1459, 4398, 109, 345, "Code",ExpressionUUID->"f65641d4-0e9e-cd49-8458-9dffaae8d563",
  InitializationCell->True],
-Cell[53905, 1342, 11457, 283, 1167, "Code",ExpressionUUID->"75aae70b-7f19-844b-9ca0-823847eda001",
+Cell[63751, 1570, 13513, 325, 1372, "Code",ExpressionUUID->"75aae70b-7f19-844b-9ca0-823847eda001",
  InitializationCell->True],
-Cell[65365, 1627, 4723, 116, 440, "Code",ExpressionUUID->"90309d80-bb2a-ec47-85ed-c52adcfe1214",
+Cell[77267, 1897, 4723, 116, 440, "Code",ExpressionUUID->"90309d80-bb2a-ec47-85ed-c52adcfe1214",
  InitializationCell->True],
-Cell[70091, 1745, 3985, 97, 408, "Code",ExpressionUUID->"5a8d92fc-f8c4-f04f-ab30-7cb66ee5a761",
+Cell[81993, 2015, 3985, 97, 408, "Code",ExpressionUUID->"5a8d92fc-f8c4-f04f-ab30-7cb66ee5a761",
  InitializationCell->True],
-Cell[74079, 1844, 2405, 59, 266, "Code",ExpressionUUID->"06445620-e128-154e-bbc8-aad09eb90e8f",
+Cell[85981, 2114, 2405, 59, 266, "Code",ExpressionUUID->"06445620-e128-154e-bbc8-aad09eb90e8f",
  InitializationCell->True],
-Cell[76487, 1905, 3794, 92, 345, "Code",ExpressionUUID->"f6a76e64-192e-604a-ae68-f87dbba99331",
+Cell[88389, 2175, 3794, 92, 345, "Code",ExpressionUUID->"f6a76e64-192e-604a-ae68-f87dbba99331",
  InitializationCell->True],
-Cell[80284, 1999, 2826, 68, 266, "Code",ExpressionUUID->"3e7e3507-6602-0f41-ae08-82deb79025af",
+Cell[92186, 2269, 2892, 69, 266, "Code",ExpressionUUID->"3e7e3507-6602-0f41-ae08-82deb79025af",
  InitializationCell->True],
-Cell[83113, 2069, 11988, 299, 930, "Code",ExpressionUUID->"ac8ba86a-013b-2544-b620-52680da6f414",
+Cell[95081, 2340, 12007, 298, 930, "Code",ExpressionUUID->"ac8ba86a-013b-2544-b620-52680da6f414",
  InitializationCell->True],
-Cell[95104, 2370, 1002, 27, 139, "Code",ExpressionUUID->"db78fc56-8770-d448-b1d6-19a4fe996bff",
+Cell[107091, 2640, 1002, 27, 139, "Code",ExpressionUUID->"db78fc56-8770-d448-b1d6-19a4fe996bff",
  InitializationCell->True],
-Cell[96109, 2399, 688, 18, 92, "Code",ExpressionUUID->"2dd0a901-0470-1641-9582-543152ca5384",
+Cell[108096, 2669, 688, 18, 92, "Code",ExpressionUUID->"2dd0a901-0470-1641-9582-543152ca5384",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[96834, 2422, 87, 0, 59, "Section",ExpressionUUID->"441e1301-3d01-a740-b681-c52b4c4449fa"],
-Cell[96924, 2424, 6023, 172, 392, "Code",ExpressionUUID->"d0a0fb31-b4fc-9f4c-aa4e-a876e3f3e1d0",
- InitializationCell->True]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[102984, 2601, 106, 0, 59, "Section",ExpressionUUID->"436509d3-47dc-d145-b9e0-ae7a83cde751"],
-Cell[103093, 2603, 914, 23, 139, "Code",ExpressionUUID->"4e8ac3d9-79eb-2f42-b562-dd2a2efa4e85",
+Cell[108821, 2692, 106, 0, 59, "Section",ExpressionUUID->"436509d3-47dc-d145-b9e0-ae7a83cde751"],
+Cell[108930, 2694, 914, 23, 139, "Code",ExpressionUUID->"4e8ac3d9-79eb-2f42-b562-dd2a2efa4e85",
  InitializationCell->True],
-Cell[104010, 2628, 4959, 138, 456, "Code",ExpressionUUID->"5d76d568-a332-1446-a49a-f4d834b5ff7b",
+Cell[109847, 2719, 3793, 101, 392, "Code",ExpressionUUID->"5d76d568-a332-1446-a49a-f4d834b5ff7b",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[109006, 2771, 96, 0, 59, "Section",ExpressionUUID->"fd8b6d77-9297-2f4b-b3d8-fe848c07dba9"],
-Cell[109105, 2773, 4191, 112, 345, "Code",ExpressionUUID->"367c735a-29ec-a740-b1de-f29038a37faa",
+Cell[113677, 2825, 96, 0, 59, "Section",ExpressionUUID->"fd8b6d77-9297-2f4b-b3d8-fe848c07dba9"],
+Cell[113776, 2827, 4191, 112, 345, "Code",ExpressionUUID->"367c735a-29ec-a740-b1de-f29038a37faa",
  InitializationCell->True]
 }, Open  ]]
 }

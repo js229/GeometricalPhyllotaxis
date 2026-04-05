@@ -30,7 +30,7 @@
 \email{jonathan@swintons.net}
 
 
-\listoftodos % This generates the summary of all notes
+%\listoftodos % This generates the summary of all notes
 \newpage
 
 \begin{abstract}
@@ -49,9 +49,9 @@ This note explores the dynamics of Schwendener disk-stacking models reintroduced
  
  
 \section{Methods}
-Instead of the fixed-circumference cylinder bur  changing stacking-disk radius of previous models, here I keep the radius of each stacking disk constant but vary the circumference of the periodic arena in which it is stacked. In the cylindrical model, the disk radius was modelled as $r(z)$, where $z$ was vertical height on the cylinder, and $r(z)$ was in simple cases linear in $z$. Then $r'=dr/dz$ was a non-dimensional measure of the rate of change of disk size. Here, instead we keep $r(z)==1$ but vary the cone circumference linearly with $z$. This has numerical advantages and is perhaps easier to interpret visually, and $r'$ becomes roughly $1/\tan \theta$ where $\theta$ is the semi-angle of the cone.\todo{is this right?}
+Instead of the fixed-circumference cylinder bur  changing stacking-disk radius of previous models, here I keep the radius of each stacking disk constant but vary the circumference of the periodic arena in which it is stacked. In the cylindrical model, the disk radius was modelled as $r(z)$, where $z$ was vertical height on the cylinder, and $r(z)$ was in simple cases linear in $z$. Then $r'=dr/dz$ was a non-dimensional measure of the rate of change of disk size. Here, instead we keep $r(z)==1$ but vary the cone circumference linearly with $z$. This has numerical advantages and is perhaps easier to interpret visually, and $r'$ becomes roughly $1/\tan \theta$ where $\theta$ is the semi-angle of the cone.
 
-
+The simulation output depends only on the semi-angle $\theta$ and the initial configuration of disks. In every case in this paper, the initial configuration is a single disk placed to fill the lowest part of the cone; since the disks have fixed radius $r=1$, if the apex of the cone is at $(0,0)$ this first disk is placed with a centre at $(0,1/2 * 1/\sin(\theta))$.
  
  The simulation code relies on a Wolfram notebook at \url{https://github.com/js229/GeometricalPhyllotaxis/blob/master/Mathematica/Packages/CoinStacking.nb}, and the simulations themselves are run by \url{https://github.com/js229/GeometricalPhyllotaxis/blob/master/LaTeX/Critical%20values/CriticalR.nb}; the first line of the latter notebook needs to point to the  location of the first.
  
