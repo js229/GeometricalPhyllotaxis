@@ -49,6 +49,26 @@ This note explores the dynamics of Schwendener disk-stacking models reintroduced
  
  
 \section{Methods}
+\subsection{Chain widths}
+For an $(m,n)$  touching circle lattice the radius of the touching circles to fit on a cylinder of circumference 1 is (~\cite{swintonMathematicalPhyllotaxis2025})
+\begin{align}
+	4 r^{2}  &=\frac{1}{ m^2-2 m n \cos (\theta )+n^2}.
+\end{align}
+where $\theta$ is the angle between the principal parastichy vectors (and is thus between $\pi/3 and 2\pi/3$). Scaling to disks of radius 1 on a circumference $C$ gives
+\begin{align}
+	 \frac{1}{4}C^2   &= m^2-2 m n \cos (\theta )+n^2.
+	 \\
+	 \cos\theta &= \frac{m^2 + n^2- C^2/4}{2 m n}
+\end{align}
+with 
+\begin{align}
+ m^2- m n + n^2  < 	\frac{1}{4}C^2   < m^2 +  m n +n^2
+\end{align}
+In particular, a square $(m,n)$ lattice fits exactly on a cylinder of radius $2\sqrt{ (m^2+n^2)}$ and the tangents of the two parastichy vectors are $m/n$ and $-n/m$. 
+
+\todo{What is the angle of the principal vector?}
+
+\subsection{Cone rather than cylinder}
 Instead of the fixed-circumference cylinder bur  changing stacking-disk radius of previous models, here I keep the radius of each stacking disk constant but vary the circumference of the periodic arena in which it is stacked. In the cylindrical model, the disk radius was modelled as $r(z)$, where $z$ was vertical height on the cylinder, and $r(z)$ was in simple cases linear in $z$. Then $r'=dr/dz$ was a non-dimensional measure of the rate of change of disk size. Here, instead we keep $r(z)==1$ but vary the cone circumference linearly with $z$. This has numerical advantages and is perhaps easier to interpret visually, and $r'$ becomes roughly $1/\tan \theta$ where $\theta$ is the semi-angle of the cone.
 
 The simulation output depends only on the semi-angle $\theta$ and the initial configuration of disks. In every case in this paper, the initial configuration is a single disk placed to fill the lowest part of the cone; since the disks have fixed radius $r=1$, if the apex of the cone is at $(0,0)$ this first disk is placed with a centre at $(0,1/2 * 1/\sin(\theta))$.
